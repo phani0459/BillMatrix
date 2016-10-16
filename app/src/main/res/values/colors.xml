@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- Login Colors-->
+    <color name="loginBG">#4C4C4C</color>
+    <color name="loginButtonBG">#FF8704</color>
+    <color name="signInTextColor">#FF8704</color>
+    <color name="editTextColor">#4C4C4C</color>
+    <color name="loginEditTextBG">#DCE3ED</color>
+    <color name="contactAdminBG">#6D7A8D</color>
+    <color name="contactAdminTextColor">#B3C0D1</color>
+    <color name="fgtPwdTextColor">#9CA5B6</color>
+    <color name="rememberTextColor">#AEB3B5</color>
+</resources>

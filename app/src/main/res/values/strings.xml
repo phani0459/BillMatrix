@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">BillMatrix</string>
+    <string name="home">HOME</string>
+    <string name="logout">LOGOUT</string>
+    <string name="save">SAVE</string>
+
+    <!-- Login Strings-->
+    <string name="userName">Username</string>
+    <string name="password">Password</string>
+    <string name="licencekey">Licence Key</string>
+    <string name="signin">Sign In</string>
+    <string name="login">LOGIN</string>
+    <string name="remember">Remember</string>
+    <string name="forgotpwd">Forgot Password?</string>
+    <string name="contactAdmin">Contact Administrator</string>
+    <string name="copyright">2016 BillMatrix, Next Gen, Retail Solution</string>
+
+    <!-- Control panel Strings-->
+    <string name="pos">pos</string>
+    <string name="inventory">inventory</string>
+    <string name="profile">profile</string>
+    <string name="payments">payments</string>
+    <string name="settings">settings</string>
+    <string name="reports">reports</string>
+    <string name="customers">customers</string>
+    <string name="employee">employee</string>
+
+    <!-- Profile Strings-->
+
+    <string name="storeadministrator">STORE ADMINISTRATOR</string>
+    <string name="branch">BRANCH</string>
+    <string name="location">LOCATION</string>
+    <string name="administrator">Administrator</string>
+    <string name="loginid">Login ID</string>
+    <string name="pwd">Passowrd</string>
+    <string name="mobile">Mobile</string>
+    <string name="profileCAPS">PROFILE</string>
 </resources>

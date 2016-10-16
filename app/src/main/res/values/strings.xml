@@ -3,6 +3,7 @@
     <string name="home">HOME</string>
     <string name="logout">LOGOUT</string>
     <string name="save">SAVE</string>
+    <string name="add">ADD</string>
 
     <!-- Login Strings-->
     <string name="userName">Username</string>
@@ -34,5 +35,14 @@
     <string name="loginid">Login ID</string>
     <string name="pwd">Passowrd</string>
     <string name="mobile">Mobile</string>
-    <string name="profileCAPS">PROFILE</string>
+    <string name="PROFILE">PROFILE</string>
+
+    <!-- Employee Strings-->
+    <string name="sno">S.NO.</string>
+    <string name="employeeName">EMPLOYEE NAME</string>
+    <string name="LOGINID">LOGIN ID</string>
+    <string name="PASSWORD">PASSWORD</string>
+    <string name="MOBILE">MOBILE</string>
+    <string name="STATUS">STATUS</string>
+    <string name="ACTION">ACTION</string>
 </resources>

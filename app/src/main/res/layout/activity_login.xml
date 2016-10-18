@@ -1,17 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/loginBG"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:layout_weight="1"
     tools:context="com.billmatrix.LoginActivity">
 
-    <TextView
+
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
-</RelativeLayout>
+        android:src="@mipmap/bill_matrix_logo"
+        android:layout_marginBottom="20dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="600px"
+        android:minWidth="700px"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@android:color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/signInTextColor"
+            android:text="@string/signin"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="5dp"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/user_name"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:translationY="10dp"
+                android:padding="5dp"
+                android:background="@color/contactAdminTextColor"
+                android:hint="@string/userName" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="5dp"
+
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/contactAdminTextColor"
+                android:translationY="10dp"
+                android:padding="5dp"
+                android:hint="@string/pwd" />
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="20dp"
+                android:minWidth="40dp"
+                android:padding="12dp"
+                android:text="@string/login"
+                android:textColor="@android:color/white"
+                android:background="@color/loginButtonBG"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="@string/remember"
+                android:textColor="@color/rememberTextColor"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/forgotpwd"
+               android:layout_marginLeft="20dp"
+                android:textColor="@color/fgtPwdTextColor"/>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="0dp"
+            android:background="@color/contactAdminBG"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/contactAdminTextColor"
+            android:text="@string/contactAdmin"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+</LinearLayout>

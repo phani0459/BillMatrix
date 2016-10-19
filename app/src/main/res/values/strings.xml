@@ -13,8 +13,8 @@
     <string name="login">LOGIN</string>
     <string name="remember">Remember</string>
     <string name="forgotpwd">Forgot Password?</string>
-    <string name="contactAdmin">Contact Administrator</string>
-    <string name="copyright">2016 BillMatrix, Next Gen, Retail Solution</string>
+    <string name="contactAdmin">CONTACT ADMINISTRATOR</string>
+    <string name="copyright">%1$d &#169; BillMatrix, Next Gen, Retail Solution</string>
 
     <!-- Control panel Strings-->
     <string name="pos">pos</string>
@@ -33,7 +33,7 @@
     <string name="location">LOCATION</string>
     <string name="administrator">Administrator</string>
     <string name="loginid">Login ID</string>
-    <string name="pwd">Passowrd</string>
+    <string name="pwd">Password</string>
     <string name="mobile">Mobile</string>
     <string name="PROFILE">PROFILE</string>
 

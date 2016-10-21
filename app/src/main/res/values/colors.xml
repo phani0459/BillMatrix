@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#4C4C4C</color>
+    <color name="saveBtnColor">#1CA603</color>
 
     <!-- Login Colors-->
     <color name="loginBG">#4C4C4C</color>
@@ -14,4 +15,9 @@
     <color name="contactAdminTextColor">#B3C0D1</color>
     <color name="fgtPwdTextColor">#9CA5B6</color>
     <color name="rememberTextColor">#AEB3B5</color>
+
+    <!-- Base tab colors -->
+    <color name="headerBG">#1F1F1F</color>
+    <color name="bodyBG">#4C4C4C</color>
+    <color name="navigateTextColor">#E3B152</color>
 </resources>

@@ -14,22 +14,27 @@ import com.billmatrix.R;
 
 import java.io.File;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public abstract class BaseTabActivity extends AppCompatActivity {
 
-    TextView textView;
+    @BindView(R.id.navigateTextView)
+    public TextView textView;
+    @BindView(R.id.layout)
+    public LinearLayout linearLayout;
 
-    LinearLayout linearLayout;
     Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_tab);
-        mContext = this;
-        textView = (TextView) findViewById(R.id.helloWorld);
-        linearLayout = (LinearLayout) findViewById(R.id.layout);
 
-        File file = new File(getExternalFilesDir(null), "pic");
+        ButterKnife.bind(this);
+        mContext = this;
+
+//        File file = new File(getExternalFilesDir(null), "pic");
     }
 
     public LinearLayout.LayoutParams getLayoutParams(int level) {
@@ -43,11 +48,6 @@ public abstract class BaseTabActivity extends AppCompatActivity {
                 break;
         }
         return layoutParams;
-    }
-
-
-    public String getResString(int id) {
-        return getResources().getString(id);
     }
 
     public void addTabButtons(int n, String... names) {

@@ -1,14 +1,16 @@
 package com.billmatrix;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import java.util.Calendar;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -16,7 +18,7 @@ public class LoginActivity extends AppCompatActivity {
     private Context mContext;
 
 
-    @Bind(R.id.copyrightTextView)
+    @BindView(R.id.copyrightTextView)
     public TextView copyrightTextView;
 
 
@@ -29,5 +31,11 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
+    }
+
+    @OnClick(R.id.btn_login)
+    public void login() {
+        Intent intent = new Intent(mContext, ProfileActivity.class);
+        startActivity(intent);
     }
 }

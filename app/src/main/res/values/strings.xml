@@ -4,6 +4,11 @@
     <string name="logout">LOGOUT</string>
     <string name="save">SAVE</string>
     <string name="add">ADD</string>
+    <string name="REPORTS">REPORTS</string>
+    <string name="SETTINGS">SETTINGS</string>
+    <string name="TODAYS_PURS">TODAY\'S PURCHASES</string>
+    <string name="VIEW_STOCK">VIEW STOCK</string>
+    <string name="LOGOUT">LOGOUT</string>
 
     <!-- Login Strings-->
     <string name="userName">Username</string>

@@ -24,7 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BaseTabActivity"></activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

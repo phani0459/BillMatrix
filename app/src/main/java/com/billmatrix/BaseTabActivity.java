@@ -1,7 +1,9 @@
 package com.billmatrix;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public abstract class BaseTabActivity extends AppCompatActivity {
 
@@ -94,6 +97,31 @@ public abstract class BaseTabActivity extends AppCompatActivity {
                 linearLayout.addView(button);
             }
         }
+    }
+
+    @OnClick(R.id.btn_logout)
+    public void logout() {
+        showAlertDialog(getString(R.string.logout), getString(R.string.wanna_logout), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+    }
+
+    public void showAlertDialog(String title, String msg, DialogInterface.OnClickListener okayClickListner) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(title);
+        builder.setMessage(msg);
+        builder.setPositiveButton(getString(android.R.string.yes), okayClickListner);
+        builder.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     String selectedTab;

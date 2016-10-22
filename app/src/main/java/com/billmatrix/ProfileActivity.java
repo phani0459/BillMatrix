@@ -10,10 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class ProfileActivity extends BaseTabActivity {
 
@@ -21,6 +24,8 @@ public class ProfileActivity extends BaseTabActivity {
     public View profileLayout;
     @BindView(R.id.et_storeAdmin)
     public EditText storeAdminEditText;
+    @BindView(R.id.et_profile_password)
+    public EditText passwordEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +35,18 @@ public class ProfileActivity extends BaseTabActivity {
         addTabButtons(1, "Profile");
 
         profileLayout.setVisibility(View.VISIBLE);
+    }
 
-        storeAdminEditText.setSelection(storeAdminEditText.getText().length());
+    @OnClick(R.id.imBtn_editPwd)
+    public void enablePassword() {
+        passwordEditText.setEnabled(true);
+        passwordEditText.setBackgroundResource(R.drawable.edit_text_border);
+    }
+
+    @OnClick(R.id.btn_saveProfile)
+    public void saveProfile() {
+        passwordEditText.setEnabled(false);
+        passwordEditText.setBackgroundResource(R.drawable.edit_text_disabled_border);
     }
 
     @Override

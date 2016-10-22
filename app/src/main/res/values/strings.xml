@@ -30,6 +30,8 @@
     <string name="reports">reports</string>
     <string name="customers">customers</string>
     <string name="employee">employee</string>
+    <string name="okay">OK</string>
+    <string name="cancel">CANCEL</string>
 
     <!-- Profile Strings-->
 
@@ -51,4 +53,6 @@
     <string name="MOBILE">MOBILE</string>
     <string name="STATUS">STATUS</string>
     <string name="ACTION">ACTION</string>
+    <string name="wanna_logout">Do you want to logout?</string>
+
 </resources>

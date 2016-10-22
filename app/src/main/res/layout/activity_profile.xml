@@ -15,12 +15,12 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:weightSum="3">
+        android:weightSum="4">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -37,11 +37,10 @@
             <EditText
                 android:id="@+id/et_storeAdmin"
                 style="@style/Base.TextAppearance.AppCompat.Small"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:cursorVisible="true"
-                android:gravity="center"
                 android:singleLine="true"
                 android:text="@string/storeadministrator"
                 android:textColor="@android:color/black"
@@ -152,7 +151,6 @@
                     android:minWidth="400dp"
                     android:padding="8dp"
                     android:singleLine="true"
-                    android:text="@string/storeadministrator"
                     android:textColor="@android:color/black" />
             </TableRow>
 
@@ -177,7 +175,6 @@
                     android:background="@drawable/edit_text_border"
                     android:padding="8dp"
                     android:singleLine="true"
-                    android:text="@string/branch"
                     android:textColor="@android:color/black" />
             </TableRow>
 
@@ -196,6 +193,7 @@
                     android:textColor="@android:color/black" />
 
                 <EditText
+                    android:id="@+id/et_profile_password"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -204,14 +202,15 @@
                     android:inputType="textPassword"
                     android:padding="8dp"
                     android:singleLine="true"
-                    android:text="@string/password"
                     android:textColor="@android:color/black" />
 
-                <ImageView
+                <ImageButton
+                    android:id="@+id/imBtn_editPwd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="8dp"
+                    android:background="@android:color/transparent"
                     android:src="@drawable/edit_icon" />
             </TableRow>
 
@@ -237,7 +236,6 @@
                     android:inputType="number"
                     android:padding="8dp"
                     android:singleLine="true"
-                    android:text="@string/location"
                     android:textColor="@android:color/black" />
             </TableRow>
 
@@ -249,12 +247,12 @@
                 android:gravity="right">
 
                 <Button
+                    android:id="@+id/btn_saveProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/green_button"
                     android:text="@string/save"
                     android:textColor="@android:color/white" />
-
             </TableRow>
         </TableLayout>
 

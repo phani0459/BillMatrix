@@ -99,11 +99,12 @@
             android:text="@string/VIEW_STOCK"
             android:textColor="#9AFFFFFF" />
 
-        <TextView
-            android:id="@+id/tv_logout"
+        <Button
+            android:id="@+id/btn_logout"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:gravity="right|center"
             android:text="@string/LOGOUT"
             android:textColor="#FFFFFF" />

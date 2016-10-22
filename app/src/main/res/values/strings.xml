@@ -55,4 +55,8 @@
     <string name="ACTION">ACTION</string>
     <string name="wanna_logout">Do you want to logout?</string>
 
+    <string name="title_activity_control_panel">ControlPanelActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>

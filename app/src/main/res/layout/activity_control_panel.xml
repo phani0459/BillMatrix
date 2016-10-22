@@ -1,0 +1,133 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:background="@drawable/bg_control_panel"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context="com.billmatrix.ControlPanelActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/billmatrix_login_logo" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="108dp"
+            android:layout_height="108dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/avatar" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tv_pos"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:drawableTop="@drawable/icon_pos"
+                android:gravity="center_horizontal"
+                android:text="@string/pos"
+                android:textColor="@color/cp_blue" />
+
+            <TextView
+                android:id="@+id/tv_inventory"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:drawableTop="@drawable/icon_inventory"
+                android:gravity="center_horizontal"
+                android:text="@string/inventory"
+                android:textColor="@color/cp_red" />
+
+            <TextView
+                android:id="@+id/tv_profile"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:drawableTop="@drawable/icon_profile"
+                android:gravity="center_horizontal"
+                android:text="@string/profile"
+                android:textColor="@color/cp_green" />
+
+            <TextView
+                android:id="@+id/tv_payments"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:drawableTop="@drawable/icon_pos"
+                android:gravity="center_horizontal"
+                android:text="@string/payments"
+                android:textColor="@color/cp_yellow" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tv_settings"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:drawableTop="@drawable/icon_settings"
+                android:gravity="center_horizontal"
+                android:text="@string/settings"
+                android:textColor="@color/cp_blue" />
+
+            <TextView
+                android:id="@+id/tv_reports"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:drawableTop="@drawable/icon_reports"
+                android:gravity="center_horizontal"
+                android:text="@string/reports"
+                android:textColor="@color/cp_red" />
+
+            <TextView
+                android:id="@+id/tv_customers"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:drawableTop="@drawable/icon_customers"
+                android:gravity="center_horizontal"
+                android:text="@string/customers"
+                android:textColor="@color/cp_green" />
+
+            <TextView
+                android:id="@+id/tv_employee"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:drawableTop="@drawable/icon_employees"
+                android:gravity="center_horizontal"
+                android:text="@string/employee"
+                android:textColor="@color/cp_yellow" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/copyrightTextView"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:padding="16dp"></TextView>
+
+    </LinearLayout>
+</LinearLayout>

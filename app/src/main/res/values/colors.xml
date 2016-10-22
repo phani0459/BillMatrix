@@ -24,4 +24,13 @@
     <!-- Profile colors -->
     <color name="adminDetailsBG">#DDDBDC</color>
 
+    <color name="black_overlay">#66000000</color>
+
+    <!--control panel colors-->
+    <color name="cp_blue">#075bac</color>
+    <color name="cp_red">#FB2302</color>
+    <color name="cp_green">#217D10</color>
+    <color name="cp_yellow">#B9AA06</color>
+
+
 </resources>

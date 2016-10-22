@@ -33,12 +33,13 @@
 
     <!-- Profile Strings-->
 
-    <string name="storeadministrator">STORE ADMINISTRATOR</string>
-    <string name="branch">BRANCH</string>
-    <string name="location">LOCATION</string>
+    <string name="storeadministrator">STORE ADMINISTRATOR: </string>
+    <string name="branch">BRANCH: </string>
+    <string name="location">LOCATION: </string>
     <string name="administrator">Administrator</string>
     <string name="loginid">Login ID</string>
     <string name="pwd">Password</string>
+    <string name="licence">Licenece Key</string>
     <string name="mobile">Mobile</string>
     <string name="PROFILE">PROFILE</string>
 

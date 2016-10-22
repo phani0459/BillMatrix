@@ -3,6 +3,7 @@ package com.billmatrix;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -100,7 +101,11 @@ public abstract class BaseTabActivity extends AppCompatActivity {
     public abstract void tabChanged(String selectedTab, boolean isInit);
 
     public void setTextView(String msg) {
-        this.textView.setText(msg);
+        this.textView.setText(Html.fromHtml(msg));
+    }
+
+    public String getArrowString() {
+        return "<big><big><big> \u203A </big></big></big>";
     }
 
 }

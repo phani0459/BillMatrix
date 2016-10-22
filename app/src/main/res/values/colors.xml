@@ -20,4 +20,8 @@
     <color name="headerBG">#1F1F1F</color>
     <color name="bodyBG">#4C4C4C</color>
     <color name="navigateTextColor">#E3B152</color>
+
+    <!-- Profile colors -->
+    <color name="adminDetailsBG">#DDDBDC</color>
+
 </resources>

@@ -12,9 +12,9 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_width="250dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="16dp"
         android:src="@drawable/billmatrix_login_logo" />
 
     <LinearLayout
@@ -159,5 +159,5 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:padding="16dp"
-        android:textColor="#AAFFFFFF" />
+        android:textColor="#40FFFFFF" />
 </LinearLayout>

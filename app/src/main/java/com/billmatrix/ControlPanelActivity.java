@@ -13,6 +13,7 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnTouch;
 
 
@@ -33,13 +34,10 @@ public class ControlPanelActivity extends AppCompatActivity {
         copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
     }
 
-    @OnTouch(R.id.ll_profile)
-    public boolean profile(View v, MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            Intent intent = new Intent(mContext, ProfileActivity.class);
-            startActivity(intent);
-        }
-        return false;
+    @OnClick(R.id.ll_profile)
+    public void profile() {
+        Intent intent = new Intent(mContext, ProfileActivity.class);
+        startActivity(intent);
     }
 
 

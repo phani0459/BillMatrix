@@ -148,6 +148,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_text_border"
                     android:cursorVisible="true"
+                    android:imeOptions="actionNext"
                     android:minWidth="400dp"
                     android:padding="8dp"
                     android:singleLine="true"
@@ -174,6 +175,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_text_border"
                     android:padding="8dp"
+                    android:imeOptions="actionNext"
                     android:singleLine="true"
                     android:textColor="@android:color/black" />
             </TableRow>
@@ -200,6 +202,7 @@
                     android:background="@drawable/edit_text_disabled_border"
                     android:enabled="false"
                     android:inputType="textPassword"
+                    android:imeOptions="actionNext"
                     android:padding="8dp"
                     android:singleLine="true"
                     android:textColor="@android:color/black" />
@@ -234,6 +237,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_text_border"
                     android:inputType="number"
+                    android:imeOptions="actionDone"
                     android:padding="8dp"
                     android:singleLine="true"
                     android:textColor="@android:color/black" />

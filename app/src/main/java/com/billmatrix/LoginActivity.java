@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.billmatrix.utils.FileUtils;
+
 import java.util.Calendar;
 
 import butterknife.BindView;
@@ -35,7 +37,9 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_login)
     public void login() {
-        Intent intent = new Intent(mContext, ProfileActivity.class);
+        FileUtils.saveLogin(mContext);
+        Intent intent = new Intent(mContext, ControlPanelActivity.class);
         startActivity(intent);
+        finish();
     }
 }

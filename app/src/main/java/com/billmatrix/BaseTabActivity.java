@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -14,12 +15,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.FileUtils;
 
 import java.io.File;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.billmatrix.utils.Constants.hashMapType;
 
 public abstract class BaseTabActivity extends AppCompatActivity {
 
@@ -37,8 +43,6 @@ public abstract class BaseTabActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
-
-//        File file = new File(getExternalFilesDir(null), "pic");
     }
 
     public LinearLayout.LayoutParams getLayoutParams(int level) {

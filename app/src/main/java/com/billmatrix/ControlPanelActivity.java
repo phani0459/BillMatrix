@@ -40,5 +40,11 @@ public class ControlPanelActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.ll_employees)
+    public void employees() {
+        Intent intent = new Intent(mContext, EmployeesActivity.class);
+        startActivity(intent);
+    }
+
 
 }

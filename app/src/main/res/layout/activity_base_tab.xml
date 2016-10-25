@@ -142,5 +142,12 @@
             android:layout_height="match_parent"
             android:visibility="gone" />
 
+        <include
+            android:id="@+id/employees"
+            layout="@layout/activity_employees"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
     </LinearLayout>
 </LinearLayout>

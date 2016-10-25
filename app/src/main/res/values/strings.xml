@@ -41,7 +41,7 @@
     <string name="administrator">Administrator</string>
     <string name="loginid">Login ID</string>
     <string name="pwd">Password</string>
-    <string name="licence">Licenece Key</string>
+    <string name="licence">Licence Key</string>
     <string name="mobile">Mobile</string>
     <string name="PROFILE">PROFILE</string>
 
@@ -58,5 +58,10 @@
     <string name="title_activity_control_panel">ControlPanelActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string-array name="employee_status">
+        <item>ACTIVE</item>
+        <item>IN-ACTIVE</item>
+    </string-array>
 
 </resources>

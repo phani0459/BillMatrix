@@ -30,6 +30,9 @@
         <activity
             android:name=".ControlPanelActivity"
             android:screenOrientation="landscape" />
+        <activity
+            android:name=".EmployeesActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

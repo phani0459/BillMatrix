@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/tab_button_bg"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
-    android:textColor="@android:color/black">
+    android:layout_height="wrap_content">
 
-</Button>
+    <Button
+        android:id="@+id/btn_tab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/tab_button_bg"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/tab_bottom_view"
+        android:layout_width="wrap_content"
+        android:layout_height="6dp"
+        android:layout_alignLeft="@+id/btn_tab"
+        android:layout_alignRight="@+id/btn_tab"
+        android:layout_below="@+id/btn_tab"
+        android:clickable="false" />
+
+</RelativeLayout>

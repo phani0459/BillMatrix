@@ -9,6 +9,10 @@
     <string name="TODAYS_PURS">TODAY\'S PURCHASES</string>
     <string name="VIEW_STOCK">VIEW STOCK</string>
     <string name="LOGOUT">LOGOUT</string>
+    <string name="sno">S.NO.</string>
+    <string name="STATUS">STATUS</string>
+    <string name="ACTION">ACTION</string>
+    <string name="LOCATION">LOCATION</string>
 
     <!-- Login Strings-->
     <string name="userName">Username</string>
@@ -46,13 +50,10 @@
     <string name="PROFILE">PROFILE</string>
 
     <!-- Employee Strings-->
-    <string name="sno">S.NO.</string>
     <string name="employeeName">EMPLOYEE NAME</string>
     <string name="LOGINID">LOGIN ID</string>
     <string name="PASSWORD">PASSWORD</string>
     <string name="MOBILE">MOBILE</string>
-    <string name="STATUS">STATUS</string>
-    <string name="ACTION">ACTION</string>
     <string name="wanna_logout">Do you want to logout?</string>
 
     <string name="title_activity_control_panel">ControlPanelActivity</string>
@@ -63,5 +64,18 @@
         <item>ACTIVE</item>
         <item>IN-ACTIVE</item>
     </string-array>
+
+    <!-- Customer Strings-->
+    <string name="customerName">CUSTOMER NAME</string>
+    <string name="CONTACTNO">CONTACT NO.</string>
+    <string name="DATE">DATE</string>
+
+    <string-array name="customer_status">
+        <item>ACTIVE</item>
+        <item>IN-ACTIVE</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

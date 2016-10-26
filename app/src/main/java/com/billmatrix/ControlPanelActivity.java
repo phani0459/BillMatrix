@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -14,7 +12,6 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnTouch;
 
 
 public class ControlPanelActivity extends AppCompatActivity {
@@ -43,6 +40,12 @@ public class ControlPanelActivity extends AppCompatActivity {
     @OnClick(R.id.ll_employees)
     public void employees() {
         Intent intent = new Intent(mContext, EmployeesActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.ll_customers)
+    public void customers() {
+        Intent intent = new Intent(mContext, CustomersActivity.class);
         startActivity(intent);
     }
 

@@ -1,9 +1,10 @@
-package com.billmatrix;
+package com.billmatrix.activities;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.billmatrix.R;
 import com.billmatrix.fragments.CustomersFragment;
 
 import butterknife.BindView;

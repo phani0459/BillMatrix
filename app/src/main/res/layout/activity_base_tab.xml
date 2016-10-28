@@ -7,7 +7,7 @@
     android:background="@color/headerBG"
     android:orientation="vertical"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.billmatrix.BaseTabActivity">
+    tools:context="com.billmatrix.activities.BaseTabActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

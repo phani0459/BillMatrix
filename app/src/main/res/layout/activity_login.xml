@@ -8,7 +8,7 @@
     android:background="@color/loginBG"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.billmatrix.LoginActivity">
+    tools:context="com.billmatrix.activities.LoginActivity">
 
 
     <ImageView

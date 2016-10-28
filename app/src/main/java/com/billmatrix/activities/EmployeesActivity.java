@@ -1,7 +1,9 @@
-package com.billmatrix;
+package com.billmatrix.activities;
 
 import android.os.Bundle;
 import android.view.View;
+
+import com.billmatrix.R;
 
 import butterknife.BindView;
 

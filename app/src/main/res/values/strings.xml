@@ -25,6 +25,13 @@
     <string name="contactAdmin">CONTACT ADMINISTRATOR</string>
     <string name="copyright">%1$d &#169; BillMatrix, Next Gen, Retail Solution</string>
 
+    <!-- Forgot Password Dialog Strings-->
+
+    <string name="dialog_msg">Enter your registered mobile number below to reset your password</string>
+    <string name="mobilenumber">Mobile Number</string>
+    <string name="back">Back</string>
+    <string name="submit">Submit</string>
+
     <!-- Control panel Strings-->
     <string name="pos">pos</string>
     <string name="inventory">inventory</string>

@@ -17,6 +17,8 @@
     <color name="fgtPwdTextColor">#9CA5B6</color>
     <color name="rememberTextColor">#AEB3B5</color>
 
+    <color name="backBtnColor">#3EC8D4</color>
+
     <!-- Base tab colors -->
     <color name="headerBG">#1F1F1F</color>
     <color name="bodyBG">#4C4C4C</color>

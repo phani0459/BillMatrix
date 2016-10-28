@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     android:layout_weight="1"
     android:background="@color/loginBG"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:gravity="center"
     android:orientation="vertical"
     tools:context="com.billmatrix.activities.LoginActivity">
@@ -135,6 +137,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
+                android:onClick="showForgotDialog"
                 android:text="@string/forgotpwd"
                 android:textColor="@color/fgtPwdTextColor" />
         </LinearLayout>

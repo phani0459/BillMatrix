@@ -1,5 +1,6 @@
 package com.billmatrix.activities;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,6 +104,32 @@ public class LoginActivity extends AppCompatActivity {
                 showToast("unable to login");
             }
         });
+    }
+
+    public void showForgotDialog(View v) {
+        final Dialog dialog = new Dialog(mContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_forgot_pwd);
+
+        Button backBtn = (Button) dialog.findViewById(R.id.btn_back);
+        Button submitBtn = (Button) dialog.findViewById(R.id.btn_submit);
+        TextInputEditText mobileNumberEditText = (TextInputEditText) dialog.findViewById(R.id.et_mobilenumber);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        dialog.show();
     }
 
     public void showToast(String msg) {

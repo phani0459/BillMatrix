@@ -7,6 +7,8 @@ import android.widget.EditText;
 
 import com.billmatrix.R;
 import com.billmatrix.models.Profile;
+import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;
@@ -47,10 +49,12 @@ public class ProfileActivity extends BaseTabActivity {
              */
             @Override
             public void onResponse(Call<Profile> call, Response<Profile> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
                 if (response.body() != null) {
                     profile = response.body();
-                    Log.e(TAG, "onResponse: " + profile.mStatus);
+                    Log.e("SUCCEESS RESPONSE RAW", profile.toString() + "");
+                    if (profile.mStatus == 200 && profile.mUserdata.equalsIgnoreCase("success")) {
+                        FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, profile.toString());
+                    }
                 }
             }
 
@@ -64,7 +68,6 @@ public class ProfileActivity extends BaseTabActivity {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });
-
     }
 
     @OnClick(R.id.imBtn_editPwd)

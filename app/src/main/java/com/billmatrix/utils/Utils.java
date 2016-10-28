@@ -1,5 +1,6 @@
 package com.billmatrix.utils;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.billmatrix.interfaces.BillMatrixAPI;
@@ -40,6 +41,14 @@ public class Utils {
                     .build();
         }
         return retrofit;
+    }
+
+    public static ProgressDialog showProgressDialog(Context mContext) {
+        ProgressDialog progressDialog = new ProgressDialog(mContext);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Loading..");
+        progressDialog.show();
+        return progressDialog;
     }
 
     public static OkHttpClient getOkHttpClient(final Context mContext) {

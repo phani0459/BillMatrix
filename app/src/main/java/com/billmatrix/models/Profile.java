@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Profile {
     @SerializedName("status")
-    public String mStatus;
+    public int mStatus;
 
     @SerializedName("userdata")
     public String mUserdata;
@@ -16,7 +16,7 @@ public class Profile {
     @SerializedName("data")
     ProfileData profileData;
 
-    public Profile(String status, String mUserdata, ProfileData profileData) {
+    public Profile(int status, String mUserdata, ProfileData profileData) {
         this.mStatus = status;
         this.mUserdata = mUserdata;
         this.profileData = profileData;

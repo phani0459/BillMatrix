@@ -160,4 +160,5 @@
         android:gravity="center"
         android:padding="16dp"
         android:textColor="#40FFFFFF" />
+
 </LinearLayout>

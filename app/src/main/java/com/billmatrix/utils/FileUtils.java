@@ -16,7 +16,7 @@ import java.util.HashMap;
  */
 
 public class FileUtils {
-    public static void writeToFile(String fileName, String data, Context context) {
+    public static void writeToFile(Context context, String fileName, String data) {
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE));
             outputStreamWriter.write(data);
@@ -26,7 +26,7 @@ public class FileUtils {
         }
     }
 
-    public static void saveLogin(Context mContext) {
+    /*public static void saveLogin(Context mContext) {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("isAdmin", "true");
         hashMap.put("status", "1");
@@ -38,7 +38,7 @@ public class FileUtils {
 
         String profileJSON = Constants.getGson().toJson(hashMap);
         FileUtils.writeToFile(Constants.PROFILE_FILE_NAME, profileJSON, mContext);
-    }
+    }*/
 
     /*
     HashMap<String, String> hashMap = new HashMap<>();

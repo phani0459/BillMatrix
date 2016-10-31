@@ -51,5 +51,11 @@ public class ControlPanelActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.ll_inventory)
+    public void inventory() {
+        Intent intent = new Intent(mContext, InventoryActivity.class);
+        startActivity(intent);
+    }
+
 
 }

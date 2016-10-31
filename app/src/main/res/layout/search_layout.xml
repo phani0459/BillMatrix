@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/search_layout_bg"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <TextView
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="6dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="8dp"
+        android:paddingTop="6dp"
+        android:text="@string/inventory_search_text"
+        android:textColor="@android:color/white" />
+
+    <EditText
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:background="@drawable/edit_text_border"
+        android:drawablePadding="4dp"
+        android:drawableRight="@drawable/search_icon"
+        android:ellipsize="end"
+        android:hint="@string/vendor_search_hint"
+        android:paddingBottom="4dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="4dp"
+        android:singleLine="true" />
+
+</LinearLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners
+                android:bottomLeftRadius="0dp"
+                android:bottomRightRadius="0dp"
+                android:topLeftRadius="6dp"
+                android:topRightRadius="6dp" />
+
+            <solid android:color="@color/search_bg_color" />
+
+        </shape>
+    </item>
+
+</level-list>

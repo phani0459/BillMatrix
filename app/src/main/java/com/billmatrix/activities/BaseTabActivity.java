@@ -27,6 +27,8 @@ public abstract class BaseTabActivity extends AppCompatActivity {
     public TextView textView;
     @BindView(R.id.layout)
     public LinearLayout linearLayout;
+    @BindView(R.id.searchLayout)
+    public LinearLayout searchLayout;
 
     Context mContext;
 
@@ -37,6 +39,10 @@ public abstract class BaseTabActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
+    }
+
+    public void toggleSearchLayout(int visibility) {
+        searchLayout.setVisibility(visibility);
     }
 
     public void addTabButtons(int n, String... names) {

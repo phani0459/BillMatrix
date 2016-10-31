@@ -111,21 +111,40 @@
 
     </LinearLayout>
 
-    <HorizontalScrollView
-        android:id="@+id/horzLayout"
+    <!-- <HorizontalScrollView
+         android:id="@+id/horzLayout"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:paddingLeft="16dp"
+         android:paddingRight="16dp"
+         android:scrollbars="none">-->
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:scrollbars="none">
+        android:weightSum="10">
 
         <LinearLayout
             android:id="@+id/layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>
+            android:layout_weight="3"
+            android:orientation="horizontal"
+            android:paddingRight="16dp" />
+
+        <include
+            android:id="@+id/searchLayout"
+            layout="@layout/search_layout"
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            android:layout_weight="7"
+            android:visibility="gone" />
+    </LinearLayout>
+    <!--</HorizontalScrollView>-->
 
     <LinearLayout
         android:layout_width="match_parent"

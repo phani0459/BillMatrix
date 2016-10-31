@@ -82,7 +82,10 @@
         <item>IN-ACTIVE</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Inventory Strings-->
+    <string name="inventory_search_hint">Enter Barcode / itemcode / item name / category</string>
+    <string name="vendor_search_hint">Vendor ID / Name</string>
+    <string name="inventory_search_text">SEARCH FOR ITEM</string>
+    <string name="vendor_search_text">SEARCH VENDOR</string>
 
 </resources>

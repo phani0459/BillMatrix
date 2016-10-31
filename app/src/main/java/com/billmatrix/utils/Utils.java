@@ -1,7 +1,10 @@
 package com.billmatrix.utils;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.billmatrix.interfaces.BillMatrixAPI;
 
@@ -41,6 +44,17 @@ public class Utils {
                     .build();
         }
         return retrofit;
+    }
+
+    public static void hideSoftKeyboard(EditText editText) {
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) editText.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+            if (inputMethodManager.isAcceptingText()) {
+                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static ProgressDialog showProgressDialog(Context mContext) {

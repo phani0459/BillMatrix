@@ -11,9 +11,11 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.billmatrix.R;
 
@@ -24,11 +26,15 @@ import butterknife.OnClick;
 public abstract class BaseTabActivity extends AppCompatActivity {
 
     @BindView(R.id.navigateTextView)
-    public TextView textView;
+    public TextView pageTitleTextView;
     @BindView(R.id.layout)
     public LinearLayout linearLayout;
     @BindView(R.id.searchLayout)
     public LinearLayout searchLayout;
+    @BindView(R.id.tv_searchText)
+    public TextView searchTextView;
+    @BindView(R.id.searchView)
+    public EditText searchView;
 
     Context mContext;
 
@@ -39,6 +45,7 @@ public abstract class BaseTabActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
+
     }
 
     public void toggleSearchLayout(int visibility) {
@@ -125,16 +132,27 @@ public abstract class BaseTabActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+    public void showToast(String msg) {
+        Toast.makeText(mContext, msg + "", Toast.LENGTH_LONG).show();
+    }
+
     String selectedTab;
 
     public abstract void tabChanged(String selectedTab, boolean isInit);
 
-    public void setTextView(String msg) {
-        this.textView.setText(Html.fromHtml(msg));
+    public void setPageTitle(String msg) {
+        this.pageTitleTextView.setText(Html.fromHtml(msg));
     }
 
     public String getArrowString() {
         return "<big><big><big> \u203A </big></big></big>";
     }
 
+    public void setSearchTextView(String msg) {
+        this.searchTextView.setText(msg);
+    }
+
+    public void setSearchHint(String msg) {
+        this.searchView.setHint(msg);
+    }
 }

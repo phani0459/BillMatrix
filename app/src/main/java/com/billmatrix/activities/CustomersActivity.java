@@ -22,7 +22,7 @@ public class CustomersActivity extends BaseTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTextView("<span>" + getArrowString() + " Customers </span>");
+        setPageTitle("<span>" + getArrowString() + " Customers </span>");
         addTabButtons(3, "Customers", "Customer wise Due", "Customer Transactions");
 
         frameLayout.setVisibility(View.VISIBLE);

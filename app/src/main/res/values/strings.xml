@@ -87,5 +87,11 @@
     <string name="vendor_search_hint">Vendor ID / Name</string>
     <string name="inventory_search_text">SEARCH FOR ITEM</string>
     <string name="vendor_search_text">SEARCH VENDOR</string>
+    <string name="vendor_id">VENDOR ID</string>
+    <string name="vendor_name">VENDOR NAME</string>
+    <string name="vendor_since">VENDOR SINCE</string>
+    <string name="vendor_add">VENDOR ADDRESS</string>
+    <string name="phone">PHONE</string>
+    <string name="email">EMAIL</string>
 
 </resources>

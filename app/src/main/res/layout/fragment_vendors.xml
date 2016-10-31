@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,14 +13,14 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:weightSum="6">
+        android:weightSum="7">
 
         <TextView
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="0.3"
+            android:layout_weight="0.4"
             android:gravity="center"
             android:text="@string/sno"
             android:textColor="@android:color/black" />
@@ -31,9 +30,39 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
+            android:layout_weight="0.7"
+            android:gravity="center"
+            android:text="@string/vendor_id"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1.4"
+            android:gravity="center"
+            android:text="@string/vendor_name"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:text="@string/vendor_since"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
             android:layout_weight="1.2"
             android:gravity="center"
-            android:text="@string/customerName"
+            android:text="@string/vendor_add"
             android:textColor="@android:color/black" />
 
         <TextView
@@ -41,9 +70,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="1"
+            android:layout_weight="0.8"
             android:gravity="center"
-            android:text="@string/CONTACTNO"
+            android:text="@string/phone"
             android:textColor="@android:color/black" />
 
         <TextView
@@ -51,29 +80,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="1"
+            android:layout_weight="1.2"
             android:gravity="center"
-            android:text="@string/DATE"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/LOCATION"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/STATUS"
+            android:text="@string/email"
             android:textColor="@android:color/black" />
 
         <TextView
@@ -87,24 +96,62 @@
             android:textColor="@android:color/black" />
     </LinearLayout>
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:weightSum="6">
+        android:weightSum="7">
 
         <TextView
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="0.3"
+            android:layout_weight="0.4"
             android:gravity="center"
             android:textColor="@android:color/black" />
 
         <EditText
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:layout_weight="0.7"
+            android:background="@drawable/edit_text_disabled_border"
+            android:enabled="false"
+            android:gravity="center"
+            android:padding="6dp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1.4"
+            android:background="@drawable/edit_text_border"
+            android:gravity="center"
+            android:padding="6dp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:layout_weight="0.8"
+            android:background="@drawable/edit_text_border"
+            android:gravity="center"
+            android:inputType="date"
+            android:maxLength="12"
+            android:padding="6dp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/editText2"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -135,30 +182,7 @@
             android:layout_weight="1"
             android:background="@drawable/edit_text_border"
             android:gravity="center"
-            android:inputType="date"
-            android:maxLength="12"
-            android:padding="6dp"
-            android:textColor="@android:color/black" />
-
-        <EditText
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:background="@drawable/edit_text_border"
-            android:gravity="center"
-            android:padding="6dp"
-            android:textColor="@android:color/black" />
-
-        <Spinner
-            style="@style/spinner_style"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:entries="@array/employee_status"
-            android:gravity="center"
+            android:inputType="textEmailAddress"
             android:padding="6dp"
             android:textColor="@android:color/black" />
 
@@ -172,7 +196,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_addCustomer"
+                android:id="@+id/btn_addVendor"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
@@ -184,4 +208,5 @@
 
         </LinearLayout>
     </LinearLayout>
+
 </LinearLayout>

@@ -20,7 +20,7 @@ public class EmployeesActivity extends BaseTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTextView("<span>" + getArrowString() + " Employees </span>");
+        setPageTitle("<span>" + getArrowString() + " Employees </span>");
         addTabButtons(1, "Employees");
 
         employeesLayout.setVisibility(View.VISIBLE);

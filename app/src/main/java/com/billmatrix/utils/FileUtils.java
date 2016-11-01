@@ -26,48 +26,8 @@ public class FileUtils {
         }
     }
 
-    /*public static void saveLogin(Context mContext) {
-        HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("isAdmin", "true");
-        hashMap.put("status", "1");
-        hashMap.put("message", "Logged in successfully");
-        hashMap.put("adminName", "Phani Kumar");
-        hashMap.put("branch", "MAIN");
-        hashMap.put("location", "Hyderabad");
-        hashMap.put("userImage", null);
-
-        String profileJSON = Constants.getGson().toJson(hashMap);
-        FileUtils.writeToFile(Constants.PROFILE_FILE_NAME, profileJSON, mContext);
-    }*/
-
-    /*
-    HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("isAdmin", "true");
-        hashMap.put("status", "1");
-        hashMap.put("message", "Logged in successfully");
-        hashMap.put("adminName", "Phani Kumar");
-        hashMap.put("branch", "MAIN");
-        hashMap.put("location", "Hyderabad");
-        hashMap.put("userImage", null);
-;
-        String s = Constants.getGson().toJson(hashMap);
-        FileUtils.writeToFile(Constants.PROFILE_FILE_NAME, s, mContext);
-        Log.e("TAG", "before: " + FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext));
-
-        String json = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
-
-        HashMap<String, String> stringHashMap = Constants.getGson().fromJson(json, hashMapType);
-        if (stringHashMap.containsKey("location")) {
-            stringHashMap.put("location", "NALGONDA");
-        }
-
-        String str = Constants.getGson().toJson(stringHashMap);
-        FileUtils.writeToFile(Constants.PROFILE_FILE_NAME, str, mContext);
-        Log.e("TAG", "after: " + FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext));
-     */
-
     public static String readFromFile(String fileName, Context context) {
-        String ret = "";
+        String jsonString = null;
         try {
             InputStream inputStream = context.openFileInput(fileName);
 
@@ -82,14 +42,16 @@ public class FileUtils {
                 }
 
                 inputStream.close();
-                ret = stringBuilder.toString();
+                jsonString = stringBuilder.toString();
             }
         } catch (FileNotFoundException e) {
+            jsonString = null;
             e.printStackTrace();
         } catch (IOException e) {
+            jsonString = null;
             e.printStackTrace();
         }
 
-        return ret;
+        return jsonString;
     }
 }

@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.billmatrix.R;
+import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -104,11 +106,16 @@ public abstract class BaseTabActivity extends AppCompatActivity {
         }
     }
 
+    public void removePreferences() {
+        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, false).apply();
+    }
+
     @OnClick(R.id.btn_logout)
     public void logout() {
         showAlertDialog(getString(R.string.logout), getString(R.string.wanna_logout), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                removePreferences();
                 ActivityCompat.finishAffinity(BaseTabActivity.this);
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

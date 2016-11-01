@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
     public TextInputEditText passwordEditText;
     @BindView(R.id.et_licenceKey)
     public TextInputEditText licenceEditText;
+    @BindView(R.id.cb_rememberMe)
+    public CheckBox rememberMeCheckBox;
 
 
     @Override
@@ -57,10 +60,45 @@ public class LoginActivity extends AppCompatActivity {
         mContext = this;
         ButterKnife.bind(this);
 
+        /**
+         * if user is previously looged in, directly open control panel
+         */
+        if (Utils.getSharedPreferences(mContext).getBoolean(Constants.IS_LOGGED_IN, false)) {
+            Intent intent = new Intent(mContext, ControlPanelActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        /**
+         * if user has logout, then show the previously logged in licence key in the field and disable the edit field
+         */
+        if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, null))) {
+            licenceEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, ""));
+            licenceEditText.setEnabled(false);
+        }
+
+        /**
+         * if user name and password are present in prefs, show them in the edit text fields.
+         */
+        if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_NAME, null))) {
+            userNameEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_NAME, ""));
+        }
+
+        if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_PASSWORD, null))) {
+            passwordEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_PASSWORD, ""));
+        }
+
         copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
     }
 
     @OnClick(R.id.btn_login)
+    public void checkInternetAndLogin() {
+        if (Utils.isInternetAvailable(mContext)) {
+            login();
+        }
+    }
+
+
     public void login() {
         if (!verify()) {
             return;
@@ -84,6 +122,23 @@ public class LoginActivity extends AppCompatActivity {
                     HashMap<String, String> loginMap = response.body();
                     if (loginMap.get("status").equalsIgnoreCase("200")) {
                         if (loginMap.get("login").equalsIgnoreCase("success")) {
+                            /**
+                             * save licence key, and disable the licence edit text so that other user cannot login from this tab
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
+                            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LICENECE_KEY, licenceKey).apply();
+
+                            /**
+                             * if remember me is checked, save user name and pwd in pref if not remove them
+                             */
+                            if (rememberMeCheckBox.isChecked()) {
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, userName).apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, password).apply();
+                            } else {
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, "").apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
+                            }
+
                             Intent intent = new Intent(mContext, ControlPanelActivity.class);
                             startActivity(intent);
                             finish();

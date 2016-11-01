@@ -55,6 +55,7 @@
                 android:maxLines="1"
                 android:padding="6dp"
                 android:singleLine="true"
+                android:textColor="@color/loginBG"
                 android:textColorHint="#AAFFFFFF" />
         </android.support.design.widget.TextInputLayout>
 
@@ -79,6 +80,7 @@
                 android:maxLines="1"
                 android:padding="6dp"
                 android:singleLine="true"
+                android:textColor="@color/loginBG"
                 android:textColorHint="#AAFFFFFF" />
         </android.support.design.widget.TextInputLayout>
 
@@ -125,6 +127,7 @@
                 android:textColor="@android:color/white" />
 
             <CheckBox
+                android:id="@+id/cb_rememberMe"
                 style="@style/Base.TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

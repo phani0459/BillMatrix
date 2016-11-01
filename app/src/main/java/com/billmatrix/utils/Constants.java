@@ -11,6 +11,21 @@ import java.util.HashMap;
  */
 
 public class Constants {
+    /**
+     * Preferences Constants
+     */
+    /**
+     * remove preferences when logout in base tab activity
+     */
+    public static final String PREFERENCES_NAME = "billMatrix shared prefs";
+    public static final String IS_LOGGED_IN = "isUserLoggedIN";
+    public static final String PREF_LICENECE_KEY = "licenceKey";
+    public static final String PREF_USER_NAME = "userName";
+    public static final String PREF_PASSWORD = "password";
+
+    /**
+     * File Names
+     */
     public static String PROFILE_FILE_NAME = "Profile";
     public static String EMPLOYEES_FILE_NAME = "Employees";
     public static Gson gson;

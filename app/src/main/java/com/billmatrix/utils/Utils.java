@@ -3,8 +3,12 @@ package com.billmatrix.utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.billmatrix.interfaces.BillMatrixAPI;
 
@@ -27,6 +31,7 @@ public class Utils {
 
     public static Retrofit retrofit;
     public static BillMatrixAPI billMatrixAPI;
+    private static SharedPreferences sharedPreferences;
 
     public static BillMatrixAPI getBillMatrixAPI(Context mContext) {
         if (billMatrixAPI == null) {
@@ -44,6 +49,26 @@ public class Utils {
                     .build();
         }
         return retrofit;
+    }
+
+    public static boolean isInternetAvailable(Context mContext) {
+        boolean isConnected = false;
+        ConnectivityManager connectivity = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
+            NetworkInfo activeNetwork = connectivity.getActiveNetworkInfo();
+            isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        }
+        if (!isConnected) {
+            Toast.makeText(mContext, "We are unable connect to our servers, please check your internet connection", Toast.LENGTH_LONG).show();
+        }
+        return isConnected;
+    }
+
+    public static SharedPreferences getSharedPreferences(Context mContext) {
+        if (sharedPreferences == null) {
+            sharedPreferences = mContext.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        }
+        return sharedPreferences;
     }
 
     public static void hideSoftKeyboard(EditText editText) {

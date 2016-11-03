@@ -17,6 +17,7 @@ import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -55,7 +56,7 @@ public class EmployeesActivity extends BaseTabActivity {
 
         mContext = this;
 
-        setPageTitle("<span>" + getArrowString() + " Employees </span>");
+        setPageTitle(String.format("<span>%s Employees </span>", getArrowString()));
         addTabButtons(1, "Employees");
 
         employeesLayout.setVisibility(View.VISIBLE);
@@ -67,13 +68,11 @@ public class EmployeesActivity extends BaseTabActivity {
         employeesAdapter = new EmployeesAdapter(employees);
         employeesRecyclerView.setAdapter(employeesAdapter);
 
-        if (Utils.isInternetAvailable(mContext)) {
-            if (!FileUtils.isFileExists(Constants.EMPLOYEES_FILE_NAME, mContext)) {
+        if (!FileUtils.isFileExists(Constants.EMPLOYEES_FILE_NAME, mContext)) {
+            if (Utils.isInternetAvailable(mContext)) {
                 getEmployeesFromServer();
             }
-        }
-
-        if (FileUtils.isFileExists(Constants.EMPLOYEES_FILE_NAME, mContext)) {
+        } else {
             String employeeString = FileUtils.readFromFile(Constants.EMPLOYEES_FILE_NAME, mContext);
             Employee employee = Constants.getGson().fromJson(employeeString, Employee.class);
             employeesAdapter.addEmployee(employee.data);
@@ -87,7 +86,6 @@ public class EmployeesActivity extends BaseTabActivity {
 
         call.enqueue(new Callback<Employee>() {
 
-
             /**
              * Successful HTTP response.
              * @param call server call
@@ -95,9 +93,9 @@ public class EmployeesActivity extends BaseTabActivity {
              */
             @Override
             public void onResponse(Call<Employee> call, Response<Employee> response) {
+                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
                 if (response.body() != null) {
                     employee = response.body();
-                    Log.e("SUCCEESS RESPONSE RAW", employee.employeedata + "");
                     if (employee.status == 200 && employee.employeedata.equalsIgnoreCase("success")) {
                         FileUtils.writeToFile(mContext, Constants.EMPLOYEES_FILE_NAME, Constants.getGson().toJson(employee));
                         employeesAdapter.addEmployee(employee.data);
@@ -154,6 +152,8 @@ public class EmployeesActivity extends BaseTabActivity {
                             empMobile_EditText.setText("");
                             empStatusSpinner.setSelection(0);
 
+                            addEmployeetoServer(employeeData);
+
                         } else {
                             showToast("Select Employee Status");
                         }
@@ -169,6 +169,43 @@ public class EmployeesActivity extends BaseTabActivity {
         } else {
             showToast("Enter Employee Name");
         }
+    }
+
+    private void addEmployeetoServer(Employee.EmployeeData employeeData) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployees(employeeData.name, employeeData.password, employeeData.number);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> employeeStatus = response.body();
+                    Log.e("SUCCEESS RESPONSE RAW", employeeStatus + "");
+                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
+                        if (employeeStatus.get("create_employee").equalsIgnoreCase("success")) {
+                            showToast("Employee Added successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     @Override

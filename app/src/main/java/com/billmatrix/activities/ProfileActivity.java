@@ -32,8 +32,8 @@ public class ProfileActivity extends BaseTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setPageTitle("<span>" + getArrowString() + " ProfileModel </span>");
-        addTabButtons(1, "ProfileModel");
+        setPageTitle(String.format("<span>%s Profile </span>", getArrowString()));
+        addTabButtons(1, "Profile");
 
         profileLayout.setVisibility(View.VISIBLE);
 

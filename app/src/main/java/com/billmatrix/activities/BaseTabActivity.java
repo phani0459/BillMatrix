@@ -152,14 +152,7 @@ public abstract class BaseTabActivity extends AppCompatActivity {
     }
 
     public String getArrowString() {
-        return "<big><big><big> \u203A </big></big></big>";
+        return " \u203A ";
     }
 
-    public void setSearchTextView(String msg) {
-        this.searchTextView.setText(msg);
-    }
-
-    public void setSearchHint(String msg) {
-        this.searchView.setHint(msg);
-    }
 }

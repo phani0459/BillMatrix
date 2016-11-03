@@ -32,7 +32,7 @@ public class InventoryActivity extends BaseTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setPageTitle("<span>" + getArrowString() + " Inventory </span>");
+        setPageTitle(String.format("<span>%s Inventory </span>", getArrowString()));
         addTabButtons(2, "INVENTORY", "Vendors");
 
         frameLayout.setVisibility(View.VISIBLE);

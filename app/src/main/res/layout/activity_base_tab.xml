@@ -25,11 +25,11 @@
 
         <TextView
             android:id="@+id/navigateTextView"
-            style="@style/Base.TextAppearance.AppCompat.Small"
+            style="@style/Base.TextAppearance.AppCompat.Menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/home_icon"
-            android:drawablePadding="8dp"
+            android:drawablePadding="4dp"
             android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"

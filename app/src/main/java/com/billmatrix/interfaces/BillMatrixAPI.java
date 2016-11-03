@@ -30,4 +30,9 @@ public interface BillMatrixAPI {
     @GET("employee/1")
     Call<Employee> getEmployees();
 
+    @FormUrlEncoded
+    @POST("create_employee")
+    Call<HashMap<String, String>> addEmployees(@Field("name") String empName, @Field("password") String password,
+                                               @Field("number") String mobileNumber);
+
 }

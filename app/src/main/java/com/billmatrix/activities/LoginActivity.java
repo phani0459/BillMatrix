@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
              */
             @Override
             public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.body() + "");
+                Log.e("SUCCEESS RESPONSE RAW",  "" + response.raw() );
                 progressDialog.dismiss();
                 if (response.body() != null) {
                     HashMap<String, String> loginMap = response.body();

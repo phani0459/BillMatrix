@@ -26,7 +26,7 @@ public class PaymentsActivity extends BaseTabActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setPageTitle("<span>" + getArrowString() + " Payments </span>");
+        setPageTitle(String.format("<span>%s Payments </span>", getArrowString()));
         addTabButtons(3, "PAY OUTS", "PAY INS", "GEN. EXPENSES");
 
         frameLayout.setVisibility(View.VISIBLE);

@@ -57,5 +57,11 @@ public class ControlPanelActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.ll_payments)
+    public void payments() {
+        Intent intent = new Intent(mContext, PaymentsActivity.class);
+        startActivity(intent);
+    }
+
 
 }

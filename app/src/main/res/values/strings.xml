@@ -94,4 +94,12 @@
     <string name="phone">PHONE</string>
     <string name="email">EMAIL</string>
 
+    <!-- Payments Strings-->
+    <string name="dateof_payment">DATE OF PAYMENT</string>
+    <string name="modeof_payment">MODE OF PAYMENT</string>
+    <string name="amount">AMOUNT</string>
+    <string name="vendor">VENDOR</string>
+    <string name="expense_name">EXPENSE NAME</string>
+    <string name="purpose">PURPOSE</string>
+
 </resources>

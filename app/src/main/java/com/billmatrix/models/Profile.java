@@ -2,69 +2,27 @@ package com.billmatrix.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by KANDAGATLAs on 28-10-2016.
  */
 
-public class Profile {
-    @SerializedName("status")
-    public int mStatus;
+public class Profile implements Serializable {
+    public int status;
+    public String userdata;
+    public ProfileData data;
 
-    @SerializedName("userdata")
-    public String mUserdata;
-
-    @SerializedName("data")
-    ProfileData profileData;
-
-    public Profile(int status, String mUserdata, ProfileData profileData) {
-        this.mStatus = status;
-        this.mUserdata = mUserdata;
-        this.profileData = profileData;
-    }
-
-    public class ProfileData {
-
-        @SerializedName("id")
+    public class ProfileData implements Serializable {
         public String id;
-
-        @SerializedName("email")
-        public String mEmail;
-
-        @SerializedName("username")
-        public String mUserName;
-
-        @SerializedName("password")
-        public String mPassword;
-
-        @SerializedName("licence_key")
-        public String mLicenceKey;
-
-        @SerializedName("imei_number")
-        public String mIMEINumber;
-
-        @SerializedName("status")
-        public String mStatus;
-
-        @SerializedName("create_data")
-        public String mCreateData;
-
-        @SerializedName("update_date")
-        public String mUpdateDate;
-
-        public ProfileData(String id, String email, String username,
-                           String password, String licence_key, String imei_number, String status, String create_data,
-                           String update_date) {
-            this.mEmail = email;
-            this.mUpdateDate = update_date;
-            this.mCreateData = create_data;
-            this.mStatus = status;
-            this.mIMEINumber = imei_number;
-            this.id = id;
-            this.mLicenceKey = licence_key;
-            this.mPassword = password;
-            this.mUserName = username;
-        }
-
+        public String email;
+        public String username;
+        public String password;
+        public String licence_key;
+        public String imei_number;
+        public String status;
+        public String create_data;
+        public String update_date;
 
     }
 }

@@ -44,7 +44,7 @@
     <string name="okay">OK</string>
     <string name="cancel">CANCEL</string>
 
-    <!-- Profile Strings-->
+    <!-- ProfileModel Strings-->
 
     <string name="storeadministrator">STORE ADMINISTRATOR: </string>
     <string name="branch">BRANCH: </string>

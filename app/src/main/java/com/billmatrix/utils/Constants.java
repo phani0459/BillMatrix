@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 /**
@@ -26,15 +27,25 @@ public class Constants {
     /**
      * File Names
      */
-    public static String PROFILE_FILE_NAME = "Profile";
+    public static String PROFILE_FILE_NAME = "ProfileModel";
     public static String EMPLOYEES_FILE_NAME = "Employees";
     public static Gson gson;
+    public static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     public static Gson getGson() {
         if (gson == null) {
             gson = new Gson();
         }
         return gson;
+    }
+
+    public static SimpleDateFormat simpleDateFormat;
+
+    public static SimpleDateFormat getSimpleDateFormat() {
+        if (simpleDateFormat == null) {
+            simpleDateFormat = new SimpleDateFormat(Constants.dateFormat);
+        }
+        return simpleDateFormat;
     }
 
     public static Type hashMapType = new TypeToken<HashMap<String, String>>() {}.getType();

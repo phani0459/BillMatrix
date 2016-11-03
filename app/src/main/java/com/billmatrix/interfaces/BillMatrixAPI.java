@@ -1,5 +1,6 @@
 package com.billmatrix.interfaces;
 
+import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
 
 import java.util.HashMap;
@@ -25,5 +26,8 @@ public interface BillMatrixAPI {
 
     @GET("profile/1")
     Call<Profile> getProfile();
+
+    @GET("employee/1")
+    Call<Employee> getEmployees();
 
 }

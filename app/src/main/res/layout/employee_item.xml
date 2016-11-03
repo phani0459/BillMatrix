@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
@@ -13,6 +13,7 @@
         android:weightSum="6">
 
         <TextView
+            android:id="@+id/tv_emp_sno"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -20,9 +21,11 @@
             android:layout_weight="0.3"
             android:gravity="center"
             android:text="@string/save"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
+            android:id="@+id/tv_emp_name"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -32,9 +35,11 @@
             android:maxLines="2"
             android:padding="6dp"
             android:text="@string/storeadministrator"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
+            android:id="@+id/tv_emp_loginId"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -43,10 +48,11 @@
             android:gravity="center"
             android:padding="6dp"
             android:text="@string/save"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/editText"
+            android:id="@+id/tv_emp_pwd"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -55,9 +61,11 @@
             android:gravity="center"
             android:padding="6dp"
             android:text="@string/save"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
+            android:id="@+id/tv_emp_mob"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -67,6 +75,7 @@
             android:inputType="number"
             android:padding="6dp"
             android:text="@string/save"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
@@ -79,6 +88,7 @@
             android:gravity="center"
             android:padding="6dp"
             android:text="@string/save"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <LinearLayout
@@ -91,11 +101,13 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/im_emp_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/edit_icon" />
 
             <ImageView
+                android:id="@+id/im_emp_del"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"

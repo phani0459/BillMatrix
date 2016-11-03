@@ -32,8 +32,8 @@ public class ProfileActivity extends BaseTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setPageTitle("<span>" + getArrowString() + " Profile </span>");
-        addTabButtons(1, "Profile");
+        setPageTitle("<span>" + getArrowString() + " ProfileModel </span>");
+        addTabButtons(1, "ProfileModel");
 
         profileLayout.setVisibility(View.VISIBLE);
 
@@ -52,7 +52,7 @@ public class ProfileActivity extends BaseTabActivity {
                 if (response.body() != null) {
                     profile = response.body();
                     Log.e("SUCCEESS RESPONSE RAW", profile.toString() + "");
-                    if (profile.mStatus == 200 && profile.mUserdata.equalsIgnoreCase("success")) {
+                    if (profile.status == 200 && profile.userdata.equalsIgnoreCase("success")) {
                         FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, profile.toString());
                     }
                 }

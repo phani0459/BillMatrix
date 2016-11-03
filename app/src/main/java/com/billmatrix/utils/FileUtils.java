@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,21 @@ public class FileUtils {
             outputStreamWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static boolean isFileExists(String fileName, Context context) {
+        File file = context.getFileStreamPath(fileName);
+        if(file != null && file.exists()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static void deleteFile(String fileName, Context context) {
+        File file = context.getFileStreamPath(fileName);
+        if(file != null && file.exists()) {
+            context.deleteFile(fileName);
         }
     }
 

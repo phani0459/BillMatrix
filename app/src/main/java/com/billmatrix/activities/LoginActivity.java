@@ -18,9 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.billmatrix.R;
-import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
-import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.Calendar;

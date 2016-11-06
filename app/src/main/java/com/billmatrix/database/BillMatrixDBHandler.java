@@ -21,7 +21,7 @@ public class BillMatrixDBHandler extends DBHandler {
     public final static String CREATE_EMP_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.EMPLOYEES_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.EMPLOYEE_NAME + " VARCHAR,"
-            + DBConstants.EMPLOYEE_LOGINID + " VARCHAR," + DBConstants.EMPLOYEE_PASSWORD + " VARCHAR,"
+            + DBConstants.EMPLOYEE_LOGINID + " VARCHAR UNIQUE," + DBConstants.EMPLOYEE_PASSWORD + " VARCHAR,"
             + DBConstants.EMPLOYEE_MOBILE + " VARCHAR," + DBConstants.EMPLOYEE_STATUS + " VARCHAR" + ")";
 
 

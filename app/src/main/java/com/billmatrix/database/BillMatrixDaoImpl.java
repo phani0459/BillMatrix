@@ -26,14 +26,18 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     }
 
 
-    public void addEmployee(Employee.EmployeeData employeeData) {
+    public long addEmployee(Employee.EmployeeData employeeData) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBConstants.EMPLOYEE_NAME, employeeData.name);
         contentValues.put(DBConstants.EMPLOYEE_MOBILE, employeeData.mobile_number);
         contentValues.put(DBConstants.EMPLOYEE_LOGINID, employeeData.email);
         contentValues.put(DBConstants.EMPLOYEE_PASSWORD, employeeData.password);
         contentValues.put(DBConstants.EMPLOYEE_STATUS, employeeData.status);
-        db.insert(DBConstants.EMPLOYEES_TABLE, null, contentValues);
+        return db.insert(DBConstants.EMPLOYEES_TABLE, null, contentValues);
+    }
+
+    public boolean deleteEmployee(String loginID) {
+        return db.delete(DBConstants.EMPLOYEES_TABLE, DBConstants.EMPLOYEE_LOGINID + "='" + loginID + "'", null) > 0;
     }
 
     public ArrayList<Employee.EmployeeData> getEmployees() {

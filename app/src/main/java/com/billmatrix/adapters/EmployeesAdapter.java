@@ -87,6 +87,10 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.Empl
         });
     }
 
+    public Employee.EmployeeData getItem(int position) {
+        return employees.get(position);
+    }
+
     @Override
     public int getItemCount() {
         return employees.size();

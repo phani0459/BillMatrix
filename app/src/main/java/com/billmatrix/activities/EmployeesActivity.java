@@ -148,21 +148,25 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
                             employeeData.mobile_number = empMob;
                             employeeData.status = empStatus;
 
-                            billMatrixDaoImpl.addEmployee(employeeData);
-                            employeesAdapter.addEmployee(employeeData);
-                            employeesRecyclerView.smoothScrollToPosition(employeesAdapter.getItemCount());
+                            long empAdded = billMatrixDaoImpl.addEmployee(employeeData);
 
-                            /**
-                             * reset all edit texts
-                             */
-                            empName_EditText.setText("");
-                            empLoginId_EditText.setText("");
-                            empPwd_EditText.setText("");
-                            empMobile_EditText.setText("");
-                            empStatusSpinner.setSelection(0);
+                            if (empAdded != -1) {
+                                employeesAdapter.addEmployee(employeeData);
+                                employeesRecyclerView.smoothScrollToPosition(employeesAdapter.getItemCount());
 
-                            addEmployeetoServer(employeeData);
+                                /**
+                                 * reset all edit texts
+                                 */
+                                empName_EditText.setText("");
+                                empLoginId_EditText.setText("");
+                                empPwd_EditText.setText("");
+                                empMobile_EditText.setText("");
+                                empStatusSpinner.setSelection(0);
 
+                                addEmployeetoServer(employeeData);
+                            } else {
+                                showToast("Employee Login Id must be unique");
+                            }
                         } else {
                             showToast("Select Employee Status");
                         }
@@ -231,6 +235,7 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
                 showAlertDialog("Are you sure?", "You want to delete employee", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).email);
                         employeesAdapter.deleteEmployee(position);
                     }
                 });

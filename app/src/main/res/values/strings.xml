@@ -76,6 +76,18 @@
     <string name="customerName">CUSTOMER NAME</string>
     <string name="CONTACTNO">CONTACT NO.</string>
     <string name="DATE">DATE</string>
+    <string name="Date">Date</string>
+    <string name="bill_no">Bill No.</string>
+    <string name="select_customer">SELECT THE CUSTOMER</string>
+    <string name="select_bill">SELECT THE BILL</string>
+    <string name="total_bill_amt">Total Bill Amount</string>
+    <string name="amt_paid">Amount Paid</string>
+    <string name="total_due">Total Due</string>
+    <string name="item_name">Item Name</string>
+    <string name="qty">Qty</string>
+    <string name="units">Units</string>
+    <string name="rate">Rate</string>
+    <string name="total_inr">Total - INR</string>
 
     <string-array name="customer_status">
         <item>ACTIVE</item>

@@ -1,5 +1,6 @@
 package com.billmatrix.activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +14,6 @@ import com.billmatrix.R;
 import com.billmatrix.adapters.EmployeesAdapter;
 import com.billmatrix.models.Employee;
 import com.billmatrix.utils.Constants;
-import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -47,6 +47,8 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
     public EditText empMobile_EditText;
     @BindView(R.id.sp_emp_status)
     public Spinner empStatusSpinner;
+    @BindView(R.id.et_emp_location)
+    public EditText locationEditText;
 
     private EmployeesAdapter employeesAdapter;
 
@@ -70,20 +72,20 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
 
         String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null);
 
-        if (!FileUtils.isFileExists(Constants.EMPLOYEES_FILE_NAME, mContext)) {
+        employees = billMatrixDaoImpl.getEmployees();
+
+        if (employees != null && employees.size() > 0) {
+            for (Employee.EmployeeData employeeData : employees) {
+                employeesAdapter.addEmployee(employeeData);
+            }
+        } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(loginId)) {
                     getEmployeesFromServer(loginId);
                 }
             }
-        } else {
-            String employeeString = FileUtils.readFromFile(Constants.EMPLOYEES_FILE_NAME, mContext);
-            Employee employee = Constants.getGson().fromJson(employeeString, Employee.class);
-            employeesAdapter.addEmployee(employee.data);
         }
     }
-
-    Employee employee;
 
     public void getEmployeesFromServer(String loginId) {
         Call<Employee> call = Utils.getBillMatrixAPI(mContext).getEmployees(loginId);
@@ -99,9 +101,9 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
             public void onResponse(Call<Employee> call, Response<Employee> response) {
                 Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
                 if (response.body() != null) {
-                    employee = response.body();
+                    Employee employee = response.body();
                     if (employee.status == 200 && employee.employeedata.equalsIgnoreCase("success")) {
-                        FileUtils.writeToFile(mContext, Constants.EMPLOYEES_FILE_NAME, Constants.getGson().toJson(employee));
+                        billMatrixDaoImpl.addEmployee(employee.data);
                         employeesAdapter.addEmployee(employee.data);
                     }
                 }
@@ -144,6 +146,7 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
                             employeeData.mobile_number = empMob;
                             employeeData.status = empStatus;
 
+                            billMatrixDaoImpl.addEmployee(employeeData);
                             employeesAdapter.addEmployee(employeeData);
                             employeesRecyclerView.smoothScrollToPosition(employeesAdapter.getItemCount());
 
@@ -220,10 +223,15 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
     }
 
     @Override
-    public void onItemClick(int caseInt, int position) {
+    public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
-                employeesAdapter.deleteEmployee(position);
+                showAlertDialog("Are you sure?", "You want to delete employee", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        employeesAdapter.deleteEmployee(position);
+                    }
+                });
                 break;
             case 2:
                 break;

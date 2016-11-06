@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.billmatrix.R;
+import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -39,6 +40,7 @@ public abstract class BaseTabActivity extends AppCompatActivity {
     public EditText searchView;
 
     Context mContext;
+    BillMatrixDaoImpl billMatrixDaoImpl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,7 @@ public abstract class BaseTabActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
-
+        billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
     }
 
     public void toggleSearchLayout(int visibility) {

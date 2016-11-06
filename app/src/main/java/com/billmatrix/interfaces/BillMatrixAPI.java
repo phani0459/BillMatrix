@@ -24,11 +24,13 @@ public interface BillMatrixAPI {
     Call<HashMap<String, String>> login(@Field("username") String username, @Field("password") String password,
                                         @Field("licence_key") String licenceKey, @Field("imei_number") String imeiNumber);
 
-    @GET("profile/1")
-    Call<Profile> getProfile();
+    @FormUrlEncoded
+    @POST("profile")
+    Call<Profile> getProfile(@Field("id") String id);
 
-    @GET("employee/1")
-    Call<Employee> getEmployees();
+    @FormUrlEncoded
+    @POST("employee")
+    Call<Employee> getEmployees(@Field("id") String id);
 
     @FormUrlEncoded
     @POST("create_employee")

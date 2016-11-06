@@ -125,6 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LICENECE_KEY, licenceKey).apply();
+                            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LOGIN_ID, loginMap.containsKey("user_id") ? loginMap.get("user_id") : "").apply();
 
                             /**
                              * if remember me is checked, save user name and pwd in pref if not remove them

@@ -23,6 +23,7 @@ public class Constants {
     public static final String PREF_LICENECE_KEY = "licenceKey";
     public static final String PREF_USER_NAME = "userName";
     public static final String PREF_PASSWORD = "password";
+    public static final String PREF_LOGIN_ID = "loginID";
 
     /**
      * File Names

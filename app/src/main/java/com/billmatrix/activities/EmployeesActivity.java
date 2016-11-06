@@ -30,7 +30,7 @@ import retrofit2.Response;
  * Created by KANDAGATLAs on 23-10-2016.
  */
 
-public class EmployeesActivity extends BaseTabActivity {
+public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapter.onClickListener {
 
     private static final String TAG = EmployeesActivity.class.getSimpleName();
     @BindView(R.id.employees)
@@ -65,12 +65,16 @@ public class EmployeesActivity extends BaseTabActivity {
 
         List<Employee.EmployeeData> employees = new ArrayList<>();
 
-        employeesAdapter = new EmployeesAdapter(employees);
+        employeesAdapter = new EmployeesAdapter(employees, mContext);
         employeesRecyclerView.setAdapter(employeesAdapter);
+
+        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null);
 
         if (!FileUtils.isFileExists(Constants.EMPLOYEES_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
-                getEmployeesFromServer();
+                if (!TextUtils.isEmpty(loginId)) {
+                    getEmployeesFromServer(loginId);
+                }
             }
         } else {
             String employeeString = FileUtils.readFromFile(Constants.EMPLOYEES_FILE_NAME, mContext);
@@ -81,8 +85,8 @@ public class EmployeesActivity extends BaseTabActivity {
 
     Employee employee;
 
-    public void getEmployeesFromServer() {
-        Call<Employee> call = Utils.getBillMatrixAPI(mContext).getEmployees();
+    public void getEmployeesFromServer(String loginId) {
+        Call<Employee> call = Utils.getBillMatrixAPI(mContext).getEmployees(loginId);
 
         call.enqueue(new Callback<Employee>() {
 
@@ -137,7 +141,7 @@ public class EmployeesActivity extends BaseTabActivity {
                             employeeData.email = empId;
                             employeeData.name = empName;
                             employeeData.password = empPwd;
-                            employeeData.number = empMob;
+                            employeeData.mobile_number = empMob;
                             employeeData.status = empStatus;
 
                             employeesAdapter.addEmployee(employeeData);
@@ -172,7 +176,7 @@ public class EmployeesActivity extends BaseTabActivity {
     }
 
     private void addEmployeetoServer(Employee.EmployeeData employeeData) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployees(employeeData.name, employeeData.password, employeeData.number);
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployees(employeeData.name, employeeData.password, employeeData.mobile_number);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
 
@@ -213,5 +217,18 @@ public class EmployeesActivity extends BaseTabActivity {
         /***
          * There is only one tab in Employees
          */
+    }
+
+    @Override
+    public void onItemClick(int caseInt, int position) {
+        switch (caseInt) {
+            case 1:
+                employeesAdapter.deleteEmployee(position);
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
     }
 }

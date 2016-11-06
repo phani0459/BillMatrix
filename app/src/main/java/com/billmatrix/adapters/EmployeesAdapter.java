@@ -1,5 +1,6 @@
 package com.billmatrix.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.activities.EmployeesActivity;
 import com.billmatrix.models.Employee;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import butterknife.ButterKnife;
 public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.EmployeeHolder> {
 
     private List<Employee.EmployeeData> employees;
+    Context mContext;
 
     public class EmployeeHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_emp_sno)
@@ -43,14 +46,19 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.Empl
         }
     }
 
+    public void deleteEmployee(int position) {
+        employees.remove(position);
+        notifyDataSetChanged();
+    }
 
     public void addEmployee(Employee.EmployeeData employeeData) {
         employees.add(employeeData);
         notifyDataSetChanged();
     }
 
-    public EmployeesAdapter(List<Employee.EmployeeData> employees) {
+    public EmployeesAdapter(List<Employee.EmployeeData> employees, Context mContext) {
         this.employees = employees;
+        this.mContext = mContext;
     }
 
 
@@ -62,19 +70,29 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.Empl
     }
 
     @Override
-    public void onBindViewHolder(EmployeeHolder holder, int position) {
+    public void onBindViewHolder(EmployeeHolder holder, final int position) {
         Employee.EmployeeData employee = employees.get(position);
 
         holder.snoTextView.setText("" + (position + 1));
         holder.nameTextView.setText(employee.name);
         holder.loginIdTextView.setText(employee.email);
-        holder.mobileTextView.setText(employee.number);
+        holder.mobileTextView.setText(employee.mobile_number);
         holder.pwdTextView.setText(employee.password);
         holder.statusTextView.setText(employee.status);
+        holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((EmployeesActivity) mContext).onItemClick(1, position);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return employees.size();
+    }
+
+    public interface onClickListener {
+        public void onItemClick(int caseInt, int position);
     }
 }

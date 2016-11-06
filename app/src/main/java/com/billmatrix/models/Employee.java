@@ -15,7 +15,7 @@ public class Employee implements Serializable{
         public String id;
         public String name;
         public String email;
-        public String number;
+        public String mobile_number;
         public String password;
         public String status;
         public String create_date;

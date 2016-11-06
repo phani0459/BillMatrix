@@ -1,6 +1,7 @@
 package com.billmatrix.activities;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -26,6 +27,14 @@ public class ProfileActivity extends BaseTabActivity {
     public EditText storeAdminEditText;
     @BindView(R.id.et_profile_password)
     public EditText passwordEditText;
+    @BindView(R.id.et_mobilenumber)
+    public EditText mobNumEditText;
+    @BindView(R.id.et_adminName)
+    public EditText adminNameEditText;
+    @BindView(R.id.et_loginID)
+    public EditText loginIdmEditText;
+
+
     Profile profile;
 
     @Override
@@ -37,7 +46,33 @@ public class ProfileActivity extends BaseTabActivity {
 
         profileLayout.setVisibility(View.VISIBLE);
 
-        Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile();
+        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null);
+
+        if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(loginId)) {
+                    getProfile(loginId);
+                }
+            }
+        } else {
+            Log.e(TAG, "Profile is from file");
+            String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
+            profile = Constants.getGson().fromJson(profileString, Profile.class);
+            loadProfile();
+        }
+    }
+
+    public void loadProfile() {
+        if (profile != null) {
+            passwordEditText.setText(profile.data.password);
+            adminNameEditText.setText(profile.data.password);
+            mobNumEditText.setText(profile.data.email);
+            loginIdmEditText.setText(profile.data.username);
+        }
+    }
+
+    public void getProfile(String loginId) {
+        Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(loginId);
 
         call.enqueue(new Callback<Profile>() {
 
@@ -49,11 +84,12 @@ public class ProfileActivity extends BaseTabActivity {
              */
             @Override
             public void onResponse(Call<Profile> call, Response<Profile> response) {
+                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
                 if (response.body() != null) {
                     profile = response.body();
-                    Log.e("SUCCEESS RESPONSE RAW", profile.toString() + "");
                     if (profile.status == 200 && profile.userdata.equalsIgnoreCase("success")) {
-                        FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, profile.toString());
+                        FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
+                        loadProfile();
                     }
                 }
             }

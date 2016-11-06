@@ -61,6 +61,8 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
         setPageTitle(String.format("<span>%s Employees </span>", getArrowString()));
         addTabButtons(1, "Employees");
 
+        Utils.loadSpinner(empStatusSpinner, mContext, R.array.employee_status);
+
         employeesLayout.setVisibility(View.VISIBLE);
 
         employeesRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));

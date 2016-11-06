@@ -1,7 +1,9 @@
 package com.billmatrix.activities;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -60,14 +62,30 @@ public class ProfileActivity extends BaseTabActivity {
             profile = Constants.getGson().fromJson(profileString, Profile.class);
             loadProfile();
         }
+
+        adminNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                storeAdminEditText.setText(s.toString().toUpperCase());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     public void loadProfile() {
         if (profile != null) {
             passwordEditText.setText(profile.data.password);
-            adminNameEditText.setText(profile.data.password);
+            adminNameEditText.setText(profile.data.username);
             mobNumEditText.setText(profile.data.email);
             loginIdmEditText.setText(profile.data.username);
+            storeAdminEditText.setText(profile.data.username.toUpperCase());
         }
     }
 

@@ -28,7 +28,7 @@
 
             <TextView
                 android:id="@+id/tv_storeAdmin"
-                style="@style/Base.TextAppearance.AppCompat.Small"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -38,13 +38,15 @@
 
             <EditText
                 android:id="@+id/et_storeAdmin"
-                style="@style/Base.TextAppearance.AppCompat.Small"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:cursorVisible="true"
+                android:enabled="false"
                 android:singleLine="true"
                 android:text="@string/storeadministrator"
+                android:textAllCaps="true"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -58,7 +60,7 @@
 
             <TextView
                 android:id="@+id/tv_branch"
-                style="@style/Base.TextAppearance.AppCompat.Small"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -68,13 +70,13 @@
 
             <EditText
                 android:id="@+id/et_branch"
-                style="@style/Base.TextAppearance.AppCompat.Small"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:gravity="center"
                 android:maxLength="12"
-                android:text="@string/branch"
+                android:text="MAIN"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -88,7 +90,7 @@
 
             <TextView
                 android:id="@+id/tv_location"
-                style="@style/Base.TextAppearance.AppCompat.Small"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -98,13 +100,13 @@
 
             <EditText
                 android:id="@+id/et_location"
-                style="@style/Base.TextAppearance.AppCompat.Small"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:gravity="center"
                 android:maxLength="10"
-                android:text="@string/location"
+                android:text="HYDERABAD"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -173,13 +175,13 @@
                     android:textColor="@android:color/black" />
 
                 <EditText
+                    android:id="@+id/et_loginID"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/et_loginID"
                     android:background="@drawable/edit_text_border"
-                    android:padding="8dp"
                     android:imeOptions="actionNext"
+                    android:padding="8dp"
                     android:singleLine="true"
                     android:textColor="@android:color/black" />
             </TableRow>
@@ -205,8 +207,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_text_disabled_border"
                     android:enabled="false"
-                    android:inputType="textPassword"
                     android:imeOptions="actionNext"
+                    android:inputType="textPassword"
                     android:padding="8dp"
                     android:singleLine="true"
                     android:textColor="@android:color/black" />
@@ -236,13 +238,13 @@
                     android:textColor="@android:color/black" />
 
                 <EditText
+                    android:id="@+id/et_mobilenumber"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_text_border"
-                    android:inputType="number"
-                    android:id="@+id/et_mobilenumber"
                     android:imeOptions="actionDone"
+                    android:inputType="number"
                     android:padding="8dp"
                     android:singleLine="true"
                     android:textColor="@android:color/black" />

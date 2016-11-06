@@ -14,7 +14,7 @@
 
         <TextView
             android:id="@+id/tv_emp_sno"
-            style="@style/Base.TextAppearance.AppCompat.Small"
+            style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
@@ -26,7 +26,7 @@
 
         <TextView
             android:id="@+id/tv_emp_name"
-            style="@style/Base.TextAppearance.AppCompat.Small"
+            style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
@@ -40,7 +40,7 @@
 
         <TextView
             android:id="@+id/tv_emp_loginId"
-            style="@style/Base.TextAppearance.AppCompat.Small"
+            style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
@@ -53,7 +53,7 @@
 
         <TextView
             android:id="@+id/tv_emp_pwd"
-            style="@style/Base.TextAppearance.AppCompat.Small"
+            style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
@@ -66,7 +66,7 @@
 
         <TextView
             android:id="@+id/tv_emp_mob"
-            style="@style/Base.TextAppearance.AppCompat.Small"
+            style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
@@ -80,7 +80,7 @@
 
         <TextView
             android:id="@+id/tv_emp_status"
-            style="@style/Base.TextAppearance.AppCompat.Small"
+            style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"

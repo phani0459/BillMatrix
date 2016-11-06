@@ -7,9 +7,12 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.billmatrix.R;
 import com.billmatrix.interfaces.BillMatrixAPI;
 
 import java.io.IOException;
@@ -38,6 +41,12 @@ public class Utils {
             billMatrixAPI = getRetrofit(mContext).create(BillMatrixAPI.class);
         }
         return billMatrixAPI;
+    }
+
+    public static void loadSpinner(Spinner spinner, Context mContext, int spinnerArray) {
+        ArrayAdapter<CharSequence> foodadapter = ArrayAdapter.createFromResource(mContext, spinnerArray, R.layout.spinner_text_item);
+        foodadapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(foodadapter);
     }
 
     public static Retrofit getRetrofit(Context mContext) {

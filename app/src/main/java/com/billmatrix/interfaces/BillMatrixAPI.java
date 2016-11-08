@@ -21,8 +21,7 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("login")
-    Call<HashMap<String, String>> login(@Field("username") String username, @Field("password") String password,
-                                        @Field("licence_key") String licenceKey, @Field("imei_number") String imeiNumber);
+    Call<HashMap<String, String>> login(@Field("username") String username, @Field("password") String password);
 
     @FormUrlEncoded
     @POST("profile")

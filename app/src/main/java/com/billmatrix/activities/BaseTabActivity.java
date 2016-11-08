@@ -110,6 +110,7 @@ public abstract class BaseTabActivity extends AppCompatActivity {
 
     public void removePreferences() {
         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, false).apply();
+        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, null).apply();
     }
 
     @OnClick(R.id.btn_logout)

@@ -72,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
          */
         if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, null))) {
             licenceEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, ""));
-            licenceEditText.setEnabled(false);
         }
 
         /**
@@ -103,8 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         final ProgressDialog progressDialog = Utils.showProgressDialog(mContext);
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).login(userName, password,
-                licenceKey, imeiNumber);
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).login(userName, password);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
             /**
@@ -114,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
              */
             @Override
             public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW",  "" + response.raw() );
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                 progressDialog.dismiss();
                 if (response.body() != null) {
                     HashMap<String, String> loginMap = response.body();
@@ -124,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
                              * save licence key, and disable the licence edit text so that other user cannot login from this tab
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
-                            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LICENECE_KEY, licenceKey).apply();
+                            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loginMap.get("user_type")).apply();
                             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LOGIN_ID, loginMap.containsKey("user_id") ? loginMap.get("user_id") : "").apply();
 
                             /**
@@ -215,10 +213,10 @@ public class LoginActivity extends AppCompatActivity {
             showToast("Enter password");
             return false;
         }
-        if (TextUtils.isEmpty(licenceKey)) {
+        /*if (TextUtils.isEmpty(licenceKey)) {
             showToast("Enter Licence Key");
             return false;
-        }
+        }*/
 
         if (TextUtils.isEmpty(imeiNumber)) {
             showToast("Cannot get IMEI Number");

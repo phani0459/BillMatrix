@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.billmatrix.models.Employee;
+import com.billmatrix.models.Vendor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,9 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         db = dbHandler.getWriteDB();
     }
 
+    /*************************************************
+     * ********* EMPLOYEE METHODS ********************
+     *************************************************/
 
     public long addEmployee(Employee.EmployeeData employeeData) {
         ContentValues contentValues = new ContentValues();
@@ -77,6 +81,21 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         }
         return null;
 
+    }
+
+    /*************************************************
+     * *************VENDOR METHODS********************
+     *************************************************/
+
+    public long addVendor(Vendor.VendorData vendorData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.VENDOR_NAME, vendorData.name);
+        contentValues.put(DBConstants.VENDOR_ID, vendorData.id);
+        contentValues.put(DBConstants.VENDOR_SINCE, vendorData.since);
+        contentValues.put(DBConstants.VENDOR_ADDRESS, vendorData.address);
+        contentValues.put(DBConstants.PHONE, vendorData.phone);
+        contentValues.put(DBConstants.EMAIL, vendorData.email);
+        return db.insert(DBConstants.VENDORS_TABLE, null, contentValues);
     }
 
     @Override

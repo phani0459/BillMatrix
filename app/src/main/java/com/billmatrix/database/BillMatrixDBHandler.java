@@ -24,10 +24,17 @@ public class BillMatrixDBHandler extends DBHandler {
             + DBConstants.EMPLOYEE_LOGINID + " VARCHAR UNIQUE," + DBConstants.EMPLOYEE_PASSWORD + " VARCHAR,"
             + DBConstants.EMPLOYEE_MOBILE + " VARCHAR," + DBConstants.EMPLOYEE_STATUS + " VARCHAR" + ")";
 
+    public final static String CREATE_VENDOR_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + DBConstants.VENDORS_TABLE + " (" + DBConstants.SNO
+            + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.VENDOR_NAME + " VARCHAR,"
+            + DBConstants.VENDOR_ID + " VARCHAR UNIQUE," + DBConstants.VENDOR_SINCE + " VARCHAR,"
+            + DBConstants.VENDOR_ADDRESS + " VARCHAR," + DBConstants.PHONE + " VARCHAR," + DBConstants.EMAIL + " VARCHAR" + ")";
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_EMP_TABLE);
+        db.execSQL(CREATE_VENDOR_TABLE);
     }
 
     @Override

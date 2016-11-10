@@ -127,6 +127,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_vendorName"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -138,6 +139,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_vendorSince"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -151,7 +153,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/et_vendorAdd"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -163,6 +165,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_vendorPhone"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -175,6 +178,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_vendorEmail"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -209,17 +213,10 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/vendorsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        </LinearLayout>
-    </ScrollView>
+        android:scrollbars="none" />
 
 </LinearLayout>

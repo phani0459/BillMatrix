@@ -5,6 +5,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
@@ -38,6 +39,50 @@ public class InventoryActivity extends BaseTabActivity {
         frameLayout.setVisibility(View.VISIBLE);
 
         toggleSearchLayout(View.VISIBLE);
+
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    searchView.setCompoundDrawablesWithIntrinsicBounds(0, 0, android.R.drawable.ic_menu_close_clear_cancel, 0);
+                } else {
+                    searchView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.search_icon, 0);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        searchView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if(event.getRawX() >= (searchView.getRight() - searchView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        if (searchView.getText().toString().length() > 0) {
+                            searchView.setText("");
+                            if (selectedTab.equalsIgnoreCase("Vendors")) {
+                                if (vendorsFragment != null) {
+                                    vendorsFragment.searchClosed();
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                }
+                return false;
+            }
+        });
 
         searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

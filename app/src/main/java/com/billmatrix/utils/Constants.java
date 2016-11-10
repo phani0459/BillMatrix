@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by KANDAGATLAs on 22-10-2016.
@@ -32,7 +33,8 @@ public class Constants {
     public static String PROFILE_FILE_NAME = "ProfileModel";
     public static String EMPLOYEES_FILE_NAME = "Employees";
     public static Gson gson;
-    public static String dateFormat = "yyyy-MM-dd HH:mm:ss";
+    public static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+    public static String dateFormat = "dd-MM-yyyy";
 
     public static Gson getGson() {
         if (gson == null) {
@@ -43,9 +45,16 @@ public class Constants {
 
     public static SimpleDateFormat simpleDateFormat;
 
-    public static SimpleDateFormat getSimpleDateFormat() {
+    public static SimpleDateFormat getDateTimeFormat() {
         if (simpleDateFormat == null) {
-            simpleDateFormat = new SimpleDateFormat(Constants.dateFormat);
+            simpleDateFormat = new SimpleDateFormat(Constants.dateTimeFormat, Locale.getDefault());
+        }
+        return simpleDateFormat;
+    }
+
+    public static SimpleDateFormat getDateFormat() {
+        if (simpleDateFormat == null) {
+            simpleDateFormat = new SimpleDateFormat(Constants.dateFormat, Locale.getDefault());
         }
         return simpleDateFormat;
     }

@@ -25,7 +25,7 @@
 
         <TextView
             android:id="@+id/navigateTextView"
-            style="@style/Base.TextAppearance.AppCompat.Menu"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/home_icon"
@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/tv_reports"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -54,7 +54,7 @@
 
         <TextView
             android:id="@+id/tv_settings"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -72,7 +72,7 @@
 
         <TextView
             android:id="@+id/tv_todayspurs"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -90,7 +90,7 @@
 
         <TextView
             android:id="@+id/tv_viewstck"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"

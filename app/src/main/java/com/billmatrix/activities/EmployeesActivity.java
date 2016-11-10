@@ -140,8 +140,8 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
                 if (!TextUtils.isEmpty(empPwd)) {
                     if (!TextUtils.isEmpty(empMob)) {
                         if (!TextUtils.isEmpty(empStatus)) {
-                            employeeData.create_date = Constants.getSimpleDateFormat().format(System.currentTimeMillis());
-                            employeeData.update_date = Constants.getSimpleDateFormat().format(System.currentTimeMillis());
+                            employeeData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                            employeeData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
                             employeeData.email = empId;
                             employeeData.name = empName;
                             employeeData.password = empPwd;

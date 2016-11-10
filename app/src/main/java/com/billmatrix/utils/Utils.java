@@ -1,6 +1,7 @@
 package com.billmatrix.utils;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -16,6 +18,7 @@ import com.billmatrix.R;
 import com.billmatrix.interfaces.BillMatrixAPI;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
@@ -41,6 +44,22 @@ public class Utils {
             billMatrixAPI = getRetrofit(mContext).create(BillMatrixAPI.class);
         }
         return billMatrixAPI;
+    }
+
+    public static DatePickerDialog dateDialog(Context mContext, final EditText fromEditText) {
+        hideSoftKeyboard(fromEditText);
+        Calendar newCalendar = Calendar.getInstance();
+        DatePickerDialog fromDatePickerDialog = new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                fromEditText.setText(Constants.getDateFormat().format(newDate.getTime()));
+            }
+
+        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+        return fromDatePickerDialog;
     }
 
     public static void loadSpinner(Spinner spinner, Context mContext, int spinnerArray) {

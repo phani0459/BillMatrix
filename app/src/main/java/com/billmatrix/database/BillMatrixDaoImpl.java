@@ -80,7 +80,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             }
         }
         return null;
-
     }
 
     /*************************************************
@@ -96,6 +95,51 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DBConstants.PHONE, vendorData.phone);
         contentValues.put(DBConstants.EMAIL, vendorData.email);
         return db.insert(DBConstants.VENDORS_TABLE, null, contentValues);
+    }
+
+    public boolean deleteVendor(String phone) {
+        return db.delete(DBConstants.VENDORS_TABLE, DBConstants.PHONE + "='" + phone + "'", null) > 0;
+    }
+
+    public ArrayList<Vendor.VendorData> getVendors() {
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DBConstants.VENDORS_TABLE, null,
+                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    null, null, null);
+
+            if (cursor.moveToFirst()) {
+                List<Vendor.VendorData> vendors = new ArrayList<>();
+                do {
+
+                    Vendor.VendorData vendorData = new Vendor().new VendorData();
+                    vendorData.name = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.VENDOR_NAME)));
+                    vendorData.email = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.EMAIL)));
+                    vendorData.id = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.VENDOR_ID)));
+                    vendorData.since = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.VENDOR_SINCE)));
+                    vendorData.address = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.VENDOR_ADDRESS)));
+                    vendorData.phone = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.PHONE)));
+                    vendors.add(vendorData);
+
+                } while (cursor.moveToNext());
+
+                return (ArrayList<Vendor.VendorData>) vendors;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(DBConstants.TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+
     }
 
     @Override

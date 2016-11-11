@@ -51,6 +51,7 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
     public EditText locationEditText;
 
     private EmployeesAdapter employeesAdapter;
+    private String adminId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
         employeesAdapter = new EmployeesAdapter(employees, mContext);
         employeesRecyclerView.setAdapter(employeesAdapter);
 
-        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null);
+        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         employees = billMatrixDaoImpl.getEmployees();
 
@@ -82,15 +83,15 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
             }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
-                if (!TextUtils.isEmpty(loginId)) {
-                    getEmployeesFromServer(loginId);
+                if (!TextUtils.isEmpty(adminId)) {
+                    getEmployeesFromServer(adminId);
                 }
             }
         }
     }
 
     public void getEmployeesFromServer(String loginId) {
-        Call<Employee> call = Utils.getBillMatrixAPI(mContext).getEmployees(loginId);
+        Call<Employee> call = Utils.getBillMatrixAPI(mContext).getAdminEmployees(loginId);
 
         call.enqueue(new Callback<Employee>() {
 
@@ -105,8 +106,10 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
                 if (response.body() != null) {
                     Employee employee = response.body();
                     if (employee.status == 200 && employee.employeedata.equalsIgnoreCase("success")) {
-                        billMatrixDaoImpl.addEmployee(employee.data);
-                        employeesAdapter.addEmployee(employee.data);
+                        for (Employee.EmployeeData employeeData : employee.data) {
+                            billMatrixDaoImpl.addEmployee(employeeData);
+                            employeesAdapter.addEmployee(employeeData);
+                        }
                     }
                 }
             }
@@ -185,7 +188,7 @@ public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapt
     }
 
     private void addEmployeetoServer(Employee.EmployeeData employeeData) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployees(employeeData.name, employeeData.password, employeeData.mobile_number);
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.name, employeeData.password, employeeData.mobile_number, adminId);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
 

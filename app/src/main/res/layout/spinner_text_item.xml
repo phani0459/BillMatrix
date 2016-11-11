@@ -6,4 +6,5 @@
     android:layout_height="wrap_content"
     android:paddingLeft="4dp"
     android:text="@string/PASSWORD"
+    android:textAllCaps="true"
     android:textColor="@android:color/black" />

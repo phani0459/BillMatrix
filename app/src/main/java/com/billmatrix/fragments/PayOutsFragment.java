@@ -11,7 +11,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Utils;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +31,7 @@ public class PayOutsFragment extends Fragment {
     public Spinner modePaymentSpinner;
 
     private Context mContext;
+    private BillMatrixDaoImpl billMatrixDaoImpl;
 
     public PayOutsFragment() {
         // Required empty public constructor
@@ -39,7 +44,17 @@ public class PayOutsFragment extends Fragment {
         ButterKnife.bind(this, v);
 
         mContext = getActivity();
-        Utils.loadSpinner(vendorSpinner, mContext, R.array.employee_status);
+
+        billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+
+        ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
+        ArrayList<String> strings = new ArrayList<>();
+
+        for (Vendor.VendorData vendorData: vendors) {
+            strings.add(vendorData.name);
+        }
+
+        Utils.loadSpinner(vendorSpinner, mContext, strings);
         Utils.loadSpinner(modePaymentSpinner, mContext, R.array.employee_status);
 
         return v;

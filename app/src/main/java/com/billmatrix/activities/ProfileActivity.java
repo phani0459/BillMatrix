@@ -48,7 +48,7 @@ public class ProfileActivity extends BaseTabActivity {
 
         profileLayout.setVisibility(View.VISIBLE);
 
-        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null);
+        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {

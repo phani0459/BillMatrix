@@ -18,6 +18,7 @@ import com.billmatrix.R;
 import com.billmatrix.interfaces.BillMatrixAPI;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
@@ -63,7 +64,13 @@ public class Utils {
     }
 
     public static void loadSpinner(Spinner spinner, Context mContext, int spinnerArray) {
-        ArrayAdapter<CharSequence> foodadapter = ArrayAdapter.createFromResource(mContext, spinnerArray, R.layout.spinner_text_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mContext, spinnerArray, R.layout.spinner_text_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+    }
+
+    public static void loadSpinner(Spinner spinner, Context mContext, ArrayList<String> spinnerArray) {
+        ArrayAdapter<String> foodadapter = new ArrayAdapter<String>(mContext, R.layout.spinner_text_item, spinnerArray);
         foodadapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(foodadapter);
     }

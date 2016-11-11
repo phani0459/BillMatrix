@@ -29,11 +29,19 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("employee")
-    Call<Employee> getEmployees(@Field("id") String id);
+    Call<Employee> getEmployeeProfile(@Field("id") String empId);
+
+    @FormUrlEncoded
+    @POST("admin_employees")
+    Call<Employee> getAdminEmployees(@Field("admin_id ") String adminId);
+
+    @FormUrlEncoded
+    @POST("delete_employee")
+    Call<HashMap<String, String>> deleteEmployee(@Field("id ") String empId);
 
     @FormUrlEncoded
     @POST("create_employee")
-    Call<HashMap<String, String>> addEmployees(@Field("name") String empName, @Field("password") String password,
-                                               @Field("number") String mobileNumber);
+    Call<HashMap<String, String>> addEmployee(@Field("username") String empName, @Field("password") String password,
+                                               @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id);
 
 }

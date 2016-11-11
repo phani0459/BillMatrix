@@ -25,7 +25,7 @@ public class Constants {
     public static final String PREF_USER_TYPE = "userType";
     public static final String PREF_USER_NAME = "userName";
     public static final String PREF_PASSWORD = "password";
-    public static final String PREF_LOGIN_ID = "loginID";
+    public static final String PREF_ADMIN_ID = "loginID";
 
     /**
      * File Names

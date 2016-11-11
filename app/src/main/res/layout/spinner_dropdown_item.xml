@@ -7,4 +7,5 @@
     android:gravity="center"
     android:padding="8dp"
     android:text="@string/PASSWORD"
+    android:textAllCaps="true"
     android:textColor="@android:color/black" />

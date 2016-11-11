@@ -88,7 +88,7 @@ public class VendorsFragment extends Fragment implements VendorsAdapter.onClickL
         });
 
         vendors = billMatrixDaoImpl.getVendors();
-        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null);
+        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         if (vendors != null && vendors.size() > 0) {
             for (Vendor.VendorData vendorData : vendors) {

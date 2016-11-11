@@ -46,6 +46,9 @@
         <activity
             android:name=".activities.PaymentsActivity"
             android:screenOrientation="landscape" />
+        <activity
+            android:name=".activities.ReportsActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

@@ -114,4 +114,25 @@
     <string name="expense_name">EXPENSE NAME</string>
     <string name="purpose">PURPOSE</string>
 
+    <!-- Sales Strings-->
+    <string name="from_date">FROM DATE</string>
+    <string name="to_date">TO DATE</string>
+    <string name="select_one">SELECT ONE</string>
+    <string name="VIEW">VIEW</string>
+    <string name="Print">PRINT</string>
+    <string name="QTY">QTY</string>
+    <string name="SOLD_DATE">SOLD DATE</string>
+    <string name="ITEM_NAME">ITEM NAME</string>
+    <string name="Brand">BRAND</string>
+    <string-array name="sale_by_array">
+        <item>SELECT ONE</item>
+        <item>Sale total</item>
+        <item>Sale by Brand</item>
+        <item>Sale total</item>
+        <item>Sale by Vendor</item>
+        <item>Sale by Category</item>
+        <item>Sale Profit</item>
+        <item>Sale by Discount</item>
+    </string-array>
+
 </resources>

@@ -8,6 +8,7 @@ import com.billmatrix.R;
 import com.billmatrix.fragments.GenExpensesFragment;
 import com.billmatrix.fragments.PayInsFragment;
 import com.billmatrix.fragments.PayOutsFragment;
+import com.billmatrix.fragments.SalesFragment;
 import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;
@@ -42,9 +43,9 @@ public class ReportsActivity extends BaseTabActivity {
 
         if (selectedTab.equalsIgnoreCase("SALES")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new PayOutsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new SalesFragment()).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PayOutsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new SalesFragment()).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("PURCHASE")) {
             if (isInit) {

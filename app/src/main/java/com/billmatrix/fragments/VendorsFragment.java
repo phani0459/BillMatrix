@@ -54,10 +54,11 @@ public class VendorsFragment extends Fragment implements VendorsAdapter.onClickL
     public RecyclerView vendorsRecyclerView;
     private VendorsAdapter vendorsAdapter;
 
+    BillMatrixDaoImpl billMatrixDaoImpl;
+
     public VendorsFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,7 +80,7 @@ public class VendorsFragment extends Fragment implements VendorsAdapter.onClickL
         vendorSince_EditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) {
+                if (hasFocus) {
                     DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, vendorSince_EditText);
                     datePickerDialog.show();
                 }
@@ -104,8 +105,6 @@ public class VendorsFragment extends Fragment implements VendorsAdapter.onClickL
 
         return v;
     }
-
-    BillMatrixDaoImpl billMatrixDaoImpl;
 
     @OnClick(R.id.btn_addVendor)
     public void addVendor() {

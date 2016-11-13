@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
@@ -10,84 +10,53 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:weightSum="6">
+        android:weightSum="5">
 
         <TextView
-            android:id="@+id/tv_emp_sno"
+            android:id="@+id/tv_item_payIns_sno"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="0.3"
+            android:layout_weight="0.5"
             android:gravity="center"
-            android:text="@string/save"
+            android:text="@string/sno"
             android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/tv_emp_name"
+            android:id="@+id/tv_item_payIns_custName"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="1.2"
+            android:layout_weight="1.5"
             android:gravity="center"
-            android:maxLines="2"
-            android:padding="6dp"
-            android:text="@string/storeadministrator"
+            android:text="@string/customerName"
             android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/tv_emp_loginId"
+            android:id="@+id/tv_item_payIns_date"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="6dp"
-            android:text="@string/save"
+            android:text="@string/dateof_payment"
             android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/tv_emp_pwd"
+            android:id="@+id/tv_item_payIns_amount"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="6dp"
-            android:text="@string/save"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/tv_emp_mob"
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:inputType="number"
-            android:padding="6dp"
-            android:text="@string/save"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/tv_emp_status"
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="6dp"
-            android:text="@string/save"
+            android:text="@string/amount"
             android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
@@ -96,22 +65,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginRight="12dp"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/im_emp_edit"
+                android:id="@+id/im_item_payIn_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/edit_icon" />
 
             <ImageView
-                android:id="@+id/im_emp_del"
+                android:id="@+id/im_item_payIn_del"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:src="@drawable/delete" />
+
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

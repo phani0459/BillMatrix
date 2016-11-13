@@ -28,6 +28,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
+            android:id="@+id/atv_select_customer_due"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:background="@drawable/edit_text_border"
             android:minWidth="320dp"
             android:padding="6dp" />

@@ -20,6 +20,7 @@ import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.VendorsAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
@@ -34,7 +35,7 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class VendorsFragment extends Fragment implements VendorsAdapter.onClickListener {
+public class VendorsFragment extends Fragment implements OnItemClickListener {
 
 
     private static final String TAG = VendorsFragment.class.getSimpleName();

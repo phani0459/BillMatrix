@@ -12,6 +12,7 @@ import android.widget.Spinner;
 
 import com.billmatrix.R;
 import com.billmatrix.adapters.EmployeesAdapter;
+import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Employee;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
@@ -30,7 +31,7 @@ import retrofit2.Response;
  * Created by KANDAGATLAs on 23-10-2016.
  */
 
-public class EmployeesActivity extends BaseTabActivity implements EmployeesAdapter.onClickListener {
+public class EmployeesActivity extends BaseTabActivity implements OnItemClickListener {
 
     private static final String TAG = EmployeesActivity.class.getSimpleName();
     @BindView(R.id.employees)

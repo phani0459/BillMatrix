@@ -19,10 +19,9 @@ import android.widget.Spinner;
 import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.CustomersAdapter;
-import com.billmatrix.adapters.VendorsAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
-import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -33,10 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class CustomersFragment extends Fragment implements CustomersAdapter.OnItemClickListener {
+public class CustomersFragment extends Fragment implements OnItemClickListener {
 
     @BindView(R.id.sp_cust_status)
     public Spinner custStatusSpinner;
@@ -98,6 +94,7 @@ public class CustomersFragment extends Fragment implements CustomersAdapter.OnIt
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
+                    Utils.hideSoftKeyboard(customerNameEditText);
                     DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate_EditText);
                     datePickerDialog.show();
                 }

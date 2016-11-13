@@ -85,7 +85,8 @@
             android:padding="6dp"
             android:textColor="@android:color/black" />
 
-        <EditText
+        <AutoCompleteTextView
+            android:id="@+id/atv_payIns_custName"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -97,6 +98,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_payins_date"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -109,6 +111,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_payIn_amt"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -130,7 +133,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_addCustomer"
+                android:id="@+id/btn_addPayIn"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
@@ -144,17 +147,10 @@
     </LinearLayout>
 
 
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/payInsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        </LinearLayout>
-    </ScrollView>
+        android:scrollbars="none" />
 
 </LinearLayout>

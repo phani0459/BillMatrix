@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 
 import java.util.ArrayList;
@@ -97,9 +98,5 @@ public class CustomersAdapter extends RecyclerView.Adapter<CustomersAdapter.Cust
     @Override
     public int getItemCount() {
         return customers.size();
-    }
-
-    public interface OnItemClickListener {
-        public void onItemClick(int caseInt, int position);
     }
 }

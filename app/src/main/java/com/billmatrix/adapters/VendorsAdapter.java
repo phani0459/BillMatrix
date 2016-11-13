@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Vendor;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import butterknife.ButterKnife;
 public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHolder> {
 
     private List<Vendor.VendorData> vendors;
-    onClickListener onClickListener;
+    OnItemClickListener onItemClickListener;
 
     public class VendorHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_item_vendorSno)
@@ -58,9 +59,9 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
         notifyDataSetChanged();
     }
 
-    public VendorsAdapter(List<Vendor.VendorData> vendors, onClickListener onClickListener) {
+    public VendorsAdapter(List<Vendor.VendorData> vendors, OnItemClickListener onItemClickListener) {
         this.vendors = vendors;
-        this.onClickListener = onClickListener;
+        this.onItemClickListener = onItemClickListener;
     }
 
     public void removeAllVendors() {
@@ -89,7 +90,7 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClickListener.onItemClick(1, position);
+                onItemClickListener.onItemClick(1, position);
             }
         });
     }
@@ -101,9 +102,5 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
     @Override
     public int getItemCount() {
         return vendors.size();
-    }
-
-    public interface onClickListener {
-        public void onItemClick(int caseInt, int position);
     }
 }

@@ -95,8 +95,4 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.Empl
     public int getItemCount() {
         return employees.size();
     }
-
-    public interface onClickListener {
-        public void onItemClick(int caseInt, int position);
-    }
 }

@@ -34,13 +34,16 @@
                 android:textColor="@android:color/black" />
 
             <AutoCompleteTextView
+                android:id="@+id/atv_select_customer"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:background="@drawable/edit_text_border"
+                android:imeOptions="actionDone"
                 android:minWidth="320dp"
-                android:padding="6dp" />
+                android:padding="6dp"
+                android:singleLine="true" />
         </LinearLayout>
 
         <LinearLayout

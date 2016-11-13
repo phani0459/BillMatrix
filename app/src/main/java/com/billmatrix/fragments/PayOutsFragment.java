@@ -1,12 +1,15 @@
 package com.billmatrix.fragments;
 
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -29,6 +32,8 @@ public class PayOutsFragment extends Fragment {
     public Spinner vendorSpinner;
     @BindView(R.id.sp_pay_outs_payment)
     public Spinner modePaymentSpinner;
+    @BindView(R.id.et_payouts_date)
+    public EditText dateEditText;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
@@ -49,13 +54,30 @@ public class PayOutsFragment extends Fragment {
 
         ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
         ArrayList<String> strings = new ArrayList<>();
+        strings.add("Select vendor");
 
-        for (Vendor.VendorData vendorData: vendors) {
-            strings.add(vendorData.name);
+        if (vendors != null && vendors.size() > 0) {
+            strings = new ArrayList<>();
+            for (Vendor.VendorData vendorData: vendors) {
+                strings.add(vendorData.name);
+            }
+
         }
-
         Utils.loadSpinner(vendorSpinner, mContext, strings);
         Utils.loadSpinner(modePaymentSpinner, mContext, R.array.employee_status);
+
+        dateEditText.setInputType(InputType.TYPE_NULL);
+
+        dateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText);
+                    datePickerDialog.show();
+                }
+                v.clearFocus();
+            }
+        });
 
         return v;
     }

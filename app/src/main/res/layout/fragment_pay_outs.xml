@@ -127,6 +127,7 @@
             android:gravity="center"
             android:inputType="date"
             android:maxLength="12"
+            android:id="@+id/et_payouts_date"
             android:padding="6dp"
             android:textColor="@android:color/black" />
 

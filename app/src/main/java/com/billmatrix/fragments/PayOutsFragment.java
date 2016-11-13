@@ -57,8 +57,7 @@ public class PayOutsFragment extends Fragment {
         strings.add("Select vendor");
 
         if (vendors != null && vendors.size() > 0) {
-            strings = new ArrayList<>();
-            for (Vendor.VendorData vendorData: vendors) {
+            for (Vendor.VendorData vendorData : vendors) {
                 strings.add(vendorData.name);
             }
 

@@ -149,5 +149,11 @@ public class ControlPanelActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.ll_settings)
+    public void settings() {
+        Intent intent = new Intent(mContext, SettingsActivity.class);
+        startActivity(intent);
+    }
+
 
 }

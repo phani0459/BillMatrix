@@ -133,5 +133,19 @@
         <item>Sale Profit</item>
         <item>Sale by Discount</item>
     </string-array>
+    <!-- Tax Strings-->
+    <string name="tax_type">TAX TYPE</string>
+    <string name="tax_desc">TAX DESCRIPTION</string>
+    <string name="tax_rate">TAX RATE</string>
+    <string-array name="tax_type_array">
+        <item>SELECT ONE</item>
+        <item>Value Added Tax</item>
+        <item>Service Tax</item>
+        <item>Excise Duty</item>
+    </string-array>
 
+    <!-- Tax Strings-->
+    <string name="discount_desc">DISCOUNT DESCRIPTION</string>
+    <string name="discount_code">DISCOUNT CODE</string>
+    <string name="discount">DISCOUNT</string>
 </resources>

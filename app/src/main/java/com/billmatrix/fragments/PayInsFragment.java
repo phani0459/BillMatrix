@@ -126,26 +126,26 @@ public class PayInsFragment extends Fragment implements OnItemClickListener {
 //                    long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
 
 //                    if (vendorAdded != -1) {
-                        payInsAdapter.addPayIn(payInData);
-                        payInsRecyclerView.smoothScrollToPosition(payInsAdapter.getItemCount());
+                    payInsAdapter.addPayIn(payInData);
+                    payInsRecyclerView.smoothScrollToPosition(payInsAdapter.getItemCount());
 
                         /*
                          * reset all edit texts
                          */
-                        customerNameAutoCompleteTextView.setText("");
-                        dateEditText.setText("");
-                        amountEditText.setText("");
+                    customerNameAutoCompleteTextView.setText("");
+                    dateEditText.setText("");
+                    amountEditText.setText("");
 //                    } else {
 //                        ((BaseTabActivity) mContext).showToast("Vendor Email / Phone must be unique");
 //                    }
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Enter Vendor Address");
+                    ((BaseTabActivity) mContext).showToast("Enter Amount");
                 }
             } else {
-                ((BaseTabActivity) mContext).showToast("Enter Vendor Email");
+                ((BaseTabActivity) mContext).showToast("Enter Date");
             }
         } else {
-            ((BaseTabActivity) mContext).showToast("Enter Vendor Name");
+            ((BaseTabActivity) mContext).showToast("Enter Customer Name");
         }
     }
 

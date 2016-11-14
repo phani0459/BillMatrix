@@ -93,9 +93,9 @@ public class Utils {
             NetworkInfo activeNetwork = connectivity.getActiveNetworkInfo();
             isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         }
-        if (!isConnected) {
+        /*if (!isConnected) {
             Toast.makeText(mContext, "We are unable connect to our servers, please check your internet connection", Toast.LENGTH_LONG).show();
-        }
+        }*/
         return isConnected;
     }
 

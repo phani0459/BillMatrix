@@ -44,12 +44,13 @@ public class Constants {
     }
 
     public static SimpleDateFormat simpleDateFormat;
+    public static SimpleDateFormat simpleDateTimeFormat;
 
     public static SimpleDateFormat getDateTimeFormat() {
-        if (simpleDateFormat == null) {
-            simpleDateFormat = new SimpleDateFormat(Constants.dateTimeFormat, Locale.getDefault());
+        if (simpleDateTimeFormat == null) {
+            simpleDateTimeFormat = new SimpleDateFormat(Constants.dateTimeFormat, Locale.getDefault());
         }
-        return simpleDateFormat;
+        return simpleDateTimeFormat;
     }
 
     public static SimpleDateFormat getDateFormat() {

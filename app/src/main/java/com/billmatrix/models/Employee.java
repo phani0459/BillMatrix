@@ -7,14 +7,14 @@ import java.util.ArrayList;
  * Created by KANDAGATLAs on 28-10-2016.
  */
 
-public class Employee implements Serializable{
+public class Employee implements Serializable {
     public int status;
     public String employeedata;
     public ArrayList<EmployeeData> data;
 
     public class EmployeeData {
         public String id;
-        public String name;
+        public String username;
         public String email;
         public String mobile_number;
         public String admin_id;

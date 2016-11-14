@@ -33,7 +33,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public long addEmployee(Employee.EmployeeData employeeData) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DBConstants.EMPLOYEE_NAME, employeeData.name);
+        contentValues.put(DBConstants.EMPLOYEE_NAME, employeeData.username);
         contentValues.put(DBConstants.EMPLOYEE_MOBILE, employeeData.mobile_number);
         contentValues.put(DBConstants.EMPLOYEE_LOGINID, employeeData.email);
         contentValues.put(DBConstants.EMPLOYEE_PASSWORD, employeeData.password);
@@ -57,7 +57,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 do {
 
                     Employee.EmployeeData employeeData = new Employee().new EmployeeData();
-                    employeeData.name = (cursor.getString(cursor
+                    employeeData.username = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_NAME)));
                     employeeData.email = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_LOGINID)));

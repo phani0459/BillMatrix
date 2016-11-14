@@ -147,7 +147,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                             employeeData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
                             employeeData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
                             employeeData.email = empId;
-                            employeeData.name = empName;
+                            employeeData.username = empName;
                             employeeData.password = empPwd;
                             employeeData.mobile_number = empMob;
                             employeeData.status = empStatus;
@@ -189,7 +189,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
     }
 
     private void addEmployeetoServer(Employee.EmployeeData employeeData) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.name, employeeData.password, employeeData.mobile_number, adminId);
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.username, employeeData.password, employeeData.mobile_number, adminId);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
 

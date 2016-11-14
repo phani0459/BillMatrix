@@ -15,6 +15,9 @@ public class Profile implements Serializable {
 
     public class ProfileData implements Serializable {
         public String id;
+        public String admin_id;
+        public String mobile_number;
+        public String type;
         public String email;
         public String username;
         public String password;

@@ -74,7 +74,7 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.Empl
         Employee.EmployeeData employee = employees.get(position);
 
         holder.snoTextView.setText("" + (position + 1));
-        holder.nameTextView.setText(employee.name);
+        holder.nameTextView.setText(employee.username);
         holder.loginIdTextView.setText(employee.email);
         holder.mobileTextView.setText(employee.mobile_number);
         holder.pwdTextView.setText(employee.password);

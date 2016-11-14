@@ -18,9 +18,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.billmatrix.R;
+import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.Employee;
+import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -36,7 +41,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private Context mContext;
 
-
     @BindView(R.id.copyrightTextView)
     public TextView copyrightTextView;
 
@@ -48,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     public TextInputEditText licenceEditText;
     @BindView(R.id.cb_rememberMe)
     public CheckBox rememberMeCheckBox;
+    private BillMatrixDaoImpl billMatrixDaoImpl;
 
 
     @Override
@@ -57,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mContext = this;
         ButterKnife.bind(this);
+        billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
 
         /**
          * if user is previously looged in, directly open control panel
@@ -90,17 +96,93 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_login)
     public void checkInternetAndLogin() {
+
+        if (!verify()) {
+            return;
+        }
+
         if (Utils.isInternetAvailable(mContext)) {
             login();
+        } else {
+            offlineLogin();
+        }
+    }
+
+    private void offlineLogin() {
+        if (FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
+            Log.e(TAG, "Profile is from file");
+            String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
+            Profile profile = Constants.getGson().fromJson(profileString, Profile.class);
+            if (profile != null && profile.data != null) {
+                if (userName.equalsIgnoreCase(profile.data.username) && password.equalsIgnoreCase(profile.data.password)) {
+                    /**
+                     * save licence key, and disable the licence edit text so that other user cannot login from this tab
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
+                    Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, profile.data.type).apply();
+
+                    /**
+                     * if remember me is checked, save user name and pwd in pref if not remove them
+                     */
+                    if (rememberMeCheckBox.isChecked()) {
+                        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, userName).apply();
+                        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, password).apply();
+                    } else {
+                        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, "").apply();
+                        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
+                    }
+
+                    Intent intent = new Intent(mContext, ControlPanelActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Log.e(TAG, "Check for employees");
+                    Employee.EmployeeData loggedInEmployee = new Employee().new EmployeeData();
+                    boolean isEmployee = false;
+                    ArrayList<Employee.EmployeeData> employees = billMatrixDaoImpl.getEmployees();
+                    if (employees != null && employees.size() > 0) {
+                        for (Employee.EmployeeData employeeData : employees) {
+                            if (userName.equalsIgnoreCase(employeeData.email) && password.equalsIgnoreCase(employeeData.password)) {
+                                isEmployee = true;
+                                loggedInEmployee = employeeData;
+                                break;
+                            }
+                        }
+
+                        Log.e(TAG, "ss" + isEmployee);
+
+                        if (isEmployee) {
+                            /**
+                             * save licence key, and disable the licence edit text so that other user cannot login from this tab
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
+                            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loggedInEmployee.type).apply();
+
+                            /**
+                             * if remember me is checked, save user name and pwd in pref if not remove them
+                             */
+                            if (rememberMeCheckBox.isChecked()) {
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, userName).apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, password).apply();
+                            } else {
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, "").apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
+                            }
+
+                            Intent intent = new Intent(mContext, ControlPanelActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                }
+            }
+        } else {
+            showToast("unable to login");
         }
     }
 
 
     public void login() {
-        if (!verify()) {
-            return;
-        }
-
         final ProgressDialog progressDialog = Utils.showProgressDialog(mContext);
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).login(userName, password);
 
@@ -213,19 +295,10 @@ public class LoginActivity extends AppCompatActivity {
             showToast("Enter password");
             return false;
         }
-        /*if (TextUtils.isEmpty(licenceKey)) {
-            showToast("Enter Licence Key");
-            return false;
-        }*/
-
         if (TextUtils.isEmpty(imeiNumber)) {
             showToast("Cannot get IMEI Number");
             return false;
         }
-
-        userName = "nag";
-        password = "nag123";
-        licenceKey = "L123";
         imeiNumber = "8234123";
 
         return true;

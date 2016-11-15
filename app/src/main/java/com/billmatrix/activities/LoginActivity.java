@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
             String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
             Profile profile = Constants.getGson().fromJson(profileString, Profile.class);
             if (profile != null && profile.data != null) {
-                if (userName.equalsIgnoreCase(profile.data.username) && password.equalsIgnoreCase(profile.data.password)) {
+                if (userName.equalsIgnoreCase(profile.data.username) && password.equalsIgnoreCase(profile.data.password) && imeiNumber.equalsIgnoreCase(profile.data.imei_number)) {
                     /**
                      * save licence key, and disable the licence edit text so that other user cannot login from this tab
                      */
@@ -142,14 +142,12 @@ public class LoginActivity extends AppCompatActivity {
                     ArrayList<Employee.EmployeeData> employees = billMatrixDaoImpl.getEmployees();
                     if (employees != null && employees.size() > 0) {
                         for (Employee.EmployeeData employeeData : employees) {
-                            if (userName.equalsIgnoreCase(employeeData.email) && password.equalsIgnoreCase(employeeData.password)) {
+                            if (userName.equalsIgnoreCase(employeeData.email) && password.equalsIgnoreCase(employeeData.password) && imeiNumber.equalsIgnoreCase(employeeData.imei_number)) {
                                 isEmployee = true;
                                 loggedInEmployee = employeeData;
                                 break;
                             }
                         }
-
-                        Log.e(TAG, "ss" + isEmployee);
 
                         if (isEmployee) {
                             /**
@@ -172,6 +170,8 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(mContext, ControlPanelActivity.class);
                             startActivity(intent);
                             finish();
+                        } else {
+                            showToast("username/password is wrong");
                         }
                     }
                 }
@@ -184,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login() {
         final ProgressDialog progressDialog = Utils.showProgressDialog(mContext);
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).login(userName, password);
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).login(userName, password, imeiNumber);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
             /**
@@ -205,6 +205,7 @@ public class LoginActivity extends AppCompatActivity {
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loginMap.get("user_type")).apply();
+                            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LICENECE_KEY, loginMap.get("imei_number")).apply();
                             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_ADMIN_ID, loginMap.containsKey("user_id") ? loginMap.get("user_id") : "").apply();
 
                             /**

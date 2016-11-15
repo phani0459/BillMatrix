@@ -21,7 +21,7 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("login")
-    Call<HashMap<String, String>> login(@Field("username") String username, @Field("password") String password);
+    Call<HashMap<String, String>> login(@Field("username") String username, @Field("password") String password, @Field("imei_number") String imei_number);
 
     @FormUrlEncoded
     @POST("profile")
@@ -42,6 +42,6 @@ public interface BillMatrixAPI {
     @FormUrlEncoded
     @POST("create_employee")
     Call<HashMap<String, String>> addEmployee(@Field("username") String empName, @Field("password") String password,
-                                               @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id);
+                                              @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id);
 
 }

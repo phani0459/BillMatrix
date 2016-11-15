@@ -4,6 +4,7 @@
     <string name="logout">LOGOUT</string>
     <string name="save">SAVE</string>
     <string name="add">ADD</string>
+    <string name="go">GO</string>
     <string name="REPORTS">REPORTS</string>
     <string name="SETTINGS">SETTINGS</string>
     <string name="TODAYS_PURS">TODAY\'S PURCHASES</string>
@@ -95,6 +96,22 @@
     </string-array>
 
     <!-- Inventory Strings-->
+    <string name="itemcode">ITEM CODE</string>
+    <string name="Unit">UNIT</string>
+    <string name="PRICE">PRICE</string>
+    <string name="MY_COST">MY COST</string>
+    <string name="WARE_HOUSE">WARE HOUSE</string>
+    <string name="VENDOR">VENDOR</string>
+    <string name="PHOTO">PHOTO</string>
+    <string name="BAR_CODE">BARCODE</string>
+    <string name="addItem_scan_bar_code">ADD ITEM BY SCANNING BARCODE</string>
+    <string name="GENERATE_BAR_CODE">GENERATE BARCODE</string>
+    <string name="PRINT_BAR_CODE">PRINT BARCODE</string>
+    <string name="no_of_barcodes">NO OF BARCODES</string>
+    <string name="BAR_CODE_GENERATED">BARCODE GENERATED \n XXXXXXXX</string>
+
+
+    <!-- VENDOR Strings-->
     <string name="inventory_search_hint">Enter Barcode / itemcode / item name / category</string>
     <string name="vendor_search_hint">Vendor ID / Name</string>
     <string name="inventory_search_text">SEARCH FOR ITEM</string>

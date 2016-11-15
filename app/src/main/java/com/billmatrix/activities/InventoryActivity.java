@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.fragments.CustomersFragment;
+import com.billmatrix.fragments.InventoryFragment;
 import com.billmatrix.fragments.VendorsFragment;
 import com.billmatrix.utils.Utils;
 
@@ -26,7 +27,7 @@ public class InventoryActivity extends BaseTabActivity {
 
     @BindView(R.id.frameLayout)
     public FrameLayout frameLayout;
-    CustomersFragment customersFragment;
+    InventoryFragment inventoryFragment;
     VendorsFragment vendorsFragment;
 
     @Override
@@ -106,7 +107,7 @@ public class InventoryActivity extends BaseTabActivity {
         searchView.setText("");
         Utils.hideSoftKeyboard(searchView);
 
-        customersFragment = new CustomersFragment();
+        inventoryFragment = new InventoryFragment();
         vendorsFragment = new VendorsFragment();
 
         isInit = true;
@@ -116,9 +117,9 @@ public class InventoryActivity extends BaseTabActivity {
 
         if (selectedTab.equalsIgnoreCase("INVENTORY")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, customersFragment).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, inventoryFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, customersFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, inventoryFragment).commit();
             }
             searchTextView.setText(getString(R.string.inventory_search_text));
             searchView.setHint(getString(R.string.inventory_search_hint));

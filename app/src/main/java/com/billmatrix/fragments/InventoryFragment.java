@@ -4,32 +4,34 @@ package com.billmatrix.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.Spinner;
 
 import com.billmatrix.R;
-import com.billmatrix.activities.BaseTabActivity;
+import com.billmatrix.adapters.InventoryAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
-import com.billmatrix.models.PayIns;
-import com.billmatrix.utils.Constants;
-import com.billmatrix.utils.Utils;
+import com.billmatrix.interfaces.OnItemClickListener;
+import com.billmatrix.models.Inventory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class InventoryFragment extends Fragment {
+public class InventoryFragment extends Fragment implements OnItemClickListener {
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
+    @BindView(R.id.inventoryList)
+    public RecyclerView inventoryRecyclerView;
+    public InventoryAdapter inventoryAdapter;
 
     public InventoryFragment() {
         // Required empty public constructor
@@ -44,7 +46,19 @@ public class InventoryFragment extends Fragment {
 
         mContext = getActivity();
 
+        inventoryRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
+        List<Inventory.InventoryData> inventoryDatas = new ArrayList<>();
+
+        inventoryAdapter = new InventoryAdapter(inventoryDatas, this);
+        inventoryRecyclerView.setAdapter(inventoryAdapter);
+
 
         return v;
+    }
+
+    @Override
+    public void onItemClick(int caseInt, int position) {
+
     }
 }

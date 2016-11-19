@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +32,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CustomersFragment extends Fragment implements OnItemClickListener {
+
+    private static final String TAG = CustomersFragment.class.getSimpleName();
 
     @BindView(R.id.sp_cust_status)
     public Spinner custStatusSpinner;
@@ -84,7 +90,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
-//                    getEmployeesFromServer(loginId);
+                    getCustomersFromServer(adminId);
                 }
             }
         }
@@ -103,6 +109,43 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         });
 
         return v;
+    }
+
+    private void getCustomersFromServer(String adminId) {
+        Log.e(TAG, "getCustomersFromServer: ");
+        Call<Customer> call = Utils.getBillMatrixAPI(mContext).getAdminCustomers(adminId);
+
+        call.enqueue(new Callback<Customer>() {
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<Customer> call, Response<Customer> response) {
+                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                if (response.body() != null) {
+                    Customer customer = response.body();
+                    if (customer.status == 200 && customer.Customerdata.equalsIgnoreCase("success")) {
+                        for (Customer.CustomerData customerData : customer.data) {
+                            billMatrixDaoImpl.addCustomer(customerData);
+                            customersAdapter.addCustomer(customerData);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<Customer> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     @OnClick(R.id.btn_addCustomer)

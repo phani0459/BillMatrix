@@ -53,7 +53,7 @@ public class ProfileActivity extends BaseTabActivity {
         if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(loginId)) {
-                    getProfile(loginId);
+                    getProfilefromServer(loginId);
                 }
             }
         } else {
@@ -89,7 +89,8 @@ public class ProfileActivity extends BaseTabActivity {
         }
     }
 
-    public void getProfile(String loginId) {
+    public void getProfilefromServer(String loginId) {
+        Log.e(TAG, "getProfilefromServer: ");
         Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(loginId);
 
         call.enqueue(new Callback<Profile>() {

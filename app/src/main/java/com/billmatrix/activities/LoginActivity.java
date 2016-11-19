@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         } else {
-            showToast("unable to login");
+            showToast("unable to log! Check for Internet connection");
         }
     }
 
@@ -222,6 +222,8 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(mContext, ControlPanelActivity.class);
                             startActivity(intent);
                             finish();
+                        } else {
+                            showToast("username/password is wrong");
                         }
                     }
                 }

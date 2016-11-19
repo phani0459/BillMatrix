@@ -10,9 +10,9 @@ import java.util.ArrayList;
 public class Customer implements Serializable {
     public int status;
     public String Customerdata;
-    public ArrayList<Customer.CustomerData> data;
+    public ArrayList<CustomerData> data;
 
-    public class CustomerData {
+    public class CustomerData implements Serializable{
         public String id;
         public String username;
         public String mobile_number;

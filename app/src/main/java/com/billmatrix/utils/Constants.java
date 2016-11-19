@@ -1,6 +1,7 @@
 package com.billmatrix.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -38,7 +39,9 @@ public class Constants {
 
     public static Gson getGson() {
         if (gson == null) {
-            gson = new Gson();
+            gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
         }
         return gson;
     }
@@ -60,5 +63,6 @@ public class Constants {
         return simpleDateFormat;
     }
 
-    public static Type hashMapType = new TypeToken<HashMap<String, String>>() {}.getType();
+    public static Type hashMapType = new TypeToken<HashMap<String, String>>() {
+    }.getType();
 }

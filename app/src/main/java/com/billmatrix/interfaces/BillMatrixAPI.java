@@ -1,5 +1,6 @@
 package com.billmatrix.interfaces;
 
+import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
 
@@ -33,11 +34,15 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("admin_employees")
-    Call<Employee> getAdminEmployees(@Field("admin_id ") String adminId);
+    Call<Employee> getAdminEmployees(@Field("admin_id") String adminId);
+
+    @FormUrlEncoded
+    @POST("admin_customers")
+    Call<Customer> getAdminCustomers(@Field("admin_id") String adminId);
 
     @FormUrlEncoded
     @POST("delete_employee")
-    Call<HashMap<String, String>> deleteEmployee(@Field("id ") String empId);
+    Call<HashMap<String, String>> deleteEmployee(@Field("id") String empId);
 
     @FormUrlEncoded
     @POST("create_employee")

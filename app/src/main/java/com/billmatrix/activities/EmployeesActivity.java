@@ -92,6 +92,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
     }
 
     public void getEmployeesFromServer(String loginId) {
+        Log.e(TAG, "getEmployeesFromServer: ");
         Call<Employee> call = Utils.getBillMatrixAPI(mContext).getAdminEmployees(loginId);
 
         call.enqueue(new Callback<Employee>() {
@@ -122,6 +123,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
              */
             @Override
             public void onFailure(Call<Employee> call, Throwable t) {
+                t.printStackTrace();
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });

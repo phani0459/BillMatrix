@@ -78,7 +78,10 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.Empl
         holder.loginIdTextView.setText(employee.email);
         holder.mobileTextView.setText(employee.mobile_number);
         holder.pwdTextView.setText(employee.password);
-        holder.statusTextView.setText(employee.status.equalsIgnoreCase("1") ? "ACTIVE" : employee.status);
+        holder.statusTextView.setText("IN-ACTIVE");
+        if (employee.status != null) {
+            holder.statusTextView.setText(employee.status.equalsIgnoreCase("1") ? "ACTIVE" : "IN-ACTIVE");
+        }
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.interfaces.BillMatrixAPI;
@@ -79,7 +78,7 @@ public class Utils {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BillMatrixAPI.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(Constants.getGson()))
                     .client(getOkHttpClient(mContext))
                     .build();
         }

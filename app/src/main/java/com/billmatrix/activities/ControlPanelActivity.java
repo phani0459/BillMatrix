@@ -8,12 +8,17 @@ import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.Employee;
+import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.Calendar;
@@ -21,10 +26,14 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class ControlPanelActivity extends AppCompatActivity {
 
+    private static final String TAG = ControlPanelActivity.class.getSimpleName();
     @BindView(R.id.copyrightTextView)
     public TextView copyrightTextView;
     private Context mContext;
@@ -61,6 +70,7 @@ public class ControlPanelActivity extends AppCompatActivity {
     public LinearLayout reportsLinearLayout;
     @BindView(R.id.ll_employees)
     public LinearLayout employeesLinearLayout;
+    private BillMatrixDaoImpl billMatrixDaoImpl;
 
 
     @Override
@@ -70,6 +80,7 @@ public class ControlPanelActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
+        billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
 
         copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
 
@@ -82,6 +93,81 @@ public class ControlPanelActivity extends AppCompatActivity {
         } else {
             disableOptions();
         }
+    }
+
+    public void getDataFromServer() {
+        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        getProfile(loginId);
+    }
+
+    public void getEmployeesFromServer(String loginId) {
+        Call<Employee> call = Utils.getBillMatrixAPI(mContext).getAdminEmployees(loginId);
+
+        call.enqueue(new Callback<Employee>() {
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<Employee> call, Response<Employee> response) {
+                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                if (response.body() != null) {
+                    Employee employee = response.body();
+                    if (employee.status == 200 && employee.employeedata.equalsIgnoreCase("success")) {
+                        for (Employee.EmployeeData employeeData : employee.data) {
+                            billMatrixDaoImpl.addEmployee(employeeData);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<Employee> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
+    public void getProfile(final String loginId) {
+        Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(loginId);
+
+        call.enqueue(new Callback<Profile>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<Profile> call, Response<Profile> response) {
+                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                if (response.body() != null) {
+                    Profile profile = response.body();
+                    if (profile.status == 200 && profile.userdata.equalsIgnoreCase("success")) {
+                        FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
+                        getEmployeesFromServer(loginId);
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<Profile> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     public void disableOptions() {

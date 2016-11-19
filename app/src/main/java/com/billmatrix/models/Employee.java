@@ -12,7 +12,7 @@ public class Employee implements Serializable {
     public String employeedata;
     public ArrayList<EmployeeData> data;
 
-    public class EmployeeData {
+    public class EmployeeData implements Serializable{
         public String id;
         public String username;
         public String email;

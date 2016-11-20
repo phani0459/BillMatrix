@@ -1,6 +1,7 @@
 package com.billmatrix.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by KANDAGATLAs on 28-10-2016.
@@ -8,8 +9,8 @@ import java.io.Serializable;
 
 public class Vendor implements Serializable {
     public int status;
-    public String vendordata;
-    public VendorData data;
+    public String Vendordata;
+    public ArrayList<VendorData> data;
 
     public class VendorData {
         public String id;

@@ -75,7 +75,7 @@
         android:weightSum="5">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tax_sno"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -1,6 +1,7 @@
 package com.billmatrix.activities;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.ColorFilter;
@@ -15,12 +16,15 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
+import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import butterknife.BindView;
@@ -71,6 +75,7 @@ public class ControlPanelActivity extends AppCompatActivity {
     @BindView(R.id.ll_employees)
     public LinearLayout employeesLinearLayout;
     private BillMatrixDaoImpl billMatrixDaoImpl;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -93,49 +98,136 @@ public class ControlPanelActivity extends AppCompatActivity {
         } else {
             disableOptions();
         }
+
+        /**
+         * Sequence ti fetch data from server
+         * Profile
+         * Employees
+         * Customers
+         * Vendors
+         */
+        getDataFromServer();
     }
 
     public void getDataFromServer() {
         String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
-        getProfile(loginId);
+        if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(loginId)) {
+                    progressDialog = Utils.getProgressDialog(mContext);
+                    progressDialog.show();
+                    getProfilefromServer(loginId);
+                }
+            } else {
+                Utils.showToast("Unable to fetch Data! Check for Internet connection.", mContext);
+            }
+        } else {
+            getEmployeesFromServer(loginId);
+        }
     }
 
-    public void getEmployeesFromServer(String loginId) {
-        Call<Employee> call = Utils.getBillMatrixAPI(mContext).getAdminEmployees(loginId);
+    public void getEmployeesFromServer(final String loginId) {
+        ArrayList<Employee.EmployeeData> employeesfromDB = billMatrixDaoImpl.getEmployees();
+        if (employeesfromDB != null && employeesfromDB.size() > 0) {
+            getCustomersFromServer(loginId);
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(loginId)) {
+                    Log.e(TAG, "getEmployeesFromServer: ");
+                    Call<Employee> call = Utils.getBillMatrixAPI(mContext).getAdminEmployees(loginId);
 
-        call.enqueue(new Callback<Employee>() {
+                    call.enqueue(new Callback<Employee>() {
 
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<Employee> call, Response<Employee> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
-                if (response.body() != null) {
-                    Employee employee = response.body();
-                    if (employee.status == 200 && employee.employeedata.equalsIgnoreCase("success")) {
-                        for (Employee.EmployeeData employeeData : employee.data) {
-                            billMatrixDaoImpl.addEmployee(employeeData);
+                        /**
+                         * Successful HTTP response.
+                         * @param call server call
+                         * @param response server response
+                         */
+                        @Override
+                        public void onResponse(Call<Employee> call, Response<Employee> response) {
+                            Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                            if (response.body() != null) {
+                                Employee employee = response.body();
+                                if (employee.status == 200 && employee.employeedata.equalsIgnoreCase("success")) {
+                                    for (Employee.EmployeeData employeeData : employee.data) {
+                                        billMatrixDaoImpl.addEmployee(employeeData);
+                                    }
+                                }
+                            }
+                            getCustomersFromServer(loginId);
                         }
-                    }
+
+                        /**
+                         *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                         * @param call server call
+                         * @param t error
+                         */
+                        @Override
+                        public void onFailure(Call<Employee> call, Throwable t) {
+                            Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
                 }
             }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<Employee> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
+        }
     }
 
-    public void getProfile(final String loginId) {
+    private void getCustomersFromServer(String adminId) {
+        ArrayList<Customer.CustomerData> customersfromDB = billMatrixDaoImpl.getCustomers();
+        if (customersfromDB != null && customersfromDB.size() > 0) {
+            getVendorsFromServer(adminId);
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(adminId)) {
+                    Log.e(TAG, "getCustomersFromServer: ");
+                    Call<Customer> call = Utils.getBillMatrixAPI(mContext).getAdminCustomers(adminId);
+
+                    call.enqueue(new Callback<Customer>() {
+
+                        /**
+                         * Successful HTTP response.
+                         * @param call server call
+                         * @param response server response
+                         */
+                        @Override
+                        public void onResponse(Call<Customer> call, Response<Customer> response) {
+                            Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                            if (response.body() != null) {
+                                Customer customer = response.body();
+                                if (customer.status == 200 && customer.Customerdata.equalsIgnoreCase("success")) {
+                                    for (Customer.CustomerData customerData : customer.data) {
+                                        billMatrixDaoImpl.addCustomer(customerData);
+                                    }
+                                }
+                            }
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+
+                        /**
+                         *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                         * @param call server call
+                         * @param t error
+                         */
+                        @Override
+                        public void onFailure(Call<Customer> call, Throwable t) {
+                            Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    public void getProfilefromServer(final String loginId) {
+        Log.e(TAG, "getProfilefromServer: ");
         Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(loginId);
 
         call.enqueue(new Callback<Profile>() {
@@ -166,8 +258,62 @@ public class ControlPanelActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Profile> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
             }
         });
+    }
+
+    private void getVendorsFromServer(String loginId) {
+        ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
+        if (vendors != null && vendors.size() > 0) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(loginId)) {
+                    Log.e(TAG, "getVendorsFromServer: ");
+                    Call<Vendor> call = Utils.getBillMatrixAPI(mContext).getAdminVendors(loginId);
+
+                    call.enqueue(new Callback<Vendor>() {
+
+                        /**
+                         * Successful HTTP response.
+                         * @param call server call
+                         * @param response server response
+                         */
+                        @Override
+                        public void onResponse(Call<Vendor> call, Response<Vendor> response) {
+                            Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                            if (response.body() != null) {
+                                Vendor vendor = response.body();
+                                if (vendor.status == 200 && vendor.Vendordata.equalsIgnoreCase("success")) {
+                                    for (Vendor.VendorData vendorData : vendor.data) {
+                                        billMatrixDaoImpl.addVendor(vendorData);
+                                    }
+                                }
+                            }
+                        }
+
+                        /**
+                         *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                         * @param call server call
+                         * @param t error
+                         */
+                        @Override
+                        public void onFailure(Call<Vendor> call, Throwable t) {
+                            t.printStackTrace();
+                            Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
+                }
+            }
+        }
     }
 
     public void disableOptions() {

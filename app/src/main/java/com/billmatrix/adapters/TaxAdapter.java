@@ -1,17 +1,17 @@
 package com.billmatrix.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.PayIns;
-import com.billmatrix.models.Vendor;
+import com.billmatrix.models.Tax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,23 +19,23 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.VendorHolder> {
+public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.VendorHolder> {
 
-    private List<PayIns.PayInData> payIns;
+    private List<Tax.TaxData> taxes;
     OnItemClickListener onItemClickListener;
 
     public class VendorHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.tv_item_payIns_sno)
-        TextView snoTextView;
-        @BindView(R.id.tv_item_payIns_custName)
-        TextView nameTextView;
-        @BindView(R.id.tv_item_payIns_amount)
-        TextView amountTextView;
-        @BindView(R.id.tv_item_payIns_date)
-        TextView dateTextView;
-        @BindView(R.id.im_item_payIn_edit)
+        @BindView(R.id.cb_item_tax_sno)
+        CheckBox snoCheckBox;
+        @BindView(R.id.tv_item_tax_type)
+        TextView taxTypeTextView;
+        @BindView(R.id.tv_item_tax_desc)
+        TextView taxDescTextView;
+        @BindView(R.id.tv_item_tax_rate)
+        TextView taxRateTextView;
+        @BindView(R.id.im_item_tax_edit)
         ImageView editImageView;
-        @BindView(R.id.im_item_payIn_del)
+        @BindView(R.id.im_item_tax_del)
         ImageView deleteImageView;
 
         public VendorHolder(View view) {
@@ -44,41 +44,41 @@ public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.VendorHold
         }
     }
 
-    public void deletePayIn(int position) {
-        payIns.remove(position);
+    public void deleteTax(int position) {
+        taxes.remove(position);
         notifyDataSetChanged();
     }
 
-    public void addPayIn(PayIns.PayInData payInData) {
-        payIns.add(payInData);
+    public void addTax(Tax.TaxData taxData) {
+        taxes.add(taxData);
         notifyDataSetChanged();
     }
 
-    public PayInsAdapter(List<PayIns.PayInData> payIns, OnItemClickListener onClickListener) {
-        this.payIns = payIns;
+    public TaxAdapter(List<Tax.TaxData> taxes, OnItemClickListener onClickListener) {
+        this.taxes = taxes;
         this.onItemClickListener = onClickListener;
     }
 
     public void removeAllPayInsData() {
-        payIns = new ArrayList<>();
+        taxes = new ArrayList<>();
         notifyDataSetChanged();
     }
 
     @Override
     public VendorHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.pay_in_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.tax_item, parent, false);
 
         return new VendorHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(VendorHolder holder, final int position) {
-        PayIns.PayInData payInData = payIns.get(position);
+        Tax.TaxData taxData = taxes.get(position);
 
-        holder.snoTextView.setText("" + (position + 1));
-        holder.nameTextView.setText(payInData.customername);
-        holder.dateTextView.setText(payInData.date);
-        holder.amountTextView.setText(payInData.amount.trim());
+        holder.snoCheckBox.setText("" + (position + 1));
+        holder.taxTypeTextView.setText(taxData.taxType);
+        holder.taxDescTextView.setText(taxData.taxDescription);
+        holder.taxRateTextView.setText(taxData.taxRate.trim());
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,13 +87,13 @@ public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.VendorHold
         });
     }
 
-    public PayIns.PayInData getItem(int position) {
-        return payIns.get(position);
+    public Tax.TaxData getItem(int position) {
+        return taxes.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return payIns.size();
+        return taxes.size();
     }
 
 

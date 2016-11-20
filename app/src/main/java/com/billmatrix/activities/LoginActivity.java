@@ -183,7 +183,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     public void login() {
-        final ProgressDialog progressDialog = Utils.showProgressDialog(mContext);
+        final ProgressDialog progressDialog = Utils.getProgressDialog(mContext);
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).login(userName, password, imeiNumber);
 
         call.enqueue(new Callback<HashMap<String, String>>() {

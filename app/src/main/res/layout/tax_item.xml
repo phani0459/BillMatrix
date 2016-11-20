@@ -13,12 +13,14 @@
         android:weightSum="5">
 
         <CheckBox
+            android:id="@+id/cb_item_tax_sno"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:gravity="center" />
 
         <TextView
+            android:id="@+id/tv_item_tax_type"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -26,9 +28,11 @@
             android:layout_weight="1.5"
             android:gravity="center"
             android:text="@string/tax_type"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
+            android:id="@+id/tv_item_tax_desc"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -36,9 +40,11 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/tax_desc"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView
+            android:id="@+id/tv_item_tax_rate"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -46,6 +52,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/tax_rate"
+            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
 

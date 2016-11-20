@@ -14,7 +14,9 @@ import com.billmatrix.R;
 import com.billmatrix.adapters.EmployeesAdapter;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Employee;
+import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -50,6 +52,8 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
     public Spinner empStatusSpinner;
     @BindView(R.id.et_emp_location)
     public EditText locationEditText;
+    @BindView(R.id.et_emp_storeAdmin)
+    public EditText storeAdminEditText;
 
     private EmployeesAdapter employeesAdapter;
     private String adminId;
@@ -70,6 +74,14 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         employeesRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
         List<Employee.EmployeeData> employees = new ArrayList<>();
+        try {
+            String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
+            Profile profilefromFile = Constants.getGson().fromJson(profileString, Profile.class);
+            storeAdminEditText.setText(profilefromFile.data.username.toUpperCase());
+        } catch (Exception e) {
+            e.printStackTrace();
+            storeAdminEditText.setText("ADMIN");
+        }
 
         employeesAdapter = new EmployeesAdapter(employees, mContext);
         employeesRecyclerView.setAdapter(employeesAdapter);

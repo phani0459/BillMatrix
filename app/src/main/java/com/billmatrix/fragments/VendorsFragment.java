@@ -21,6 +21,7 @@ import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.VendorsAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
+import com.billmatrix.models.Employee;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
@@ -31,6 +32,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -99,12 +103,50 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(loginId)) {
-//                    getEmployeesFromServer(loginId);
+                    getVendorsFromServer(loginId);
                 }
             }
         }
 
         return v;
+    }
+
+    private void getVendorsFromServer(String loginId) {
+        Log.e(TAG, "getVendorsFromServer: ");
+        Call<Vendor> call = Utils.getBillMatrixAPI(mContext).getAdminVendors(loginId);
+
+        call.enqueue(new Callback<Vendor>() {
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<Vendor> call, Response<Vendor> response) {
+                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                if (response.body() != null) {
+                    Vendor vendor = response.body();
+                    if (vendor.status == 200 && vendor.Vendordata.equalsIgnoreCase("success")) {
+                        for (Vendor.VendorData vendorData : vendor.data) {
+                            billMatrixDaoImpl.addVendor(vendorData);
+                            vendorsAdapter.addVendor(vendorData);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<Vendor> call, Throwable t) {
+                t.printStackTrace();
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     @OnClick(R.id.btn_addVendor)

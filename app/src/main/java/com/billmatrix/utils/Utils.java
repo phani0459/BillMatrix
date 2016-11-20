@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.interfaces.BillMatrixAPI;
@@ -116,11 +117,14 @@ public class Utils {
         }
     }
 
-    public static ProgressDialog showProgressDialog(Context mContext) {
+    public static  void showToast(String msg, Context mContext) {
+        Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
+    }
+
+    public static ProgressDialog getProgressDialog(Context mContext) {
         ProgressDialog progressDialog = new ProgressDialog(mContext);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Loading..");
-        progressDialog.show();
         return progressDialog;
     }
 

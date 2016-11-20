@@ -82,7 +82,10 @@ public class CustomersAdapter extends RecyclerView.Adapter<CustomersAdapter.Cust
         holder.contactTextView.setText(customerData.mobile_number);
         holder.dateTextView.setText(customerData.date != null ? customerData.date.trim() : "");
         holder.locationTextView.setText(customerData.location != null ? customerData.location.trim(): "");
-        holder.statusTextView.setText(customerData.status.equalsIgnoreCase("1") ? "ACTIVE" : "IN-ACTIVE");
+        holder.statusTextView.setText("IN-ACTIVE");
+        if (customerData.status != null) {
+            holder.statusTextView.setText(customerData.status.equalsIgnoreCase("1") ? "ACTIVE" : "IN-ACTIVE");
+        }
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

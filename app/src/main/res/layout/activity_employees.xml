@@ -35,7 +35,7 @@
                 android:textColor="@android:color/black" />
 
             <EditText
-                android:id="@+id/et_storeAdmin"
+                android:id="@+id/et_emp_storeAdmin"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,7 +43,6 @@
                 android:cursorVisible="true"
                 android:enabled="false"
                 android:singleLine="true"
-                android:text="PHANI KUMAR"
                 android:textAllCaps="true"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />

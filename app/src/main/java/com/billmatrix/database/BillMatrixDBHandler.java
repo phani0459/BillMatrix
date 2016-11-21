@@ -18,19 +18,25 @@ public class BillMatrixDBHandler extends DBHandler {
             + DBConstants.EMPLOYEES_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.EMPLOYEE_NAME + " VARCHAR,"
             + DBConstants.EMPLOYEE_LOGINID + " VARCHAR UNIQUE," + DBConstants.EMPLOYEE_PASSWORD + " VARCHAR,"
-            + DBConstants.EMPLOYEE_MOBILE + " VARCHAR," + DBConstants.STATUS + " VARCHAR" + ")";
+            + DBConstants.EMPLOYEE_MOBILE + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.IMEI + " VARCHAR,"
+            + DBConstants.TYPE + " VARCHAR," + DBConstants.LOCATION + " VARCHAR," + DBConstants.BRANCH + " VARCHAR,"
+            + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.ID + " VARCHAR" + ")";
 
     public final static String CREATE_VENDOR_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.VENDORS_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.VENDOR_NAME + " VARCHAR,"
             + DBConstants.VENDOR_ID + " VARCHAR," + DBConstants.VENDOR_SINCE + " VARCHAR,"
-            + DBConstants.VENDOR_ADDRESS + " VARCHAR," + DBConstants.PHONE + " VARCHAR UNIQUE," + DBConstants.EMAIL + " VARCHAR UNIQUE" + ")";
+            + DBConstants.VENDOR_ADDRESS + " VARCHAR," + DBConstants.PHONE + " VARCHAR UNIQUE,"
+            + DBConstants.EMAIL + " VARCHAR," + DBConstants.ID + " VARCHAR," + DBConstants.CREATE_DATE
+            + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.LOCATION + " VARCHAR,"
+            + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR" + ")";
 
     public final static String CREATE_CUSTOMER_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.CUSTOMERS_TABLE + " (" + DBConstants.SNO
-            + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.CUSTOMER_NAME + " VARCHAR,"
-            + DBConstants.CUSTOMER_CONTACT + " VARCHAR UNIQUE," + DBConstants.CUSTOMER_DATE + " VARCHAR,"
-            + DBConstants.CUSTOMER_LOCATION + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR" + ")";
+            + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.CUSTOMER_NAME + " VARCHAR," + DBConstants.ID + " VARCHAR," + DBConstants.EMAIL + " VARCHAR,"
+            + DBConstants.CUSTOMER_CONTACT + " VARCHAR UNIQUE," + DBConstants.CUSTOMER_DATE + " VARCHAR," + DBConstants.LOCATION + " VARCHAR,"
+            + DBConstants.CUSTOMER_LOCATION + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR,"
+            + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR" + ")";
 
 
     @Override

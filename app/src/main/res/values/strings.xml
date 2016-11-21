@@ -110,6 +110,14 @@
     <string name="no_of_barcodes">NO OF BARCODES</string>
     <string name="BAR_CODE_GENERATED">BARCODE GENERATED \n XXXXXXXX</string>
 
+    <string-array name="units_array">
+        <item>KG\'s</item>
+        <item>GM\'s</item>
+        <item>LTR\'s</item>
+        <item>ML\'s</item>
+        <item>PC\'s</item>
+        <item>NO\'s</item>
+    </string-array>
 
     <!-- VENDOR Strings-->
     <string name="inventory_search_hint">Enter Barcode / itemcode / item name / category</string>
@@ -131,6 +139,13 @@
     <string name="expense_name">EXPENSE NAME</string>
     <string name="purpose">PURPOSE</string>
 
+    <string-array name="mode_of_pay_array">
+        <item>CASH</item>
+        <item>CHEQUE</item>
+        <item>CARD</item>
+        <item>OTHER</item>
+    </string-array>
+
     <!-- Sales Strings-->
     <string name="from_date">FROM DATE</string>
     <string name="to_date">TO DATE</string>
@@ -150,6 +165,7 @@
         <item>Sale Profit</item>
         <item>Sale by Discount</item>
     </string-array>
+
     <!-- Tax Strings-->
     <string name="tax_type">TAX TYPE</string>
     <string name="tax_desc">TAX DESCRIPTION</string>
@@ -161,7 +177,7 @@
         <item>Excise Duty</item>
     </string-array>
 
-    <!-- Tax Strings-->
+    <!-- Discount Strings-->
     <string name="discount_desc">DISCOUNT DESCRIPTION</string>
     <string name="discount_code">DISCOUNT CODE</string>
     <string name="discount">DISCOUNT</string>

@@ -23,6 +23,8 @@ public class Employee implements Serializable {
         public String create_date;
         public String update_date;
         public String imei_number;
+        public String branch;
+        public String location;
         public String type;
     }
 }

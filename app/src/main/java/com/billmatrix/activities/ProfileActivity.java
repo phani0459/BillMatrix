@@ -35,6 +35,10 @@ public class ProfileActivity extends BaseTabActivity {
     public EditText adminNameEditText;
     @BindView(R.id.et_loginID)
     public EditText loginIdmEditText;
+    @BindView(R.id.et_location)
+    public EditText locationAdminEditText;
+    @BindView(R.id.et_branch)
+    public EditText branchAdminEditText;
 
 
     Profile profile;
@@ -86,6 +90,8 @@ public class ProfileActivity extends BaseTabActivity {
             mobNumEditText.setText(profile.data.email);
             loginIdmEditText.setText(profile.data.username);
             storeAdminEditText.setText(profile.data.username.toUpperCase());
+            locationAdminEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
+            branchAdminEditText.setText(profile.data.branch != null ? profile.data.branch.toUpperCase() : "");
         }
     }
 

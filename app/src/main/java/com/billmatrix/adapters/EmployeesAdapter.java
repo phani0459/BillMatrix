@@ -80,12 +80,18 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.Empl
         holder.pwdTextView.setText(employee.password);
         holder.statusTextView.setText("IN-ACTIVE");
         if (employee.status != null) {
-            holder.statusTextView.setText(employee.status.equalsIgnoreCase("1") ? "ACTIVE" : "IN-ACTIVE");
+            holder.statusTextView.setText((employee.status.equalsIgnoreCase("1") || employee.status.equalsIgnoreCase("ACTIVE"))? "ACTIVE" : "IN-ACTIVE");
         }
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((EmployeesActivity) mContext).onItemClick(1, position);
+            }
+        });
+        holder.editImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((EmployeesActivity) mContext).onItemClick(2, position);
             }
         });
     }

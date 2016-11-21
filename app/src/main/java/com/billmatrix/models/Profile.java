@@ -24,6 +24,8 @@ public class Profile implements Serializable {
         public String licence_key;
         public String imei_number;
         public String status;
+        public String branch;
+        public String location;
         public String create_data;
         public String update_date;
 

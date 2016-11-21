@@ -63,7 +63,7 @@ public class PayOutsFragment extends Fragment {
 
         }
         Utils.loadSpinner(vendorSpinner, mContext, strings);
-        Utils.loadSpinner(modePaymentSpinner, mContext, R.array.employee_status);
+        Utils.loadSpinner(modePaymentSpinner, mContext, R.array.mode_of_pay_array);
 
         dateEditText.setInputType(InputType.TYPE_NULL);
 

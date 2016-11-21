@@ -18,6 +18,8 @@ public class Vendor implements Serializable {
         public String since;
         public String address;
         public String phone;
+        public String admin_id;
+        public String status;
         public String email;
         public String create_date;
         public String update_date;

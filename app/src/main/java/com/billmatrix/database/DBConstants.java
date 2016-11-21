@@ -17,6 +17,13 @@ public class DBConstants {
     public final static String EMAIL = "email";
     public final static String STATUS = "Status";
     public final static String ADMIN_ID = "adminID";
+    public final static String ID = "_id";
+    public final static String IMEI = "imei";
+    public final static String CREATE_DATE = "create_Date";
+    public final static String UPDATE_DATE = "update_date";
+    public final static String BRANCH = "branch";
+    public final static String LOCATION = "location";
+    public final static String TYPE = "type";
 
     public final static String EMPLOYEES_TABLE = "TABLE_EMPLOYEES";
     public final static String VENDORS_TABLE = "TABLE_VENDORS";

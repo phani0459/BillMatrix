@@ -12,9 +12,10 @@ public class Customer implements Serializable {
     public String Customerdata;
     public ArrayList<CustomerData> data;
 
-    public class CustomerData implements Serializable{
+    public class CustomerData implements Serializable {
         public String id;
         public String username;
+        public String email;
         public String mobile_number;
         public String date;
         public String location;

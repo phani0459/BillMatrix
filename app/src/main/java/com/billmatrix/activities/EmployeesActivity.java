@@ -54,6 +54,8 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
     public EditText locationEditText;
     @BindView(R.id.et_emp_storeAdmin)
     public EditText storeAdminEditText;
+    @BindView(R.id.et_emp_branch)
+    public EditText branchAdminEditText;
 
     private EmployeesAdapter employeesAdapter;
     private String adminId;
@@ -78,6 +80,8 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
             Profile profilefromFile = Constants.getGson().fromJson(profileString, Profile.class);
             storeAdminEditText.setText(profilefromFile.data.username.toUpperCase());
+            locationEditText.setText(profilefromFile.data.location != null ? profilefromFile.data.location.toUpperCase() : "");
+            branchAdminEditText.setText(profilefromFile.data.branch != null ? profilefromFile.data.branch.toUpperCase() : "");
         } catch (Exception e) {
             e.printStackTrace();
             storeAdminEditText.setText("ADMIN");
@@ -181,7 +185,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                                 empMobile_EditText.setText("");
                                 empStatusSpinner.setSelection(0);
 
-                                addEmployeetoServer(employeeData);
+//                                addEmployeetoServer(employeeData);
                             } else {
                                 showToast("Employee Login Id must be unique");
                             }
@@ -259,6 +263,18 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 });
                 break;
             case 2:
+                Employee.EmployeeData selectedEmp = employeesAdapter.getItem(position);
+                empName_EditText.setText(selectedEmp.username);
+                empLoginId_EditText.setText(selectedEmp.email);
+                empPwd_EditText.setText(selectedEmp.password);
+                empMobile_EditText.setText(selectedEmp.mobile_number);
+                if (selectedEmp.status.equalsIgnoreCase("ACTIVE") || selectedEmp.status.equalsIgnoreCase("1")) {
+                    empStatusSpinner.setSelection(0);
+                } else {
+                    empStatusSpinner.setSelection(1);
+                }
+                billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).email);
+                employeesAdapter.deleteEmployee(position);
                 break;
             case 3:
                 break;

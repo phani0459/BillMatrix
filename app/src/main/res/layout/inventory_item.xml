@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
             android:gravity="center"
-            android:minWidth="48dp"
+            android:minWidth="104dp"
             android:text="@string/Unit"
             android:textColor="@android:color/black" />
 
@@ -118,7 +118,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
             android:gravity="center"
-            android:minWidth="120dp"
+            android:minWidth="156dp"
             android:text="@string/vendor"
             android:textColor="@android:color/black" />
 

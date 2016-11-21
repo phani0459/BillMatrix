@@ -142,6 +142,9 @@ public class LoginActivity extends AppCompatActivity {
                     ArrayList<Employee.EmployeeData> employees = billMatrixDaoImpl.getEmployees();
                     if (employees != null && employees.size() > 0) {
                         for (Employee.EmployeeData employeeData : employees) {
+                            Log.e(TAG + userName, "offlineLogin: " +  employeeData.email);
+                            Log.e(TAG + password, "offlineLogin: " +  employeeData.password);
+                            Log.e(TAG + imeiNumber, "offlineLogin: " +  employeeData.imei_number);
                             if (userName.equalsIgnoreCase(employeeData.email) && password.equalsIgnoreCase(employeeData.password) && imeiNumber.equalsIgnoreCase(employeeData.imei_number)) {
                                 isEmployee = true;
                                 loggedInEmployee = employeeData;
@@ -171,7 +174,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         } else {
-                            showToast("username/password is wrong");
+                            showToast("emp username/password is wrong");
                         }
                     }
                 }

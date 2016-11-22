@@ -84,12 +84,18 @@ public class CustomersAdapter extends RecyclerView.Adapter<CustomersAdapter.Cust
         holder.locationTextView.setText(customerData.location != null ? customerData.location.trim(): "");
         holder.statusTextView.setText("IN-ACTIVE");
         if (customerData.status != null) {
-            holder.statusTextView.setText(customerData.status.equalsIgnoreCase("1") ? "ACTIVE" : "IN-ACTIVE");
+            holder.statusTextView.setText((customerData.status.equalsIgnoreCase("1") || customerData.status.equalsIgnoreCase("ACTIVE"))? "ACTIVE" : "IN-ACTIVE");
         }
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onItemClickListener.onItemClick(1, position);
+            }
+        });
+        holder.editImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(2, position);
             }
         });
     }

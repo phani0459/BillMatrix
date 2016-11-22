@@ -154,13 +154,12 @@ public class LoginActivity extends AppCompatActivity {
                     ArrayList<Employee.EmployeeData> employees = billMatrixDaoImpl.getEmployees();
                     if (employees != null && employees.size() > 0) {
                         for (Employee.EmployeeData employeeData : employees) {
-                            Log.e(TAG + userName, "offlineLogin: " +  employeeData.email);
-                            Log.e(TAG + password, "offlineLogin: " +  employeeData.password);
-                            Log.e(TAG + imeiNumber, "offlineLogin: " +  employeeData.imei_number);
-                            if (userName.equalsIgnoreCase(employeeData.email) && password.equalsIgnoreCase(employeeData.password) && imeiNumber.equalsIgnoreCase(employeeData.imei_number)) {
-                                isEmployee = true;
-                                loggedInEmployee = employeeData;
-                                break;
+                            if (employeeData.status.equalsIgnoreCase("1") || employeeData.status.equalsIgnoreCase("ACTIVE")) {
+                                if (userName.equalsIgnoreCase(employeeData.email) && password.equalsIgnoreCase(employeeData.password) && imeiNumber.equalsIgnoreCase(employeeData.imei_number)) {
+                                    isEmployee = true;
+                                    loggedInEmployee = employeeData;
+                                    break;
+                                }
                             }
                         }
 
@@ -190,7 +189,10 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         } else {
-                            showToast("emp username/password is wrong");
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                            showToast("username/password is wrong");
                         }
                     }
                 }

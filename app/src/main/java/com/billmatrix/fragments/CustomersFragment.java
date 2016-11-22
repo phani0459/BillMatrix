@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -53,6 +54,8 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
     public EditText customerContactEditText;
     @BindView(R.id.customersList)
     public RecyclerView customersRecyclerView;
+    @BindView(R.id.btn_addCustomer)
+    public Button addCustomerBtn;
 
     BillMatrixDaoImpl billMatrixDaoImpl;
     private CustomersAdapter customersAdapter;
@@ -150,6 +153,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
 
     @OnClick(R.id.btn_addCustomer)
     public void addCustomer() {
+        addCustomerBtn.setText("ADD");
         Utils.hideSoftKeyboard(customerNameEditText);
 
         Customer.CustomerData customerData = new Customer().new CustomerData();
@@ -220,6 +224,19 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                 });
                 break;
             case 2:
+                addCustomerBtn.setText("SAVE");
+                Customer.CustomerData selectedCustomer = customersAdapter.getItem(position);
+                customerNameEditText.setText(selectedCustomer.username);
+                customerDate_EditText.setText(selectedCustomer.date);
+                customerLocationEditText.setText(selectedCustomer.location);
+                customerContactEditText.setText(selectedCustomer.mobile_number);
+                if (selectedCustomer.status.equalsIgnoreCase("ACTIVE") || selectedCustomer.status.equalsIgnoreCase("1")) {
+                    custStatusSpinner.setSelection(0);
+                } else {
+                    custStatusSpinner.setSelection(1);
+                }
+                billMatrixDaoImpl.deleteCustomer(customersAdapter.getItem(position).mobile_number);
+                customersAdapter.deleteCustomer(position);
                 break;
             case 3:
                 break;

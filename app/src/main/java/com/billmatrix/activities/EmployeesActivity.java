@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -56,6 +57,8 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
     public EditText storeAdminEditText;
     @BindView(R.id.et_emp_branch)
     public EditText branchAdminEditText;
+    @BindView(R.id.btn_addEmployee)
+    public Button addEmpButton;
 
     private EmployeesAdapter employeesAdapter;
     private String adminId;
@@ -147,7 +150,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
     @OnClick(R.id.btn_addEmployee)
     public void addEmployee() {
-
+        addEmpButton.setText("ADD");
         Utils.hideSoftKeyboard(empName_EditText);
 
         Employee.EmployeeData employeeData = new Employee().new EmployeeData();
@@ -263,6 +266,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 });
                 break;
             case 2:
+                addEmpButton.setText("SAVE");
                 Employee.EmployeeData selectedEmp = employeesAdapter.getItem(position);
                 empName_EditText.setText(selectedEmp.username);
                 empLoginId_EditText.setText(selectedEmp.email);

@@ -86,7 +86,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, vendorSince_EditText);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, vendorSince_EditText, true);
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -161,46 +161,42 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         String vendorSince = vendorSince_EditText.getText().toString();
 
         if (!TextUtils.isEmpty(vendorName)) {
-            if (!TextUtils.isEmpty(vendorEmail)) {
-                if (!TextUtils.isEmpty(vendorAdd)) {
-                    if (!TextUtils.isEmpty(vendorMob)) {
-                        if (!TextUtils.isEmpty(vendorSince)) {
-                            vendorData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                            vendorData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                            vendorData.email = vendorEmail;
-                            vendorData.name = vendorName;
-                            vendorData.address = vendorAdd;
-                            vendorData.phone = vendorMob;
-                            vendorData.since = vendorSince;
+            if (!TextUtils.isEmpty(vendorAdd)) {
+                if (!TextUtils.isEmpty(vendorMob)) {
+                    if (!TextUtils.isEmpty(vendorSince)) {
+                        vendorData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                        vendorData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                        vendorData.email = vendorEmail;
+                        vendorData.name = vendorName;
+                        vendorData.address = vendorAdd;
+                        vendorData.phone = vendorMob;
+                        vendorData.since = vendorSince;
 
-                            long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
+                        long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
 
-                            if (vendorAdded != -1) {
-                                vendorsAdapter.addVendor(vendorData);
-                                vendorsRecyclerView.smoothScrollToPosition(vendorsAdapter.getItemCount());
+                        if (vendorAdded != -1) {
+                            vendorsAdapter.addVendor(vendorData);
+                            vendorsRecyclerView.smoothScrollToPosition(vendorsAdapter.getItemCount());
 
-                                /**
-                                 * reset all edit texts
-                                 */
-                                vendorEmail_EditText.setText("");
-                                vendorSince_EditText.setText("");
-                                vendorPhone_EditText.setText("");
-                                vendorName_EditText.setText("");
-                                vendorAdd_EditText.setText("");
-                            } else {
-                                ((BaseTabActivity) mContext).showToast("Vendor Email / Phone must be unique");
-                            }
+                            /**
+                             * reset all edit texts
+                             */
+                            vendorEmail_EditText.setText("");
+                            vendorSince_EditText.setText("");
+                            vendorPhone_EditText.setText("");
+                            vendorName_EditText.setText("");
+                            vendorAdd_EditText.setText("");
                         } else {
-                            ((BaseTabActivity) mContext).showToast("Enter Vendor Since");
+                            ((BaseTabActivity) mContext).showToast("Vendor Phone must be unique");
                         }
                     } else {
-                        ((BaseTabActivity) mContext).showToast("Enter Vendor Mobile Number");
+                        ((BaseTabActivity) mContext).showToast("Enter Vendor Since");
                     }
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Enter Vendor Address");
+                    ((BaseTabActivity) mContext).showToast("Enter Vendor Mobile Number");
                 }
             } else {
-                ((BaseTabActivity) mContext).showToast("Enter Vendor Email");
+                ((BaseTabActivity) mContext).showToast("Enter Vendor Address");
             }
         } else {
             ((BaseTabActivity) mContext).showToast("Enter Vendor Name");

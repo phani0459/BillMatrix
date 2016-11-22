@@ -56,7 +56,7 @@ public class SalesFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, fromDate_EditText);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, fromDate_EditText, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -67,7 +67,7 @@ public class SalesFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, toDate_EditText);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, toDate_EditText, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();

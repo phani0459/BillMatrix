@@ -3,9 +3,11 @@ package com.billmatrix.activities;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -53,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.cb_rememberMe)
     public CheckBox rememberMeCheckBox;
     private BillMatrixDaoImpl billMatrixDaoImpl;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -101,6 +104,8 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        progressDialog = Utils.getProgressDialog(mContext);
+
         if (Utils.isInternetAvailable(mContext)) {
             login();
         } else {
@@ -110,6 +115,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void offlineLogin() {
         if (FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
+            if (progressDialog != null && !progressDialog.isShowing()) {
+                progressDialog.show();
+            }
             Log.e(TAG, "Profile is from file");
             String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
             Profile profile = Constants.getGson().fromJson(profileString, Profile.class);
@@ -130,6 +138,10 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, "").apply();
                         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
+                    }
+
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
                     }
 
                     Intent intent = new Intent(mContext, ControlPanelActivity.class);
@@ -170,6 +182,10 @@ public class LoginActivity extends AppCompatActivity {
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
                             }
 
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+
                             Intent intent = new Intent(mContext, ControlPanelActivity.class);
                             startActivity(intent);
                             finish();
@@ -180,13 +196,32 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         } else {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             showToast("unable to log! Check for Internet connection");
         }
     }
 
+    public void showAlertDialog(String title, String msg, DialogInterface.OnClickListener okayClickListner) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(title);
+        builder.setMessage(msg);
+        builder.setPositiveButton(getString(android.R.string.yes), okayClickListner);
+        builder.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 
     public void login() {
-        final ProgressDialog progressDialog = Utils.getProgressDialog(mContext);
+        if (progressDialog != null && !progressDialog.isShowing()) {
+            progressDialog.show();
+        }
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).login(userName, password, imeiNumber);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
@@ -198,7 +233,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
                 Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                progressDialog.dismiss();
                 if (response.body() != null) {
                     HashMap<String, String> loginMap = response.body();
                     if (loginMap.get("status").equalsIgnoreCase("200")) {
@@ -225,10 +259,21 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(mContext, ControlPanelActivity.class);
                             startActivity(intent);
                             finish();
+                        } else if (loginMap.containsKey("message") && loginMap.get("message").equalsIgnoreCase("incorrect IMEI")){
+                            showAlertDialog("Incorrect Licence Key", "contact BillMatrix admin to reset present Licence key.", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    showToast("Call BillMatrix Admin");
+                                }
+                            });
                         } else {
                             showToast("username/password is wrong");
                         }
                     }
+                }
+
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
                 }
             }
 
@@ -240,7 +285,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                progressDialog.dismiss();
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
                 showToast("unable to login");
             }
         });

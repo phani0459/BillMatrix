@@ -101,7 +101,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     Utils.hideSoftKeyboard(customerNameEditText);
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate_EditText);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate_EditText, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -173,9 +173,9 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                             customerData.status = customerStatus;
                             customerData.admin_id = adminId;
 
-                            long vendorAdded = billMatrixDaoImpl.addCustomer(customerData);
+                            long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
 
-                            if (vendorAdded != -1) {
+                            if (customerAdded != -1) {
                                 customersAdapter.addCustomer(customerData);
                                 customersRecyclerView.smoothScrollToPosition(customersAdapter.getItemCount());
 

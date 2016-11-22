@@ -186,7 +186,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DBConstants.CUSTOMER_NAME, customerData.username);
         contentValues.put(DBConstants.CUSTOMER_CONTACT, customerData.mobile_number);
         contentValues.put(DBConstants.CUSTOMER_DATE, customerData.date);
-        contentValues.put(DBConstants.CUSTOMER_LOCATION, customerData.location);
+        contentValues.put(DBConstants.LOCATION, customerData.location);
         contentValues.put(DBConstants.STATUS, customerData.status);
         contentValues.put(DBConstants.ADMIN_ID, customerData.admin_id);
         contentValues.put(DBConstants.EMAIL, customerData.email);
@@ -219,19 +219,18 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     customerData.date = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.CUSTOMER_DATE)));
                     customerData.location = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.CUSTOMER_LOCATION)));
+                            .getColumnIndexOrThrow(DBConstants.LOCATION)));
                     customerData.status = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.STATUS)));
                     customerData.admin_id = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ADMIN_ID)));
                     customerData.email = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.EMPLOYEE_MOBILE)));
+                            .getColumnIndexOrThrow(DBConstants.EMAIL)));
                     customerData.create_date = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.CREATE_DATE)));
                     customerData.update_date = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.UPDATE_DATE)));
                     customers.add(customerData);
-
                 } while (cursor.moveToNext());
 
                 return (ArrayList<Customer.CustomerData>) customers;

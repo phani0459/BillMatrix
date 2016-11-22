@@ -175,7 +175,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         }
     }
 
-    private void getCustomersFromServer(String adminId) {
+    private void getCustomersFromServer(final String adminId) {
         ArrayList<Customer.CustomerData> customersfromDB = billMatrixDaoImpl.getCustomers();
         if (customersfromDB != null && customersfromDB.size() > 0) {
             getVendorsFromServer(adminId);
@@ -203,9 +203,8 @@ public class ControlPanelActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                            if (progressDialog != null && progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
+
+                            getVendorsFromServer(adminId);
                         }
 
                         /**
@@ -294,6 +293,10 @@ public class ControlPanelActivity extends AppCompatActivity {
                                         billMatrixDaoImpl.addVendor(vendorData);
                                     }
                                 }
+                            }
+
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
                             }
                         }
 

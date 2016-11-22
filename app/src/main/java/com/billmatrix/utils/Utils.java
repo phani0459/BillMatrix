@@ -47,7 +47,7 @@ public class Utils {
         return billMatrixAPI;
     }
 
-    public static DatePickerDialog dateDialog(Context mContext, final EditText fromEditText) {
+    public static DatePickerDialog dateDialog(Context mContext, final EditText fromEditText, boolean onlyPastDates) {
         hideSoftKeyboard(fromEditText);
         Calendar newCalendar = Calendar.getInstance();
         DatePickerDialog fromDatePickerDialog = new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
@@ -59,6 +59,10 @@ public class Utils {
             }
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+        if (onlyPastDates) {
+            fromDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        }
 
         return fromDatePickerDialog;
     }

@@ -35,7 +35,7 @@ public class BillMatrixDBHandler extends DBHandler {
             + DBConstants.CUSTOMERS_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.CUSTOMER_NAME + " VARCHAR," + DBConstants.ID + " VARCHAR," + DBConstants.EMAIL + " VARCHAR,"
             + DBConstants.CUSTOMER_CONTACT + " VARCHAR UNIQUE," + DBConstants.CUSTOMER_DATE + " VARCHAR," + DBConstants.LOCATION + " VARCHAR,"
-            + DBConstants.CUSTOMER_LOCATION + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR,"
+            + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR,"
             + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR" + ")";
 
 

@@ -48,7 +48,7 @@ public class GenExpensesFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();

@@ -83,10 +83,10 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
         holder.snoTextView.setText("" + (position + 1));
         holder.nameTextView.setText(vendorData.name);
         holder.vendorIdTextView.setText(TextUtils.isEmpty(vendorData.id) ? "V" + (position + 1) : "V" + vendorData.id);
-        holder.mobileTextView.setText(vendorData.phone.trim());
-        holder.addTextView.setText(vendorData.address.trim());
+        holder.mobileTextView.setText(!TextUtils.isEmpty(vendorData.phone) ? vendorData.phone.trim() : "-");
+        holder.addTextView.setText(!TextUtils.isEmpty(vendorData.address) ? vendorData.address.trim() : "-");
         holder.sinceTextView.setText(vendorData.since);
-        holder.emailTextView.setText(vendorData.email);
+        holder.emailTextView.setText(!TextUtils.isEmpty(vendorData.email) ? vendorData.email : "--");
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

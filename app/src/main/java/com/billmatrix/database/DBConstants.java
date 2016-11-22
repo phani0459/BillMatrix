@@ -50,7 +50,6 @@ public class DBConstants {
     public final static String CUSTOMER_NAME = "Customer_Name";
     public final static String CUSTOMER_CONTACT = "customer_contact";
     public final static String CUSTOMER_DATE = "customer_date";
-    public final static String CUSTOMER_LOCATION = "vendor_ADD";
 
 
     public static final String TAG = "BillMatrix_DataBase";

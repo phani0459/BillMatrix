@@ -82,7 +82,7 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
 
         holder.snoTextView.setText("" + (position + 1));
         holder.nameTextView.setText(vendorData.name);
-        holder.vendorIdTextView.setText(TextUtils.isEmpty(vendorData.id) ? "V" + (position + 1) : "V" + vendorData.id);
+        holder.vendorIdTextView.setText("V" + (position + 1));
         holder.mobileTextView.setText(!TextUtils.isEmpty(vendorData.phone) ? vendorData.phone.trim() : "-");
         holder.addTextView.setText(!TextUtils.isEmpty(vendorData.address) ? vendorData.address.trim() : "-");
         holder.sinceTextView.setText(vendorData.since);
@@ -91,6 +91,13 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
             @Override
             public void onClick(View v) {
                 onItemClickListener.onItemClick(1, position);
+            }
+        });
+
+        holder.editImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(2, position);
             }
         });
     }

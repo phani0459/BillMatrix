@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.billmatrix.R;
@@ -27,6 +28,7 @@ import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -58,8 +60,12 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
     @BindView(R.id.vendorsList)
     public RecyclerView vendorsRecyclerView;
     private VendorsAdapter vendorsAdapter;
+    @BindView(R.id.btn_addVendor)
+    public Button addVendorButton;
 
     BillMatrixDaoImpl billMatrixDaoImpl;
+    private Vendor.VendorData selectedVendortoEdit;
+    private String adminId;
 
     public VendorsFragment() {
         // Required empty public constructor
@@ -82,6 +88,8 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         vendorsRecyclerView.setAdapter(vendorsAdapter);
         vendorSince_EditText.setInputType(InputType.TYPE_NULL);
 
+        vendorPhone_EditText.setFilters(Utils.getInputFilter(10));
+
         vendorSince_EditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -94,16 +102,18 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         });
 
         vendors = billMatrixDaoImpl.getVendors();
-        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         if (vendors != null && vendors.size() > 0) {
             for (Vendor.VendorData vendorData : vendors) {
-                vendorsAdapter.addVendor(vendorData);
+                if (!vendorData.status.equalsIgnoreCase("-1")) {
+                    vendorsAdapter.addVendor(vendorData);
+                }
             }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
-                if (!TextUtils.isEmpty(loginId)) {
-                    getVendorsFromServer(loginId);
+                if (!TextUtils.isEmpty(adminId)) {
+                    getVendorsFromServer(adminId);
                 }
             }
         }
@@ -160,47 +170,166 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         String vendorMob = vendorPhone_EditText.getText().toString();
         String vendorSince = vendorSince_EditText.getText().toString();
 
-        if (!TextUtils.isEmpty(vendorName)) {
-            if (!TextUtils.isEmpty(vendorAdd)) {
-                if (!TextUtils.isEmpty(vendorMob)) {
-                    if (!TextUtils.isEmpty(vendorSince)) {
-                        vendorData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                        vendorData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                        vendorData.email = vendorEmail;
-                        vendorData.name = vendorName;
-                        vendorData.address = vendorAdd;
-                        vendorData.phone = vendorMob;
-                        vendorData.since = vendorSince;
+        if (TextUtils.isEmpty(vendorName)) {
+            ((BaseTabActivity) mContext).showToast("Enter Vendor Name");
+            return;
+        }
 
-                        long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
+        if (TextUtils.isEmpty(vendorAdd)) {
+            ((BaseTabActivity) mContext).showToast("Enter Vendor Address");
+            return;
+        }
 
-                        if (vendorAdded != -1) {
-                            vendorsAdapter.addVendor(vendorData);
-                            vendorsRecyclerView.smoothScrollToPosition(vendorsAdapter.getItemCount());
+        if (TextUtils.isEmpty(vendorMob)) {
+            ((BaseTabActivity) mContext).showToast("Enter Vendor Mobile Number");
+            return;
+        }
 
-                            /**
-                             * reset all edit texts
-                             */
-                            vendorEmail_EditText.setText("");
-                            vendorSince_EditText.setText("");
-                            vendorPhone_EditText.setText("");
-                            vendorName_EditText.setText("");
-                            vendorAdd_EditText.setText("");
-                        } else {
-                            ((BaseTabActivity) mContext).showToast("Vendor Phone must be unique");
-                        }
-                    } else {
-                        ((BaseTabActivity) mContext).showToast("Enter Vendor Since");
-                    }
+        if (!Utils.isPhoneValid(vendorMob)) {
+            ((BaseTabActivity) mContext).showToast("Enter Valid Vendor Mobile Number");
+            return;
+        }
+
+        if (TextUtils.isEmpty(vendorSince)) {
+            ((BaseTabActivity) mContext).showToast("Enter Vendor Since");
+            return;
+        }
+
+        if (!TextUtils.isEmpty(vendorEmail) && !Utils.isEmailValid(vendorEmail)) {
+            ((BaseTabActivity) mContext).showToast("Enter Valid Vendor Email");
+            return;
+        }
+
+        if (addVendorButton.getText().toString().equalsIgnoreCase("ADD")) {
+            vendorData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        } else {
+            if (selectedVendortoEdit != null) {
+                vendorData.id = selectedVendortoEdit.id;
+                vendorData.create_date = selectedVendortoEdit.create_date;
+            }
+        }
+
+        vendorData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        vendorData.email = vendorEmail;
+        vendorData.name = vendorName;
+        vendorData.address = vendorAdd;
+        vendorData.phone = vendorMob;
+        vendorData.since = vendorSince;
+        vendorData.admin_id = adminId;
+        vendorData.status = "1";
+
+        long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
+
+        if (vendorAdded != -1) {
+            vendorsAdapter.addVendor(vendorData);
+            vendorsRecyclerView.smoothScrollToPosition(vendorsAdapter.getItemCount());
+
+            /**
+             * reset all edit texts
+             */
+            vendorEmail_EditText.setText("");
+            vendorSince_EditText.setText("");
+            vendorPhone_EditText.setText("");
+            vendorName_EditText.setText("");
+            vendorAdd_EditText.setText("");
+
+            if (addVendorButton.getText().toString().equalsIgnoreCase("ADD")) {
+                if (Utils.isInternetAvailable(mContext)) {
+                    addVendortoServer(vendorData);
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Enter Vendor Mobile Number");
+                    ((BaseTabActivity) mContext).showToast("Vendor Added successfully");
                 }
             } else {
-                ((BaseTabActivity) mContext).showToast("Enter Vendor Address");
+                if (selectedVendortoEdit != null) {
+                    if (Utils.isInternetAvailable(mContext)) {
+                        updateVendortoServer(vendorData);
+                    } else {
+                        ((BaseTabActivity) mContext).showToast("Vendor Updated successfully");
+                    }
+                }
             }
+
         } else {
-            ((BaseTabActivity) mContext).showToast("Enter Vendor Name");
+            ((BaseTabActivity) mContext).showToast("Vendor Phone must be unique");
         }
+
+        addVendorButton.setText("ADD");
+    }
+
+    private void addVendortoServer(Vendor.VendorData vendorData) {
+        Log.e(TAG, "addVendortoServer: " + vendorData.toString());
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addVendor(vendorData.name, vendorData.email, vendorData.phone,
+                vendorData.since, vendorData.address, vendorData.status, adminId);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> vendorMap = response.body();
+                    if (vendorMap.get("status").equalsIgnoreCase("200")) {
+                        if (vendorMap.get("create_vendor").equalsIgnoreCase("success")) {
+                            ((BaseTabActivity) mContext).showToast("Vendor Added successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
+    private void updateVendortoServer(Vendor.VendorData vendorData) {
+        Log.e(TAG, "updateVendortoServer: ");
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateVendor(vendorData.id, vendorData.email, vendorData.phone,
+                vendorData.since, vendorData.status, vendorData.address, vendorData.name);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> vendorMap = response.body();
+                    if (vendorMap.get("status").equalsIgnoreCase("200")) {
+                        if (vendorMap.containsKey("update_vendor") && vendorMap.get("update_vendor").equalsIgnoreCase("Successfully Updated")) {
+                            ((BaseTabActivity) mContext).showToast("Vendor Updated successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     public void searchClicked(String query) {
@@ -242,12 +371,21 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Vendor", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.deleteVendor(vendorsAdapter.getItem(position).phone);
+                        billMatrixDaoImpl.updateVendor("-1", vendorsAdapter.getItem(position).phone);
                         vendorsAdapter.deleteVendor(position);
                     }
                 });
                 break;
             case 2:
+                addVendorButton.setText("SAVE");
+                selectedVendortoEdit = vendorsAdapter.getItem(position);
+                vendorName_EditText.setText(selectedVendortoEdit.name);
+                vendorSince_EditText.setText(selectedVendortoEdit.since);
+                vendorAdd_EditText.setText(selectedVendortoEdit.address);
+                vendorPhone_EditText.setText(selectedVendortoEdit.phone);
+                vendorEmail_EditText.setText(selectedVendortoEdit.email);
+                billMatrixDaoImpl.deleteVendor(vendorsAdapter.getItem(position).phone);
+                vendorsAdapter.deleteVendor(position);
                 break;
             case 3:
                 break;

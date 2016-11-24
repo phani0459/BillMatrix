@@ -204,6 +204,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             employeeData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
         } else {
             if (selectedEmptoEdit != null) {
+                employeeData.id = selectedEmptoEdit.id;
                 employeeData.create_date = selectedEmptoEdit.create_date;
             }
         }
@@ -243,7 +244,6 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             } else {
                 if (selectedEmptoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        employeeData.id = selectedEmptoEdit.id;
                         updateEmployeetoServer(employeeData);
                     } else {
                         showToast("Employee Updated successfully");

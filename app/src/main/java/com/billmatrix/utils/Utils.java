@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -76,9 +77,15 @@ public class Utils {
 
     public static boolean isPhoneValid(String phoneNumber) {
         if (!TextUtils.isEmpty(phoneNumber)) {
-            return phoneNumber.length() >= 10;
+            if (phoneNumber.matches("[0-9]+")) {
+                return phoneNumber.length() >= 10;
+            }
         }
         return false;
+    }
+
+    public static boolean isEmailValid(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     public static void loadSpinner(Spinner spinner, Context mContext, int spinnerArray) {

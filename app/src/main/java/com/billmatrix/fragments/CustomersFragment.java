@@ -24,10 +24,12 @@ import com.billmatrix.adapters.CustomersAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
+import com.billmatrix.models.Employee;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -60,6 +62,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
     BillMatrixDaoImpl billMatrixDaoImpl;
     private CustomersAdapter customersAdapter;
     private String adminId;
+    private Customer.CustomerData selectedCusttoEdit;
 
     public CustomersFragment() {
         // Required empty public constructor
@@ -79,6 +82,8 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         List<Customer.CustomerData> customers = new ArrayList<>();
 
+        customerContactEditText.setFilters(Utils.getInputFilter(10));
+
         customersRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         customersAdapter = new CustomersAdapter(customers, this);
         customersRecyclerView.setAdapter(customersAdapter);
@@ -88,7 +93,9 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
 
         if (customers != null && customers.size() > 0) {
             for (Customer.CustomerData customerData : customers) {
-                customersAdapter.addCustomer(customerData);
+                if (!customerData.status.equalsIgnoreCase("-1")) {
+                    customersAdapter.addCustomer(customerData);
+                }
             }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
@@ -153,7 +160,6 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
 
     @OnClick(R.id.btn_addCustomer)
     public void addCustomer() {
-        addCustomerBtn.setText("ADD");
         Utils.hideSoftKeyboard(customerNameEditText);
 
         Customer.CustomerData customerData = new Customer().new CustomerData();
@@ -163,52 +169,165 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         String customerLocation = customerLocationEditText.getText().toString();
         String customerStatus = custStatusSpinner.getSelectedItem().toString();
 
-        if (!TextUtils.isEmpty(customerName)) {
-            if (!TextUtils.isEmpty(customerContact)) {
-                if (!TextUtils.isEmpty(customerDate)) {
-                    if (!TextUtils.isEmpty(customerLocation)) {
-                        if (!TextUtils.isEmpty(customerStatus)) {
-                            customerData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                            customerData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                            customerData.username = customerName;
-                            customerData.mobile_number = customerContact;
-                            customerData.date = customerDate;
-                            customerData.location = customerLocation;
-                            customerData.status = customerStatus;
-                            customerData.admin_id = adminId;
+        if (TextUtils.isEmpty(customerName)) {
+            ((BaseTabActivity) mContext).showToast("Enter Customer Name");
+            return;
+        }
 
-                            long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
+        if (TextUtils.isEmpty(customerContact)) {
+            ((BaseTabActivity) mContext).showToast("Enter Customer Mobile Number");
+            return;
+        }
 
-                            if (customerAdded != -1) {
-                                customersAdapter.addCustomer(customerData);
-                                customersRecyclerView.smoothScrollToPosition(customersAdapter.getItemCount());
+        if (!Utils.isPhoneValid(customerContact)) {
+            ((BaseTabActivity) mContext).showToast("Enter Valid Customer Mobile Number");
+            return;
+        }
 
-                                /**
-                                 * reset all edit texts
-                                 */
-                                customerNameEditText.setText("");
-                                customerContactEditText.setText("");
-                                customerDate_EditText.setText("");
-                                customerLocationEditText.setText("");
-                                custStatusSpinner.setSelection(0);
-                            } else {
-                                ((BaseTabActivity) mContext).showToast("Customer Mobile Number must be unique");
-                            }
-                        } else {
-                            ((BaseTabActivity) mContext).showToast("Select Customer Status");
-                        }
-                    } else {
-                        ((BaseTabActivity) mContext).showToast("Enter Customer Location");
-                    }
+        if (TextUtils.isEmpty(customerDate)) {
+            ((BaseTabActivity) mContext).showToast("Select Customer Date");
+            return;
+        }
+
+        if (TextUtils.isEmpty(customerLocation)) {
+            ((BaseTabActivity) mContext).showToast("Enter Customer Location");
+            return;
+        }
+
+        if (TextUtils.isEmpty(customerStatus)) {
+            ((BaseTabActivity) mContext).showToast("Select Customer Status");
+            return;
+        }
+
+        if (addCustomerBtn.getText().toString().equalsIgnoreCase("ADD")) {
+            customerData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        } else {
+            if (selectedCusttoEdit != null) {
+                customerData.id = selectedCusttoEdit.id;
+                customerData.create_date = selectedCusttoEdit.create_date;
+            }
+        }
+
+        customerData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        customerData.username = customerName;
+        customerData.mobile_number = customerContact;
+        customerData.date = customerDate;
+        customerData.location = customerLocation;
+        customerData.status = customerStatus.equalsIgnoreCase("ACTIVE") ? "1" : "0";
+        customerData.admin_id = adminId;
+
+        long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
+
+        if (customerAdded != -1) {
+            customersAdapter.addCustomer(customerData);
+            customersRecyclerView.smoothScrollToPosition(customersAdapter.getItemCount());
+
+            /**
+             * reset all edit texts
+             */
+            customerNameEditText.setText("");
+            customerContactEditText.setText("");
+            customerDate_EditText.setText("");
+            customerLocationEditText.setText("");
+            custStatusSpinner.setSelection(0);
+
+            if (addCustomerBtn.getText().toString().equalsIgnoreCase("ADD")) {
+                if (Utils.isInternetAvailable(mContext)) {
+                    addCustomertoServer(customerData);
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Select Customer Date");
+                    ((BaseTabActivity) mContext).showToast("Customer Added successfully");
                 }
             } else {
-                ((BaseTabActivity) mContext).showToast("Enter Customer Mobile Number");
+                if (selectedCusttoEdit != null) {
+                    if (Utils.isInternetAvailable(mContext)) {
+                        updateCustomertoServer(customerData);
+                    } else {
+                        ((BaseTabActivity) mContext).showToast("Customer Updated successfully");
+                    }
+                }
             }
+
         } else {
-            ((BaseTabActivity) mContext).showToast("Enter Customer Name");
+            ((BaseTabActivity) mContext).showToast("Customer Mobile Number must be unique");
         }
+
+        addCustomerBtn.setText("ADD");
+    }
+
+    private void updateCustomertoServer(Customer.CustomerData customerData) {
+        Log.e(TAG, "updateCustomertoServer: ");
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateCustomer(customerData.id, customerData.username, customerData.mobile_number,
+                customerData.location, customerData.status, customerData.date);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> customerMap = response.body();
+                    if (customerMap.get("status").equalsIgnoreCase("200")) {
+                        if (customerMap.containsKey("update_customer") && customerMap.get("update_customer").equalsIgnoreCase("Successfully Updated")) {
+                            ((BaseTabActivity) mContext).showToast("Customer Updated successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
+    private void addCustomertoServer(Customer.CustomerData customerData) {
+        Log.e(TAG, "addCustomertoServer: ");
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addCustomer(customerData.username, customerData.mobile_number, customerData.location,
+                customerData.status, customerData.date, adminId);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> customerStatus = response.body();
+                    if (customerStatus.get("status").equalsIgnoreCase("200")) {
+                        if (customerStatus.get("create_customer").equalsIgnoreCase("success")) {
+                            ((BaseTabActivity) mContext).showToast("Customer Added successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -218,19 +337,19 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Customer", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.deleteCustomer(customersAdapter.getItem(position).mobile_number);
+                        billMatrixDaoImpl.updateCustomer("-1", customersAdapter.getItem(position).mobile_number);
                         customersAdapter.deleteCustomer(position);
                     }
                 });
                 break;
             case 2:
                 addCustomerBtn.setText("SAVE");
-                Customer.CustomerData selectedCustomer = customersAdapter.getItem(position);
-                customerNameEditText.setText(selectedCustomer.username);
-                customerDate_EditText.setText(selectedCustomer.date);
-                customerLocationEditText.setText(selectedCustomer.location);
-                customerContactEditText.setText(selectedCustomer.mobile_number);
-                if (selectedCustomer.status.equalsIgnoreCase("ACTIVE") || selectedCustomer.status.equalsIgnoreCase("1")) {
+                selectedCusttoEdit = customersAdapter.getItem(position);
+                customerNameEditText.setText(selectedCusttoEdit.username);
+                customerDate_EditText.setText(selectedCusttoEdit.date);
+                customerLocationEditText.setText(selectedCusttoEdit.location);
+                customerContactEditText.setText(selectedCusttoEdit.mobile_number);
+                if (selectedCusttoEdit.status.equalsIgnoreCase("ACTIVE") || selectedCusttoEdit.status.equalsIgnoreCase("1")) {
                     custStatusSpinner.setSelection(0);
                 } else {
                     custStatusSpinner.setSelection(1);

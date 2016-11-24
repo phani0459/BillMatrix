@@ -59,6 +59,18 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.ID + "='" + empId + "'", null) > 0;
     }
 
+    public boolean updateCustomer(String status, String customerMobile) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.STATUS, status);
+        return db.update(DBConstants.CUSTOMERS_TABLE, contentValues, DBConstants.CUSTOMER_CONTACT + "='" + customerMobile + "'", null) > 0;
+    }
+
+    public boolean updateVendor(String status, String vendorPhone) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.STATUS, status);
+        return db.update(DBConstants.VENDORS_TABLE, contentValues, DBConstants.PHONE + "='" + vendorPhone + "'", null) > 0;
+    }
+
     public ArrayList<Employee.EmployeeData> getEmployees() {
         Cursor cursor = null;
         try {
@@ -195,7 +207,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DBConstants.LOCATION, customerData.location);
         contentValues.put(DBConstants.STATUS, customerData.status);
         contentValues.put(DBConstants.ADMIN_ID, customerData.admin_id);
-        contentValues.put(DBConstants.EMAIL, customerData.email);
         contentValues.put(DBConstants.CREATE_DATE, customerData.create_date);
         contentValues.put(DBConstants.UPDATE_DATE, customerData.update_date);
         return db.insert(DBConstants.CUSTOMERS_TABLE, null, contentValues);
@@ -230,8 +241,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(DBConstants.STATUS)));
                     customerData.admin_id = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ADMIN_ID)));
-                    customerData.email = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.EMAIL)));
                     customerData.create_date = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.CREATE_DATE)));
                     customerData.update_date = (cursor.getString(cursor

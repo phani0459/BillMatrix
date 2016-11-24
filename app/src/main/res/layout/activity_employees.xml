@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.6"
+            android:layout_weight="1.8"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -51,7 +51,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.2"
+            android:layout_weight="1.1"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -84,7 +84,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.2"
+            android:layout_weight="1.1"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -117,6 +117,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             android:src="@drawable/edit_icon" />
     </LinearLayout>
 

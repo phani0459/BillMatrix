@@ -2,8 +2,10 @@ package com.billmatrix.activities;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -13,6 +15,8 @@ import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
+
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -67,6 +71,12 @@ public class ProfileActivity extends BaseTabActivity {
             loadProfile();
         }
 
+        loginIdmEditText.setFilters(Utils.getInputFilter(12));
+        passwordEditText.setFilters(Utils.getInputFilter(12));
+        mobNumEditText.setFilters(Utils.getInputFilter(10));
+        branchAdminEditText.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        locationAdminEditText.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+
         adminNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -83,12 +93,20 @@ public class ProfileActivity extends BaseTabActivity {
         });
     }
 
+    @OnClick(R.id.im_edit_storeDetails)
+    public void editStoreDetails(){
+        locationAdminEditText.setEnabled(true);
+        branchAdminEditText.setEnabled(true);
+        locationAdminEditText.setBackgroundResource(R.drawable.edit_text_border);
+        branchAdminEditText.setBackgroundResource(R.drawable.edit_text_border);
+    }
+
     public void loadProfile() {
         if (profile != null) {
             passwordEditText.setText(profile.data.password);
             adminNameEditText.setText(profile.data.username);
-            mobNumEditText.setText(profile.data.email);
-            loginIdmEditText.setText(profile.data.username);
+            mobNumEditText.setText(profile.data.mobile_number);
+            loginIdmEditText.setText(profile.data.login_id);
             storeAdminEditText.setText(profile.data.username.toUpperCase());
             locationAdminEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
             branchAdminEditText.setText(profile.data.branch != null ? profile.data.branch.toUpperCase() : "");
@@ -135,12 +153,141 @@ public class ProfileActivity extends BaseTabActivity {
     public void enablePassword() {
         passwordEditText.setEnabled(true);
         passwordEditText.setBackgroundResource(R.drawable.edit_text_border);
+        passwordEditText.setTransformationMethod(null);
     }
 
     @OnClick(R.id.btn_saveProfile)
     public void saveProfile() {
+        passwordEditText.setTransformationMethod(new PasswordTransformationMethod());
+        String adminName = adminNameEditText.getText().toString();
+
+        if (TextUtils.isEmpty(adminName)) {
+            showToast("Enter Administrator");
+            return;
+        }
+
+        String loginId = loginIdmEditText.getText().toString();
+
+        if (TextUtils.isEmpty(loginId)) {
+            showToast("Enter Login Id");
+            return;
+        }
+
+        if (loginId.length() < 6) {
+            showToast("Login Id must be more than 6 characters");
+            return;
+        }
+
+        String password = passwordEditText.getText().toString();
+
+        if (TextUtils.isEmpty(password)) {
+            showToast("Enter Password");
+            return;
+        }
+
+        if (password.length() < 6) {
+            showToast("password must be more than 6 characters");
+            return;
+        }
+
         passwordEditText.setEnabled(false);
         passwordEditText.setBackgroundResource(R.drawable.edit_text_disabled_border);
+
+        String mobile = mobNumEditText.getText().toString();
+
+        if (TextUtils.isEmpty(mobile)) {
+            showToast("Enter Mobile Number");
+            return;
+        }
+
+        if (!Utils.isPhoneValid(mobile)) {
+            showToast("Enter Valid Mobile Number");
+            return;
+        }
+
+        String branch = branchAdminEditText.getText().toString();
+
+        if (TextUtils.isEmpty(branch)) {
+            showToast("Enter branch Name");
+            return;
+        }
+
+        branchAdminEditText.setBackgroundResource(android.R.color.transparent);
+        branchAdminEditText.setEnabled(false);
+
+        String location = locationAdminEditText.getText().toString();
+
+        if (TextUtils.isEmpty(location)) {
+            showToast("Enter location");
+            return;
+        }
+        
+        locationAdminEditText.setBackgroundResource(android.R.color.transparent);
+        locationAdminEditText.setEnabled(false);
+
+        Profile newProfile = new Profile();
+        newProfile.status = 200;
+        newProfile.userdata = "success";
+
+        Profile.ProfileData newData = new Profile().new ProfileData();
+        newData.id = profile.data.id;
+        newData.admin_id = profile.data.id;
+        newData.username = adminName;
+        newData.login_id = loginId;
+        newData.mobile_number = mobile;
+        newData.password = password;
+        newData.imei_number = profile.data.imei_number;
+        newData.type = "admin";
+        newData.branch = branch;
+        newData.location = location;
+        newData.status = profile.data.status;
+        newData.create_date = profile.data.create_date;;
+        newData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+
+        newProfile.data = newData;
+        FileUtils.deleteFile(mContext, Constants.PROFILE_FILE_NAME);
+        FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(newProfile));
+
+        if (Utils.isInternetAvailable(mContext)) {
+            Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateEmployee(profile.data.id, adminName, password, mobile,
+                    loginId, profile.data.imei_number, location, branch, profile.data.status);
+
+            call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+                /**
+                 * Successful HTTP response.
+                 * @param call server call
+                 * @param response server response
+                 */
+                @Override
+                public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                    Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                    if (response.body() != null) {
+                        HashMap<String, String> employeeStatus = response.body();
+                        if (employeeStatus.get("status").equalsIgnoreCase("200")) {
+                            if (employeeStatus.containsKey("update_employee") && employeeStatus.get("update_employee").equalsIgnoreCase("Successfully Updated")) {
+                                showToast("Profile Updated successfully");
+                            }
+                        }
+                    }
+                }
+
+                /**
+                 *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                 * @param call server call
+                 * @param t error
+                 */
+                @Override
+                public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                    Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                }
+            });
+        } else {
+            showToast("Profile Updated successfully");
+        }
+        
+
     }
 
     @Override

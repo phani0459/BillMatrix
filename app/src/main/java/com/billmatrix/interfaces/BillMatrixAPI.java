@@ -23,7 +23,7 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("login")
-    Call<HashMap<String, String>> login(@Field("username") String username, @Field("password") String password, @Field("imei_number") String imei_number);
+    Call<HashMap<String, String>> login(@Field("login_id") String username, @Field("password") String password, @Field("imei_number") String imei_number);
 
     @FormUrlEncoded
     @POST("profile")
@@ -46,9 +46,17 @@ public interface BillMatrixAPI {
     Call<HashMap<String, String>> deleteEmployee(@Field("id") String empId);
 
     @FormUrlEncoded
+    @POST("update_employee")
+    Call<HashMap<String, String>> updateEmployee(@Field("id") String id, @Field("username") String empName, @Field("password") String password,
+                                                 @Field("mobile_number") String mobileNumber,
+                                                 @Field("login_id") String login_id, @Field("imei_number") String imei_number,
+                                                 @Field("location") String location, @Field("branch") String branch, @Field("status") String status);
+    @FormUrlEncoded
     @POST("create_employee")
     Call<HashMap<String, String>> addEmployee(@Field("username") String empName, @Field("password") String password,
-                                              @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id);
+                                              @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id,
+                                              @Field("login_id") String login_id, @Field("imei_number") String imei_number,
+                                              @Field("location") String location, @Field("branch") String branch);
 
     @FormUrlEncoded
     @POST("admin_vendors")

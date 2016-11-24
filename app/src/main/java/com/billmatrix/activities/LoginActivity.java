@@ -86,8 +86,8 @@ public class LoginActivity extends AppCompatActivity {
         /**
          * if user name and password are present in prefs, show them in the edit text fields.
          */
-        if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_NAME, null))) {
-            userNameEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_NAME, ""));
+        if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null))) {
+            userNameEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, ""));
         }
 
         if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_PASSWORD, null))) {
@@ -122,10 +122,7 @@ public class LoginActivity extends AppCompatActivity {
             String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
             Profile profile = Constants.getGson().fromJson(profileString, Profile.class);
             if (profile != null && profile.data != null) {
-                if (userName.equalsIgnoreCase(profile.data.username) && password.equalsIgnoreCase(profile.data.password) && imeiNumber.equalsIgnoreCase(profile.data.imei_number)) {
-                    /**
-                     * save licence key, and disable the licence edit text so that other user cannot login from this tab
-                     */
+                if (userName.equalsIgnoreCase(profile.data.login_id) && password.equalsIgnoreCase(profile.data.password) && imeiNumber.equalsIgnoreCase(profile.data.imei_number)) {
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                     Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, profile.data.type).apply();
 
@@ -133,10 +130,10 @@ public class LoginActivity extends AppCompatActivity {
                      * if remember me is checked, save user name and pwd in pref if not remove them
                      */
                     if (rememberMeCheckBox.isChecked()) {
-                        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, userName).apply();
+                        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LOGIN_ID, userName).apply();
                         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, password).apply();
                     } else {
-                        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, "").apply();
+                        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LOGIN_ID, "").apply();
                         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
                     }
 
@@ -154,40 +151,38 @@ public class LoginActivity extends AppCompatActivity {
                     ArrayList<Employee.EmployeeData> employees = billMatrixDaoImpl.getEmployees();
                     if (employees != null && employees.size() > 0) {
                         for (Employee.EmployeeData employeeData : employees) {
-                            if (employeeData.status.equalsIgnoreCase("1") || employeeData.status.equalsIgnoreCase("ACTIVE")) {
-                                if (userName.equalsIgnoreCase(employeeData.email) && password.equalsIgnoreCase(employeeData.password) && imeiNumber.equalsIgnoreCase(employeeData.imei_number)) {
-                                    isEmployee = true;
-                                    loggedInEmployee = employeeData;
-                                    break;
-                                }
+                            if (userName.equalsIgnoreCase(employeeData.login_id) && password.equalsIgnoreCase(employeeData.password) && imeiNumber.equalsIgnoreCase(employeeData.imei_number)) {
+                                isEmployee = true;
+                                loggedInEmployee = employeeData;
+                                break;
                             }
                         }
 
                         if (isEmployee) {
-                            /**
-                             * save licence key, and disable the licence edit text so that other user cannot login from this tab
-                             */
-                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
-                            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loggedInEmployee.type).apply();
-
-                            /**
-                             * if remember me is checked, save user name and pwd in pref if not remove them
-                             */
-                            if (rememberMeCheckBox.isChecked()) {
-                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, userName).apply();
-                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, password).apply();
-                            } else {
-                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, "").apply();
-                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
-                            }
-
                             if (progressDialog != null && progressDialog.isShowing()) {
                                 progressDialog.dismiss();
                             }
 
-                            Intent intent = new Intent(mContext, ControlPanelActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if (loggedInEmployee.status.equalsIgnoreCase("1") || loggedInEmployee.status.equalsIgnoreCase("ACTIVE")) {
+                                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loggedInEmployee.type).apply();
+
+                                /**
+                                 * if remember me is checked, save user name and pwd in pref if not remove them
+                                 */
+                                if (rememberMeCheckBox.isChecked()) {
+                                    Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LOGIN_ID, userName).apply();
+                                    Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, password).apply();
+                                } else {
+                                    Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LOGIN_ID, "").apply();
+                                    Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
+                                }
+                                Intent intent = new Intent(mContext, ControlPanelActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                showToast("You are an IN-ACTIVE employee, contact admin to login.");
+                            }
                         } else {
                             if (progressDialog != null && progressDialog.isShowing()) {
                                 progressDialog.dismiss();
@@ -239,9 +234,6 @@ public class LoginActivity extends AppCompatActivity {
                     HashMap<String, String> loginMap = response.body();
                     if (loginMap.get("status").equalsIgnoreCase("200")) {
                         if (loginMap.get("login").equalsIgnoreCase("success")) {
-                            /**
-                             * save licence key, and disable the licence edit text so that other user cannot login from this tab
-                             */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loginMap.get("user_type")).apply();
                             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LICENECE_KEY, loginMap.get("imei_number")).apply();
@@ -251,10 +243,10 @@ public class LoginActivity extends AppCompatActivity {
                              * if remember me is checked, save user name and pwd in pref if not remove them
                              */
                             if (rememberMeCheckBox.isChecked()) {
-                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, userName).apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LOGIN_ID, userName).apply();
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, password).apply();
                             } else {
-                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_NAME, "").apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LOGIN_ID, "").apply();
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_PASSWORD, "").apply();
                             }
 

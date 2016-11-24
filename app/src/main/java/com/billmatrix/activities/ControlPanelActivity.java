@@ -110,31 +110,31 @@ public class ControlPanelActivity extends AppCompatActivity {
     }
 
     public void getDataFromServer() {
-        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        String adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
         if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
-                if (!TextUtils.isEmpty(loginId)) {
+                if (!TextUtils.isEmpty(adminId)) {
                     progressDialog = Utils.getProgressDialog(mContext);
                     progressDialog.show();
-                    getProfilefromServer(loginId);
+                    getProfilefromServer(adminId);
                 }
             } else {
                 Utils.showToast("Unable to fetch Data! Check for Internet connection.", mContext);
             }
         } else {
-            getEmployeesFromServer(loginId);
+            getEmployeesFromServer(adminId);
         }
     }
 
-    public void getEmployeesFromServer(final String loginId) {
+    public void getEmployeesFromServer(final String adminId) {
         ArrayList<Employee.EmployeeData> employeesfromDB = billMatrixDaoImpl.getEmployees();
         if (employeesfromDB != null && employeesfromDB.size() > 0) {
-            getCustomersFromServer(loginId);
+            getCustomersFromServer(adminId);
         } else {
             if (Utils.isInternetAvailable(mContext)) {
-                if (!TextUtils.isEmpty(loginId)) {
+                if (!TextUtils.isEmpty(adminId)) {
                     Log.e(TAG, "getEmployeesFromServer: ");
-                    Call<Employee> call = Utils.getBillMatrixAPI(mContext).getAdminEmployees(loginId);
+                    Call<Employee> call = Utils.getBillMatrixAPI(mContext).getAdminEmployees(adminId);
 
                     call.enqueue(new Callback<Employee>() {
 
@@ -154,7 +154,7 @@ public class ControlPanelActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                            getCustomersFromServer(loginId);
+                            getCustomersFromServer(adminId);
                         }
 
                         /**
@@ -225,9 +225,9 @@ public class ControlPanelActivity extends AppCompatActivity {
         }
     }
 
-    public void getProfilefromServer(final String loginId) {
+    public void getProfilefromServer(final String adminId) {
         Log.e(TAG, "getProfilefromServer: ");
-        Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(loginId);
+        Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(adminId);
 
         call.enqueue(new Callback<Profile>() {
 
@@ -244,7 +244,7 @@ public class ControlPanelActivity extends AppCompatActivity {
                     Profile profile = response.body();
                     if (profile.status == 200 && profile.userdata.equalsIgnoreCase("success")) {
                         FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
-                        getEmployeesFromServer(loginId);
+                        getEmployeesFromServer(adminId);
                     }
                 }
             }
@@ -264,7 +264,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         });
     }
 
-    private void getVendorsFromServer(String loginId) {
+    private void getVendorsFromServer(String adminId) {
         ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
         if (vendors != null && vendors.size() > 0) {
             if (progressDialog != null && progressDialog.isShowing()) {
@@ -272,9 +272,9 @@ public class ControlPanelActivity extends AppCompatActivity {
             }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
-                if (!TextUtils.isEmpty(loginId)) {
+                if (!TextUtils.isEmpty(adminId)) {
                     Log.e(TAG, "getVendorsFromServer: ");
-                    Call<Vendor> call = Utils.getBillMatrixAPI(mContext).getAdminVendors(loginId);
+                    Call<Vendor> call = Utils.getBillMatrixAPI(mContext).getAdminVendors(adminId);
 
                     call.enqueue(new Callback<Vendor>() {
 

@@ -75,7 +75,7 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.Empl
 
         holder.snoTextView.setText("" + (position + 1));
         holder.nameTextView.setText(employee.username);
-        holder.loginIdTextView.setText(employee.email);
+        holder.loginIdTextView.setText(employee.login_id);
         holder.mobileTextView.setText(employee.mobile_number);
         holder.pwdTextView.setText(employee.password);
         holder.statusTextView.setText("IN-ACTIVE");

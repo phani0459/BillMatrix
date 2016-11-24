@@ -35,7 +35,7 @@ public class FileUtils {
         return false;
     }
 
-    public static void deleteFile(String fileName, Context context) {
+    public static void deleteFile(Context context, String fileName) {
         File file = context.getFileStreamPath(fileName);
         if(file != null && file.exists()) {
             context.deleteFile(fileName);

@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.InputFilter;
+import android.text.TextUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -65,6 +67,18 @@ public class Utils {
         }
 
         return fromDatePickerDialog;
+    }
+
+    public static InputFilter[] getInputFilter(int maxChars) {
+        InputFilter[] filter = new InputFilter[]{new InputFilter.LengthFilter(maxChars)};
+        return filter;
+    }
+
+    public static boolean isPhoneValid(String phoneNumber) {
+        if (!TextUtils.isEmpty(phoneNumber)) {
+            return phoneNumber.length() >= 10;
+        }
+        return false;
     }
 
     public static void loadSpinner(Spinner spinner, Context mContext, int spinnerArray) {

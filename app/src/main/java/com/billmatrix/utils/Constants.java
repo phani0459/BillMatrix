@@ -24,9 +24,10 @@ public class Constants {
     public static final String IS_LOGGED_IN = "isUserLoggedIN";
     public static final String PREF_LICENECE_KEY = "licenceKey";
     public static final String PREF_USER_TYPE = "userType";
-    public static final String PREF_USER_NAME = "userName";
+    public static final String PREF_ADMIN_NAME = "adminName";
+    public static final String PREF_LOGIN_ID = "loginID";
     public static final String PREF_PASSWORD = "password";
-    public static final String PREF_ADMIN_ID = "loginID";
+    public static final String PREF_ADMIN_ID = "adminID";
 
     /**
      * File Names

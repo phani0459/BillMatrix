@@ -35,7 +35,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBConstants.EMPLOYEE_NAME, employeeData.username);
         contentValues.put(DBConstants.EMPLOYEE_MOBILE, employeeData.mobile_number);
-        contentValues.put(DBConstants.EMPLOYEE_LOGINID, employeeData.email);
+        contentValues.put(DBConstants.EMPLOYEE_LOGINID, employeeData.login_id);
         contentValues.put(DBConstants.EMPLOYEE_PASSWORD, employeeData.password);
         contentValues.put(DBConstants.STATUS, employeeData.status);
         contentValues.put(DBConstants.ID, employeeData.id);
@@ -51,6 +51,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public boolean deleteEmployee(String loginID) {
         return db.delete(DBConstants.EMPLOYEES_TABLE, DBConstants.EMPLOYEE_LOGINID + "='" + loginID + "'", null) > 0;
+    }
+
+    public boolean updateEmployee(String status, String empId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.STATUS, status);
+        return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.ID + "='" + empId + "'", null) > 0;
     }
 
     public ArrayList<Employee.EmployeeData> getEmployees() {
@@ -69,7 +75,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_NAME)));
                     employeeData.mobile_number = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_MOBILE)));
-                    employeeData.email = (cursor.getString(cursor
+                    employeeData.login_id = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_LOGINID)));
                     employeeData.password = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_PASSWORD)));

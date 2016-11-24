@@ -62,6 +62,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
     private EmployeesAdapter employeesAdapter;
     private String adminId;
+    private Employee.EmployeeData selectedEmptoEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,9 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         employeesLayout.setVisibility(View.VISIBLE);
 
         employeesRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        empMobile_EditText.setFilters(Utils.getInputFilter(10));
+        empLoginId_EditText.setFilters(Utils.getInputFilter(12));
+        empPwd_EditText.setFilters(Utils.getInputFilter(12));
 
         List<Employee.EmployeeData> employees = new ArrayList<>();
         try {
@@ -99,7 +103,9 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
         if (employees != null && employees.size() > 0) {
             for (Employee.EmployeeData employeeData : employees) {
-                employeesAdapter.addEmployee(employeeData);
+                if (!employeeData.status.equalsIgnoreCase("-1")) {
+                    employeesAdapter.addEmployee(employeeData);
+                }
             }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
@@ -150,7 +156,6 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
     @OnClick(R.id.btn_addEmployee)
     public void addEmployee() {
-        addEmpButton.setText("ADD");
         Utils.hideSoftKeyboard(empName_EditText);
 
         Employee.EmployeeData employeeData = new Employee().new EmployeeData();
@@ -160,57 +165,100 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         String empMob = empMobile_EditText.getText().toString();
         String empStatus = empStatusSpinner.getSelectedItem().toString();
 
-        if (!TextUtils.isEmpty(empName)) {
-            if (!TextUtils.isEmpty(empId)) {
-                if (!TextUtils.isEmpty(empPwd)) {
-                    if (!TextUtils.isEmpty(empMob)) {
-                        if (!TextUtils.isEmpty(empStatus)) {
-                            employeeData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                            employeeData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                            employeeData.email = empId;
-                            employeeData.username = empName;
-                            employeeData.password = empPwd;
-                            employeeData.mobile_number = empMob;
-                            employeeData.status = empStatus;
+        if (TextUtils.isEmpty(empName)) {
+            showToast("Enter Employee Name");
+            return;
+        }
 
-                            long empAdded = billMatrixDaoImpl.addEmployee(employeeData);
+        if (TextUtils.isEmpty(empId)) {
+            showToast("Enter Employee Id");
+            return;
+        }
 
-                            if (empAdded != -1) {
-                                employeesAdapter.addEmployee(employeeData);
-                                employeesRecyclerView.smoothScrollToPosition(employeesAdapter.getItemCount());
+        if (empId.length() < 6) {
+            showToast("Login Id must be more than 6 characters");
+            return;
+        }
 
-                                /**
-                                 * reset all edit texts
-                                 */
-                                empName_EditText.setText("");
-                                empLoginId_EditText.setText("");
-                                empPwd_EditText.setText("");
-                                empMobile_EditText.setText("");
-                                empStatusSpinner.setSelection(0);
+        if (TextUtils.isEmpty(empPwd)) {
+            showToast("Enter Employee Password");
+            return;
+        }
 
-//                                addEmployeetoServer(employeeData);
-                            } else {
-                                showToast("Employee Login Id must be unique");
-                            }
-                        } else {
-                            showToast("Select Employee Status");
-                        }
-                    } else {
-                        showToast("Enter Employee Mobile Number");
-                    }
+        if (empPwd.length() < 6) {
+            showToast("Password must be more than 6 characters");
+            return;
+        }
+
+        if (!Utils.isPhoneValid(empMob)) {
+            showToast("Enter Valid Employee Mobile Number");
+            return;
+        }
+
+        if (TextUtils.isEmpty(empStatus)) {
+            showToast("Select Employee Status");
+            return;
+        }
+
+        if (addEmpButton.getText().toString().equalsIgnoreCase("ADD")) {
+            employeeData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        } else {
+            if (selectedEmptoEdit != null) {
+                employeeData.create_date = selectedEmptoEdit.create_date;
+            }
+        }
+        employeeData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        employeeData.login_id = empId;
+        employeeData.username = empName;
+        employeeData.password = empPwd;
+        employeeData.mobile_number = empMob;
+        employeeData.status = empStatus.equalsIgnoreCase("ACTIVE") ? "1" : "0";
+        employeeData.imei_number = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, "");
+        employeeData.type = "user";
+        employeeData.admin_id = adminId;
+        employeeData.location = locationEditText.getText().toString();
+        employeeData.branch = branchAdminEditText.getText().toString();
+
+        long empAdded = billMatrixDaoImpl.addEmployee(employeeData);
+
+        if (empAdded != -1) {
+            employeesAdapter.addEmployee(employeeData);
+            employeesRecyclerView.smoothScrollToPosition(employeesAdapter.getItemCount());
+
+            /**
+             * reset all edit texts
+             */
+            empName_EditText.setText("");
+            empLoginId_EditText.setText("");
+            empPwd_EditText.setText("");
+            empMobile_EditText.setText("");
+            empStatusSpinner.setSelection(0);
+
+            if (addEmpButton.getText().toString().equalsIgnoreCase("ADD")) {
+                if (Utils.isInternetAvailable(mContext)) {
+                    addEmployeetoServer(employeeData);
                 } else {
-                    showToast("Enter Employee Password");
+                    showToast("Employee Added successfully");
                 }
             } else {
-                showToast("Enter Employee Id");
+                if (selectedEmptoEdit != null) {
+                    if (Utils.isInternetAvailable(mContext)) {
+                        employeeData.id = selectedEmptoEdit.id;
+                        updateEmployeetoServer(employeeData);
+                    } else {
+                        showToast("Employee Updated successfully");
+                    }
+                }
             }
         } else {
-            showToast("Enter Employee Name");
+            showToast("Employee Login Id must be unique");
         }
+        addEmpButton.setText("ADD");
     }
 
-    private void addEmployeetoServer(Employee.EmployeeData employeeData) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.username, employeeData.password, employeeData.mobile_number, adminId);
+    private void updateEmployeetoServer(Employee.EmployeeData employeeData) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateEmployee(employeeData.id, employeeData.username, employeeData.password, employeeData.mobile_number,
+                employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch, employeeData.status);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
 
@@ -225,7 +273,43 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                 if (response.body() != null) {
                     HashMap<String, String> employeeStatus = response.body();
-                    Log.e("SUCCEESS RESPONSE RAW", employeeStatus + "");
+                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
+                        if (employeeStatus.containsKey("update_employee") && employeeStatus.get("update_employee").equalsIgnoreCase("Successfully Updated")) {
+                            showToast("Employee Updated successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
+    private void addEmployeetoServer(Employee.EmployeeData employeeData) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.username, employeeData.password, employeeData.mobile_number, adminId,
+                employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
                         if (employeeStatus.get("create_employee").equalsIgnoreCase("success")) {
                             showToast("Employee Added successfully");
@@ -260,24 +344,24 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 showAlertDialog("Are you sure?", "You want to delete employee", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).email);
+                        billMatrixDaoImpl.updateEmployee("-1", employeesAdapter.getItem(position).id);
                         employeesAdapter.deleteEmployee(position);
                     }
                 });
                 break;
             case 2:
                 addEmpButton.setText("SAVE");
-                Employee.EmployeeData selectedEmp = employeesAdapter.getItem(position);
-                empName_EditText.setText(selectedEmp.username);
-                empLoginId_EditText.setText(selectedEmp.email);
-                empPwd_EditText.setText(selectedEmp.password);
-                empMobile_EditText.setText(selectedEmp.mobile_number);
-                if (selectedEmp.status.equalsIgnoreCase("ACTIVE") || selectedEmp.status.equalsIgnoreCase("1")) {
+                selectedEmptoEdit = employeesAdapter.getItem(position);
+                empName_EditText.setText(selectedEmptoEdit.username);
+                empLoginId_EditText.setText(selectedEmptoEdit.login_id);
+                empPwd_EditText.setText(selectedEmptoEdit.password);
+                empMobile_EditText.setText(selectedEmptoEdit.mobile_number);
+                if (selectedEmptoEdit.status.equalsIgnoreCase("ACTIVE") || selectedEmptoEdit.status.equalsIgnoreCase("1")) {
                     empStatusSpinner.setSelection(0);
                 } else {
                     empStatusSpinner.setSelection(1);
                 }
-                billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).email);
+                billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).login_id);
                 employeesAdapter.deleteEmployee(position);
                 break;
             case 3:

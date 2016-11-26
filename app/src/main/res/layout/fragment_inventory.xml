@@ -507,6 +507,7 @@
                                     android:textColor="@android:color/black" />
 
                                 <EditText
+                                    android:id="@+id/et_gen_bar_itemCode"
                                     style="@style/Base.TextAppearance.AppCompat.Caption"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -535,6 +536,7 @@
                                     android:textColor="@android:color/black" />
 
                                 <EditText
+                                    android:id="@+id/et_gen_bar_itemName"
                                     style="@style/Base.TextAppearance.AppCompat.Caption"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -567,6 +569,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="12dp"
+                                    android:id="@+id/tv_generated_barCode"
                                     android:gravity="center"
                                     android:text="@string/BAR_CODE_GENERATED"
                                     android:textColor="@android:color/black" />
@@ -639,6 +642,7 @@
                                     android:textColor="@android:color/black" />
 
                                 <EditText
+                                    android:id="@+id/et_print_bar_itemCode"
                                     style="@style/Base.TextAppearance.AppCompat.Caption"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -667,6 +671,7 @@
                                     android:textColor="@android:color/black" />
 
                                 <EditText
+                                    android:id="@+id/et_print_bar_itemName"
                                     style="@style/Base.TextAppearance.AppCompat.Caption"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -711,6 +716,8 @@
                                     android:inputType="number"
                                     android:padding="6dp"
                                     android:singleLine="true"
+                                    android:id="@+id/et_noOfCodes"
+                                    android:text="1"
                                     android:textColor="@android:color/black" />
                             </LinearLayout>
 

@@ -37,5 +37,8 @@
     <color name="cp_green">#217D10</color>
     <color name="cp_yellow">#B9AA06</color>
 
+    <color name="selectedItemColor">#656fd1f2</color>
+    <color name="item_bg">#F5F5F5</color>
+
 
 </resources>

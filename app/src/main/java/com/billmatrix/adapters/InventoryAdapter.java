@@ -1,6 +1,8 @@
 package com.billmatrix.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +21,12 @@ import butterknife.ButterKnife;
 
 public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.VendorHolder> {
 
+    private Context mContext;
     private List<Inventory.InventoryData> inventoryDatas;
     OnItemClickListener onItemClickListener;
+    private SparseBooleanArray selectedItems;
+    private View lastChecked = null;
+    private int lastCheckedPos = -1;
 
     public class VendorHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_item_inven_sno)
@@ -68,9 +74,11 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         notifyDataSetChanged();
     }
 
-    public InventoryAdapter(List<Inventory.InventoryData> inventoryDatas, OnItemClickListener onClickListener) {
+    public InventoryAdapter(List<Inventory.InventoryData> inventoryDatas, OnItemClickListener onClickListener, Context mContext) {
         this.inventoryDatas = inventoryDatas;
         this.onItemClickListener = onClickListener;
+        this.mContext = mContext;
+        selectedItems = new SparseBooleanArray();
     }
 
     public void removeAllInventories() {
@@ -88,6 +96,8 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
     @Override
     public void onBindViewHolder(VendorHolder holder, final int position) {
         Inventory.InventoryData inventoryData = inventoryDatas.get(position);
+
+        final View itemView = (View) holder.snoTextView.getParent();
 
         holder.snoTextView.setText("" + (position + 1));
         holder.itemCodeTextView.setText(inventoryData.item_code);
@@ -113,6 +123,22 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
             @Override
             public void onClick(View v) {
                 onItemClickListener.onItemClick(2, position);
+            }
+        });
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (lastChecked != null) {
+                    lastChecked.setSelected(false);
+                    onItemClickListener.onItemClick(4, position);
+                }
+                if (!v.isSelected() && lastCheckedPos != position) {
+                    v.setSelected(true);
+                    lastCheckedPos = position;
+                    lastChecked = v;
+                    onItemClickListener.onItemClick(3, position);
+                }
             }
         });
     }

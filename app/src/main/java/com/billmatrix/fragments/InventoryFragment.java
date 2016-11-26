@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.billmatrix.R;
@@ -81,6 +82,18 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
     public EditText photoEditText;
     @BindView(R.id.btnAddInventory)
     public Button addInventoryButton;
+    @BindView(R.id.et_print_bar_itemName)
+    public EditText printItemName;
+    @BindView(R.id.et_print_bar_itemCode)
+    public EditText printItemCode;
+    @BindView(R.id.et_gen_bar_itemCode)
+    public EditText generateItemCode;
+    @BindView(R.id.et_gen_bar_itemName)
+    public EditText generateItemName;
+    @BindView(R.id.tv_generated_barCode)
+    public TextView generatedBarCodeTextView;
+    @BindView(R.id.et_noOfCodes)
+    public EditText noOfCodesEditText;
 
     private String adminId;
     private Inventory.InventoryData selectedInventorytoEdit;
@@ -146,7 +159,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
 
         inventoryRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         List<Inventory.InventoryData> inventoryDatas = new ArrayList<>();
-        inventoryAdapter = new InventoryAdapter(inventoryDatas, this);
+        inventoryAdapter = new InventoryAdapter(inventoryDatas, this, mContext);
         inventoryRecyclerView.setAdapter(inventoryAdapter);
 
         inventoryDatas = billMatrixDaoImpl.getInventory();
@@ -470,7 +483,19 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 break;
             case 3:
                 selectedInventorytoEdit = inventoryAdapter.getItem(position);
-
+                generateItemCode.setText(selectedInventorytoEdit.item_code);
+                generateItemName.setText(selectedInventorytoEdit.item_name);
+                printItemCode.setText(selectedInventorytoEdit.item_code);
+                printItemName.setText(selectedInventorytoEdit.item_name);
+                noOfCodesEditText.setText("1");
+                break;
+            case 4:
+                generateItemCode.setText("");
+                generateItemName.setText("");
+                printItemCode.setText("");
+                noOfCodesEditText.setText("");
+                printItemName.setText("");
+                generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED));
                 break;
         }
     }

@@ -6,6 +6,7 @@
     <color name="saveBtnColor">#1CA603</color>
     <color name="tabButtonBG">#F5F5F5</color>
     <color name="search_bg_color">#D54635</color>
+    <color name="disableColor">#E7E7E7</color>
 
     <!-- Login Colors-->
     <color name="loginBG">#4C4C4C</color>

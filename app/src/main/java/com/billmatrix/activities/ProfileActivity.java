@@ -8,9 +8,12 @@ import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.billmatrix.R;
+import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
@@ -43,7 +46,14 @@ public class ProfileActivity extends BaseTabActivity {
     public EditText locationAdminEditText;
     @BindView(R.id.et_branch)
     public EditText branchAdminEditText;
+    @BindView(R.id.btn_saveProfile)
+    public Button saveProfileButton;
+    @BindView(R.id.im_edit_storeDetails)
+    public ImageButton editStoreDetailsButton;
+    @BindView(R.id.imBtn_editPwd)
+    public ImageButton editPwdButton;
 
+    public boolean isAdmin;
 
     Profile profile;
 
@@ -54,9 +64,23 @@ public class ProfileActivity extends BaseTabActivity {
         setPageTitle(String.format("<span>%s Profile </span>", getArrowString()));
         addTabButtons(1, "Profile");
 
+        isAdmin = true;
+
         profileLayout.setVisibility(View.VISIBLE);
 
         String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        String userType = Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_TYPE, null);
+
+        /**
+         * If employee logged in disable profile attrs
+         */
+        if (!TextUtils.isEmpty(userType)) {
+            if (!userType.equalsIgnoreCase("admin")) {
+                isAdmin = false;
+            }
+        } else {
+            isAdmin = false;
+        }
 
         if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
@@ -68,8 +92,14 @@ public class ProfileActivity extends BaseTabActivity {
             Log.e(TAG, "Profile is from file");
             String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
             profile = Constants.getGson().fromJson(profileString, Profile.class);
-            loadProfile();
+
+            if (isAdmin) {
+                loadProfile();
+            } else {
+                disableProfile();
+            }
         }
+
 
         loginIdmEditText.setFilters(Utils.getInputFilter(12));
         passwordEditText.setFilters(Utils.getInputFilter(12));
@@ -91,6 +121,39 @@ public class ProfileActivity extends BaseTabActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+    public void disableProfile() {
+        saveProfileButton.setEnabled(false);
+        saveProfileButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+        adminNameEditText.setEnabled(false);
+        adminNameEditText.setBackgroundResource(R.drawable.edit_text_disabled_border);
+        loginIdmEditText.setBackgroundResource(R.drawable.edit_text_disabled_border);
+        loginIdmEditText.setEnabled(false);
+        mobNumEditText.setEnabled(false);
+        mobNumEditText.setBackgroundResource(R.drawable.edit_text_disabled_border);
+
+        editStoreDetailsButton.setVisibility(View.INVISIBLE);
+        editPwdButton.setVisibility(View.INVISIBLE);
+
+        loadEmployeeProfile();
+    }
+
+    private void loadEmployeeProfile() {
+        final String empId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_EMP_ID, null);
+        Employee.EmployeeData employeeData = billMatrixDaoImpl.getParticularEmployee(empId);
+        if (employeeData != null) {
+            passwordEditText.setText(employeeData.password);
+            adminNameEditText.setText(employeeData.username);
+            mobNumEditText.setText(employeeData.mobile_number);
+            loginIdmEditText.setText(employeeData.login_id);
+        }
+
+        if (profile != null) {
+            storeAdminEditText.setText(profile.data.username.toUpperCase());
+            locationAdminEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
+            branchAdminEditText.setText(profile.data.branch != null ? profile.data.branch.toUpperCase() : "");
+        }
     }
 
     @OnClick(R.id.im_edit_storeDetails)
@@ -132,7 +195,11 @@ public class ProfileActivity extends BaseTabActivity {
                     profile = response.body();
                     if (profile.status == 200 && profile.userdata.equalsIgnoreCase("success")) {
                         FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
-                        loadProfile();
+                        if (isAdmin) {
+                            loadProfile();
+                        } else {
+                            disableProfile();
+                        }
                     }
                 }
             }

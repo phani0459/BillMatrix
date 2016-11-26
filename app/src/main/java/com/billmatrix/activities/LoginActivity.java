@@ -158,14 +158,15 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
 
-                        if (isEmployee) {
-                            if (progressDialog != null && progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
+                        if (progressDialog != null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
 
+                        if (isEmployee) {
                             if (loggedInEmployee.status.equalsIgnoreCase("1") || loggedInEmployee.status.equalsIgnoreCase("ACTIVE")) {
                                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loggedInEmployee.type).apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_ID, loggedInEmployee.id).apply();
 
                                 /**
                                  * if remember me is checked, save user name and pwd in pref if not remove them
@@ -184,9 +185,6 @@ public class LoginActivity extends AppCompatActivity {
                                 showToast("You are an IN-ACTIVE employee, contact admin to login.");
                             }
                         } else {
-                            if (progressDialog != null && progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
                             showToast("username/password is wrong");
                         }
                     }
@@ -237,7 +235,11 @@ public class LoginActivity extends AppCompatActivity {
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loginMap.get("user_type")).apply();
                             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_LICENECE_KEY, loginMap.get("imei_number")).apply();
-                            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_ADMIN_ID, loginMap.containsKey("user_id") ? loginMap.get("user_id") : "").apply();
+                            if (loginMap.get("user_type").equalsIgnoreCase("admin")) {
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_ADMIN_ID, loginMap.containsKey("user_id") ? loginMap.get("user_id") : "").apply();
+                            } else {
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_ID, loginMap.containsKey("user_id") ? loginMap.get("user_id") : "").apply();
+                            }
 
                             /**
                              * if remember me is checked, save user name and pwd in pref if not remove them

@@ -28,12 +28,13 @@ public class Constants {
     public static final String PREF_LOGIN_ID = "loginID";
     public static final String PREF_PASSWORD = "password";
     public static final String PREF_ADMIN_ID = "adminID";
+    public static final String PREF_EMP_ID = "employeeId";
 
     /**
      * File Names
      */
     public static String PROFILE_FILE_NAME = "ProfileModel";
-    public static String EMPLOYEES_FILE_NAME = "Employees";
+    public static String EMPLOYEE_FILE_NAME = "Employee_Profile";
     public static Gson gson;
     public static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
     public static String dateFormat = "dd-MM-yyyy";

@@ -90,9 +90,11 @@ public class ControlPanelActivity extends AppCompatActivity {
         copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
 
         String userType = Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_TYPE, null);
+        String adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         if (!TextUtils.isEmpty(userType)) {
             if (!userType.equalsIgnoreCase("admin")) {
+//                getEmployeeProfileFromServer();
                 disableOptions();
             }
         } else {
@@ -100,17 +102,65 @@ public class ControlPanelActivity extends AppCompatActivity {
         }
 
         /**
-         * Sequence ti fetch data from server
+         * Sequence to fetch data from server
          * Profile
          * Employees
          * Customers
          * Vendors
          */
-        getDataFromServer();
+        getDataFromServer(adminId);
     }
 
-    public void getDataFromServer() {
-        String adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+    private void getEmployeeProfileFromServer() {
+        final String empId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_EMP_ID, null);
+        if (!FileUtils.isFileExists(Constants.EMPLOYEE_FILE_NAME, mContext)) {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(empId)) {
+                    progressDialog = Utils.getProgressDialog(mContext);
+                    progressDialog.show();
+                    Log.e(TAG, "getEmployeeProfileFromServer: ");
+                    Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(empId);
+
+                    call.enqueue(new Callback<Profile>() {
+
+
+                        /**
+                         * Successful HTTP response.
+                         * @param call server call
+                         * @param response server response
+                         */
+                        @Override
+                        public void onResponse(Call<Profile> call, Response<Profile> response) {
+                            Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                            if (response.body() != null) {
+                                Profile empProfile = response.body();
+                                if (empProfile.status == 200 && empProfile.userdata.equalsIgnoreCase("success")) {
+                                    FileUtils.writeToFile(mContext, Constants.EMPLOYEE_FILE_NAME, Constants.getGson().toJson(empProfile));
+                                }
+                            }
+                        }
+
+                        /**
+                         *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                         * @param call server call
+                         * @param t error
+                         */
+                        @Override
+                        public void onFailure(Call<Profile> call, Throwable t) {
+                            Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
+                }
+            } else {
+                Utils.showToast("Unable to fetch Data! Check for Internet connection.", mContext);
+            }
+        }
+    }
+
+    public void getDataFromServer(String adminId) {
         if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
@@ -328,19 +378,16 @@ public class ControlPanelActivity extends AppCompatActivity {
         };
 
         ColorFilter colorFilter = new ColorMatrixColorFilter(colorMatrix);
-        profileImageView.setColorFilter(colorFilter);
         settingsImageView.setColorFilter(colorFilter);
         reportsImageView.setColorFilter(colorFilter);
         customersImageView.setColorFilter(colorFilter);
         employeeImageView.setColorFilter(colorFilter);
 
-        profileTextView.setTextColor(getResources().getColor(android.R.color.white));
         settingsTextView.setTextColor(getResources().getColor(android.R.color.white));
         reportsTextView.setTextColor(getResources().getColor(android.R.color.white));
         customersTextView.setTextColor(getResources().getColor(android.R.color.white));
         employeeTextView.setTextColor(getResources().getColor(android.R.color.white));
 
-        profileLinearLayout.setEnabled(false);
         settingsLinearLayout.setEnabled(false);
         reportsLinearLayout.setEnabled(false);
         customersLinearLayout.setEnabled(false);

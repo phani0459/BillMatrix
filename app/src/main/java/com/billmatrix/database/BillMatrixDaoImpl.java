@@ -13,6 +13,8 @@ import com.billmatrix.models.Vendor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.billmatrix.database.DBConstants.TAG;
+
 /**
  * Created by KANDAGATLAs on 06-11-2016.
  */
@@ -59,16 +61,56 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.ID + "='" + empId + "'", null) > 0;
     }
 
-    public boolean updateCustomer(String status, String customerMobile) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DBConstants.STATUS, status);
-        return db.update(DBConstants.CUSTOMERS_TABLE, contentValues, DBConstants.CUSTOMER_CONTACT + "='" + customerMobile + "'", null) > 0;
-    }
+    public Employee.EmployeeData getParticularEmployee(String empId) {
+        Cursor cursor = null;
+        try {
+            String query = "SELECT * FROM " + DBConstants.EMPLOYEES_TABLE
+                    + " WHERE " + DBConstants.ID
+                    + " = '" + empId + "'";
 
-    public boolean updateVendor(String status, String vendorPhone) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DBConstants.STATUS, status);
-        return db.update(DBConstants.VENDORS_TABLE, contentValues, DBConstants.PHONE + "='" + vendorPhone + "'", null) > 0;
+            cursor = db.rawQuery(query, null);
+
+            if (cursor.moveToFirst()) {
+                Employee.EmployeeData employeeData = new Employee().new EmployeeData();
+                do {
+                    employeeData.username = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.EMPLOYEE_NAME)));
+                    employeeData.mobile_number = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.EMPLOYEE_MOBILE)));
+                    employeeData.login_id = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.EMPLOYEE_LOGINID)));
+                    employeeData.password = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.EMPLOYEE_PASSWORD)));
+                    employeeData.status = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.STATUS)));
+                    employeeData.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ID));
+                    employeeData.admin_id = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ADMIN_ID)));
+                    employeeData.create_date = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.CREATE_DATE)));
+                    employeeData.update_date = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.UPDATE_DATE)));
+                    employeeData.branch = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.BRANCH)));
+                    employeeData.location = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.LOCATION)));
+                    employeeData.imei_number = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.IMEI)));
+                    employeeData.type = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.TYPE)));
+                } while (cursor.moveToNext());
+
+                return employeeData;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
     }
 
     public ArrayList<Employee.EmployeeData> getEmployees() {
@@ -115,7 +157,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 return (ArrayList<Employee.EmployeeData>) employeesData;
             }
         } catch (IllegalArgumentException e) {
-            Log.d(DBConstants.TAG, e.toString());
+            Log.d(TAG, e.toString());
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -146,6 +188,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public boolean deleteVendor(String phone) {
         return db.delete(DBConstants.VENDORS_TABLE, DBConstants.PHONE + "='" + phone + "'", null) > 0;
+    }
+
+    public boolean updateVendor(String status, String vendorPhone) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.STATUS, status);
+        return db.update(DBConstants.VENDORS_TABLE, contentValues, DBConstants.PHONE + "='" + vendorPhone + "'", null) > 0;
     }
 
     public ArrayList<Vendor.VendorData> getVendors() {
@@ -185,7 +233,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 return (ArrayList<Vendor.VendorData>) vendors;
             }
         } catch (IllegalArgumentException e) {
-            Log.d(DBConstants.TAG, e.toString());
+            Log.d(TAG, e.toString());
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -214,6 +262,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public boolean deleteCustomer(String phone) {
         return db.delete(DBConstants.CUSTOMERS_TABLE, DBConstants.CUSTOMER_CONTACT + "='" + phone + "'", null) > 0;
+    }
+
+    public boolean updateCustomer(String status, String customerMobile) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.STATUS, status);
+        return db.update(DBConstants.CUSTOMERS_TABLE, contentValues, DBConstants.CUSTOMER_CONTACT + "='" + customerMobile + "'", null) > 0;
     }
 
     public ArrayList<Customer.CustomerData> getCustomers() {
@@ -251,7 +305,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 return (ArrayList<Customer.CustomerData>) customers;
             }
         } catch (IllegalArgumentException e) {
-            Log.d(DBConstants.TAG, e.toString());
+            Log.d(TAG, e.toString());
         } finally {
             if (cursor != null) {
                 cursor.close();

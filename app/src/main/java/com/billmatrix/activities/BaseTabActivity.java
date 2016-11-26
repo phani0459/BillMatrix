@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;
@@ -111,6 +112,8 @@ public abstract class BaseTabActivity extends AppCompatActivity {
     public void removePreferences() {
         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, false).apply();
         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, null).apply();
+        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_ID, "").apply();
+        FileUtils.deleteFile(mContext, Constants.EMPLOYEE_FILE_NAME);
     }
 
     @OnClick(R.id.btn_logout)

@@ -717,7 +717,6 @@
                                     android:padding="6dp"
                                     android:singleLine="true"
                                     android:id="@+id/et_noOfCodes"
-                                    android:text="1"
                                     android:textColor="@android:color/black" />
                             </LinearLayout>
 

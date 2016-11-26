@@ -23,11 +23,15 @@ public class DBConstants {
     public final static String UPDATE_DATE = "update_date";
     public final static String BRANCH = "branch";
     public final static String LOCATION = "location";
+    public final static String DATE = "date";
     public final static String TYPE = "type";
+
 
     public final static String EMPLOYEES_TABLE = "TABLE_EMPLOYEES";
     public final static String VENDORS_TABLE = "TABLE_VENDORS";
     public final static String CUSTOMERS_TABLE = "TABLE_CUSTOMERS";
+    public final static String INVENTORY_TABLE = "TABLE_INVENTORY";
+
     /**
      * Employees Column Names
      */
@@ -49,8 +53,20 @@ public class DBConstants {
      */
     public final static String CUSTOMER_NAME = "Customer_Name";
     public final static String CUSTOMER_CONTACT = "customer_contact";
-    public final static String CUSTOMER_DATE = "customer_date";
 
+    /**
+     * Inventory Column Names
+     */
+    public final static String ITEM_NAME = "itemName";
+    public final static String ITEM_CODE = "itemCode";
+    public final static String UNIT = "unit";
+    public final static String QUANTITY = "quantity";
+    public final static String PRICE = "price";
+    public final static String MY_COST = "myCost";
+    public final static String WAREHOUSE = "warehouse";
+    public final static String VENDOR = "vendor";
+    public final static String BARCODE = "barCode";
+    public final static String PHOTO = "photo";
 
     public static final String TAG = "BillMatrix_DataBase";
 }

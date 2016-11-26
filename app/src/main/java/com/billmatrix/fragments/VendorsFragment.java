@@ -253,7 +253,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
             ((BaseTabActivity) mContext).showToast("Vendor Phone must be unique");
         }
 
-        addVendorButton.setText("ADD");
+        addVendorButton.setText(getString(R.string.add));
     }
 
     private void addVendortoServer(Vendor.VendorData vendorData) {
@@ -377,7 +377,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                 });
                 break;
             case 2:
-                addVendorButton.setText("SAVE");
+                addVendorButton.setText(getString(R.string.save));
                 selectedVendortoEdit = vendorsAdapter.getItem(position);
                 vendorName_EditText.setText(selectedVendortoEdit.name);
                 vendorSince_EditText.setText(selectedVendortoEdit.since);

@@ -87,18 +87,34 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
 
     @Override
     public void onBindViewHolder(VendorHolder holder, final int position) {
-//        Inventory.InventoryData inventoryData = inventoryDatas.get(position);
+        Inventory.InventoryData inventoryData = inventoryDatas.get(position);
 
-      /*  holder.snoTextView.setText("" + (position + 1));
-        holder.nameTextView.setText(vendorData.itemname);
-        holder.dateTextView.setText(vendorData.date);
-        holder.amountTextView.setText(vendorData.amount.trim());
+        holder.snoTextView.setText("" + (position + 1));
+        holder.itemCodeTextView.setText(inventoryData.item_code);
+        holder.itemNameTextView.setText(inventoryData.item_name);
+        holder.unitTextView.setText(inventoryData.unit);
+        holder.qtyTextView.setText(inventoryData.qty);
+        holder.priceTextView.setText(inventoryData.price);
+        holder.myCostTextView.setText(inventoryData.mycost);
+        holder.dateTextView.setText(inventoryData.date);
+        holder.wareHouseTextView.setText(inventoryData.warehouse);
+        holder.vendorTextView.setText(inventoryData.vendor);
+        holder.barCodeTextView.setText(inventoryData.barcode);
+        holder.photoTextView.setText(inventoryData.photo);
+
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onItemClickListener.onItemClick(1, position);
             }
-        });*/
+        });
+
+        holder.editImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(2, position);
+            }
+        });
     }
 
     public Inventory.InventoryData getItem(int position) {
@@ -107,7 +123,7 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
 
     @Override
     public int getItemCount() {
-        return 10;
+        return inventoryDatas.size();
     }
 
 

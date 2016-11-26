@@ -24,7 +24,6 @@ import com.billmatrix.adapters.CustomersAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
-import com.billmatrix.models.Employee;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -251,7 +250,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
             ((BaseTabActivity) mContext).showToast("Customer Mobile Number must be unique");
         }
 
-        addCustomerBtn.setText("ADD");
+        addCustomerBtn.setText(getString(R.string.add));
     }
 
     private void updateCustomertoServer(Customer.CustomerData customerData) {
@@ -343,7 +342,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                 });
                 break;
             case 2:
-                addCustomerBtn.setText("SAVE");
+                addCustomerBtn.setText(getString(R.string.save));
                 selectedCusttoEdit = customersAdapter.getItem(position);
                 customerNameEditText.setText(selectedCusttoEdit.username);
                 customerDate_EditText.setText(selectedCusttoEdit.date);

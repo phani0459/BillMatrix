@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
+import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Vendor;
 
 import java.util.ArrayList;
@@ -251,7 +252,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DBConstants.ID, customerData.id);
         contentValues.put(DBConstants.CUSTOMER_NAME, customerData.username);
         contentValues.put(DBConstants.CUSTOMER_CONTACT, customerData.mobile_number);
-        contentValues.put(DBConstants.CUSTOMER_DATE, customerData.date);
+        contentValues.put(DBConstants.DATE, customerData.date);
         contentValues.put(DBConstants.LOCATION, customerData.location);
         contentValues.put(DBConstants.STATUS, customerData.status);
         contentValues.put(DBConstants.ADMIN_ID, customerData.admin_id);
@@ -288,7 +289,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     customerData.mobile_number = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.CUSTOMER_CONTACT)));
                     customerData.date = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.CUSTOMER_DATE)));
+                            .getColumnIndexOrThrow(DBConstants.DATE)));
                     customerData.location = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.LOCATION)));
                     customerData.status = (cursor.getString(cursor
@@ -303,6 +304,100 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 } while (cursor.moveToNext());
 
                 return (ArrayList<Customer.CustomerData>) customers;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    /*************************************************
+     * ********* INVENTORY METHODS ********************
+     *************************************************/
+
+    public long addInventory(Inventory.InventoryData inventoryData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.ITEM_CODE, inventoryData.item_code);
+        contentValues.put(DBConstants.ITEM_NAME, inventoryData.item_name);
+        contentValues.put(DBConstants.UNIT, inventoryData.unit);
+        contentValues.put(DBConstants.QUANTITY, inventoryData.qty);
+        contentValues.put(DBConstants.PRICE, inventoryData.price);
+        contentValues.put(DBConstants.MY_COST, inventoryData.mycost);
+        contentValues.put(DBConstants.DATE, inventoryData.date);
+        contentValues.put(DBConstants.WAREHOUSE, inventoryData.warehouse);
+        contentValues.put(DBConstants.VENDOR, inventoryData.vendor);
+        contentValues.put(DBConstants.BARCODE, inventoryData.barcode);
+        contentValues.put(DBConstants.PHOTO, inventoryData.photo);
+        contentValues.put(DBConstants.ID, inventoryData.id);
+        contentValues.put(DBConstants.STATUS, inventoryData.status);
+        contentValues.put(DBConstants.ADMIN_ID, inventoryData.admin_id);
+        contentValues.put(DBConstants.CREATE_DATE, inventoryData.create_date);
+        contentValues.put(DBConstants.UPDATE_DATE, inventoryData.update_date);
+        return db.insert(DBConstants.INVENTORY_TABLE, null, contentValues);
+    }
+
+    public boolean deleteInventory(String itemCode) {
+        return db.delete(DBConstants.INVENTORY_TABLE, DBConstants.ITEM_CODE + "='" + itemCode + "'", null) > 0;
+    }
+
+    public boolean updateInventory(String status, String itemCode) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.STATUS, status);
+        return db.update(DBConstants.INVENTORY_TABLE, contentValues, DBConstants.ITEM_CODE + "='" + itemCode + "'", null) > 0;
+    }
+
+    public ArrayList<Inventory.InventoryData> getInventory() {
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DBConstants.INVENTORY_TABLE, null,
+                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    null, null, null);
+
+            if (cursor.moveToFirst()) {
+                List<Inventory.InventoryData> inventories = new ArrayList<>();
+                do {
+
+                    Inventory.InventoryData inventoryData = new Inventory().new InventoryData();
+                    inventoryData.item_code = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ITEM_CODE)));
+                    inventoryData.item_name = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ITEM_NAME)));
+                    inventoryData.unit = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.UNIT)));
+                    inventoryData.qty = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.QUANTITY)));
+                    inventoryData.price = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.PRICE)));
+                    inventoryData.mycost = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.MY_COST)));
+                    inventoryData.date = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.DATE)));
+                    inventoryData.warehouse = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.WAREHOUSE)));
+                    inventoryData.vendor = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.VENDOR)));
+                    inventoryData.barcode = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.BARCODE)));
+                    inventoryData.photo = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.PHOTO)));
+                    inventoryData.id = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ID)));
+                    inventoryData.admin_id = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ADMIN_ID)));
+                    inventoryData.status = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.STATUS)));
+                    inventoryData.create_date = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.CREATE_DATE)));
+                    inventoryData.update_date = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.UPDATE_DATE)));
+                    inventories.add(inventoryData);
+                } while (cursor.moveToNext());
+
+                return (ArrayList<Inventory.InventoryData>) inventories;
             }
         } catch (IllegalArgumentException e) {
             Log.d(TAG, e.toString());

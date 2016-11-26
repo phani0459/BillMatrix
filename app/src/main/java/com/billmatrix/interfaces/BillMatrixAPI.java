@@ -2,6 +2,7 @@ package com.billmatrix.interfaces;
 
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
+import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Vendor;
 
@@ -40,6 +41,10 @@ public interface BillMatrixAPI {
     @FormUrlEncoded
     @POST("admin_customers")
     Call<Customer> getAdminCustomers(@Field("admin_id") String adminId);
+
+    @FormUrlEncoded
+    @POST("admin_inventories")
+    Call<Inventory> getAdminInventory(@Field("admin_id") String adminId);
 
     @FormUrlEncoded
     @POST("delete_employee")
@@ -88,4 +93,17 @@ public interface BillMatrixAPI {
     @POST("admin_vendors")
     Call<Vendor> getAdminVendors(@Field("admin_id") String adminId);
 
+    @FormUrlEncoded
+    @POST("create_inventory")
+    Call<HashMap<String, String>> addInventory(@Field("admin_id") String adminId, @Field("item_code") String item_code, @Field("item_name") String item_name,
+                                               @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
+                                               @Field("date") String date, @Field("warehouse") String warehouse, @Field("vendor") String vendor,
+                                               @Field("barcode") String barcode, @Field("photo") String photo, @Field("status") String status);
+
+    @FormUrlEncoded
+    @POST("update_inventory")
+    Call<HashMap<String,String>> updateInventory(@Field("id") String id, @Field("item_code") String item_code, @Field("item_name") String item_name,
+                                                 @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
+                                                 @Field("date") String date, @Field("warehouse") String warehouse, @Field("vendor") String vendor,
+                                                 @Field("barcode") String barcode, @Field("photo") String photo, @Field("status") String status);
 }

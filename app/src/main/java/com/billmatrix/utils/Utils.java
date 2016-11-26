@@ -12,8 +12,10 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -50,15 +52,21 @@ public class Utils {
         return billMatrixAPI;
     }
 
-    public static DatePickerDialog dateDialog(Context mContext, final EditText fromEditText, boolean onlyPastDates) {
-        hideSoftKeyboard(fromEditText);
+    public static DatePickerDialog dateDialog(Context mContext, final Object fromEditText, boolean onlyPastDates) {
+        if (fromEditText instanceof EditText) {
+            hideSoftKeyboard((EditText) fromEditText);
+        }
         Calendar newCalendar = Calendar.getInstance();
         DatePickerDialog fromDatePickerDialog = new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
 
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
-                fromEditText.setText(Constants.getDateFormat().format(newDate.getTime()));
+                if (fromEditText instanceof EditText) {
+                    ((EditText) fromEditText).setText(Constants.getDateFormat().format(newDate.getTime()));
+                } else {
+                    ((Button) fromEditText).setText(Constants.getDateFormat().format(newDate.getTime()));
+                }
             }
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));

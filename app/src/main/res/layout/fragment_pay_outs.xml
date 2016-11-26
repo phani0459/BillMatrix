@@ -106,18 +106,39 @@
             android:padding="6dp"
             android:textColor="@android:color/black" />
 
-        <Spinner
-            android:id="@+id/sp_pay_outs_payment"
-            style="@style/spinner_style"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginRight="12dp"
             android:layout_weight="1.2"
-            android:entries="@array/employee_status"
-            android:padding="6dp"
-            android:textColor="@android:color/black" />
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Spinner
+                android:id="@+id/sp_pay_outs_payment"
+                style="@style/spinner_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/employee_status"
+                android:padding="6dp"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/et_payment_mode"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edit_text_border"
+                android:padding="6dp"
+                android:textColor="@android:color/black"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <EditText
+            android:id="@+id/et_payouts_date"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -127,7 +148,6 @@
             android:gravity="center"
             android:inputType="date"
             android:maxLength="12"
-            android:id="@+id/et_payouts_date"
             android:padding="6dp"
             android:textColor="@android:color/black" />
 

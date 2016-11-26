@@ -60,6 +60,7 @@
         </RelativeLayout>
 
         <HorizontalScrollView
+            android:id="@+id/inven_horzScroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none">
@@ -227,6 +228,7 @@
                         android:textColor="@android:color/black" />
 
                     <EditText
+                        android:id="@+id/et_inven_item_code"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -239,6 +241,7 @@
                         android:textColor="@android:color/black" />
 
                     <EditText
+                        android:id="@+id/et_inven_item_name"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -250,18 +253,38 @@
                         android:singleLine="true"
                         android:textColor="@android:color/black" />
 
-                    <Spinner
-                        android:id="@+id/sp_inven_unit"
-                        style="@style/spinner_style"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_marginRight="12dp"
-                        android:entries="@array/units_array"
+                        android:gravity="center"
                         android:minWidth="104dp"
-                        android:padding="6dp"
-                        android:textColor="@android:color/black" />
+                        android:orientation="vertical">
+
+                        <Spinner
+                            android:id="@+id/sp_inven_unit"
+                            style="@style/spinner_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/units_array"
+                            android:padding="6dp"
+                            android:textColor="@android:color/black" />
+
+                        <EditText
+                            android:id="@+id/et_custom_unit"
+                            style="@style/Base.TextAppearance.AppCompat.Caption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/edit_text_border"
+                            android:padding="6dp"
+                            android:textColor="@android:color/black"
+                            android:visibility="gone" />
+                    </LinearLayout>
 
                     <EditText
+                        android:id="@+id/et_inven_qty"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -275,6 +298,7 @@
                         android:textColor="@android:color/black" />
 
                     <EditText
+                        android:id="@+id/et_inven_price"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -288,6 +312,7 @@
                         android:textColor="@android:color/black" />
 
                     <EditText
+                        android:id="@+id/et_inven_my_cost"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -314,6 +339,7 @@
                         android:textColor="@android:color/black" />
 
                     <EditText
+                        android:id="@+id/et_inven_ware_house"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -337,6 +363,7 @@
                         android:textColor="@android:color/black" />
 
                     <EditText
+                        android:id="@+id/et_inven_bar_code"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -350,6 +377,7 @@
                         android:textColor="@android:color/black" />
 
                     <EditText
+                        android:id="@+id/et_inven_photo"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -372,6 +400,7 @@
                         android:orientation="horizontal">
 
                         <Button
+                            android:id="@+id/btnAddInventory"
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="32dp"

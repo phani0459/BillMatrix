@@ -9,6 +9,7 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -34,6 +35,8 @@ public class PayOutsFragment extends Fragment {
     public Spinner modePaymentSpinner;
     @BindView(R.id.et_payouts_date)
     public EditText dateEditText;
+    @BindView(R.id.et_payment_mode)
+    public EditText otherPaymentEditText;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
@@ -75,6 +78,30 @@ public class PayOutsFragment extends Fragment {
                     datePickerDialog.show();
                 }
                 v.clearFocus();
+            }
+        });
+
+        modePaymentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedMode = parent.getAdapter().getItem(position).toString();
+                if (selectedMode.equalsIgnoreCase("cash")) {
+                    otherPaymentEditText.setVisibility(View.GONE);
+                } else {
+                    otherPaymentEditText.setVisibility(View.VISIBLE);
+                    if (selectedMode.equalsIgnoreCase("card")) {
+                        otherPaymentEditText.setHint("Last 4 digits of card");
+                    } else if (selectedMode.equalsIgnoreCase("cheque")) {
+                        otherPaymentEditText.setHint("Cheque No.");
+                    } else if (selectedMode.equalsIgnoreCase("other")) {
+                        otherPaymentEditText.setHint("Payment Mode");
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 

@@ -253,7 +253,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         } else {
             showToast("Employee Login Id must be unique");
         }
-        addEmpButton.setText("ADD");
+        addEmpButton.setText(getString(R.string.add));
     }
 
     private void updateEmployeetoServer(Employee.EmployeeData employeeData) {
@@ -350,7 +350,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 });
                 break;
             case 2:
-                addEmpButton.setText("SAVE");
+                addEmpButton.setText(getString(R.string.save));
                 selectedEmptoEdit = employeesAdapter.getItem(position);
                 empName_EditText.setText(selectedEmptoEdit.username);
                 empLoginId_EditText.setText(selectedEmptoEdit.login_id);

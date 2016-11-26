@@ -201,6 +201,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         }
 
         if (addVendorButton.getText().toString().equalsIgnoreCase("ADD")) {
+            vendorData.id = "_new";
             vendorData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
         } else {
             if (selectedVendortoEdit != null) {
@@ -341,7 +342,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
 
             if (vendors != null && vendors.size() > 0) {
                 for (Vendor.VendorData vendorData : vendors) {
-                    if (vendorData.name.contains(query)) {
+                    if (vendorData.name.contains(query) || vendorData.id.contains(query)) {
                         vendorsAdapter.addVendor(vendorData);
                     }
                 }

@@ -205,10 +205,6 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         });
     }
 
-    public void showToast(String msg) {
-        Toast.makeText(mContext, msg + "", Toast.LENGTH_LONG).show();
-    }
-
     @OnClick(R.id.btnAddInventory)
     public void addInventory() {
         Utils.hideSoftKeyboard(itemCodeEditText);
@@ -217,28 +213,28 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         String itemCode = itemCodeEditText.getText().toString();
 
         if (TextUtils.isEmpty(itemCode)) {
-            showToast("Enter Item Code");
+            ((BaseTabActivity) mContext).showToast("Enter Item Code");
             return;
         }
 
         String itemName = itemNameeEditText.getText().toString();
 
         if (TextUtils.isEmpty(itemName)) {
-            showToast("Enter Item Name");
+            ((BaseTabActivity) mContext).showToast("Enter Item Name");
             return;
         }
 
         String unit = unitSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(unit)) {
-            showToast("Select Unit");
+            ((BaseTabActivity) mContext).showToast("Select Unit");
             return;
         }
 
         if (unit.equalsIgnoreCase("Other")) {
             unit = customUnitEditText.getText().toString();
             if (TextUtils.isEmpty(unit)) {
-                showToast("Enter Custom Unit");
+                ((BaseTabActivity) mContext).showToast("Enter Custom Unit");
                 return;
             }
         }
@@ -246,28 +242,28 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         String qty = qtyEditText.getText().toString();
 
         if (TextUtils.isEmpty(qty)) {
-            showToast("Enter Quantity");
+            ((BaseTabActivity) mContext).showToast("Enter Quantity");
             return;
         }
 
         String price = priceEditText.getText().toString();
 
         if (TextUtils.isEmpty(price)) {
-            showToast("Enter Price");
+            ((BaseTabActivity) mContext).showToast("Enter Price");
             return;
         }
 
         String myCost = myCostEditText.getText().toString();
 
         if (TextUtils.isEmpty(myCost)) {
-            showToast("Enter Cost");
+            ((BaseTabActivity) mContext).showToast("Enter Cost");
             return;
         }
 
         String date = dateEditText.getText().toString();
 
         if (TextUtils.isEmpty(date)) {
-            showToast("Select Date");
+            ((BaseTabActivity) mContext).showToast("Select Date");
             return;
         }
 
@@ -276,14 +272,14 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         String vendor = vendorSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(vendor) || vendor.equalsIgnoreCase("select vendor")) {
-            showToast("Select Vendor");
+            ((BaseTabActivity) mContext).showToast("Select Vendor");
             return;
         }
 
         String barcode = barCodeEditText.getText().toString();
 
         if (TextUtils.isEmpty(barcode)) {
-            showToast("Scan Item For Barcode");
+            ((BaseTabActivity) mContext).showToast("Scan Item For Barcode");
             return;
         }
 
@@ -398,7 +394,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         Log.e(TAG, "addInventorytoServer: ");
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addInventory(adminId, inventoryData.item_code, inventoryData.item_name,
                 inventoryData.unit, inventoryData.qty, inventoryData.price, inventoryData.mycost, inventoryData.date, inventoryData.warehouse, inventoryData.vendor,
-                inventoryData.barcode, inventoryData.photo , "1");
+                inventoryData.barcode, inventoryData.photo, "1");
 
         call.enqueue(new Callback<HashMap<String, String>>() {
 
@@ -496,5 +492,38 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
             return 6;
         }
         return 0;
+    }
+
+    public void searchClosed() {
+        Log.e(TAG, "searchClosed: ");
+
+        inventoryAdapter.removeAllInventories();
+
+        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+
+        if (inventories != null && inventories.size() > 0) {
+            for (Inventory.InventoryData inventoryData : inventories) {
+                inventoryAdapter.addInventory(inventoryData);
+            }
+        }
+    }
+
+    public void searchClicked(String query) {
+        Log.e(TAG, "searchClicked: " + query);
+        if (query.length() > 0) {
+            query = query.toLowerCase();
+            inventoryAdapter.removeAllInventories();
+
+            ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+
+            if (inventories != null && inventories.size() > 0) {
+                for (Inventory.InventoryData inventoryData : inventories) {
+                    if (inventoryData.barcode.toLowerCase().contains(query) || inventoryData.item_name.toLowerCase().contains(query) ||
+                            inventoryData.item_code.toLowerCase().contains(query)) {
+                        inventoryAdapter.addInventory(inventoryData);
+                    }
+                }
+            }
+        }
     }
 }

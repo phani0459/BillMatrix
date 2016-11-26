@@ -76,11 +76,16 @@ public class InventoryActivity extends BaseTabActivity {
                                 if (vendorsFragment != null) {
                                     vendorsFragment.searchClosed();
                                 }
+                            } else {
+                                if (inventoryFragment != null) {
+                                    inventoryFragment.searchClosed();
+                                }
                             }
                         }
                         return false;
                     }
                 }
+                v.clearFocus();
                 return false;
             }
         });
@@ -93,6 +98,10 @@ public class InventoryActivity extends BaseTabActivity {
                     if (selectedTab.equalsIgnoreCase("Vendors")) {
                         if (vendorsFragment != null) {
                             vendorsFragment.searchClicked(searchView.getText().toString());
+                        }
+                    } else {
+                        if (inventoryFragment != null) {
+                            inventoryFragment.searchClicked(searchView.getText().toString());
                         }
                     }
                     return true;

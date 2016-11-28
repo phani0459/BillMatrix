@@ -46,6 +46,11 @@ public class BillMatrixDBHandler extends DBHandler {
             + DBConstants.BARCODE + " VARCHAR," + DBConstants.PHOTO + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.ID + " VARCHAR,"
             + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR" + ")";
 
+    public final static String CREATE_TAX_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + DBConstants.TAX_TABLE + " (" + DBConstants.SNO
+            + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.TAX_TYPE + " VARCHAR UNIQUE," + DBConstants.ID + " VARCHAR," + DBConstants.TAX_DESC + " VARCHAR,"
+            + DBConstants.TAX_RATE + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.STATUS + " VARCHAR,"
+            + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR" + ")";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -53,6 +58,7 @@ public class BillMatrixDBHandler extends DBHandler {
         db.execSQL(CREATE_VENDOR_TABLE);
         db.execSQL(CREATE_CUSTOMER_TABLE);
         db.execSQL(CREATE_INVENTORY_TABLE);
+        db.execSQL(CREATE_TAX_TABLE);
     }
 
     @Override

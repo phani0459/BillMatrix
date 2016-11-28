@@ -18,6 +18,7 @@ public class Tax implements Serializable{
         public String taxDescription;
         public String taxRate;
         public String admin_id;
+        public String status;
         public String create_date;
         public String update_date;
     }

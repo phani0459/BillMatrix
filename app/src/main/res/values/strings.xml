@@ -182,4 +182,20 @@
     <string name="discount_desc">DISCOUNT DESCRIPTION</string>
     <string name="discount_code">DISCOUNT CODE</string>
     <string name="discount">DISCOUNT</string>
+
+    <!-- Store Strings-->
+    <string name="store_name">Store Name</string>
+    <string name="address_1">Address 1</string>
+    <string name="add_2">Address 2</string>
+    <string name="city_state">City, State</string>
+    <string name="zip_code">Zip Code</string>
+    <string name="vat_tin">VAT TIN#</string>
+    <string name="cst_no">CST NO</string>
+    <string name="phone_mobile">Phone / Mobile</string>
+    <string name="bill_header">BILL HEADER</string>
+    <string name="bill_footer">BILL FOOTER</string>
+    <string name="thanku_visit_again">THANK YOU \n VISIT AGAIN</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

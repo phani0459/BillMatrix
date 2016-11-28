@@ -9,6 +9,7 @@ import android.util.Log;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 
 import java.util.ArrayList;
@@ -360,7 +361,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             if (cursor.moveToFirst()) {
                 List<Inventory.InventoryData> inventories = new ArrayList<>();
                 do {
-
                     Inventory.InventoryData inventoryData = new Inventory().new InventoryData();
                     inventoryData.item_code = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ITEM_CODE)));
@@ -398,6 +398,66 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 } while (cursor.moveToNext());
 
                 return (ArrayList<Inventory.InventoryData>) inventories;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    /*************************************************
+     * ********* TAX METHODS ********************
+     *************************************************/
+
+    public long addTax(Tax.TaxData taxData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.TAX_TYPE, taxData.taxType);
+        contentValues.put(DBConstants.TAX_DESC, taxData.taxDescription);
+        contentValues.put(DBConstants.TAX_RATE, taxData.taxRate);
+        contentValues.put(DBConstants.ID, taxData.id);
+        contentValues.put(DBConstants.ADMIN_ID, taxData.admin_id);
+        contentValues.put(DBConstants.STATUS, taxData.status);
+        contentValues.put(DBConstants.CREATE_DATE, taxData.create_date);
+        contentValues.put(DBConstants.UPDATE_DATE, taxData.update_date);
+        return db.insert(DBConstants.TAX_TABLE, null, contentValues);
+    }
+
+    public ArrayList<Tax.TaxData> getTax() {
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DBConstants.TAX_TABLE, null,
+                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    null, null, null);
+
+            if (cursor.moveToFirst()) {
+                List<Tax.TaxData> taxes = new ArrayList<>();
+                do {
+                    Log.e(TAG, "getTax: " );
+                    Tax.TaxData tax = new Tax().new TaxData();
+                    tax.taxType = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.TAX_TYPE));
+                    tax.taxDescription = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.TAX_DESC));
+                    tax.taxRate = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.TAX_RATE));
+                    tax.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ID));
+                    tax.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ADMIN_ID));
+                    tax.status = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.STATUS));
+                    tax.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.UPDATE_DATE));
+                    tax.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.CREATE_DATE));
+                    taxes.add(tax);
+                } while (cursor.moveToNext());
+
+                return (ArrayList<Tax.TaxData>) taxes;
             }
         } catch (IllegalArgumentException e) {
             Log.d(TAG, e.toString());

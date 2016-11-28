@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ import butterknife.OnClick;
  */
 public class TaxFragment extends Fragment implements OnItemClickListener {
 
+    private static final String TAG = TaxFragment.class.getSimpleName();
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
     @BindView(R.id.sp_tax_type)
@@ -52,6 +54,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
     @BindView(R.id.taxTypesList)
     public RecyclerView taxTypeRecyclerView;
     public TaxAdapter taxAdapter;
+    private String adminId;
 
     public TaxFragment() {
         // Required empty public constructor
@@ -76,6 +79,24 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         taxAdapter = new TaxAdapter(taxes, this);
         taxTypeRecyclerView.setAdapter(taxAdapter);
 
+        taxes = billMatrixDaoImpl.getTax();
+        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+
+        if (taxes != null && taxes.size() > 0) {
+            Log.e(TAG, "onCreateView: " + taxes.size() );
+            for (Tax.TaxData taxData : taxes) {
+                if (!taxData.status.equalsIgnoreCase("-1")) {
+                    taxAdapter.addTax(taxData);
+                }
+            }
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(adminId)) {
+//                    getCustomersFromServer(adminId);
+                }
+            }
+        }
+
         return v;
     }
 
@@ -95,22 +116,23 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
                 taxData.taxType = taxType;
                 taxData.taxDescription = desc;
                 taxData.taxRate = rate;
+                taxData.status = "1";
 
-                //long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
+                long taxAdded = billMatrixDaoImpl.addTax(taxData);
 
-                //if (vendorAdded != -1) {
+                if (taxAdded != -1) {
                     taxAdapter.addTax(taxData);
                     taxTypeRecyclerView.smoothScrollToPosition(taxAdapter.getItemCount());
 
-                        /*
-                         * reset all edit texts
-                         */
-                taxTypeSpinner.setSelection(0);
-                taxRateEditText.setText("");
-                taxDescEditText.setText("");
-                //} else {
-                //   ((BaseTabActivity) mContext).showToast("Vendor Email / Phone must be unique");
-                //}
+                    /**
+                     * reset all edit texts
+                     */
+                    taxTypeSpinner.setSelection(0);
+                    taxRateEditText.setText("");
+                    taxDescEditText.setText("");
+                } else {
+                    ((BaseTabActivity) mContext).showToast("Tax Type must be unique");
+                }
             } else {
                 ((BaseTabActivity) mContext).showToast("Enter Tax rate");
             }
@@ -123,7 +145,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
-                ((BaseTabActivity)mContext).showAlertDialog("Are you sure?", "You want to delete Tax Type", new DialogInterface.OnClickListener() {
+                ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Tax Type", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         billMatrixDaoImpl.deleteEmployee(taxAdapter.getItem(position).id);

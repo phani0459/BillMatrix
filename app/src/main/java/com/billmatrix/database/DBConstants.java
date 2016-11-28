@@ -31,6 +31,7 @@ public class DBConstants {
     public final static String VENDORS_TABLE = "TABLE_VENDORS";
     public final static String CUSTOMERS_TABLE = "TABLE_CUSTOMERS";
     public final static String INVENTORY_TABLE = "TABLE_INVENTORY";
+    public final static String TAX_TABLE = "TABLE_TAX";
 
     /**
      * Employees Column Names
@@ -67,6 +68,14 @@ public class DBConstants {
     public final static String VENDOR = "vendor";
     public final static String BARCODE = "barCode";
     public final static String PHOTO = "photo";
+
+
+    /**
+     * TAX Column Names
+     */
+    public final static String TAX_TYPE = "taxType";
+    public final static String TAX_DESC = "taxDescription";
+    public final static String TAX_RATE = "taxRate";
 
     public static final String TAG = "BillMatrix_DataBase";
 }

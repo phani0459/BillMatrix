@@ -9,6 +9,7 @@ import com.billmatrix.fragments.DiscountsFragment;
 import com.billmatrix.fragments.GenExpensesFragment;
 import com.billmatrix.fragments.PayInsFragment;
 import com.billmatrix.fragments.SalesFragment;
+import com.billmatrix.fragments.StoreFragment;
 import com.billmatrix.fragments.TaxFragment;
 import com.billmatrix.utils.Utils;
 
@@ -44,9 +45,9 @@ public class SettingsActivity extends BaseTabActivity {
 
         if (selectedTab.equalsIgnoreCase("STORE")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new SalesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new StoreFragment()).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new SalesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new StoreFragment()).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("DATABASE")) {
             if (isInit) {

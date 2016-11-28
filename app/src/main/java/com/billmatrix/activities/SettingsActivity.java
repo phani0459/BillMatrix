@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.billmatrix.R;
+import com.billmatrix.fragments.DatabaseFragment;
 import com.billmatrix.fragments.DiscountsFragment;
 import com.billmatrix.fragments.GenExpensesFragment;
 import com.billmatrix.fragments.PayInsFragment;
@@ -51,9 +52,9 @@ public class SettingsActivity extends BaseTabActivity {
             }
         } else if (selectedTab.equalsIgnoreCase("DATABASE")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new PayInsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new DatabaseFragment()).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PayInsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new DatabaseFragment()).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("TAX")) {
             if (isInit) {

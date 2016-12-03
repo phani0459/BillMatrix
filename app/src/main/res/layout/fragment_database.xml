@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="8dp"
-            android:drawableRight="@drawable/edit_icon"
+            android:drawableRight="@drawable/sync_all"
             android:gravity="center"
             android:text="@string/sync_all"
             android:textColor="@android:color/black" />

@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.3"
             android:gravity="center"
             android:text="@string/sno"
             android:textColor="@android:color/black" />
@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="2.2"
+            android:layout_weight="2.4"
             android:gravity="center"
             android:text="@string/discount_desc"
             android:textColor="@android:color/black" />
@@ -78,22 +78,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.3"
             android:gravity="center"
             android:padding="6dp"
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_disc_desc"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="2.2"
+            android:layout_weight="2.4"
             android:background="@drawable/edit_text_border"
             android:padding="6dp"
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_disc_code"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -104,6 +106,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
+            android:id="@+id/et_disc_value"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -137,4 +140,10 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/discountsList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none" />
 </LinearLayout>

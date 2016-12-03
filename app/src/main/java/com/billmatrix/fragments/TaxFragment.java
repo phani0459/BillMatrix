@@ -83,7 +83,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         if (taxes != null && taxes.size() > 0) {
-            Log.e(TAG, "onCreateView: " + taxes.size() );
+            Log.e(TAG, "onCreateView: " + taxes.size());
             for (Tax.TaxData taxData : taxes) {
                 if (!taxData.status.equalsIgnoreCase("-1")) {
                     taxAdapter.addTax(taxData);
@@ -148,7 +148,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Tax Type", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.deleteEmployee(taxAdapter.getItem(position).id);
+                        billMatrixDaoImpl.deleteTax(taxAdapter.getItem(position).taxType);
                         taxAdapter.deleteTax(position);
                     }
                 });

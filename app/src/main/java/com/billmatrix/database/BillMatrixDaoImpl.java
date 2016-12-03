@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.billmatrix.models.Customer;
+import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Tax;
@@ -426,6 +427,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.insert(DBConstants.TAX_TABLE, null, contentValues);
     }
 
+    public boolean deleteTax(String taxType) {
+        return db.delete(DBConstants.TAX_TABLE, DBConstants.TAX_TYPE + "='" + taxType + "'", null) > 0;
+    }
+
     public ArrayList<Tax.TaxData> getTax() {
         Cursor cursor = null;
         try {
@@ -436,7 +441,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             if (cursor.moveToFirst()) {
                 List<Tax.TaxData> taxes = new ArrayList<>();
                 do {
-                    Log.e(TAG, "getTax: " );
+                    Log.e(TAG, "getTax: ");
                     Tax.TaxData tax = new Tax().new TaxData();
                     tax.taxType = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.TAX_TYPE));
@@ -458,6 +463,70 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 } while (cursor.moveToNext());
 
                 return (ArrayList<Tax.TaxData>) taxes;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    /*************************************************
+     * ********* DISCOUNT METHODS ********************
+     *************************************************/
+
+    public long addDiscount(Discount.DiscountData discountData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.DISCOUNT_CODE, discountData.discount_code);
+        contentValues.put(DBConstants.DISCOUNT_DESC, discountData.discountDescription);
+        contentValues.put(DBConstants.DISCOUNT_VALUE, discountData.discount);
+        contentValues.put(DBConstants.ID, discountData.id);
+        contentValues.put(DBConstants.ADMIN_ID, discountData.admin_id);
+        contentValues.put(DBConstants.STATUS, discountData.status);
+        contentValues.put(DBConstants.CREATE_DATE, discountData.create_date);
+        contentValues.put(DBConstants.UPDATE_DATE, discountData.update_date);
+        return db.insert(DBConstants.DISCOUNT_TABLE, null, contentValues);
+    }
+
+    public boolean deleteDiscount(String discCode) {
+        return db.delete(DBConstants.DISCOUNT_TABLE, DBConstants.DISCOUNT_CODE + "='" + discCode + "'", null) > 0;
+    }
+
+    public ArrayList<Discount.DiscountData> getDiscount() {
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DBConstants.DISCOUNT_TABLE, null,
+                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    null, null, null);
+
+            if (cursor.moveToFirst()) {
+                List<Discount.DiscountData> discounts = new ArrayList<>();
+                do {
+                    Log.e(TAG, "getTax: ");
+                    Discount.DiscountData discount = new Discount().new DiscountData();
+                    discount.discount_code = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.DISCOUNT_CODE));
+                    discount.discountDescription = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.DISCOUNT_DESC));
+                    discount.discount = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.DISCOUNT_VALUE));
+                    discount.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ID));
+                    discount.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ADMIN_ID));
+                    discount.status = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.STATUS));
+                    discount.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.UPDATE_DATE));
+                    discount.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.CREATE_DATE));
+                    discounts.add(discount);
+                } while (cursor.moveToNext());
+
+                return (ArrayList<Discount.DiscountData>) discounts;
             }
         } catch (IllegalArgumentException e) {
             Log.d(TAG, e.toString());

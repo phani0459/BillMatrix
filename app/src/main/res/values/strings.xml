@@ -213,4 +213,10 @@
     <string name="sync">SYNC</string>
     <string name="sync_all">SYNC ALL</string>
 
+    <!-- POS Strings-->
+    <string name="sell_item">SELL ITEM</string>
+    <string name="PAY">PAY</string>
+    <string name="credit">CREDIT</string>
+    <string name="INVENTORY">INVENTORY</string>
+
 </resources>

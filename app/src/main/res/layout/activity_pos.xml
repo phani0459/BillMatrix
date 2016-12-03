@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_base_tab"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/headerBG"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.billmatrix.activities.BaseTabActivity">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:background="@color/headerBG"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <ImageView
             android:layout_width="90dp"
@@ -24,7 +20,6 @@
             android:src="@drawable/billmatrix_base_logo" />
 
         <TextView
-            android:id="@+id/navigateTextView"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,7 +28,8 @@
             android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:textColor="@color/navigateTextColor" />
+            android:textColor="@color/navigateTextColor"
+            android:visibility="gone" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -127,70 +123,83 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <!-- <HorizontalScrollView
-         android:id="@+id/horzLayout"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:paddingLeft="16dp"
-         android:paddingRight="16dp"
-         android:scrollbars="none">-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:background="@color/headerBG"
         android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:paddingTop="8dp"
         android:weightSum="10">
 
         <LinearLayout
-            android:id="@+id/layout"
-            android:layout_width="wrap_content"
+            android:id="@+id/pos_tabs_layout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:orientation="horizontal"
-            android:paddingRight="16dp" />
+            android:layout_marginRight="4dp"
+            android:layout_weight="4"
+            android:orientation="horizontal" />
 
         <include
-            android:id="@+id/searchLayout"
-            layout="@layout/search_layout"
+            layout="@layout/pos_search_layout"
             android:layout_width="0dp"
             android:layout_height="54dp"
-            android:layout_weight="7"
-            android:visibility="gone" />
+            android:layout_marginLeft="4dp"
+            android:layout_weight="6"
+            android:visibility="visible" />
     </LinearLayout>
-    <!--</HorizontalScrollView>-->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bodyBG"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:orientation="horizontal"
+        android:paddingBottom="16dp"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:paddingRight="16dp"
+        android:weightSum="10">
 
-        <include
-            android:id="@+id/profile"
-            layout="@layout/activity_profile"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:layout_marginRight="4dp"
+            android:layout_weight="4"
+            android:orientation="vertical"
+            android:weightSum="10">
 
-        <include
-            android:id="@+id/employees"
-            layout="@layout/activity_employees"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="6"
+                android:background="@drawable/layout_border"
+                android:orientation="vertical">
 
-        <FrameLayout
-            android:id="@+id/frameLayout"
-            android:layout_width="match_parent"
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="4"
+                android:background="@drawable/layout_border"
+                android:orientation="vertical">
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="6"
             android:background="@drawable/layout_border"
-            android:visibility="gone" />
+            android:orientation="vertical">
 
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

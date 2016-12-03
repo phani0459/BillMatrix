@@ -52,6 +52,9 @@
         <activity
             android:name=".activities.SettingsActivity"
             android:screenOrientation="landscape" />
+        <activity
+            android:name=".activities.POSActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

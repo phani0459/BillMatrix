@@ -3,10 +3,13 @@ package com.billmatrix.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -112,7 +115,7 @@ public class ControlPanelActivity extends AppCompatActivity {
     }
 
     private void getEmployeeProfileFromServer() {
-        final String empId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_EMP_ID, null);
+        final String empId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_EMP_LOGIN_ID, null);
         if (!FileUtils.isFileExists(Constants.EMPLOYEE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(empId)) {
@@ -392,7 +395,43 @@ public class ControlPanelActivity extends AppCompatActivity {
         reportsLinearLayout.setEnabled(false);
         customersLinearLayout.setEnabled(false);
         employeesLinearLayout.setEnabled(false);
+    }
 
+    public void removePreferences() {
+        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, false).apply();
+        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, null).apply();
+        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_LOGIN_ID, "").apply();
+        FileUtils.deleteFile(mContext, Constants.EMPLOYEE_FILE_NAME);
+    }
+
+    @OnClick(R.id.im_logout)
+    public void logout() {
+        showAlertDialog(getString(R.string.logout), getString(R.string.wanna_logout), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                removePreferences();
+                // to remove any activities that are in stack
+                ActivityCompat.finishAffinity(ControlPanelActivity.this);
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void showAlertDialog(String title, String msg, DialogInterface.OnClickListener okayClickListner) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(title);
+        builder.setMessage(msg);
+        builder.setPositiveButton(getString(android.R.string.yes), okayClickListner);
+        builder.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     @OnClick(R.id.ll_profile)

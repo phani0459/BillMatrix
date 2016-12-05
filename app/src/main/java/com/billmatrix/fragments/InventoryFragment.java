@@ -20,14 +20,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.InventoryAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.Customer;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
@@ -94,9 +92,12 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
     public TextView generatedBarCodeTextView;
     @BindView(R.id.et_noOfCodes)
     public EditText noOfCodesEditText;
+    @BindView(R.id.tv_inven_no_results)
+    public TextView noResultsTextView;
 
     private String adminId;
     private Inventory.InventoryData selectedInventorytoEdit;
+    public boolean isEditing;
 
     public InventoryFragment() {
         // Required empty public constructor
@@ -291,10 +292,10 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
 
         String barcode = barCodeEditText.getText().toString();
 
-        if (TextUtils.isEmpty(barcode)) {
+        /*if (TextUtils.isEmpty(barcode)) {
             ((BaseTabActivity) mContext).showToast("Scan Item For Barcode");
             return;
-        }
+        }*/
 
         String photo = photoEditText.getText().toString();
 
@@ -359,9 +360,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                     }
                 }
             }
-
+            isEditing = false;
+            addInventoryButton.setText(getString(R.string.add));
+        } else {
+            ((BaseTabActivity) mContext).showToast("Item Code must be unique");
         }
-        addInventoryButton.setText(getString(R.string.add));
     }
 
     private void updateInventorytoServer(Inventory.InventoryData inventoryData) {
@@ -501,26 +504,29 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
     }
 
     private int getUnitSelection(String unit) {
-        if (unit.equalsIgnoreCase("KG's")) {
+        if (unit.equalsIgnoreCase("KGs")) {
             return 0;
-        } else if (unit.equalsIgnoreCase("GM's")) {
+        } else if (unit.equalsIgnoreCase("GMs")) {
             return 1;
-        } else if (unit.equalsIgnoreCase("LTR's")) {
+        } else if (unit.equalsIgnoreCase("LTRs")) {
             return 2;
-        } else if (unit.equalsIgnoreCase("ML's")) {
+        } else if (unit.equalsIgnoreCase("MLs")) {
             return 3;
-        } else if (unit.equalsIgnoreCase("PC's")) {
+        } else if (unit.equalsIgnoreCase("PCs")) {
             return 4;
-        } else if (unit.equalsIgnoreCase("NO's")) {
+        } else if (unit.equalsIgnoreCase("NOs")) {
             return 5;
-        } else if (unit.equalsIgnoreCase("Other")) {
+        } else if (unit.equalsIgnoreCase("units")) {
             return 6;
+        } else if (unit.equalsIgnoreCase("Other")) {
+            return 7;
         }
         return 0;
     }
 
     public void searchClosed() {
         Log.e(TAG, "searchClosed: ");
+        noResultsTextView.setVisibility(View.GONE);
 
         inventoryAdapter.removeAllInventories();
 
@@ -536,6 +542,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
     public void searchClicked(String query) {
         Log.e(TAG, "searchClicked: " + query);
         if (query.length() > 0) {
+            noResultsTextView.setVisibility(View.GONE);
+            boolean noInventory = false;
             query = query.toLowerCase();
             inventoryAdapter.removeAllInventories();
 
@@ -545,9 +553,14 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 for (Inventory.InventoryData inventoryData : inventories) {
                     if (inventoryData.barcode.toLowerCase().contains(query) || inventoryData.item_name.toLowerCase().contains(query) ||
                             inventoryData.item_code.toLowerCase().contains(query)) {
+                        noInventory = true;
                         inventoryAdapter.addInventory(inventoryData);
                     }
                 }
+            }
+
+            if (!noInventory) {
+                noResultsTextView.setVisibility(View.VISIBLE);
             }
         }
     }

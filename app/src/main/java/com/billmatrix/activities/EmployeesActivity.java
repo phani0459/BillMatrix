@@ -63,6 +63,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
     private EmployeesAdapter employeesAdapter;
     private String adminId;
     private Employee.EmployeeData selectedEmptoEdit;
+    private Profile profilefromFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +86,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         List<Employee.EmployeeData> employees = new ArrayList<>();
         try {
             String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
-            Profile profilefromFile = Constants.getGson().fromJson(profileString, Profile.class);
+            profilefromFile = Constants.getGson().fromJson(profileString, Profile.class);
             storeAdminEditText.setText(profilefromFile.data.username.toUpperCase());
             locationEditText.setText(profilefromFile.data.location != null ? profilefromFile.data.location.toUpperCase() : "");
             branchAdminEditText.setText(profilefromFile.data.branch != null ? profilefromFile.data.branch.toUpperCase() : "");
@@ -175,6 +176,11 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             return;
         }
 
+        if (profilefromFile != null && profilefromFile.data != null && empId.equalsIgnoreCase(profilefromFile.data.login_id)) {
+            showToast("Employee Id must not be same as admin Id");
+            return;
+        }
+
         if (empId.length() < 6) {
             showToast("Login Id must be more than 6 characters");
             return;
@@ -250,10 +256,11 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     }
                 }
             }
+            addEmpButton.setText(getString(R.string.add));
+            isEditing = false;
         } else {
             showToast("Employee Login Id must be unique");
         }
-        addEmpButton.setText(getString(R.string.add));
     }
 
     private void updateEmployeetoServer(Employee.EmployeeData employeeData) {
@@ -337,6 +344,8 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
          */
     }
 
+    public boolean isEditing;
+
     @Override
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
@@ -350,19 +359,22 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 });
                 break;
             case 2:
-                addEmpButton.setText(getString(R.string.save));
-                selectedEmptoEdit = employeesAdapter.getItem(position);
-                empName_EditText.setText(selectedEmptoEdit.username);
-                empLoginId_EditText.setText(selectedEmptoEdit.login_id);
-                empPwd_EditText.setText(selectedEmptoEdit.password);
-                empMobile_EditText.setText(selectedEmptoEdit.mobile_number);
-                if (selectedEmptoEdit.status.equalsIgnoreCase("ACTIVE") || selectedEmptoEdit.status.equalsIgnoreCase("1")) {
-                    empStatusSpinner.setSelection(0);
-                } else {
-                    empStatusSpinner.setSelection(1);
+                if (!isEditing) {
+                    isEditing = true;
+                    addEmpButton.setText(getString(R.string.save));
+                    selectedEmptoEdit = employeesAdapter.getItem(position);
+                    empName_EditText.setText(selectedEmptoEdit.username);
+                    empLoginId_EditText.setText(selectedEmptoEdit.login_id);
+                    empPwd_EditText.setText(selectedEmptoEdit.password);
+                    empMobile_EditText.setText(selectedEmptoEdit.mobile_number);
+                    if (selectedEmptoEdit.status.equalsIgnoreCase("ACTIVE") || selectedEmptoEdit.status.equalsIgnoreCase("1")) {
+                        empStatusSpinner.setSelection(0);
+                    } else {
+                        empStatusSpinner.setSelection(1);
+                    }
+                    billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).login_id);
+                    employeesAdapter.deleteEmployee(position);
                 }
-                billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).login_id);
-                employeesAdapter.deleteEmployee(position);
                 break;
             case 3:
                 break;

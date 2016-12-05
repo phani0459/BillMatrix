@@ -64,12 +64,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.ID + "='" + empId + "'", null) > 0;
     }
 
-    public Employee.EmployeeData getParticularEmployee(String empId) {
+    public Employee.EmployeeData getParticularEmployee(String empLoginId) {
         Cursor cursor = null;
         try {
             String query = "SELECT * FROM " + DBConstants.EMPLOYEES_TABLE
-                    + " WHERE " + DBConstants.ID
-                    + " = '" + empId + "'";
+                    + " WHERE " + DBConstants.EMPLOYEE_LOGINID
+                    + " = '" + empLoginId + "'";
 
             cursor = db.rawQuery(query, null);
 

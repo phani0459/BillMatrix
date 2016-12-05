@@ -62,6 +62,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
     private CustomersAdapter customersAdapter;
     private String adminId;
     private Customer.CustomerData selectedCusttoEdit;
+    public boolean isEditing;
 
     public CustomersFragment() {
         // Required empty public constructor
@@ -110,7 +111,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     Utils.hideSoftKeyboard(customerNameEditText);
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate_EditText, false);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate_EditText, true);
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -245,12 +246,11 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                     }
                 }
             }
-
+            addCustomerBtn.setText(getString(R.string.add));
+            isEditing = false;
         } else {
             ((BaseTabActivity) mContext).showToast("Customer Mobile Number must be unique");
         }
-
-        addCustomerBtn.setText(getString(R.string.add));
     }
 
     private void updateCustomertoServer(Customer.CustomerData customerData) {
@@ -342,19 +342,22 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                 });
                 break;
             case 2:
-                addCustomerBtn.setText(getString(R.string.save));
-                selectedCusttoEdit = customersAdapter.getItem(position);
-                customerNameEditText.setText(selectedCusttoEdit.username);
-                customerDate_EditText.setText(selectedCusttoEdit.date);
-                customerLocationEditText.setText(selectedCusttoEdit.location);
-                customerContactEditText.setText(selectedCusttoEdit.mobile_number);
-                if (selectedCusttoEdit.status.equalsIgnoreCase("ACTIVE") || selectedCusttoEdit.status.equalsIgnoreCase("1")) {
-                    custStatusSpinner.setSelection(0);
-                } else {
-                    custStatusSpinner.setSelection(1);
+                if (!isEditing) {
+                    isEditing = true;
+                    addCustomerBtn.setText(getString(R.string.save));
+                    selectedCusttoEdit = customersAdapter.getItem(position);
+                    customerNameEditText.setText(selectedCusttoEdit.username);
+                    customerDate_EditText.setText(selectedCusttoEdit.date);
+                    customerLocationEditText.setText(selectedCusttoEdit.location);
+                    customerContactEditText.setText(selectedCusttoEdit.mobile_number);
+                    if (selectedCusttoEdit.status.equalsIgnoreCase("ACTIVE") || selectedCusttoEdit.status.equalsIgnoreCase("1")) {
+                        custStatusSpinner.setSelection(0);
+                    } else {
+                        custStatusSpinner.setSelection(1);
+                    }
+                    billMatrixDaoImpl.deleteCustomer(customersAdapter.getItem(position).mobile_number);
+                    customersAdapter.deleteCustomer(position);
                 }
-                billMatrixDaoImpl.deleteCustomer(customersAdapter.getItem(position).mobile_number);
-                customersAdapter.deleteCustomer(position);
                 break;
             case 3:
                 break;

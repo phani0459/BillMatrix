@@ -55,6 +55,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
     public RecyclerView taxTypeRecyclerView;
     public TaxAdapter taxAdapter;
     private String adminId;
+    public boolean isEditing;
 
     public TaxFragment() {
         // Required empty public constructor
@@ -109,35 +110,38 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         String desc = taxDescEditText.getText().toString();
         String rate = taxRateEditText.getText().toString();
 
-        if (!TextUtils.isEmpty(taxType) && !taxType.equalsIgnoreCase("select one")) {
-            if (!TextUtils.isEmpty(rate)) {
-                taxData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                taxData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                taxData.taxType = taxType;
-                taxData.taxDescription = desc;
-                taxData.taxRate = rate;
-                taxData.status = "1";
-
-                long taxAdded = billMatrixDaoImpl.addTax(taxData);
-
-                if (taxAdded != -1) {
-                    taxAdapter.addTax(taxData);
-                    taxTypeRecyclerView.smoothScrollToPosition(taxAdapter.getItemCount());
-
-                    /**
-                     * reset all edit texts
-                     */
-                    taxTypeSpinner.setSelection(0);
-                    taxRateEditText.setText("");
-                    taxDescEditText.setText("");
-                } else {
-                    ((BaseTabActivity) mContext).showToast("Tax Type must be unique");
-                }
-            } else {
-                ((BaseTabActivity) mContext).showToast("Enter Tax rate");
-            }
-        } else {
+        if (TextUtils.isEmpty(taxType) && !taxType.equalsIgnoreCase("select one")) {
             ((BaseTabActivity) mContext).showToast("Select Tax Type");
+            return;
+        }
+
+        if (TextUtils.isEmpty(rate)) {
+            ((BaseTabActivity) mContext).showToast("Enter Tax rate");
+            return;
+        }
+
+        taxData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        taxData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        taxData.taxType = taxType;
+        taxData.taxDescription = desc;
+        taxData.taxRate = rate;
+        taxData.status = "1";
+
+        long taxAdded = billMatrixDaoImpl.addTax(taxData);
+
+        if (taxAdded != -1) {
+            taxAdapter.addTax(taxData);
+            taxTypeRecyclerView.smoothScrollToPosition(taxAdapter.getItemCount());
+
+            /**
+             * reset all edit texts
+             */
+            taxTypeSpinner.setSelection(0);
+            taxRateEditText.setText("");
+            taxDescEditText.setText("");
+            isEditing = false;
+        } else {
+            ((BaseTabActivity) mContext).showToast("Tax Type must be unique");
         }
     }
 
@@ -154,6 +158,9 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
                 });
                 break;
             case 2:
+                if (!isEditing) {
+                    isEditing = true;
+                }
                 break;
             case 3:
                 break;

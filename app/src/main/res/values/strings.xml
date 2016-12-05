@@ -14,9 +14,11 @@
     <string name="STATUS">STATUS</string>
     <string name="ACTION">ACTION</string>
     <string name="LOCATION">LOCATION</string>
+    <string name="No_results">No Results found, Try again</string>
+    <string name="storage_permission_rationale">"Storage permissions are needed for uploading Images."</string>
 
     <!-- Login Strings-->
-    <string name="userName">Username</string>
+    <string name="login_id">Login ID</string>
     <string name="password">Password</string>
     <string name="licencekey">Licence Key</string>
     <string name="signin">Sign In</string>
@@ -41,7 +43,7 @@
     <string name="profile">profile</string>
     <string name="payments">payments</string>
     <string name="settings">settings</string>
-    <string name="employee">employee</string>
+    <string name="employee">employees</string>
     <string name="okay">OK</string>
     <string name="cancel">CANCEL</string>
 
@@ -111,13 +113,14 @@
     <string name="BAR_CODE_GENERATED">BARCODE GENERATED \n XXXXXXXX</string>
 
     <string-array name="units_array">
-        <item>KG\'s</item>
-        <item>GM\'s</item>
-        <item>LTR\'s</item>
-        <item>ML\'s</item>
-        <item>PC\'s</item>
-        <item>NO\'s</item>
-        <item>OTHER</item>
+        <item>kgs</item>
+        <item>gms</item>
+        <item>ltrs</item>
+        <item>mls</item>
+        <item>pcs</item>
+        <item>nos</item>
+        <item>units</item>
+        <item>Other</item>
     </string-array>
 
     <!-- VENDOR Strings-->
@@ -159,12 +162,12 @@
     <string name="Brand">BRAND</string>
     <string-array name="sale_by_array">
         <item>SELECT ONE</item>
-        <item>Sale total</item>
-        <item>Sale by Brand</item>
-        <item>Sale by Vendor</item>
-        <item>Sale by Category</item>
-        <item>Sale Profit</item>
-        <item>Sale by Discount</item>
+        <item>SALE TOTAL</item>
+        <item>SALE BY BRAND</item>
+        <item>SALE BY VENDOR</item>
+        <item>SALE BY CATEGORY</item>
+        <item>SALE PROFIT</item>
+        <item>SALE BY DISCOUNT</item>
     </string-array>
 
     <!-- Tax Strings-->
@@ -218,5 +221,6 @@
     <string name="PAY">PAY</string>
     <string name="credit">CREDIT</string>
     <string name="INVENTORY">INVENTORY</string>
+    <string name="search_customer">Search Customer</string>
 
 </resources>

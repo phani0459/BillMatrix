@@ -45,7 +45,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tv_reports"
+                    android:id="@+id/tv_pos_reports"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                     android:background="#9AFFFFFF" />
 
                 <TextView
-                    android:id="@+id/tv_settings"
+                    android:id="@+id/tv_pos_settings"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                     android:background="#9AFFFFFF" />
 
                 <TextView
-                    android:id="@+id/tv_todayspurs"
+                    android:id="@+id/tv_pos_todayspurs"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
                     android:background="#9AFFFFFF" />
 
                 <TextView
-                    android:id="@+id/tv_viewstck"
+                    android:id="@+id/tv_pos_viewstck"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/btn_logout"
+                android:id="@+id/btn_pos_logout"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -184,10 +184,74 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="4dp"
                 android:layout_weight="4"
-                android:background="@drawable/layout_border"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
+                    <RelativeLayout
+                        android:id="@+id/rl_pos_cust_close"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="4dp"
+                        android:background="@drawable/tab_button_bg">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginLeft="24dp"
+                            android:layout_marginRight="24dp"
+                            android:layout_marginTop="12dp"
+                            android:src="@drawable/black_close" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_pos_cust_edit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="6dp"
+                        android:background="@drawable/tab_button_bg">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginLeft="24dp"
+                            android:layout_marginRight="24dp"
+                            android:layout_marginTop="12dp"
+                            android:src="@drawable/edit_icon" />
+                    </RelativeLayout>
+
+                    <EditText
+                        android:id="@+id/pos_searchView"
+                        style="@style/Base.TextAppearance.AppCompat.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="2dp"
+                        android:background="@drawable/edit_text_border"
+                        android:drawablePadding="4dp"
+                        android:drawableRight="@drawable/search_icon"
+                        android:ellipsize="end"
+                        android:hint="@string/search_customer"
+                        android:imeOptions="actionSearch"
+                        android:paddingBottom="4dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingTop="4dp"
+                        android:singleLine="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/layout_border"
+                    android:orientation="vertical"></LinearLayout>
             </LinearLayout>
         </LinearLayout>
 

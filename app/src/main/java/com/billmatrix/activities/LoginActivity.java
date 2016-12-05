@@ -166,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (loggedInEmployee.status.equalsIgnoreCase("1") || loggedInEmployee.status.equalsIgnoreCase("ACTIVE")) {
                                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loggedInEmployee.type).apply();
-                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_ID, loggedInEmployee.id).apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_LOGIN_ID, loggedInEmployee.login_id).apply();
 
                                 /**
                                  * if remember me is checked, save user name and pwd in pref if not remove them
@@ -238,7 +238,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (loginMap.get("user_type").equalsIgnoreCase("admin")) {
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_ADMIN_ID, loginMap.containsKey("user_id") ? loginMap.get("user_id") : "").apply();
                             } else {
-                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_ID, loginMap.containsKey("user_id") ? loginMap.get("user_id") : "").apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_LOGIN_ID, userName).apply();
                             }
 
                             /**

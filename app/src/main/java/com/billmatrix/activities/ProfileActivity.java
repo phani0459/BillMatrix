@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.models.Employee;
@@ -52,6 +53,8 @@ public class ProfileActivity extends BaseTabActivity {
     public ImageButton editStoreDetailsButton;
     @BindView(R.id.imBtn_editPwd)
     public ImageButton editPwdButton;
+    @BindView(R.id.tv_administrator)
+    public TextView administratorTextView;
 
     public boolean isAdmin;
 
@@ -96,6 +99,7 @@ public class ProfileActivity extends BaseTabActivity {
             if (isAdmin) {
                 loadProfile();
             } else {
+                administratorTextView.setText("Employee Name");
                 disableProfile();
             }
         }
@@ -104,13 +108,13 @@ public class ProfileActivity extends BaseTabActivity {
         loginIdmEditText.setFilters(Utils.getInputFilter(12));
         passwordEditText.setFilters(Utils.getInputFilter(12));
         mobNumEditText.setFilters(Utils.getInputFilter(10));
-        branchAdminEditText.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
-        locationAdminEditText.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        branchAdminEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        locationAdminEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
         adminNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                storeAdminEditText.setText(s.toString().toUpperCase());
+                storeAdminEditText.setText(s.toString());
             }
 
             @Override
@@ -140,7 +144,7 @@ public class ProfileActivity extends BaseTabActivity {
     }
 
     private void loadEmployeeProfile() {
-        final String empId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_EMP_ID, null);
+        final String empId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_EMP_LOGIN_ID, null);
         Employee.EmployeeData employeeData = billMatrixDaoImpl.getParticularEmployee(empId);
         if (employeeData != null) {
             passwordEditText.setText(employeeData.password);
@@ -157,7 +161,7 @@ public class ProfileActivity extends BaseTabActivity {
     }
 
     @OnClick(R.id.im_edit_storeDetails)
-    public void editStoreDetails(){
+    public void editStoreDetails() {
         locationAdminEditText.setEnabled(true);
         branchAdminEditText.setEnabled(true);
         locationAdminEditText.setBackgroundResource(R.drawable.edit_text_border);
@@ -170,9 +174,9 @@ public class ProfileActivity extends BaseTabActivity {
             adminNameEditText.setText(profile.data.username);
             mobNumEditText.setText(profile.data.mobile_number);
             loginIdmEditText.setText(profile.data.login_id);
-            storeAdminEditText.setText(profile.data.username.toUpperCase());
-            locationAdminEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
-            branchAdminEditText.setText(profile.data.branch != null ? profile.data.branch.toUpperCase() : "");
+            storeAdminEditText.setText(profile.data.username);
+            locationAdminEditText.setText(!TextUtils.isEmpty(profile.data.location) ? profile.data.location.toUpperCase() : "");
+            branchAdminEditText.setText(!TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "");
         }
     }
 
@@ -288,7 +292,7 @@ public class ProfileActivity extends BaseTabActivity {
             showToast("Enter location");
             return;
         }
-        
+
         locationAdminEditText.setBackgroundResource(android.R.color.transparent);
         locationAdminEditText.setEnabled(false);
 
@@ -308,7 +312,8 @@ public class ProfileActivity extends BaseTabActivity {
         newData.branch = branch;
         newData.location = location;
         newData.status = profile.data.status;
-        newData.create_date = profile.data.create_date;;
+        newData.create_date = profile.data.create_date;
+        ;
         newData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
 
         newProfile.data = newData;
@@ -353,7 +358,7 @@ public class ProfileActivity extends BaseTabActivity {
         } else {
             showToast("Profile Updated successfully");
         }
-        
+
 
     }
 

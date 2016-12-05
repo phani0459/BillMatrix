@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
@@ -136,6 +137,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -146,44 +150,47 @@
                         android:orientation="vertical">
 
                         <EditText
+                            android:id="@+id/et_storeName"
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="12dp"
-                            android:layout_marginLeft="12dp"
-                            android:layout_marginRight="12dp"
                             android:background="@drawable/edit_text_border"
                             android:hint="@string/store_name"
+                            android:imeOptions="actionNext"
                             android:minWidth="296dp"
                             android:padding="8dp"
+                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <EditText
-                            android:id="@+id/editText2"
+                            android:id="@+id/et_address_One"
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
-                            android:layout_marginLeft="12dp"
-                            android:layout_marginRight="12dp"
                             android:background="@drawable/edit_text_border"
                             android:hint="@string/address_1"
+                            android:imeOptions="actionNext"
                             android:minWidth="296dp"
                             android:padding="8dp"
+                            android:singleLine="true"
                             android:textColor="@android:color/black" />
                     </LinearLayout>
 
-                    <ImageView
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:id="@+id/im_upload_logo"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:layout_margin="8dp"
-                        android:src="@drawable/upload_logo" />
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="2dp"
+                        android:background="@drawable/upload_logo"
+                        fresco:roundAsCircle="false" />
 
                 </LinearLayout>
 
                 <EditText
-                    android:id="@+id/editText"
+                    android:id="@+id/et_address_Two"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -192,11 +199,14 @@
                     android:layout_marginRight="12dp"
                     android:background="@drawable/edit_text_border"
                     android:hint="@string/add_2"
+                    android:imeOptions="actionNext"
                     android:minWidth="296dp"
                     android:padding="6dp"
+                    android:singleLine="true"
                     android:textColor="@android:color/black" />
 
                 <EditText
+                    android:id="@+id/et_city_state"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -205,11 +215,14 @@
                     android:layout_marginRight="12dp"
                     android:background="@drawable/edit_text_border"
                     android:hint="@string/city_state"
+                    android:imeOptions="actionNext"
                     android:minWidth="296dp"
                     android:padding="6dp"
+                    android:singleLine="true"
                     android:textColor="@android:color/black" />
 
                 <EditText
+                    android:id="@+id/et_zipCode"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -218,11 +231,14 @@
                     android:layout_marginRight="12dp"
                     android:background="@drawable/edit_text_border"
                     android:hint="@string/zip_code"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
                     android:minWidth="296dp"
                     android:padding="6dp"
                     android:textColor="@android:color/black" />
 
                 <EditText
+                    android:id="@+id/et_vatTIN"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -231,11 +247,14 @@
                     android:layout_marginRight="12dp"
                     android:background="@drawable/edit_text_border"
                     android:hint="@string/vat_tin"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
                     android:minWidth="296dp"
                     android:padding="6dp"
                     android:textColor="@android:color/black" />
 
                 <EditText
+                    android:id="@+id/et_CSTNo"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -244,11 +263,14 @@
                     android:layout_marginRight="12dp"
                     android:background="@drawable/edit_text_border"
                     android:hint="@string/cst_no"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
                     android:minWidth="296dp"
                     android:padding="6dp"
                     android:textColor="@android:color/black" />
 
                 <EditText
+                    android:id="@+id/et_phone"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -257,6 +279,8 @@
                     android:layout_marginRight="12dp"
                     android:background="@drawable/edit_text_border"
                     android:hint="@string/phone_mobile"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
                     android:minWidth="296dp"
                     android:padding="6dp"
                     android:textColor="@android:color/black" />
@@ -264,10 +288,13 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
                     android:minWidth="296dp"
                     android:orientation="vertical">
 
                     <Button
+                        android:id="@+id/btn_saveStore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
@@ -286,8 +313,6 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
@@ -301,7 +326,7 @@
                         style="@style/Base.TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
+                        android:layout_marginLeft="6dp"
                         android:gravity="left"
                         android:text="@string/bill_header"
                         android:textColor="@android:color/black" />
@@ -310,12 +335,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:minHeight="132dp"
+                    android:layout_marginRight="4dp"
                     android:orientation="horizontal"
-                    android:padding="6dp"
-                    android:weightSum="5">
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp">
 
                     <RadioButton
                         android:layout_width="wrap_content"
@@ -326,7 +349,10 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/adminDetailsBG">
+                        android:background="@color/adminDetailsBG"
+                        android:minHeight="192dp"
+                        android:padding="6dp"
+                        android:weightSum="5">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -336,7 +362,8 @@
                             android:layout_weight="1.5"
                             android:orientation="vertical">
 
-                            <ImageView
+                            <com.facebook.drawee.view.SimpleDraweeView
+                                android:id="@+id/dra_header_logo"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
@@ -346,7 +373,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="24dp"
                                 android:orientation="horizontal">
 
                                 <ImageView
@@ -365,14 +392,84 @@
                             </LinearLayout>
                         </LinearLayout>
 
-                        <TextView
-                            style="@style/Base.TextAppearance.AppCompat.Medium"
+                        <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginTop="8dp"
                             android:layout_weight="3"
                             android:gravity="center"
-                            android:text="@string/bill_header"
-                            android:textColor="@android:color/black" />
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_header_store_Name"
+                                style="@style/Base.TextAppearance.AppCompat.Medium"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@android:color/black"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_header_store_addONE"
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@android:color/black" />
+
+                            <TextView
+                                android:id="@+id/tv_header_store_addTWO"
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@android:color/black" />
+
+                            <TextView
+                                android:id="@+id/tv_header_store_city"
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@android:color/black" />
+
+                            <TextView
+                                android:id="@+id/tv_header_store_zipCode"
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@android:color/black" />
+
+                            <TextView
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@android:color/black"
+                                android:textStyle="bold"
+                                android:visibility="invisible" />
+
+                            <TextView
+                                android:id="@+id/tv_header_store_vat"
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@android:color/black"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_header_store_cst"
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@android:color/black"
+                                android:textStyle="bold" />
+                        </LinearLayout>
 
                         <ImageView
                             android:layout_width="0dp"
@@ -387,8 +484,6 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -401,7 +496,7 @@
                         style="@style/Base.TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
+                        android:layout_marginLeft="6dp"
                         android:gravity="left"
                         android:text="@string/bill_footer"
                         android:textColor="@android:color/black" />
@@ -410,8 +505,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_marginRight="4dp"
                     android:minHeight="96dp"
                     android:orientation="horizontal"
                     android:padding="6dp"
@@ -464,8 +558,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_marginRight="4dp"
                     android:minHeight="132dp"
                     android:orientation="horizontal"
                     android:padding="6dp"

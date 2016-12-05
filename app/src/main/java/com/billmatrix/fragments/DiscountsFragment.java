@@ -137,10 +137,13 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
             discountDescEditText.setText("");
             discountValueEditText.setText("");
             discountCodeEditText.setText("");
+            isEditing = false;
         } else {
             ((BaseTabActivity) mContext).showToast("Discount Code must be unique");
         }
     }
+
+    public boolean isEditing;
 
     @Override
     public void onItemClick(int caseInt, final int position) {
@@ -155,6 +158,9 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
                 });
                 break;
             case 2:
+                if (!isEditing) {
+                    isEditing = true;
+                }
                 break;
             case 3:
                 break;

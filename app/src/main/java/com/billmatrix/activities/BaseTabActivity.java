@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,13 +20,16 @@ import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.interfaces.DrawableClickListener;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
+import com.facebook.drawee.backends.pipeline.Fresco;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTouch;
 
 public abstract class BaseTabActivity extends AppCompatActivity {
 
@@ -49,8 +53,20 @@ public abstract class BaseTabActivity extends AppCompatActivity {
         setContentView(R.layout.activity_base_tab);
 
         ButterKnife.bind(this);
+        Fresco.initialize(getApplicationContext());
+
         mContext = this;
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+
+        pageTitleTextView.setOnTouchListener(new DrawableClickListener.LeftDrawableClickListener(pageTitleTextView) {
+            @Override
+            public boolean onDrawableClick() {
+                Intent intent = new Intent(mContext, ControlPanelActivity.class);
+                startActivity(intent);
+                finish();
+                return false;
+            }
+        });
     }
 
     public void toggleSearchLayout(int visibility) {
@@ -112,8 +128,28 @@ public abstract class BaseTabActivity extends AppCompatActivity {
     public void removePreferences() {
         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, false).apply();
         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, null).apply();
-        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_ID, "").apply();
+        Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_LOGIN_ID, "").apply();
         FileUtils.deleteFile(mContext, Constants.EMPLOYEE_FILE_NAME);
+    }
+
+    @OnTouch(R.id.tv_reports)
+    public boolean reports(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            Intent intent = new Intent(mContext, ReportsActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        return false;
+    }
+
+    @OnTouch(R.id.tv_settings)
+    public boolean settings(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            Intent intent = new Intent(mContext, SettingsActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        return false;
     }
 
     @OnClick(R.id.btn_logout)
@@ -122,6 +158,7 @@ public abstract class BaseTabActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 removePreferences();
+                // to remove any activities that are in stack
                 ActivityCompat.finishAffinity(BaseTabActivity.this);
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -158,7 +195,7 @@ public abstract class BaseTabActivity extends AppCompatActivity {
     }
 
     public String getArrowString() {
-        return " \u203A ";
+        return /*" \u203A "*/ " ";
     }
 
 }

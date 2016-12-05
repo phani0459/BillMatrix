@@ -28,7 +28,7 @@ public class Constants {
     public static final String PREF_LOGIN_ID = "loginID";
     public static final String PREF_PASSWORD = "password";
     public static final String PREF_ADMIN_ID = "adminID";
-    public static final String PREF_EMP_ID = "employeeId";
+    public static final String PREF_EMP_LOGIN_ID = "employeeLoginId";
 
     /**
      * File Names

@@ -17,14 +17,23 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
+import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.Discount;
 import com.billmatrix.utils.Utils;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -48,6 +57,7 @@ public class StoreFragment extends Fragment {
     private static final int REQUEST_READ_STORAGE = 14;
     private Context mContext;
     private Uri logoUri;
+    private BillMatrixDaoImpl billMatrixDaoImpl;
 
     @BindView(R.id.im_upload_logo)
     public SimpleDraweeView logoDraweeView;
@@ -83,6 +93,10 @@ public class StoreFragment extends Fragment {
     public TextView headerStoreCSTTextView;
     @BindView(R.id.dra_header_logo)
     public SimpleDraweeView headerLogoDraweeView;
+    @BindView(R.id.cb_thnk_footer)
+    public CheckBox thankYouFooterCheckBox;
+    @BindView(R.id.ll_store_discounts)
+    public LinearLayout storeDiscountsLayout;
 
 
     public StoreFragment() {
@@ -96,12 +110,27 @@ public class StoreFragment extends Fragment {
         ButterKnife.bind(this, v);
 
         mContext = getActivity();
+        billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
 
         zipCodeEditText.setFilters(Utils.getInputFilter(6));
         phoneEditText.setFilters(Utils.getInputFilter(10));
 
+        showDiscounts();
+
         return v;
     }
+
+    public void showDiscounts() {
+        ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
+        if (discounts != null && discounts.size() > 0) {
+            for (Discount.DiscountData discount : discounts) {
+                CheckBox checkBox = new CheckBox(mContext);
+                checkBox.setText(discount.discountDescription);
+                storeDiscountsLayout.addView(checkBox);
+            }
+        }
+    }
+
 
     @OnClick(R.id.im_upload_logo)
     public void browseLicenceOne() {

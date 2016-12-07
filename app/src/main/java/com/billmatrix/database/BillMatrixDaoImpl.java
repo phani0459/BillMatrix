@@ -441,7 +441,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             if (cursor.moveToFirst()) {
                 List<Tax.TaxData> taxes = new ArrayList<>();
                 do {
-                    Log.e(TAG, "getTax: ");
                     Tax.TaxData tax = new Tax().new TaxData();
                     tax.taxType = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.TAX_TYPE));

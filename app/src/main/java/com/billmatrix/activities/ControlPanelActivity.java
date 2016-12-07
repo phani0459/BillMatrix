@@ -23,6 +23,7 @@ import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Vendor;
+import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
@@ -38,7 +39,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ControlPanelActivity extends AppCompatActivity {
+public class ControlPanelActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private static final String TAG = ControlPanelActivity.class.getSimpleName();
     @BindView(R.id.copyrightTextView)
@@ -79,6 +80,7 @@ public class ControlPanelActivity extends AppCompatActivity {
     public LinearLayout employeesLinearLayout;
     private BillMatrixDaoImpl billMatrixDaoImpl;
     private ProgressDialog progressDialog;
+    private ConnectivityReceiver connectivityReceiver;
 
 
     @Override
@@ -87,6 +89,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_control_panel);
 
         ButterKnife.bind(this);
+
         mContext = this;
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
 
@@ -112,6 +115,12 @@ public class ControlPanelActivity extends AppCompatActivity {
          * Vendors
          */
         getDataFromServer(adminId);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ConnectivityReceiver.connectivityReceiverListener = this;
     }
 
     private void getEmployeeProfileFromServer() {
@@ -226,6 +235,12 @@ public class ControlPanelActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ConnectivityReceiver.connectivityReceiverListener = null;
     }
 
     private void getCustomersFromServer(final String adminId) {
@@ -483,4 +498,16 @@ public class ControlPanelActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected) {
+            showAlertDialog("You are Connected to Internet", "Do you want to sync with Server", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+    }
 }

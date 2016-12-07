@@ -76,6 +76,8 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
 
+        rememberMeCheckBox.setChecked(false);
+
         /**
          * if user has logout, then show the previously logged in licence key in the field and disable the edit field
          */
@@ -88,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
          */
         if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null))) {
             userNameEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, ""));
+            rememberMeCheckBox.setChecked(true);
         }
 
         if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_PASSWORD, null))) {

@@ -123,8 +123,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
             android:weightSum="2">
 
             <LinearLayout
@@ -313,7 +311,6 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -365,9 +362,10 @@
                             <com.facebook.drawee.view.SimpleDraweeView
                                 android:id="@+id/dra_header_logo"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="104dp"
                                 android:layout_gravity="center"
-                                android:src="@mipmap/ic_launcher" />
+                                android:background="@drawable/avatar"
+                                fresco:roundAsCircle="true" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -484,6 +482,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -508,10 +507,12 @@
                     android:layout_marginRight="4dp"
                     android:minHeight="96dp"
                     android:orientation="horizontal"
-                    android:padding="6dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
                     android:weightSum="5">
 
-                    <RadioButton
+                    <CheckBox
+                        android:id="@+id/cb_thnk_footer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center" />
@@ -519,7 +520,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/adminDetailsBG">
+                        android:background="@color/adminDetailsBG"
+                        android:padding="6dp">
 
                         <TextView
                             android:id="@+id/textView"
@@ -557,11 +559,13 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="4dp"
+                    android:layout_marginTop="6dp"
                     android:minHeight="132dp"
                     android:orientation="horizontal"
-                    android:padding="6dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
                     android:weightSum="5">
 
                     <RadioButton
@@ -569,15 +573,22 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="top" />
 
-                    <LinearLayout
+                    <android.support.v4.widget.NestedScrollView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@color/adminDetailsBG">
 
+                        <LinearLayout
+                            android:id="@+id/ll_store_discounts"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="4dp">
 
-                    </LinearLayout>
+
+                        </LinearLayout>
+                    </android.support.v4.widget.NestedScrollView>
                 </LinearLayout>
-
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

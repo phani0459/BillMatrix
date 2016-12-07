@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.DrawableClickListener;
+import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
@@ -31,7 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 
-public abstract class BaseTabActivity extends AppCompatActivity {
+public abstract class BaseTabActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     @BindView(R.id.navigateTextView)
     public TextView pageTitleTextView;
@@ -67,6 +68,18 @@ public abstract class BaseTabActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ConnectivityReceiver.connectivityReceiverListener = this;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ConnectivityReceiver.connectivityReceiverListener = null;
     }
 
     public void toggleSearchLayout(int visibility) {
@@ -198,4 +211,16 @@ public abstract class BaseTabActivity extends AppCompatActivity {
         return /*" \u203A "*/ " ";
     }
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected) {
+            showAlertDialog("You are Connected to Internet", "Do you want to sync with Server", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+    }
 }

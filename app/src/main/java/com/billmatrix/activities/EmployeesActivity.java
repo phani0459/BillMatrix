@@ -155,8 +155,11 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         });
     }
 
+    public boolean isEmployeeAdded;
+
     @OnClick(R.id.btn_addEmployee)
     public void addEmployee() {
+        isEmployeeAdded = false;
         Utils.hideSoftKeyboard(empName_EditText);
 
         Employee.EmployeeData employeeData = new Employee().new EmployeeData();
@@ -258,6 +261,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             }
             addEmpButton.setText(getString(R.string.add));
             isEditing = false;
+            isEmployeeAdded = true;
         } else {
             showToast("Employee Login Id must be unique");
         }
@@ -344,6 +348,23 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
          */
     }
 
+    @Override
+    public void onBackPressed() {
+        if (addEmpButton.getText().toString().equalsIgnoreCase("SAVE")) {
+            showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addEmployee();
+                    if (isEmployeeAdded) {
+                        finish();
+                    }
+                }
+            });
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     public boolean isEditing;
 
     @Override
@@ -374,6 +395,8 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     }
                     billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).login_id);
                     employeesAdapter.deleteEmployee(position);
+                } else {
+                    showToast("Save present editing employee before editing other employee");
                 }
                 break;
             case 3:

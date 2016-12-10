@@ -52,7 +52,6 @@
         android:gravity="center"
         android:minWidth="104dp"
         android:text="@string/Unit"
-        android:textAllCaps="true"
         android:textColor="@android:color/black" />
 
     <TextView

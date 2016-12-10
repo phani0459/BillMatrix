@@ -1,5 +1,6 @@
 package com.billmatrix.activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -21,6 +22,7 @@ public class CustomersActivity extends BaseTabActivity {
 
     @BindView(R.id.frameLayout)
     public FrameLayout frameLayout;
+    private CustomersFragment customersFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +35,26 @@ public class CustomersActivity extends BaseTabActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (customersFragment != null && selectedTab.equalsIgnoreCase("Customers")) {
+            customersFragment.onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void tabChanged(String selectedTab, boolean isInit) {
         isInit = true;
+
+        if (customersFragment != null) {
+            if (customersFragment.isEditing) {
+                showToast("Save the changes made before going to other tab");
+                return;
+            }
+        }
+
+        customersFragment = new CustomersFragment();
 
         if (getSupportFragmentManager().getFragments() != null && getSupportFragmentManager().getFragments().size() > 0) {
             isInit = false;
@@ -42,9 +62,9 @@ public class CustomersActivity extends BaseTabActivity {
 
         if (selectedTab.equalsIgnoreCase("Customers")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new CustomersFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, customersFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new CustomersFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, customersFragment).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("Customer wise Due")) {
             if (isInit) {

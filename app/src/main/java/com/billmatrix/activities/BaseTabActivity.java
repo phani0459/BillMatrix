@@ -3,6 +3,7 @@ package com.billmatrix.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -70,6 +72,13 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
         });
     }
 
+    @OnClick(R.id.im_billmatrix_logo)
+    public void logoClicked() {
+        Intent intent = new Intent(mContext, ControlPanelActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -87,7 +96,6 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
     }
 
     public void addTabButtons(int n, String... names) {
-
         if (n > 0) {
             for (int i = 0; i < n; i++) {
                 LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -112,23 +120,24 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
                     @Override
                     public void onClick(View v) {
                         if (!selectedTab.equalsIgnoreCase(button.getText().toString())) {
-                            selectedTab = button.getText().toString();
-                            if (linearLayout.getChildCount() > 0) {
-                                for (int j = 0; j < linearLayout.getChildCount(); j++) {
-                                    View view = linearLayout.getChildAt(j);
-                                    Button tab = (Button) view.findViewById(R.id.btn_tab);
-                                    Button tabBtmView = (Button) view.findViewById(R.id.tab_bottom_view);
-                                    tab.getBackground().setLevel(1);
-                                    tab.setTextColor(getResources().getColor(android.R.color.white));
-                                    tabBtmView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                            if (ifTabCanChange) {
+                                selectedTab = button.getText().toString();
+                                if (linearLayout.getChildCount() > 0) {
+                                    for (int j = 0; j < linearLayout.getChildCount(); j++) {
+                                        View view = linearLayout.getChildAt(j);
+                                        Button tab = (Button) view.findViewById(R.id.btn_tab);
+                                        Button tabBtmView = (Button) view.findViewById(R.id.tab_bottom_view);
+                                        tab.getBackground().setLevel(1);
+                                        tab.setTextColor(getResources().getColor(android.R.color.white));
+                                        tabBtmView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                                    }
                                 }
+                                v.getBackground().setLevel(0);
+                                ((Button) v).setTextColor(getResources().getColor(android.R.color.black));
+                                View parent = (View) v.getParent();
+                                Button tabBtmView = (Button) parent.findViewById(R.id.tab_bottom_view);
+                                tabBtmView.setBackgroundColor(getResources().getColor(R.color.tabButtonBG));
                             }
-                            v.getBackground().setLevel(0);
-                            ((Button) v).setTextColor(getResources().getColor(android.R.color.black));
-                            View parent = (View) v.getParent();
-                            Button tabBtmView = (Button) parent.findViewById(R.id.tab_bottom_view);
-                            tabBtmView.setBackgroundColor(getResources().getColor(R.color.tabButtonBG));
-
                             tabChanged(((Button) v).getText().toString(), false);
                         }
                     }
@@ -137,6 +146,8 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
             }
         }
     }
+
+    public boolean ifTabCanChange = true;
 
     public void removePreferences() {
         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, false).apply();

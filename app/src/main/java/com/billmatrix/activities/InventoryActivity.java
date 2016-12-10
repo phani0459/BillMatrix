@@ -112,9 +112,34 @@ public class InventoryActivity extends BaseTabActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (inventoryFragment != null && selectedTab.equalsIgnoreCase("INVENTORY")) {
+            inventoryFragment.onBackPressed();
+        } else if (vendorsFragment != null && selectedTab.equalsIgnoreCase("Vendors")) {
+            vendorsFragment.onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void tabChanged(String selectedTab, boolean isInit) {
         searchView.setText("");
         Utils.hideSoftKeyboard(searchView);
+
+        if (inventoryFragment != null) {
+            if (inventoryFragment.isEditing) {
+                showToast("Save the changes made before going to other tab");
+                return;
+            }
+        }
+
+        if (vendorsFragment != null) {
+            if (vendorsFragment.isEditing) {
+                showToast("Save the changes made before going to other tab");
+                return;
+            }
+        }
 
         inventoryFragment = new InventoryFragment();
         vendorsFragment = new VendorsFragment();

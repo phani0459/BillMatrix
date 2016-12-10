@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,6 +125,22 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         return v;
     }
 
+    public void onBackPressed() {
+        if (addVendorButton.getText().toString().equalsIgnoreCase("SAVE")) {
+            ((BaseTabActivity) mContext).showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addVendor();
+                    if (isVendroAdded) {
+                        ((BaseTabActivity) mContext).finish();
+                    }
+                }
+            });
+        } else {
+            ((BaseTabActivity) mContext).finish();
+        }
+    }
+
     private void getVendorsFromServer(String loginId) {
         Log.e(TAG, "getVendorsFromServer: ");
         Call<Vendor> call = Utils.getBillMatrixAPI(mContext).getAdminVendors(loginId);
@@ -162,9 +179,12 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         });
     }
 
+    private boolean isVendroAdded;
+
     @OnClick(R.id.btn_addVendor)
     public void addVendor() {
         Utils.hideSoftKeyboard(vendorAdd_EditText);
+        isVendroAdded = false;
 
         Vendor.VendorData vendorData = new Vendor().new VendorData();
         String vendorEmail = vendorEmail_EditText.getText().toString();
@@ -204,7 +224,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         }
 
         if (addVendorButton.getText().toString().equalsIgnoreCase("ADD")) {
-            vendorData.id = "_new";
+            vendorData.id = vendorsAdapter.getItemCount() + 1 + "";
             vendorData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
         } else {
             if (selectedVendortoEdit != null) {
@@ -254,6 +274,8 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
             }
             isEditing = false;
             addVendorButton.setText(getString(R.string.add));
+            ((BaseTabActivity) mContext).ifTabCanChange = true;
+            isVendroAdded = true;
         } else {
             ((BaseTabActivity) mContext).showToast("Vendor Phone must be unique");
         }
@@ -390,6 +412,8 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
             case 2:
                 if (!isEditing) {
                     isEditing = true;
+                    ((BaseTabActivity) mContext).ifTabCanChange = false;
+
                     addVendorButton.setText(getString(R.string.save));
                     selectedVendortoEdit = vendorsAdapter.getItem(position);
                     vendorName_EditText.setText(selectedVendortoEdit.name);
@@ -399,6 +423,8 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                     vendorEmail_EditText.setText(selectedVendortoEdit.email);
                     billMatrixDaoImpl.deleteVendor(vendorsAdapter.getItem(position).phone);
                     vendorsAdapter.deleteVendor(position);
+                } else {
+                    ((BaseTabActivity) mContext).showToast("Save present editing Vendor before editing other vendor");
                 }
                 break;
             case 3:

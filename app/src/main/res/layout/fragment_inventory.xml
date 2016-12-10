@@ -399,7 +399,6 @@
                             android:layout_marginRight="12dp"
                             android:background="@drawable/edit_text_border"
                             android:gravity="center"
-                            android:inputType="number"
                             android:minWidth="104dp"
                             android:padding="6dp"
                             android:singleLine="true"

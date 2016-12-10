@@ -178,8 +178,23 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 }
             }
         }
-
         return v;
+    }
+
+    public void onBackPressed() {
+        if (addInventoryButton.getText().toString().equalsIgnoreCase("SAVE")) {
+            ((BaseTabActivity) mContext).showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addInventory();
+                    if (isInventoryAdded) {
+                        ((BaseTabActivity) mContext).finish();
+                    }
+                }
+            });
+        } else {
+            ((BaseTabActivity) mContext).finish();
+        }
     }
 
     private void getInventoryFromServer(String adminId) {
@@ -219,9 +234,12 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         });
     }
 
+    private boolean isInventoryAdded;
+
     @OnClick(R.id.btnAddInventory)
     public void addInventory() {
         Utils.hideSoftKeyboard(itemCodeEditText);
+        isInventoryAdded = false;
 
         Inventory.InventoryData inventoryData = new Inventory().new InventoryData();
         String itemCode = itemCodeEditText.getText().toString();
@@ -360,8 +378,10 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                     }
                 }
             }
-            isEditing = false;
             addInventoryButton.setText(getString(R.string.add));
+            isEditing = false;
+            ((BaseTabActivity) mContext).ifTabCanChange = true;
+            isInventoryAdded = true;
         } else {
             ((BaseTabActivity) mContext).showToast("Item Code must be unique");
         }
@@ -458,31 +478,38 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 });
                 break;
             case 2:
-                addInventoryButton.setText(getString(R.string.save));
-                selectedInventorytoEdit = inventoryAdapter.getItem(position);
+                if (!isEditing) {
+                    isEditing = true;
+                    ((BaseTabActivity) mContext).ifTabCanChange = false;
 
-                itemCodeEditText.setText(selectedInventorytoEdit.item_code);
-                itemNameeEditText.setText(selectedInventorytoEdit.item_name);
-                qtyEditText.setText(selectedInventorytoEdit.qty);
-                priceEditText.setText(selectedInventorytoEdit.price);
-                myCostEditText.setText(selectedInventorytoEdit.mycost);
-                dateEditText.setText(selectedInventorytoEdit.date);
-                wareHouseEditText.setText(selectedInventorytoEdit.warehouse);
-                barCodeEditText.setText(selectedInventorytoEdit.barcode);
-                photoEditText.setText(selectedInventorytoEdit.photo);
-                vendorSpinner.setSelection(0);
+                    addInventoryButton.setText(getString(R.string.save));
+                    selectedInventorytoEdit = inventoryAdapter.getItem(position);
 
-                int unitSelection = getUnitSelection(selectedInventorytoEdit.unit);
-                unitSpinner.setSelection(unitSelection);
-                if (unitSelection == 6) {
-                    customUnitEditText.setVisibility(View.VISIBLE);
-                    customUnitEditText.setText(selectedInventorytoEdit.unit);
+                    itemCodeEditText.setText(selectedInventorytoEdit.item_code);
+                    itemNameeEditText.setText(selectedInventorytoEdit.item_name);
+                    qtyEditText.setText(selectedInventorytoEdit.qty);
+                    priceEditText.setText(selectedInventorytoEdit.price);
+                    myCostEditText.setText(selectedInventorytoEdit.mycost);
+                    dateEditText.setText(selectedInventorytoEdit.date);
+                    wareHouseEditText.setText(selectedInventorytoEdit.warehouse);
+                    barCodeEditText.setText(selectedInventorytoEdit.barcode);
+                    photoEditText.setText(selectedInventorytoEdit.photo);
+                    vendorSpinner.setSelection(0);
+
+                    int unitSelection = getUnitSelection(selectedInventorytoEdit.unit);
+                    unitSpinner.setSelection(unitSelection);
+                    if (unitSelection == 6) {
+                        customUnitEditText.setVisibility(View.VISIBLE);
+                        customUnitEditText.setText(selectedInventorytoEdit.unit);
+                    } else {
+                        customUnitEditText.setVisibility(View.GONE);
+                    }
+
+                    billMatrixDaoImpl.deleteInventory(inventoryAdapter.getItem(position).item_code);
+                    inventoryAdapter.deleteInventory(position);
                 } else {
-                    customUnitEditText.setVisibility(View.GONE);
+                    ((BaseTabActivity) mContext).showToast("Save present editing inventory before editing other inventory");
                 }
-
-                billMatrixDaoImpl.deleteInventory(inventoryAdapter.getItem(position).item_code);
-                inventoryAdapter.deleteInventory(position);
                 break;
             case 3:
                 selectedInventorytoEdit = inventoryAdapter.getItem(position);

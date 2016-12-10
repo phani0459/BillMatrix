@@ -110,6 +110,13 @@ public class POSActivity extends Activity {
         return false;
     }
 
+    @OnClick(R.id.im_pos_billmatrix_logo)
+    public void logoClicked() {
+        Intent intent = new Intent(mContext, ControlPanelActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     @OnTouch(R.id.tv_pos_settings)
     public boolean settings(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {

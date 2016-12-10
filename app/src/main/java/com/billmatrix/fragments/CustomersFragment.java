@@ -121,6 +121,22 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         return v;
     }
 
+    public void onBackPressed() {
+        if (addCustomerBtn.getText().toString().equalsIgnoreCase("SAVE")) {
+            ((BaseTabActivity) mContext).showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addCustomer();
+                    if (isCustomerAdded) {
+                        ((BaseTabActivity) mContext).finish();
+                    }
+                }
+            });
+        } else {
+            ((BaseTabActivity) mContext).finish();
+        }
+    }
+
     private void getCustomersFromServer(String adminId) {
         Log.e(TAG, "getCustomersFromServer: ");
         Call<Customer> call = Utils.getBillMatrixAPI(mContext).getAdminCustomers(adminId);
@@ -158,8 +174,11 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         });
     }
 
+    public boolean isCustomerAdded;
+
     @OnClick(R.id.btn_addCustomer)
     public void addCustomer() {
+        isCustomerAdded = false;
         Utils.hideSoftKeyboard(customerNameEditText);
 
         Customer.CustomerData customerData = new Customer().new CustomerData();
@@ -248,6 +267,8 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
             }
             addCustomerBtn.setText(getString(R.string.add));
             isEditing = false;
+            isCustomerAdded = true;
+            ((BaseTabActivity) mContext).ifTabCanChange = true;
         } else {
             ((BaseTabActivity) mContext).showToast("Customer Mobile Number must be unique");
         }
@@ -344,6 +365,8 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
             case 2:
                 if (!isEditing) {
                     isEditing = true;
+                    ((BaseTabActivity) mContext).ifTabCanChange = false;
+
                     addCustomerBtn.setText(getString(R.string.save));
                     selectedCusttoEdit = customersAdapter.getItem(position);
                     customerNameEditText.setText(selectedCusttoEdit.username);
@@ -357,6 +380,8 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                     }
                     billMatrixDaoImpl.deleteCustomer(customersAdapter.getItem(position).mobile_number);
                     customersAdapter.deleteCustomer(position);
+                } else {
+                    ((BaseTabActivity) mContext).showToast("Save present editing customer before editing other customer");
                 }
                 break;
             case 3:

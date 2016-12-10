@@ -304,6 +304,42 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         });
     }
 
+    public void deleteEmployeefromServer(String empId) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteEmployee(empId);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> employeeStatus = response.body();
+                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
+                        if (employeeStatus.get("delete_employee").equalsIgnoreCase("success")) {
+                            showToast("Employee Deleted successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
     private void addEmployeetoServer(Employee.EmployeeData employeeData) {
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.username, employeeData.password, employeeData.mobile_number, adminId,
                 employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch);
@@ -375,6 +411,13 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         billMatrixDaoImpl.updateEmployee("-1", employeesAdapter.getItem(position).id);
+                        if (Utils.isInternetAvailable(mContext)) {
+                                if (!TextUtils.isEmpty(employeesAdapter.getItem(position).id)) {
+                                deleteEmployeefromServer(employeesAdapter.getItem(position).id);
+                            }
+                        } else {
+                            showToast("Employee Deleted successfully");
+                        }
                         employeesAdapter.deleteEmployee(position);
                     }
                 });

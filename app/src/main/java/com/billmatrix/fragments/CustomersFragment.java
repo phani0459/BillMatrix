@@ -312,6 +312,42 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         });
     }
 
+    public void deleteCustomerfromServer(String customerID) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteCustomer(customerID);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> employeeStatus = response.body();
+                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
+                        if (employeeStatus.get("delete_customer").equalsIgnoreCase("success")) {
+                            ((BaseTabActivity) mContext).showToast("Customer Deleted successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
     private void addCustomertoServer(Customer.CustomerData customerData) {
         Log.e(TAG, "addCustomertoServer: ");
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addCustomer(customerData.username, customerData.mobile_number, customerData.location,
@@ -358,6 +394,13 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         billMatrixDaoImpl.updateCustomer("-1", customersAdapter.getItem(position).mobile_number);
+                        if (Utils.isInternetAvailable(mContext)) {
+                            if (!TextUtils.isEmpty(customersAdapter.getItem(position).id)) {
+                                deleteCustomerfromServer(customersAdapter.getItem(position).id);
+                            }
+                        } else {
+                            ((BaseTabActivity) mContext).showToast("Customer Deleted successfully");
+                        }
                         customersAdapter.deleteCustomer(position);
                     }
                 });

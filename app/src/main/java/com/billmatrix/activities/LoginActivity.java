@@ -121,10 +121,10 @@ public class LoginActivity extends AppCompatActivity {
             if (progressDialog != null && !progressDialog.isShowing()) {
                 progressDialog.show();
             }
-            Log.e(TAG, "Profile is from file");
             String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
             Profile profile = Constants.getGson().fromJson(profileString, Profile.class);
             if (profile != null && profile.data != null) {
+                Log.e(TAG, "Profile is from file");
                 if (userName.equalsIgnoreCase(profile.data.login_id) && password.equalsIgnoreCase(profile.data.password) && imeiNumber.equalsIgnoreCase(profile.data.imei_number)) {
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                     Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, profile.data.type).apply();
@@ -333,9 +333,9 @@ public class LoginActivity extends AppCompatActivity {
     String imeiNumber;
 
     private boolean verify() {
-        userName = userNameEditText.getText().toString();
-        password = passwordEditText.getText().toString();
-        licenceKey = licenceEditText.getText().toString();
+        userName = userNameEditText.getText().toString().trim();
+        password = passwordEditText.getText().toString().trim();
+        licenceKey = licenceEditText.getText().toString().trim();
         getIMEINumber();
         Log.e(TAG, "verify: " + imeiNumber);
 

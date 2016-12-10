@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -224,7 +223,6 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         }
 
         if (addVendorButton.getText().toString().equalsIgnoreCase("ADD")) {
-            vendorData.id = vendorsAdapter.getItemCount() + 1 + "";
             vendorData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
         } else {
             if (selectedVendortoEdit != null) {
@@ -279,6 +277,42 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         } else {
             ((BaseTabActivity) mContext).showToast("Vendor Phone must be unique");
         }
+    }
+
+    public void deleteVendorfromServer(String vendorId) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteVendor(vendorId);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> employeeStatus = response.body();
+                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
+                        if (employeeStatus.get("delete_vendor").equalsIgnoreCase("success")) {
+                            ((BaseTabActivity) mContext).showToast("Vendor Deleted successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     private void addVendortoServer(Vendor.VendorData vendorData) {
@@ -405,6 +439,13 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         billMatrixDaoImpl.updateVendor("-1", vendorsAdapter.getItem(position).phone);
+                        if (Utils.isInternetAvailable(mContext)) {
+                            if (!TextUtils.isEmpty(vendorsAdapter.getItem(position).id)) {
+                                deleteVendorfromServer(vendorsAdapter.getItem(position).id);
+                            }
+                        } else {
+                            ((BaseTabActivity) mContext).showToast("Vendor Deleted successfully");
+                        }
                         vendorsAdapter.deleteVendor(position);
                     }
                 });

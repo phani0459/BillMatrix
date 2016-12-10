@@ -39,14 +39,6 @@ public interface BillMatrixAPI {
     Call<Employee> getAdminEmployees(@Field("admin_id") String adminId);
 
     @FormUrlEncoded
-    @POST("admin_customers")
-    Call<Customer> getAdminCustomers(@Field("admin_id") String adminId);
-
-    @FormUrlEncoded
-    @POST("admin_inventories")
-    Call<Inventory> getAdminInventory(@Field("admin_id") String adminId);
-
-    @FormUrlEncoded
     @POST("delete_employee")
     Call<HashMap<String, String>> deleteEmployee(@Field("id") String empId);
 
@@ -65,6 +57,10 @@ public interface BillMatrixAPI {
                                               @Field("location") String location, @Field("branch") String branch);
 
     @FormUrlEncoded
+    @POST("admin_customers")
+    Call<Customer> getAdminCustomers(@Field("admin_id") String adminId);
+
+    @FormUrlEncoded
     @POST("create_customer")
     Call<HashMap<String, String>> addCustomer(@Field("username") String custName,
                                               @Field("mobile_number") String mobileNumber, @Field("location") String location,
@@ -75,6 +71,10 @@ public interface BillMatrixAPI {
     Call<HashMap<String, String>> updateCustomer(@Field("id") String id, @Field("username") String custName,
                                                  @Field("mobile_number") String mobileNumber, @Field("location") String location, @Field("status") String status,
                                                  @Field("date") String date);
+
+    @FormUrlEncoded
+    @POST("delete_customer")
+    Call<HashMap<String, String>> deleteCustomer(@Field("id") String customerId);
 
     @FormUrlEncoded
     @POST("create_vendor")
@@ -88,10 +88,18 @@ public interface BillMatrixAPI {
                                                @Field("phone") String phone, @Field("since") String since, @Field("status") String status,
                                                @Field("address") String address, @Field("name") String name);
 
-
     @FormUrlEncoded
     @POST("admin_vendors")
     Call<Vendor> getAdminVendors(@Field("admin_id") String adminId);
+
+    @FormUrlEncoded
+    @POST("delete_vendor")
+    Call<HashMap<String, String>> deleteVendor(@Field("id") String vendorID);
+
+
+    @FormUrlEncoded
+    @POST("admin_inventories")
+    Call<Inventory> getAdminInventory(@Field("admin_id") String adminId);
 
     @FormUrlEncoded
     @POST("create_inventory")
@@ -102,8 +110,12 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("update_inventory")
-    Call<HashMap<String,String>> updateInventory(@Field("id") String id, @Field("item_code") String item_code, @Field("item_name") String item_name,
-                                                 @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
-                                                 @Field("date") String date, @Field("warehouse") String warehouse, @Field("vendor") String vendor,
-                                                 @Field("barcode") String barcode, @Field("photo") String photo, @Field("status") String status);
+    Call<HashMap<String, String>> updateInventory(@Field("id") String id, @Field("item_code") String item_code, @Field("item_name") String item_name,
+                                                  @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
+                                                  @Field("date") String date, @Field("warehouse") String warehouse, @Field("vendor") String vendor,
+                                                  @Field("barcode") String barcode, @Field("photo") String photo, @Field("status") String status);
+
+    @FormUrlEncoded
+    @POST("delete_inventory")
+    Call<HashMap<String, String>> deleteInventory(@Field("id") String inventoryID);
 }

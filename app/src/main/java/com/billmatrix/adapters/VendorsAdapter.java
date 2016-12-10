@@ -82,7 +82,7 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
 
         holder.snoTextView.setText("" + (position + 1));
         holder.nameTextView.setText(vendorData.name);
-        holder.vendorIdTextView.setText("V" + vendorData.id);
+        holder.vendorIdTextView.setText("V" + (!TextUtils.isEmpty(vendorData.id) ? vendorData.id : (position + 1)));
         holder.mobileTextView.setText(!TextUtils.isEmpty(vendorData.phone) ? vendorData.phone.trim() : "-");
         holder.addTextView.setText(!TextUtils.isEmpty(vendorData.address) ? vendorData.address.trim() : "-");
         holder.sinceTextView.setText(vendorData.since);

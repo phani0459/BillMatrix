@@ -426,6 +426,42 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         });
     }
 
+    public void deleteInventoryfromServer(String inventoryID) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteInventory(inventoryID);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> employeeStatus = response.body();
+                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
+                        if (employeeStatus.get("delete_inventory").equalsIgnoreCase("success")) {
+                            ((BaseTabActivity) mContext).showToast("Inventory Deleted successfully");
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
     private void addInventorytoServer(Inventory.InventoryData inventoryData) {
         Log.e(TAG, "addInventorytoServer: ");
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addInventory(adminId, inventoryData.item_code, inventoryData.item_name,
@@ -473,6 +509,13 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         billMatrixDaoImpl.updateInventory("-1", inventoryAdapter.getItem(position).item_code);
+                        if (Utils.isInternetAvailable(mContext)) {
+                            if (!TextUtils.isEmpty(inventoryAdapter.getItem(position).id)) {
+                                deleteInventoryfromServer(inventoryAdapter.getItem(position).id);
+                            }
+                        } else {
+                            ((BaseTabActivity) mContext).showToast("Inventory Deleted successfully");
+                        }
                         inventoryAdapter.deleteInventory(position);
                     }
                 });

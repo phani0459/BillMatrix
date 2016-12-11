@@ -21,9 +21,9 @@ import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
+import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Vendor;
-import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
@@ -39,7 +39,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ControlPanelActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
+public class ControlPanelActivity extends AppCompatActivity {
 
     private static final String TAG = ControlPanelActivity.class.getSimpleName();
     @BindView(R.id.copyrightTextView)
@@ -80,7 +80,6 @@ public class ControlPanelActivity extends AppCompatActivity implements Connectiv
     public LinearLayout employeesLinearLayout;
     private BillMatrixDaoImpl billMatrixDaoImpl;
     private ProgressDialog progressDialog;
-    private ConnectivityReceiver connectivityReceiver;
 
 
     @Override
@@ -113,14 +112,9 @@ public class ControlPanelActivity extends AppCompatActivity implements Connectiv
          * Employees
          * Customers
          * Vendors
+         * Inventory
          */
         getDataFromServer(adminId);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ConnectivityReceiver.connectivityReceiverListener = this;
     }
 
     private void getEmployeeProfileFromServer() {
@@ -237,12 +231,6 @@ public class ControlPanelActivity extends AppCompatActivity implements Connectiv
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ConnectivityReceiver.connectivityReceiverListener = null;
-    }
-
     private void getCustomersFromServer(final String adminId) {
         ArrayList<Customer.CustomerData> customersfromDB = billMatrixDaoImpl.getCustomers();
         if (customersfromDB != null && customersfromDB.size() > 0) {
@@ -332,12 +320,10 @@ public class ControlPanelActivity extends AppCompatActivity implements Connectiv
         });
     }
 
-    private void getVendorsFromServer(String adminId) {
+    private void getVendorsFromServer(final String adminId) {
         ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
         if (vendors != null && vendors.size() > 0) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            getInventoryFromServer(adminId);
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
@@ -363,9 +349,8 @@ public class ControlPanelActivity extends AppCompatActivity implements Connectiv
                                 }
                             }
 
-                            if (progressDialog != null && progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
+                            getInventoryFromServer(adminId);
+
                         }
 
                         /**
@@ -376,6 +361,61 @@ public class ControlPanelActivity extends AppCompatActivity implements Connectiv
                         @Override
                         public void onFailure(Call<Vendor> call, Throwable t) {
                             t.printStackTrace();
+                            Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    private void getInventoryFromServer(String adminId) {
+        Log.e(TAG, "getInventoryFromServer: ");
+        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+        if (inventories != null && inventories.size() > 0) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(adminId)) {
+                    Call<Inventory> call = Utils.getBillMatrixAPI(mContext).getAdminInventory(adminId);
+
+                    call.enqueue(new Callback<Inventory>() {
+
+                        /**
+                         * Successful HTTP response.
+                         * @param call server call
+                         * @param response server response
+                         */
+                        @Override
+                        public void onResponse(Call<Inventory> call, Response<Inventory> response) {
+                            Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                            if (response.body() != null) {
+                                Inventory inventory = response.body();
+                                if (inventory.status == 200 && inventory.InventoryData.equalsIgnoreCase("success")) {
+                                    for (Inventory.InventoryData inventoryData : inventory.data) {
+                                        billMatrixDaoImpl.addInventory(inventoryData);
+                                    }
+                                }
+                            }
+
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+
+                        }
+
+                        /**
+                         *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                         * @param call server call
+                         * @param t error
+                         */
+                        @Override
+                        public void onFailure(Call<Inventory> call, Throwable t) {
                             Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
                             if (progressDialog != null && progressDialog.isShowing()) {
                                 progressDialog.dismiss();
@@ -495,19 +535,5 @@ public class ControlPanelActivity extends AppCompatActivity implements Connectiv
     public void settings() {
         Intent intent = new Intent(mContext, SettingsActivity.class);
         startActivity(intent);
-    }
-
-
-    @Override
-    public void onNetworkConnectionChanged(boolean isConnected) {
-        if (isConnected) {
-            showAlertDialog("You are Connected to Internet", "Do you want to sync with Server", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                    startActivity(intent);
-                }
-            });
-        }
     }
 }

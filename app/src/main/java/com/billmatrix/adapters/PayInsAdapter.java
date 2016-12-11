@@ -1,7 +1,6 @@
 package com.billmatrix.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.PayIns;
-import com.billmatrix.models.Vendor;
+import com.billmatrix.models.PayIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +17,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.VendorHolder> {
+public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.PayInsHolder> {
 
-    private List<PayIns.PayInData> payIns;
+    private List<PayIn.PayInData> payIns;
     OnItemClickListener onItemClickListener;
 
-    public class VendorHolder extends RecyclerView.ViewHolder {
+    public class PayInsHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_item_payIns_sno)
         TextView snoTextView;
         @BindView(R.id.tv_item_payIns_custName)
@@ -38,7 +36,7 @@ public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.VendorHold
         @BindView(R.id.im_item_payIn_del)
         ImageView deleteImageView;
 
-        public VendorHolder(View view) {
+        public PayInsHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
@@ -49,34 +47,34 @@ public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.VendorHold
         notifyDataSetChanged();
     }
 
-    public void addPayIn(PayIns.PayInData payInData) {
+    public void addPayIn(PayIn.PayInData payInData) {
         payIns.add(payInData);
         notifyDataSetChanged();
     }
 
-    public PayInsAdapter(List<PayIns.PayInData> payIns, OnItemClickListener onClickListener) {
+    public PayInsAdapter(List<PayIn.PayInData> payIns, OnItemClickListener onClickListener) {
         this.payIns = payIns;
         this.onItemClickListener = onClickListener;
     }
 
-    public void removeAllPayInsData() {
+    public void removeAllPayIns() {
         payIns = new ArrayList<>();
         notifyDataSetChanged();
     }
 
     @Override
-    public VendorHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PayInsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.pay_in_item, parent, false);
 
-        return new VendorHolder(itemView);
+        return new PayInsHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(VendorHolder holder, final int position) {
-        PayIns.PayInData payInData = payIns.get(position);
+    public void onBindViewHolder(PayInsHolder holder, final int position) {
+        PayIn.PayInData payInData = payIns.get(position);
 
         holder.snoTextView.setText("" + (position + 1));
-        holder.nameTextView.setText(payInData.customername);
+        holder.nameTextView.setText(payInData.name);
         holder.dateTextView.setText(payInData.date);
         holder.amountTextView.setText(payInData.amount.trim());
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +85,7 @@ public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.VendorHold
         });
     }
 
-    public PayIns.PayInData getItem(int position) {
+    public PayIn.PayInData getItem(int position) {
         return payIns.get(position);
     }
 

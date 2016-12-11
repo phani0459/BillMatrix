@@ -94,7 +94,7 @@ public class PayOutsFragment extends Fragment {
                     } else if (selectedMode.equalsIgnoreCase("cheque")) {
                         otherPaymentEditText.setHint("Cheque No.");
                     } else if (selectedMode.equalsIgnoreCase("other")) {
-                        otherPaymentEditText.setHint("Payment Mode");
+                        otherPaymentEditText.setHint("PayIn Mode");
                     }
                 }
             }

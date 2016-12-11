@@ -19,14 +19,11 @@ import android.widget.EditText;
 
 import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
-import com.billmatrix.adapters.CustomersAdapter;
 import com.billmatrix.adapters.PayInsAdapter;
-import com.billmatrix.adapters.VendorsAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
-import com.billmatrix.models.PayIns;
-import com.billmatrix.models.Vendor;
+import com.billmatrix.models.PayIn;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -88,7 +85,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, false);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true);
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -97,7 +94,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener {
 
         payInsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
-        List<PayIns.PayInData> payIns = new ArrayList<>();
+        List<PayIn.PayInData> payIns = new ArrayList<>();
 
         payInsAdapter = new PayInsAdapter(payIns, this);
         payInsRecyclerView.setAdapter(payInsAdapter);
@@ -109,7 +106,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener {
     public void addPayIn() {
         Utils.hideSoftKeyboard(amountEditText);
 
-        PayIns.PayInData payInData = new PayIns().new PayInData();
+        PayIn.PayInData payInData = new PayIn().new PayInData();
         String customerName = customerNameAutoCompleteTextView.getText().toString();
         String date = dateEditText.getText().toString();
         String amount = amountEditText.getText().toString();
@@ -119,7 +116,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener {
                 if (!TextUtils.isEmpty(amount)) {
                     payInData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
                     payInData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-                    payInData.customername = customerName;
+                    payInData.name = customerName;
                     payInData.date = date;
                     payInData.amount = amount;
 
@@ -153,7 +150,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener {
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
-                ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Payment", new DialogInterface.OnClickListener() {
+                ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete PayIn", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 //                        billMatrixDaoImpl.deleteVendor(payInsAdapter.getItem(position).customername);

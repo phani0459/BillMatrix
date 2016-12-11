@@ -1,16 +1,13 @@
 package com.billmatrix.fragments;
 
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +17,9 @@ import android.widget.Spinner;
 
 import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
-import com.billmatrix.adapters.PayInsAdapter;
 import com.billmatrix.adapters.TaxAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.Customer;
-import com.billmatrix.models.PayIns;
 import com.billmatrix.models.Tax;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;

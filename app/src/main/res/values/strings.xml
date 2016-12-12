@@ -222,5 +222,8 @@
     <string name="credit">CREDIT</string>
     <string name="INVENTORY">INVENTORY</string>
     <string name="search_customer">Search Customer</string>
+    <string name="TOTAL">TOTAL</string>
+    <string name="z_bill">Z BILL</string>
+    <string name="cash_or_card">CASH &#8725; CARD</string>
 
 </resources>

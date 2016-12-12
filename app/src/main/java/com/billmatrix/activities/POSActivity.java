@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,20 +19,26 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.billmatrix.R;
+import com.billmatrix.adapters.GenExpensesAdapter;
+import com.billmatrix.adapters.POSInventoryAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
+import com.billmatrix.models.GeneralExpense;
+import com.billmatrix.models.Inventory;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 
-public class POSActivity extends Activity {
+public class POSActivity extends Activity implements OnItemClickListener {
 
     @BindView(R.id.sp_pos_customers)
     public Spinner customersSpinner;
@@ -39,6 +48,8 @@ public class POSActivity extends Activity {
     public RelativeLayout customerCloseButton;
     @BindView(R.id.rl_pos_cust_edit)
     public RelativeLayout customerEditButton;
+    @BindView(R.id.posInventoryList)
+    public RecyclerView posInventoryList;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
@@ -74,6 +85,13 @@ public class POSActivity extends Activity {
         button.getBackground().setLevel(0);
         button.setTextColor(getResources().getColor(android.R.color.black));
         tab_bottom_view.setBackgroundColor(getResources().getColor(R.color.tabButtonBG));
+
+        posInventoryList.setLayoutManager(new GridLayoutManager(mContext, 2));
+
+        List<Inventory.InventoryData> inventory = billMatrixDaoImpl.getInventory();
+
+        POSInventoryAdapter inventoryAdapter = new POSInventoryAdapter(inventory, this);
+        posInventoryList.setAdapter(inventoryAdapter);
 
         tabsLayout.addView(buttonLayout);
     }
@@ -140,5 +158,10 @@ public class POSActivity extends Activity {
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    @Override
+    public void onItemClick(int caseInt, int position) {
+
     }
 }

@@ -74,7 +74,7 @@ public class PayOutsFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, false);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true);
                     datePickerDialog.show();
                 }
                 v.clearFocus();

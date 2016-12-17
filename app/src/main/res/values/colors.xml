@@ -40,5 +40,7 @@
     <color name="selectedItemColor">#656fd1f2</color>
     <color name="item_bg">#F5F5F5</color>
 
+    <color name="pos_unit_color">#E1AA53</color>
+
 
 </resources>

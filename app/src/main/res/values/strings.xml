@@ -225,5 +225,7 @@
     <string name="TOTAL">TOTAL</string>
     <string name="z_bill">Z BILL</string>
     <string name="cash_or_card">CASH &#8725; CARD</string>
+    <string name="ITEMS">ITEMS</string>
+    <string name="sub_total">SUB TOTAL:</string>
 
 </resources>

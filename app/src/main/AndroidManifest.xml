@@ -66,6 +66,13 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:enabled="true"
+            android:name=".LogoutService"
+            android:exported="false"
+            android:stopWithTask="false" />
+
     </application>
 
 </manifest>

@@ -4,6 +4,7 @@
     style="@style/Base.TextAppearance.AppCompat.Caption"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:singleLine="true"
     android:paddingLeft="4dp"
     android:text="@string/PASSWORD"
     android:textColor="@android:color/black" />

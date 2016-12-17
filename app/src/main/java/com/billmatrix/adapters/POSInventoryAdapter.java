@@ -53,6 +53,13 @@ public class POSInventoryAdapter extends RecyclerView.Adapter<POSInventoryAdapte
         Inventory.InventoryData inventoryData = inventories.get(position);
 
         holder.nameTextView.setText(inventoryData.item_name);
+
+        ((View) holder.inventoryImageView.getParent()).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(1, position);
+            }
+        });
     }
 
     public Inventory.InventoryData getItem(int position) {

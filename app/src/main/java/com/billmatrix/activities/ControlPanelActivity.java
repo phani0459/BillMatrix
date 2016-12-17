@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.billmatrix.LogoutService;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Customer;
@@ -105,6 +106,9 @@ public class ControlPanelActivity extends AppCompatActivity {
         } else {
             disableOptions();
         }
+
+        Intent logoutService = new Intent(mContext, LogoutService.class);
+        startService(logoutService);
 
         /**
          * Sequence to fetch data from server

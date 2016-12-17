@@ -300,7 +300,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="12dp"
-                            android:layout_weight="1.2"
+                            android:layout_weight="1.4"
                             android:gravity="center"
                             android:text="@string/itemcode"
                             android:textColor="@android:color/black" />
@@ -310,7 +310,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="12dp"
-                            android:layout_weight="1.6"
+                            android:layout_weight="1.8"
                             android:gravity="center"
                             android:text="@string/ITEM_NAME"
                             android:textColor="@android:color/black" />
@@ -322,7 +322,6 @@
                             android:layout_marginRight="12dp"
                             android:layout_weight="0.5"
                             android:gravity="center"
-                            android:text="@string/Unit"
                             android:textColor="@android:color/black" />
 
                         <TextView
@@ -330,7 +329,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="12dp"
-                            android:layout_weight="1.4"
+                            android:layout_weight="1"
                             android:gravity="center"
                             android:text="@string/QTY"
                             android:textColor="@android:color/black" />
@@ -357,7 +356,7 @@
                     </LinearLayout>
 
                     <android.support.v7.widget.RecyclerView
-                        android:id="@+id/genExpensesList"
+                        android:id="@+id/pos_items_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scrollbars="none" />
@@ -394,13 +393,14 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tv_total_cart_items"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="@string/Unit"
+                        android:text="@string/ITEMS"
                         android:textColor="@android:color/black" />
 
                     <TextView
@@ -410,17 +410,18 @@
                         android:layout_marginRight="8dp"
                         android:layout_weight="1.5"
                         android:gravity="center"
-                        android:text="@string/QTY"
+                        android:text="@string/discount"
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tv_sub_total"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1.5"
                         android:gravity="center"
-                        android:text="@string/PRICE"
+                        android:text="@string/sub_total"
                         android:textColor="@android:color/black" />
                 </LinearLayout>
 

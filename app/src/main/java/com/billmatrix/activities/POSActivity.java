@@ -17,10 +17,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.adapters.GenExpensesAdapter;
 import com.billmatrix.adapters.POSInventoryAdapter;
+import com.billmatrix.adapters.POSItemAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
@@ -29,6 +31,8 @@ import com.billmatrix.models.Inventory;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +54,17 @@ public class POSActivity extends Activity implements OnItemClickListener {
     public RelativeLayout customerEditButton;
     @BindView(R.id.posInventoryList)
     public RecyclerView posInventoryList;
+    @BindView(R.id.pos_items_list)
+    public RecyclerView posItemsRecyclerView;
+    @BindView(R.id.tv_total_cart_items)
+    public TextView totalCartItemsTextView;
+    @BindView(R.id.tv_sub_total)
+    public TextView subTotalTextView;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
+    private POSItemAdapter posItemAdapter;
+    private POSInventoryAdapter posInventoryAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +77,16 @@ public class POSActivity extends Activity implements OnItemClickListener {
         ArrayList<Customer.CustomerData> customers = new ArrayList<>();
         ArrayList<String> customerNames = new ArrayList<>();
 
+        customerNames.add("SELECT CUSTOMER");
         customers = billMatrixDaoImpl.getCustomers();
 
         if (customers != null && customers.size() > 0) {
             for (Customer.CustomerData customer : customers) {
-                customerNames.add(customer.username);
+                customerNames.add(customer.username.toUpperCase());
             }
-
-            Utils.loadSpinner(customersSpinner, mContext, customerNames);
         }
+        customerNames.add("NEW CUSTOMER");
+        Utils.loadSpinner(customersSpinner, mContext, customerNames);
 
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         RelativeLayout buttonLayout = (RelativeLayout) layoutInflater.inflate(R.layout.tab_button, null);
@@ -89,9 +102,13 @@ public class POSActivity extends Activity implements OnItemClickListener {
         posInventoryList.setLayoutManager(new GridLayoutManager(mContext, 2));
 
         List<Inventory.InventoryData> inventory = billMatrixDaoImpl.getInventory();
+        posInventoryAdapter = new POSInventoryAdapter(inventory, this);
+        posInventoryList.setAdapter(posInventoryAdapter);
 
-        POSInventoryAdapter inventoryAdapter = new POSInventoryAdapter(inventory, this);
-        posInventoryList.setAdapter(inventoryAdapter);
+        List<Inventory.InventoryData> itemsInventory = new ArrayList<>();
+        posItemsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        posItemAdapter = new POSItemAdapter(itemsInventory, this);
+        posItemsRecyclerView.setAdapter(posItemAdapter);
 
         tabsLayout.addView(buttonLayout);
     }
@@ -162,6 +179,9 @@ public class POSActivity extends Activity implements OnItemClickListener {
 
     @Override
     public void onItemClick(int caseInt, int position) {
-
+        Inventory.InventoryData selectedInventory = posInventoryAdapter.getItem(position);
+        posItemAdapter.addInventory(selectedInventory);
+        totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
+        subTotalTextView.setText(getString(R.string.sub_total) + " " + "");
     }
 }

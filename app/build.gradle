@@ -36,4 +36,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.facebook.fresco:fresco:0.14.1'
+    compile 'com.cepheuen.elegant-number-button:lib:1.0.2'
 }

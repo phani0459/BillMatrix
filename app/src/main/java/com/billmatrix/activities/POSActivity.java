@@ -36,13 +36,14 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 
-public class POSActivity extends Activity implements OnItemClickListener {
+public class POSActivity extends Activity implements OnItemClickListener, POSItemAdapter.OnItemSelected {
 
     @BindView(R.id.sp_pos_customers)
     public Spinner customersSpinner;
@@ -182,6 +183,18 @@ public class POSActivity extends Activity implements OnItemClickListener {
         Inventory.InventoryData selectedInventory = posInventoryAdapter.getItem(position);
         posItemAdapter.addInventory(selectedInventory);
         totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
-        subTotalTextView.setText(getString(R.string.sub_total) + " " + "");
+    }
+
+    private String getSubTotal() {
+        Float subTotal = 0f;
+        for (int i = 0; i < posItemAdapter.getItemTotals().size(); i++) {
+            subTotal = subTotal + posItemAdapter.getItemTotals().get(i);
+        }
+        return String.format(Locale.getDefault(), "%.2f", subTotal) + "";
+    }
+
+    @Override
+    public void itemSelected() {
+        subTotalTextView.setText(getString(R.string.sub_total) + " " + getSubTotal() + "/-");
     }
 }

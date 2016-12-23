@@ -13,6 +13,7 @@ import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Inventory;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,7 +23,13 @@ import butterknife.ButterKnife;
 public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInventoryHolder> {
 
     private List<Inventory.InventoryData> inventories;
-    OnItemClickListener onItemClickListener;
+    OnItemSelected onItemSelected;
+
+    public ArrayList<Float> getItemTotals() {
+        return itemTotals;
+    }
+
+    ArrayList<Float> itemTotals;
 
     public class POSInventoryHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.im_pos_item_del)
@@ -46,9 +53,10 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
         }
     }
 
-    public POSItemAdapter(List<Inventory.InventoryData> inventories, OnItemClickListener onClickListener) {
+    public POSItemAdapter(List<Inventory.InventoryData> inventories, OnItemSelected onItemSelected) {
         this.inventories = inventories;
-        this.onItemClickListener = onClickListener;
+        this.onItemSelected = onItemSelected;
+        itemTotals = new ArrayList<>();
     }
 
     public void addInventory(Inventory.InventoryData inventoryData) {
@@ -73,7 +81,7 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
             unit = unit.substring(0, unit.length() - 1);
         }
 
-        holder.qtyNumberButton.setNumber("1");
+        holder.qtyNumberButton.setNumber("1", true);
         holder.qtyNumberButton.setRange(1, Integer.parseInt(inventoryData.qty));
 
         holder.itemCodeTextView.setText(inventoryData.item_code.toUpperCase());
@@ -83,13 +91,18 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
 
         final int quantity = Integer.parseInt(holder.qtyNumberButton.getNumber());
         float totalPrice = Float.parseFloat(price) * quantity;
+
+        itemTotals.add(position, totalPrice);
         holder.totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalPrice));
+        onItemSelected.itemSelected();
 
         holder.qtyNumberButton.setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
             @Override
             public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
                 float totalPrice = Float.parseFloat(price) * newValue;
                 holder.totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalPrice));
+                itemTotals.set(position, totalPrice);
+                onItemSelected.itemSelected();
             }
         });
     }
@@ -101,6 +114,10 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
     @Override
     public int getItemCount() {
         return inventories.size();
+    }
+
+    public interface OnItemSelected {
+        void itemSelected();
     }
 
 

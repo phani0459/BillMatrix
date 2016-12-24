@@ -1,0 +1,50 @@
+[
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_grow_from_bottomleft_to_topright.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_grow_from_bottomleft_to_topright.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_shrink_from_bottom.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_shrink_from_bottom.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_shrink_from_bottomleft_to_topright.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_shrink_from_bottomleft_to_topright.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_grow_from_bottomright_to_topleft.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_grow_from_bottomright_to_topleft.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_shrink_from_topleft_to_bottomright.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_shrink_from_topleft_to_bottomright.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_shrink_from_bottomright_to_topleft.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_shrink_from_bottomright_to_topleft.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_shrink_from_top.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_shrink_from_top.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_grow_from_topright_to_bottomleft.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_grow_from_topright_to_bottomleft.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_shrink_from_topright_to_bottomleft.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_shrink_from_topright_to_bottomleft.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_grow_from_bottom.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_grow_from_bottom.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_grow_from_topleft_to_bottomright.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_grow_from_topleft_to_bottomright.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\gd_grow_from_top.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\anim\\gd_grow_from_top.xml"
+    }
+]

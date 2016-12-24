@@ -7,7 +7,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.billmatrix.BillMatrixAPP;
-import com.billmatrix.activities.BaseTabActivity;
 
 public class ConnectivityReceiver extends BroadcastReceiver {
 

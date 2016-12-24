@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.billmatrix">
 
     <supports-screens
@@ -14,6 +15,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:name=".BillMatrixAPP"
@@ -21,7 +24,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:node="replace">
         <activity
             android:name=".activities.LoginActivity"
             android:screenOrientation="landscape">
@@ -58,6 +62,9 @@
         <activity
             android:name=".activities.POSActivity"
             android:screenOrientation="landscape" />
+        <activity
+            android:name=".BluetoothPrinter"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".utils.ConnectivityReceiver"
@@ -68,10 +75,12 @@
         </receiver>
 
         <service
-            android:enabled="true"
             android:name=".LogoutService"
+            android:enabled="true"
             android:exported="false"
             android:stopWithTask="false" />
+
+        <service android:name=".WorkService" />
 
     </application>
 

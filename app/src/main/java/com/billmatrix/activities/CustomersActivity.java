@@ -1,6 +1,5 @@
 package com.billmatrix.activities;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -9,8 +8,6 @@ import com.billmatrix.R;
 import com.billmatrix.fragments.CustomerTransFragment;
 import com.billmatrix.fragments.CustomerWiseDueFragment;
 import com.billmatrix.fragments.CustomersFragment;
-import com.billmatrix.fragments.VendorsFragment;
-import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;
 

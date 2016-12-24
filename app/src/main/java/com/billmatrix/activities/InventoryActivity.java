@@ -3,7 +3,6 @@ package com.billmatrix.activities;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.billmatrix.R;
-import com.billmatrix.fragments.CustomersFragment;
 import com.billmatrix.fragments.InventoryFragment;
 import com.billmatrix.fragments.VendorsFragment;
 import com.billmatrix.utils.Utils;

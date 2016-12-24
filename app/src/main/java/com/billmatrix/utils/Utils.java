@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -102,10 +101,11 @@ public class Utils {
         spinner.setAdapter(adapter);
     }
 
-    public static void loadSpinner(Spinner spinner, Context mContext, ArrayList<String> spinnerArray) {
-        ArrayAdapter<String> foodadapter = new ArrayAdapter<String>(mContext, R.layout.spinner_text_item, spinnerArray);
-        foodadapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        spinner.setAdapter(foodadapter);
+    public static ArrayAdapter<String> loadSpinner(Spinner spinner, Context mContext, ArrayList<String> spinnerArray) {
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_text_item, spinnerArray);
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+        return spinnerAdapter;
     }
 
     public static Retrofit getRetrofit(Context mContext) {
@@ -154,10 +154,10 @@ public class Utils {
         Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
     }
 
-    public static ProgressDialog getProgressDialog(Context mContext) {
+    public static ProgressDialog getProgressDialog(Context mContext, String message) {
         ProgressDialog progressDialog = new ProgressDialog(mContext);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("Loading..");
+        progressDialog.setMessage(message);
         return progressDialog;
     }
 

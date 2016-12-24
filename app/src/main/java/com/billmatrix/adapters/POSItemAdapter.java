@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.billmatrix.R;
-import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Inventory;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 

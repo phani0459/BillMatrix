@@ -126,7 +126,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         if (!FileUtils.isFileExists(Constants.EMPLOYEE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(empId)) {
-                    progressDialog = Utils.getProgressDialog(mContext);
+                    progressDialog = Utils.getProgressDialog(mContext, "Loading...");
                     progressDialog.show();
                     Log.e(TAG, "getEmployeeProfileFromServer: ");
                     Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(empId);
@@ -174,7 +174,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
-                    progressDialog = Utils.getProgressDialog(mContext);
+                    progressDialog = Utils.getProgressDialog(mContext, "Loading...");
                     progressDialog.show();
                     getProfilefromServer(adminId);
                 }

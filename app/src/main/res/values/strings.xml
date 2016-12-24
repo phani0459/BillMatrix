@@ -108,9 +108,10 @@
     <string name="BAR_CODE">BARCODE</string>
     <string name="addItem_scan_bar_code">ADD ITEM BY SCANNING BARCODE</string>
     <string name="GENERATE_BAR_CODE">GENERATE BARCODE</string>
+    <string name="GENERATE_PRINT_BAR_CODE">GENERATE and PRINT BARCODE</string>
     <string name="PRINT_BAR_CODE">PRINT BARCODE</string>
     <string name="no_of_barcodes">NO OF BARCODES</string>
-    <string name="BAR_CODE_GENERATED">BARCODE GENERATED \n XXXXXXXX</string>
+    <string name="BAR_CODE_GENERATED">BARCODE GENERATED</string>
 
     <string-array name="units_array">
         <item>kgs</item>

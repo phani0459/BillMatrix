@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BillMatrix.iml" filepath="$PROJECT_DIR$/BillMatrix.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/printerLibs/printerLibs.iml" filepath="$PROJECT_DIR$/printerLibs/printerLibs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zircobrowser/zircobrowser.iml" filepath="$PROJECT_DIR$/zircobrowser/zircobrowser.iml" />
     </modules>
   </component>
 </project>

@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.billmatrix.R;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Discount;
-import com.billmatrix.models.Tax;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,0 +1,106 @@
+[
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\javascript_prompt_dialog.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\javascript_prompt_dialog.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\video_loading_progress.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\video_loading_progress.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\bookmarks_history_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\bookmarks_history_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\url_autocomplete_line.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\url_autocomplete_line.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\download_row.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\download_row.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\weave_bookmarks_list_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\weave_bookmarks_list_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\history_row.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\history_row.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\webview.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\webview.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\weave_preferences_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\weave_preferences_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\adblocker_whitelist_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\adblocker_whitelist_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\downloads_list_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\downloads_list_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\mobile_view_list_row.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\mobile_view_list_row.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\preferences_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\preferences_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\zirco_main.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\zirco_main.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\bookmark_row.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\bookmark_row.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\bookmarks_list_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\bookmarks_list_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\http_authentication_dialog.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\http_authentication_dialog.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\edit_bookmark_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\edit_bookmark_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\changelog_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\changelog_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\base_spinner_custom_preference_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\base_spinner_custom_preference_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\gd_quick_action_grid_item.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\gd_quick_action_grid_item.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\weave_bookmark_row.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\weave_bookmark_row.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\about_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\about_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\gd_quick_action_grid.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\gd_quick_action_grid.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\mobile_view_list_activity.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\mobile_view_list_activity.xml"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\debug\\layout\\adblocker_whitelist_row.xml",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\layout\\adblocker_whitelist_row.xml"
+    }
+]

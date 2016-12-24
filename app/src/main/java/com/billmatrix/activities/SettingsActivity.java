@@ -8,8 +8,6 @@ import com.billmatrix.R;
 import com.billmatrix.fragments.DatabaseFragment;
 import com.billmatrix.fragments.DiscountsFragment;
 import com.billmatrix.fragments.GenExpensesFragment;
-import com.billmatrix.fragments.PayInsFragment;
-import com.billmatrix.fragments.SalesFragment;
 import com.billmatrix.fragments.StoreFragment;
 import com.billmatrix.fragments.TaxFragment;
 import com.billmatrix.utils.Utils;

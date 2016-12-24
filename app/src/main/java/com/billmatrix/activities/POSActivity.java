@@ -20,19 +20,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.billmatrix.R;
-import com.billmatrix.adapters.GenExpensesAdapter;
 import com.billmatrix.adapters.POSInventoryAdapter;
 import com.billmatrix.adapters.POSItemAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
-import com.billmatrix.models.GeneralExpense;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;

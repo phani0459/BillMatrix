@@ -10,10 +10,7 @@ import android.widget.TextView;
 import com.billmatrix.R;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Inventory;
-import com.billmatrix.models.Tax;
-import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;

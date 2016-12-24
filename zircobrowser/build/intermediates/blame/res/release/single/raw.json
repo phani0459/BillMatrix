@@ -1,0 +1,30 @@
+[
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\raw\\adsweep",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\raw\\adsweep"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\raw\\start_style.css",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\raw\\start_style.css"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\raw\\start_search.html",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\raw\\start_search.html"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\raw\\start.html",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\raw\\start.html"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\raw\\start_bookmarks.html",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\raw\\start_bookmarks.html"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\raw\\changelog",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\raw\\changelog"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\raw\\start_history.html",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\raw\\start_history.html"
+    }
+]

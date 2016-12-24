@@ -129,15 +129,22 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lastChecked != null) {
-                    lastChecked.setSelected(false);
-                    onItemClickListener.onItemClick(4, position);
-                }
-                if (!v.isSelected() && lastCheckedPos != position) {
+                if (lastCheckedPos != position) {
+
+                    if (lastChecked != null) {
+                        lastChecked.setSelected(false);
+                    }
+
                     v.setSelected(true);
                     lastCheckedPos = position;
                     lastChecked = v;
                     onItemClickListener.onItemClick(3, position);
+                } else {
+                    if (lastChecked != null) {
+                        lastCheckedPos = -1;
+                        lastChecked.setSelected(false);
+                        onItemClickListener.onItemClick(4, position);
+                    }
                 }
             }
         });

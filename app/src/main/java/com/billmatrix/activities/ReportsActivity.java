@@ -7,7 +7,6 @@ import android.widget.FrameLayout;
 import com.billmatrix.R;
 import com.billmatrix.fragments.GenExpensesFragment;
 import com.billmatrix.fragments.PayInsFragment;
-import com.billmatrix.fragments.PayOutsFragment;
 import com.billmatrix.fragments.SalesFragment;
 import com.billmatrix.utils.Utils;
 

@@ -1,7 +1,6 @@
 package com.billmatrix.utils;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.HashMap;
 
 /**
  * Created by KANDAGATLAs on 22-10-2016.

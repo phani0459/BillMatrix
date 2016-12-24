@@ -1,10 +1,19 @@
 package com.billmatrix.fragments;
 
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,12 +25,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.billmatrix.R;
+import com.billmatrix.WorkService;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.InventoryAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
@@ -30,6 +42,10 @@ import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
+import com.lvrenyang.pos.Cmd;
+import com.lvrenyang.utils.DataUtils;
+
+import org.zirco.myprinter.Global;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +58,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -51,6 +70,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
     private InventoryAdapter inventoryAdapter;
+    private static final int BLUETOOTH_ENABLE_REQUEST_ID = 1;
 
     @BindView(R.id.inventoryList)
     public RecyclerView inventoryRecyclerView;
@@ -94,10 +114,20 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
     public EditText noOfCodesEditText;
     @BindView(R.id.tv_inven_no_results)
     public TextView noResultsTextView;
+    @BindView(R.id.btn_prnt_bar_code)
+    public Button printBarcodeButton;
+    @BindView(R.id.btn_gen_bar_code)
+    public Button generateBarCodeButton;
 
     private String adminId;
     private Inventory.InventoryData selectedInventorytoEdit;
     public boolean isEditing;
+    private BluetoothAdapter adapter;
+    private BroadcastReceiver broadcastReceiver;
+    private ProgressDialog connectingProgressDialog;
+    private MHandler mHandler;
+    private ProgressDialog searchingDialog;
+    private ArrayAdapter<String> vendorSpinnerAdapter;
 
     public InventoryFragment() {
         // Required empty public constructor
@@ -113,8 +143,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        connectingProgressDialog = Utils.getProgressDialog(mContext, "");
 
         Utils.loadSpinner(unitSpinner, mContext, R.array.units_array);
+        generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED) + "\n" + "XXXXXXXX");
+        barCodeEditText.setFilters(Utils.getInputFilter(12));
 
         dateEditText.setInputType(InputType.TYPE_NULL);
         final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, false);
@@ -130,6 +163,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
             }
         });
 
+        generateBarCodeButton.setEnabled(false);
+        printBarcodeButton.setEnabled(false);
+        generateBarCodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+        printBarcodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+
         ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
         ArrayList<String> strings = new ArrayList<>();
         strings.add("Select vendor");
@@ -140,7 +178,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
             }
 
         }
-        Utils.loadSpinner(vendorSpinner, mContext, strings);
+        vendorSpinnerAdapter = Utils.loadSpinner(vendorSpinner, mContext, strings);
 
         unitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -178,6 +216,20 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 }
             }
         }
+
+        /**
+         * Printer Code
+         */
+
+        mHandler = new MHandler();
+        WorkService.addHandler(mHandler);
+        initBroadcast();
+
+        if (null == WorkService.workThread) {
+            Intent intent = new Intent(mContext, WorkService.class);
+            mContext.startService(intent);
+        }
+
         return v;
     }
 
@@ -310,10 +362,12 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
 
         String barcode = barCodeEditText.getText().toString();
 
-        /*if (TextUtils.isEmpty(barcode)) {
-            ((BaseTabActivity) mContext).showToast("Scan Item For Barcode");
-            return;
-        }*/
+        if (!TextUtils.isEmpty(barcode)) {
+            if (barcode.length() < 10) {
+                ((BaseTabActivity) mContext).showToast("Enter valid Barcode");
+                return;
+            }
+        }
 
         String photo = photoEditText.getText().toString();
 
@@ -537,7 +591,13 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                     wareHouseEditText.setText(selectedInventorytoEdit.warehouse);
                     barCodeEditText.setText(selectedInventorytoEdit.barcode);
                     photoEditText.setText(selectedInventorytoEdit.photo);
-                    vendorSpinner.setSelection(0);
+                    try {
+                        int vendorSelectedPosition = vendorSpinnerAdapter.getPosition(selectedInventorytoEdit.vendor);
+                        vendorSpinner.setSelection(vendorSelectedPosition);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        vendorSpinner.setSelection(0);
+                    }
 
                     int unitSelection = getUnitSelection(selectedInventorytoEdit.unit);
                     unitSpinner.setSelection(unitSelection);
@@ -560,15 +620,36 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 generateItemName.setText(selectedInventorytoEdit.item_name);
                 printItemCode.setText(selectedInventorytoEdit.item_code);
                 printItemName.setText(selectedInventorytoEdit.item_name);
+                if (!TextUtils.isEmpty(selectedInventorytoEdit.barcode)) {
+                    generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED) + "\n" + selectedInventorytoEdit.barcode);
+
+                    generateBarCodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+                    generateBarCodeButton.setEnabled(false);
+                    printBarcodeButton.setBackgroundResource(R.drawable.barcode_btn_bg);
+                    printBarcodeButton.setEnabled(true);
+                } else {
+                    generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED) + "\n" + "XXXXXXXX");
+
+                    generateBarCodeButton.setBackgroundResource(R.drawable.barcode_btn_bg);
+                    generateBarCodeButton.setEnabled(true);
+                    printBarcodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+                    printBarcodeButton.setEnabled(false);
+                }
                 noOfCodesEditText.setText("1");
                 break;
             case 4:
+                selectedInventorytoEdit = null;
                 generateItemCode.setText("");
                 generateItemName.setText("");
                 printItemCode.setText("");
                 noOfCodesEditText.setText("");
                 printItemName.setText("");
-                generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED));
+                generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED) + "\n" + "XXXXXXXX");
+
+                generateBarCodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+                generateBarCodeButton.setEnabled(false);
+                printBarcodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+                printBarcodeButton.setEnabled(false);
                 break;
         }
     }
@@ -633,5 +714,198 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 noResultsTextView.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    /**
+     * Printer Code
+     */
+
+    public void printBarcode() {
+        if (WorkService.workThread != null && WorkService.workThread.isConnected()) {
+            Log.e(TAG, "printBarcode: " + selectedInventorytoEdit.barcode);
+            Bundle data = new Bundle();
+            data.putString(Global.STRPARA1, selectedInventorytoEdit.barcode);
+            data.putInt(Global.INTPARA1, 0);
+            data.putInt(Global.INTPARA2, Cmd.Constant.BARCODE_TYPE_UPC_A);
+            data.putInt(Global.INTPARA3, 3);
+            data.putInt(Global.INTPARA4, 96);
+            data.putInt(Global.INTPARA5, 0);
+            data.putInt(Global.INTPARA6, 2);
+            WorkService.workThread.handleCmd(Global.CMD_POS_SETBARCODE, data);
+        } else {
+            ((BaseTabActivity) mContext).showToast(Global.toast_notconnect);
+        }
+    }
+
+    @OnClick(R.id.btn_prnt_bar_code)
+    public void enableBluetooth(View v) {
+        searchingDialog = Utils.getProgressDialog(mContext, "Searching...");
+        searchingDialog.setCancelable(false);
+
+        adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter == null) {
+            return;
+        }
+
+        if (!adapter.isEnabled()) {
+            searchingDialog.dismiss();
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, BLUETOOTH_ENABLE_REQUEST_ID);
+        } else {
+            if (WorkService.workThread != null && WorkService.workThread.isConnected()) {
+                printBarcode();
+            } else {
+                searchingDialog.show();
+                startDiscovery();
+            }
+        }
+    }
+
+    private void initBroadcast() {
+        broadcastReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    if (device == null)
+                        return;
+                    final String address = device.getAddress();
+                    String deviceName = device.getName();
+                    if (TextUtils.isEmpty(deviceName)) {
+                        deviceName = "BT";
+                    } else if (deviceName.equals(address)) {
+                        deviceName = "BT";
+                    }
+
+                    AlertDialog devicesDialog = new AlertDialog.Builder(mContext)
+                            .setTitle("Connect to " + deviceName)
+                            .setMessage("" + address)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    /**
+                                     * dismiss search
+                                     */
+                                    searchingDialog.dismiss();
+
+                                    connectingProgressDialog.setMessage("Connecting" + " " + address);
+                                    connectingProgressDialog.setIndeterminate(true);
+                                    connectingProgressDialog.setCancelable(false);
+                                    connectingProgressDialog.show();
+
+                                    WorkService.workThread.connectBt(address);
+                                }
+                            }).create();
+
+                    devicesDialog.show();
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                    //TODO: disable progress bar
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                    //TODO: disable progress bar
+                }
+
+            }
+
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        mContext.registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    class MHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                /**
+                 * DrawerService of onStartCommand Will send this message
+                 */
+                case Global.MSG_ALLTHREAD_READY: {
+                    if (WorkService.workThread.isConnected()) {
+                        connectingProgressDialog.cancel();
+                    } else {
+                        connectingProgressDialog.cancel();
+                    }
+                    break;
+                }
+
+                case Global.MSG_WORKTHREAD_SEND_CONNECTBTRESULT: {
+                    int result = msg.arg1;
+                    Toast.makeText(mContext, (result == 1) ? "Printer Connected" : "Connecting Printer failed. Try Again!", Toast.LENGTH_SHORT).show();
+                    connectingProgressDialog.cancel();
+                    break;
+                }
+
+                case Global.CMD_POS_SETBARCODERESULT: {
+                    int result = msg.arg1;
+                    Toast.makeText(mContext, (result == 1) ? Global.toast_success : Global.toast_fail, Toast.LENGTH_SHORT).show();
+                    Log.v("TAG", "Result: " + result);
+                    break;
+                }
+
+                case Global.CMD_POS_PRINTPICTURERESULT: {
+                    int result = msg.arg1;
+                    Toast.makeText(mContext, (result == 1) ? Global.toast_success : Global.toast_fail, Toast.LENGTH_SHORT).show();
+                    Log.v("TAG", "Result: " + result);
+                    break;
+                }
+
+                case com.lvrenyang.utils.Constant.MSG_BTHEARTBEATTHREAD_UPDATESTATUS:
+                case com.lvrenyang.utils.Constant.MSG_NETHEARTBEATTHREAD_UPDATESTATUS: {
+                    int statusOK = msg.arg1;
+                    int status = msg.arg2;
+                    Log.e("TAG", "statusOK: " + statusOK + " status: " + DataUtils.byteToStr((byte) status));
+                    if (statusOK == 1) {
+                        Log.e("SSSSSSSSS" + statusOK, "statusOK");
+                    } else {
+                        Log.e("NOOOO" + statusOK, "statusOKstatusOK");
+                    }
+                    connectingProgressDialog.cancel();
+                    break;
+                }
+                case Global.CMD_POS_WRITE_BT_FLOWCONTROL_RESULT: {
+                    int result = msg.arg1;
+                    Log.e("TAG", "Result: " + result);
+                    connectingProgressDialog.cancel();
+                    break;
+                }
+            }
+        }
+    }
+
+    public void startDiscovery() {
+        adapter.cancelDiscovery();
+        adapter.startDiscovery();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == BLUETOOTH_ENABLE_REQUEST_ID) {
+            if (resultCode == RESULT_OK) {
+                searchingDialog.show();
+                startDiscovery();
+            } else if (resultCode == RESULT_CANCELED) {
+                ((BaseTabActivity) mContext).showToast("Switch On Bluetooth to connect Printer and print");
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        WorkService.delHandler(mHandler);
+        mHandler = null;
+        unInitBroadcast();
+    }
+
+    private void unInitBroadcast() {
+        if (broadcastReceiver != null)
+            mContext.unregisterReceiver(broadcastReceiver);
     }
 }

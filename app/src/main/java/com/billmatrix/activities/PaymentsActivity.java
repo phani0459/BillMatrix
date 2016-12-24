@@ -5,11 +5,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.billmatrix.R;
-import com.billmatrix.fragments.CustomersFragment;
 import com.billmatrix.fragments.GenExpensesFragment;
 import com.billmatrix.fragments.PayInsFragment;
 import com.billmatrix.fragments.PayOutsFragment;
-import com.billmatrix.fragments.VendorsFragment;
 import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;

@@ -504,7 +504,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             if (cursor.moveToFirst()) {
                 List<Discount.DiscountData> discounts = new ArrayList<>();
                 do {
-                    Log.e(TAG, "getTax: ");
                     Discount.DiscountData discount = new Discount().new DiscountData();
                     discount.discount_code = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.DISCOUNT_CODE));

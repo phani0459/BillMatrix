@@ -19,6 +19,7 @@ public class Inventory implements Serializable {
         public String item_name;
         public String unit;
         public String qty;
+        public String selectedQTY;
         public String price;
         public String mycost;
         public String date;

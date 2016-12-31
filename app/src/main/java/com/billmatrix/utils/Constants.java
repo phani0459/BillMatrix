@@ -29,6 +29,8 @@ public class Constants {
     public static final String PREF_PASSWORD = "password";
     public static final String PREF_ADMIN_ID = "adminID";
     public static final String PREF_EMP_LOGIN_ID = "employeeLoginId";
+    public static final String PREF_DISCOUNT_VALUE = "discountValue_Selected";
+    public static final String PREF_DISCOUNT_CODE = "discountCode_Selected";
 
     /**
      * File Names

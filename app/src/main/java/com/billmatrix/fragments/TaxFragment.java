@@ -78,7 +78,6 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         if (taxes != null && taxes.size() > 0) {
-            Log.e(TAG, "onCreateView: " + taxes.size());
             for (Tax.TaxData taxData : taxes) {
                 if (!taxData.status.equalsIgnoreCase("-1")) {
                     taxAdapter.addTax(taxData);

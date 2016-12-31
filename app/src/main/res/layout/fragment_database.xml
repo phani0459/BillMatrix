@@ -33,6 +33,7 @@
                 android:textColor="@android:color/black" />
 
             <TextView
+                android:id="@+id/tv_last_sync_date"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -165,6 +166,7 @@
                     android:textColor="@android:color/black" />
 
                 <Button
+                    android:id="@+id/btn_sync"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"

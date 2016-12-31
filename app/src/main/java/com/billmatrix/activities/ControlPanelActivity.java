@@ -377,7 +377,6 @@ public class ControlPanelActivity extends AppCompatActivity {
     }
 
     private void getInventoryFromServer(String adminId) {
-        Log.e(TAG, "getInventoryFromServer: ");
         ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
         if (inventories != null && inventories.size() > 0) {
             if (progressDialog != null && progressDialog.isShowing()) {
@@ -386,6 +385,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
+                    Log.e(TAG, "getInventoryFromServer: ");
                     Call<Inventory> call = Utils.getBillMatrixAPI(mContext).getAdminInventory(adminId);
 
                     call.enqueue(new Callback<Inventory>() {

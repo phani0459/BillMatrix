@@ -22,14 +22,13 @@ import java.util.List;
  */
 public class WorkService extends Service {
 
-	// Service和workThread通信用mHandler
+	// Service and workThread communication with mHandler
 	public static WorkThread workThread = null;
 	private static Handler mHandler = null;
 	private static List<Handler> targetsHandler = new ArrayList<Handler>(5);
 
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

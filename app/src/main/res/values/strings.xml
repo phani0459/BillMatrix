@@ -204,6 +204,7 @@
     <string name="last_sync_date">LAST SYNCHRONIZED DATE : </string>
     <string name="sync_note">NOTE : SALES SYNCHRONIZATION IS UPTO MAXIMUM 3 MONTHS OLDER DATA</string>
     <string name="sync_to_server">SYNCHRONIZE TO SERVER</string>
+    <string name="sync_with_server">SYNCHRONIZE WITH SERVER</string>
     <string name="sync_from_server">SYNCHRONIZE FROM SERVER</string>
     <string name="Inventory">Inventory</string>
     <string name="Reports">Reports</string>
@@ -216,6 +217,7 @@
     <string name="generated_report">Generated Report (Custom)</string>
     <string name="sync">SYNC</string>
     <string name="sync_all">SYNC ALL</string>
+    <string name="Employees">Employees</string>
 
     <!-- POS Strings-->
     <string name="sell_item">SELL ITEM</string>
@@ -228,5 +230,12 @@
     <string name="cash_or_card">CASH &#8725; CARD</string>
     <string name="ITEMS">ITEMS</string>
     <string name="sub_total">SUB TOTAL:</string>
+    <string name="select_pos_customer">SELECT CUSTOMER</string>
+    <string name="add_guest_as_customer">ADD GUEST AS CUSTOMER</string>
+
+    <!-- Hardware Strings-->
+    <string name="below_components_detected">BELOW HARDWARE COMPONENTS ARE DETECTED</string>
+    <string name="place_holder_for_connected_devices">PLACE HOLDER FOR MANAGING CONNECTED HARDWARE</string>
+
 
 </resources>

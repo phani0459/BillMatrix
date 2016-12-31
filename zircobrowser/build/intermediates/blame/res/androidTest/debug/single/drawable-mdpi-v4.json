@@ -36,12 +36,12 @@
         "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable-mdpi-v4\\btn_bottom.9.png"
     },
     {
-        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-mdpi-v4\\fav_icn_default.png",
-        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable-mdpi-v4\\fav_icn_default.png"
-    },
-    {
         "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-mdpi-v4\\gd_quick_action_grid_selector_pressed.9.png",
         "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable-mdpi-v4\\gd_quick_action_grid_selector_pressed.9.png"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-mdpi-v4\\fav_icn_default.png",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable-mdpi-v4\\fav_icn_default.png"
     },
     {
         "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-mdpi-v4\\ic_tab_weave_unselected.png",

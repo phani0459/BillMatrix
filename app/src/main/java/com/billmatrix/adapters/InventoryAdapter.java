@@ -2,7 +2,6 @@ package com.billmatrix.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +20,8 @@ import butterknife.ButterKnife;
 
 public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.VendorHolder> {
 
-    private Context mContext;
     private List<Inventory.InventoryData> inventoryDatas;
     OnItemClickListener onItemClickListener;
-    private SparseBooleanArray selectedItems;
     private View lastChecked = null;
     private int lastCheckedPos = -1;
 
@@ -77,8 +74,6 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
     public InventoryAdapter(List<Inventory.InventoryData> inventoryDatas, OnItemClickListener onClickListener, Context mContext) {
         this.inventoryDatas = inventoryDatas;
         this.onItemClickListener = onClickListener;
-        this.mContext = mContext;
-        selectedItems = new SparseBooleanArray();
     }
 
     public void removeAllInventories() {

@@ -64,10 +64,16 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
 
         discountsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        Discount.DiscountData defaultDiscount = new Discount().new DiscountData();
+
+        defaultDiscount.discount_code = "";
+        defaultDiscount.discountDescription = "No Discount";
+        defaultDiscount.discount = "0";
 
         List<Discount.DiscountData> discounts = new ArrayList<>();
+        discounts.add(defaultDiscount);
 
-        discountAdapter = new DiscountAdapter(discounts, this);
+        discountAdapter = new DiscountAdapter(mContext, discounts, this);
         discountsRecyclerView.setAdapter(discountAdapter);
 
         discounts = billMatrixDaoImpl.getDiscount();

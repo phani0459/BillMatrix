@@ -10,14 +10,24 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.adapters.POSInventoryAdapter;
@@ -29,6 +39,8 @@ import com.billmatrix.models.Inventory;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +53,7 @@ import butterknife.OnTouch;
 
 public class POSActivity extends Activity implements OnItemClickListener, POSItemAdapter.OnItemSelected {
 
+    private static final String TAG = POSActivity.class.getSimpleName();
     @BindView(R.id.sp_pos_customers)
     public Spinner customersSpinner;
     @BindView(R.id.pos_tabs_layout)
@@ -57,33 +70,57 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public TextView totalCartItemsTextView;
     @BindView(R.id.tv_sub_total)
     public TextView subTotalTextView;
+    @BindView(R.id.et_pos_discount_code)
+    public EditText discountCodeEditText;
+    @BindView(R.id.tv_pos_customer_Name)
+    public TextView customerNameTextView;
+    @BindView(R.id.tv_pos_customer_location)
+    public TextView customerLocationTextView;
+    @BindView(R.id.tv_pos_customer_contact)
+    public TextView customerContactTextView;
+    @BindView(R.id.dra_pos_customer_banner)
+    public SimpleDraweeView customerBannerDraweeView;
+    @BindView(R.id.dra_pos_customer_photo)
+    public SimpleDraweeView headerLogoDraweeView;
+    @BindView(R.id.pos_searchView)
+    public EditText posSearchEditText;
+    @BindView(R.id.ll_customerDetails)
+    public LinearLayout customerDetailsLayout;
+    @BindView(R.id.tv_POS_No_Customer)
+    public TextView customerNotSelectedTextView;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
     private POSItemAdapter posItemAdapter;
     private POSInventoryAdapter posInventoryAdapter;
+    private float discountSelected;
+    private ArrayList<Customer.CustomerData> dbCustomers;
+    private Customer.CustomerData selectedCustomer;
+    private ArrayAdapter<String> customerSpinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fresco.initialize(this);
+
         setContentView(R.layout.activity_pos);
         ButterKnife.bind(this);
 
         mContext = this;
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
-        ArrayList<Customer.CustomerData> customers = new ArrayList<>();
+        dbCustomers = new ArrayList<>();
         ArrayList<String> customerNames = new ArrayList<>();
 
         customerNames.add("SELECT CUSTOMER");
-        customers = billMatrixDaoImpl.getCustomers();
+        dbCustomers = billMatrixDaoImpl.getCustomers();
 
-        if (customers != null && customers.size() > 0) {
-            for (Customer.CustomerData customer : customers) {
+        if (dbCustomers != null && dbCustomers.size() > 0) {
+            for (Customer.CustomerData customer : dbCustomers) {
                 customerNames.add(customer.username.toUpperCase());
             }
         }
-        customerNames.add("NEW CUSTOMER");
-        Utils.loadSpinner(customersSpinner, mContext, customerNames);
+        customerNames.add("GUEST CUSTOMER 1");
+        customerSpinnerAdapter = Utils.loadSpinner(customersSpinner, mContext, customerNames);
 
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         RelativeLayout buttonLayout = (RelativeLayout) layoutInflater.inflate(R.layout.tab_button, null);
@@ -107,7 +144,139 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         posItemAdapter = new POSItemAdapter(itemsInventory, this);
         posItemsRecyclerView.setAdapter(posItemAdapter);
 
+        discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f);
+        discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
+
         tabsLayout.addView(buttonLayout);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        customersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selecteCustomerName = (String) adapterView.getAdapter().getItem(i);
+                if (!selecteCustomerName.equalsIgnoreCase("SELECT CUSTOMER") && !selecteCustomerName.contains("GUEST CUSTOMER")) {
+                    for (Customer.CustomerData customer : dbCustomers) {
+                        if (customer.username.equalsIgnoreCase(selecteCustomerName)) {
+                            selectedCustomer = customer;
+                            loadCustomerDetails();
+                        }
+                    }
+                } else if (selecteCustomerName.equalsIgnoreCase("SELECT CUSTOMER")) {
+                    customerNotSelectedTextView.setVisibility(View.VISIBLE);
+                    customerDetailsLayout.setVisibility(View.GONE);
+                    customerNotSelectedTextView.setText(getString(R.string.select_pos_customer));
+                } else if (selecteCustomerName.contains("GUEST CUSTOMER")) {
+                    customerNotSelectedTextView.setVisibility(View.VISIBLE);
+                    customerDetailsLayout.setVisibility(View.GONE);
+                    customerNotSelectedTextView.setText(getString(R.string.add_guest_as_customer));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        posSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    posSearchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, android.R.drawable.ic_menu_close_clear_cancel, 0);
+                } else {
+                    posSearchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.search_icon, 0);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        posSearchEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (event.getRawX() >= (posSearchEditText.getRight() - posSearchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        if (posSearchEditText.getText().toString().length() > 0) {
+                            posSearchEditText.setText("");
+                            searchClosed();
+                        }
+                        return false;
+                    }
+                }
+                v.clearFocus();
+                return false;
+            }
+        });
+
+        posSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    Utils.hideSoftKeyboard(posSearchEditText);
+                    searchClicked(posSearchEditText.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    public void searchClicked(String query) {
+        Log.e(TAG, "searchClicked: ");
+        if (query.length() > 0) {
+            query = query.toLowerCase();
+
+            if (dbCustomers != null && dbCustomers.size() > 0) {
+                for (Customer.CustomerData customerData : dbCustomers) {
+                    if (customerData.username.toLowerCase().contains(query)) {
+                        Log.e(TAG, "query Searched: " + query);
+                        selectedCustomer = customerData;
+
+                        try {
+                            int customerSelectedPosition = customerSpinnerAdapter.getPosition(customerData.username.toUpperCase());
+                            Log.e(TAG, "searchClicked: " + customerSelectedPosition);
+                            customersSpinner.setSelection(customerSelectedPosition);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            customersSpinner.setSelection(0);
+                        }
+
+                        loadCustomerDetails();
+
+                    }
+                }
+            }
+        }
+    }
+
+    public void searchClosed() {
+        Log.e(TAG, "searchClosed: ");
+    }
+
+    public void loadCustomerDetails() {
+        if (selectedCustomer != null) {
+            customerLocationTextView.setText(selectedCustomer.location.toUpperCase());
+            customerContactTextView.setText(selectedCustomer.mobile_number.toUpperCase());
+            customerNameTextView.setText(selectedCustomer.username.toUpperCase());
+
+            customerNotSelectedTextView.setVisibility(View.GONE);
+            customerDetailsLayout.setVisibility(View.VISIBLE);
+
+        }
     }
 
     public void removePreferences() {
@@ -174,9 +343,32 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         alertDialog.show();
     }
 
+    public void showToast(String msg) {
+        Toast.makeText(mContext, msg + "", Toast.LENGTH_LONG).show();
+    }
+
     @Override
     public void onItemClick(int caseInt, int position) {
         Inventory.InventoryData selectedInventory = posInventoryAdapter.getItem(position);
+        if (posItemAdapter.inventories != null && posItemAdapter.inventories.size() > 0) {
+            if (posItemAdapter.inventories.contains(selectedInventory)) {
+                int inventoryQty = Integer.parseInt(selectedInventory.selectedQTY);
+                if (TextUtils.isDigitsOnly(selectedInventory.qty)) {
+                    if (Integer.parseInt(selectedInventory.qty) > inventoryQty) {
+                        inventoryQty = inventoryQty + 1;
+                        selectedInventory.selectedQTY = inventoryQty + "";
+                        posItemAdapter.changeInventory(selectedInventory);
+                    } else {
+                        showToast("Items not available");
+                    }
+                }
+                return;
+            } else {
+                selectedInventory.selectedQTY = "1";
+            }
+        } else {
+            selectedInventory.selectedQTY = "1";
+        }
         posItemAdapter.addInventory(selectedInventory);
         totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
     }
@@ -190,7 +382,15 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
     @Override
-    public void itemSelected() {
-        subTotalTextView.setText(getString(R.string.sub_total) + " " + getSubTotal() + "/-");
+    public void itemSelected(int caseInt, final int position) {
+        switch (caseInt) {
+            case 0:
+                subTotalTextView.setText(getString(R.string.sub_total) + " " + getSubTotal() + "/-");
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+        }
     }
 }

@@ -767,7 +767,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     if (device == null)
@@ -796,6 +796,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                                     connectingProgressDialog.setCancelable(false);
                                     connectingProgressDialog.show();
 
+                                    WorkService.workThread.setDeviceAddress(address);
+                                    WorkService.workThread.setDeviceName(device.getName());
                                     WorkService.workThread.connectBt(address);
                                 }
                             }).create();

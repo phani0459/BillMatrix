@@ -16,13 +16,16 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.billmatrix.R;
@@ -88,10 +91,16 @@ public class StoreFragment extends Fragment {
     public TextView headerStoreCSTTextView;
     @BindView(R.id.dra_header_logo)
     public SimpleDraweeView headerLogoDraweeView;
-    @BindView(R.id.cb_thnk_footer)
-    public CheckBox thankYouFooterCheckBox;
+    @BindView(R.id.rbtn_thnk_footer)
+    public RadioButton thankYouFooterRadioButton;
     @BindView(R.id.ll_store_discounts)
     public LinearLayout storeDiscountsLayout;
+    @BindView(R.id.tv_no_discounts)
+    public TextView noDiscountsTextView;
+    @BindView(R.id.et_thank_footer)
+    public EditText thankFooterEditText;
+    @BindView(R.id.im_save_thank_footer_details)
+    public ImageButton saveThankFooterButton;
 
 
     public StoreFragment() {
@@ -109,20 +118,39 @@ public class StoreFragment extends Fragment {
 
         zipCodeEditText.setFilters(Utils.getInputFilter(6));
         phoneEditText.setFilters(Utils.getInputFilter(10));
+        noDiscountsTextView.setText("Add Discounts in Discounts Page");
+        thankFooterEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
         showDiscounts();
 
         return v;
     }
 
+    @OnClick(R.id.im_edit_thank_footer_details)
+    public void editThankFooter() {
+        thankFooterEditText.setEnabled(true);
+        thankFooterEditText.setBackgroundResource(R.drawable.edit_text_border);
+        saveThankFooterButton.setVisibility(View.VISIBLE);
+    }
+
+    @OnClick(R.id.im_save_thank_footer_details)
+    public void saveThankFooter() {
+        thankFooterEditText.setEnabled(false);
+        thankFooterEditText.setBackgroundResource(android.R.color.transparent);
+        saveThankFooterButton.setVisibility(View.INVISIBLE);
+    }
+
     public void showDiscounts() {
         ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
         if (discounts != null && discounts.size() > 0) {
+            noDiscountsTextView.setVisibility(View.GONE);
             for (Discount.DiscountData discount : discounts) {
                 CheckBox checkBox = new CheckBox(mContext);
                 checkBox.setText(discount.discountDescription);
                 storeDiscountsLayout.addView(checkBox);
             }
+        } else {
+            noDiscountsTextView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -178,60 +206,60 @@ public class StoreFragment extends Fragment {
 
         String addONE = addressOneEditText.getText().toString();
 
-        if (TextUtils.isEmpty(addONE)) {
+        /*if (TextUtils.isEmpty(addONE)) {
             ((BaseTabActivity) mContext).showToast("Enter Address Line One");
             return;
-        }
+        }*/
 
         String addTWO = addressTwoEditText.getText().toString();
 
-        if (TextUtils.isEmpty(addTWO)) {
+        /*if (TextUtils.isEmpty(addTWO)) {
             ((BaseTabActivity) mContext).showToast("Enter Address Line Two");
             return;
-        }
+        }*/
 
         String cityState = cityEditText.getText().toString();
 
-        if (TextUtils.isEmpty(cityState)) {
+        /*if (TextUtils.isEmpty(cityState)) {
             ((BaseTabActivity) mContext).showToast("Enter City and State");
             return;
-        }
+        }*/
 
         String zipCode = zipCodeEditText.getText().toString();
 
-        if (TextUtils.isEmpty(zipCode)) {
+        /*if (TextUtils.isEmpty(zipCode)) {
             ((BaseTabActivity) mContext).showToast("Enter Zip Code");
             return;
-        }
+        }*/
 
         String vatTIN = vatTINEditText.getText().toString();
 
-        if (TextUtils.isEmpty(vatTIN)) {
+        /*if (TextUtils.isEmpty(vatTIN)) {
             ((BaseTabActivity) mContext).showToast("Enter VAT TIN");
             return;
-        }
+        }*/
 
         String cstNo = cstNOEditText.getText().toString();
 
-        if (TextUtils.isEmpty(cstNo)) {
+        /*if (TextUtils.isEmpty(cstNo)) {
             ((BaseTabActivity) mContext).showToast("Enter CST No");
             return;
-        }
+        }*/
 
         String phone = phoneEditText.getText().toString();
 
-        if (TextUtils.isEmpty(phone)) {
+        /*if (TextUtils.isEmpty(phone)) {
             ((BaseTabActivity) mContext).showToast("Enter Phone Number");
             return;
-        }
+        }*/
 
         headerStoreNameTextView.setText(storeName);
         headerStoreAddOneTextView.setText(addONE);
         headerStoreAddTwoTextView.setText(addTWO);
         headerStoreCityTextView.setText(cityState);
         headerStoreZipTextView.setText(zipCode);
-        headerStoreVatTextView.setText("VAT TIN: " + vatTIN);
-        headerStoreCSTTextView.setText("CST NO: " + cstNo);
+        headerStoreVatTextView.setText(!TextUtils.isEmpty(vatTIN) ? "VAT TIN: " + vatTIN : "");
+        headerStoreCSTTextView.setText(!TextUtils.isEmpty(cstNo) ? "CST NO: " + cstNo : "");
 
         if (logoUri != null) {
             headerLogoDraweeView.setImageURI(logoUri);

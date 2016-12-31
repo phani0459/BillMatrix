@@ -5,7 +5,7 @@ import java.io.File;
 import android.os.Environment;
 
 /**
- * 外部和库通讯需要使用的消息都在这里定义。
+ * External and library communications need to use the message are defined here.
  * 
  * @author Administrator
  * 

@@ -8,6 +8,7 @@ import com.billmatrix.R;
 import com.billmatrix.fragments.DatabaseFragment;
 import com.billmatrix.fragments.DiscountsFragment;
 import com.billmatrix.fragments.GenExpensesFragment;
+import com.billmatrix.fragments.HardwareFragment;
 import com.billmatrix.fragments.StoreFragment;
 import com.billmatrix.fragments.TaxFragment;
 import com.billmatrix.utils.Utils;
@@ -62,9 +63,9 @@ public class SettingsActivity extends BaseTabActivity {
             }
         } else if (selectedTab.equalsIgnoreCase("HARDWARE")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new HardwareFragment()).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HardwareFragment()).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("DISCOUNTS")) {
             if (isInit) {

@@ -21,8 +21,10 @@ import butterknife.ButterKnife;
 
 public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInventoryHolder> {
 
-    private List<Inventory.InventoryData> inventories;
+    public List<Inventory.InventoryData> inventories;
     OnItemSelected onItemSelected;
+    private View lastChecked = null;
+    private int lastCheckedPos = -1;
 
     public ArrayList<Float> getItemTotals() {
         return itemTotals;
@@ -60,7 +62,16 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
 
     public void addInventory(Inventory.InventoryData inventoryData) {
         inventories.add(inventoryData);
-        notifyItemInserted(inventories.size());
+        notifyItemChanged(inventories.size());
+    }
+
+    public void changeInventory(Inventory.InventoryData inventoryData) {
+        for (int i = 0; i < inventories.size(); i++) {
+            if (inventories.get(i).id.equalsIgnoreCase(inventoryData.id)) {
+                inventories.set(i, inventoryData);
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -80,7 +91,9 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
             unit = unit.substring(0, unit.length() - 1);
         }
 
-        holder.qtyNumberButton.setNumber("1", true);
+        final View itemView = (View) holder.itemCodeTextView.getParent();
+
+        holder.qtyNumberButton.setNumber(inventoryData.selectedQTY, true);
         holder.qtyNumberButton.setRange(1, Integer.parseInt(inventoryData.qty));
 
         holder.itemCodeTextView.setText(inventoryData.item_code.toUpperCase());
@@ -93,15 +106,39 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
 
         itemTotals.add(position, totalPrice);
         holder.totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalPrice));
-        onItemSelected.itemSelected();
+        onItemSelected.itemSelected(0, position);
 
         holder.qtyNumberButton.setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
             @Override
             public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
                 float totalPrice = Float.parseFloat(price) * newValue;
+                inventoryData.selectedQTY = newValue + "";
                 holder.totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalPrice));
                 itemTotals.set(position, totalPrice);
-                onItemSelected.itemSelected();
+                onItemSelected.itemSelected(0, position);
+            }
+        });
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (lastCheckedPos != position) {
+
+                    if (lastChecked != null) {
+                        lastChecked.setSelected(false);
+                    }
+
+                    v.setSelected(true);
+                    lastCheckedPos = position;
+                    lastChecked = v;
+                    onItemSelected.itemSelected(3, position);
+                } else {
+                    if (lastChecked != null) {
+                        lastCheckedPos = -1;
+                        lastChecked.setSelected(false);
+                        onItemSelected.itemSelected(4, position);
+                    }
+                }
             }
         });
     }
@@ -116,7 +153,7 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
     }
 
     public interface OnItemSelected {
-        void itemSelected();
+        void itemSelected(int caseInt, int position);
     }
 
 

@@ -12,10 +12,11 @@
         android:padding="8dp"
         android:weightSum="5">
 
-        <CheckBox
-            android:id="@+id/cb_item_discount_sno"
+        <RadioButton
+            android:id="@+id/rbtn_item_discount_sno"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
             android:layout_weight="0.3"
             android:gravity="center" />
 
@@ -26,7 +27,6 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
             android:layout_weight="2.4"
-            android:gravity="center"
             android:text="@string/discount_desc"
             android:textAllCaps="true"
             android:textColor="@android:color/black" />
@@ -40,7 +40,6 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/discount_code"
-            android:textAllCaps="true"
             android:textColor="@android:color/black" />
 
         <TextView

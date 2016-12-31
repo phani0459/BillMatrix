@@ -45,7 +45,7 @@ public class Global {
 	public static final int MSG_WORKTHREAD_HANDLER_CONNECTUSB = 100028;
 	public static final int MSG_WORKTHREAD_SEND_CONNECTUSBRESULT = 100029;
 
-	// Bundle data使用
+	// Bundle data use
 	public static final String BYTESPARA1 = "bytespara1";
 	public static final String BYTESPARA2 = "bytespara2";
 	public static final String BYTESPARA3 = "bytespara3";

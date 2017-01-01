@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.FloatProperty;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -375,8 +376,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     private String getSubTotal() {
         Float subTotal = 0f;
-        for (int i = 0; i < posItemAdapter.getItemTotals().size(); i++) {
-            subTotal = subTotal + posItemAdapter.getItemTotals().get(i);
+        for (int i = 0; i < posItemAdapter.inventories.size(); i++) {
+            int qty = Integer.parseInt(posItemAdapter.inventories.get(i).selectedQTY);
+            float price = Float.parseFloat(posItemAdapter.inventories.get(i).price);
+            subTotal = subTotal + (qty * price);
         }
         return String.format(Locale.getDefault(), "%.2f", subTotal) + "";
     }
@@ -386,6 +389,16 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         switch (caseInt) {
             case 0:
                 subTotalTextView.setText(getString(R.string.sub_total) + " " + getSubTotal() + "/-");
+                break;
+            case 1:
+                showAlertDialog("Are you sure?", "You want to remove Item", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        posItemAdapter.removeItem(position);
+                        subTotalTextView.setText(getString(R.string.sub_total) + " " + getSubTotal() + "/-");
+                        totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
+                    }
+                });
                 break;
             case 3:
                 break;

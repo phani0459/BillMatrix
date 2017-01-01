@@ -305,17 +305,41 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="6dp"
-                            android:layout_weight="1.4"
+                            android:layout_weight="1"
                             android:gravity="center"
                             android:text="@string/itemcode"
                             android:textColor="@android:color/black" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="6dp"
+                            android:layout_weight="0.7"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:visibility="invisible"
+                            android:weightSum="2">
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:src="@drawable/edit_icon" />
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:src="@drawable/delete" />
+                        </LinearLayout>
 
                         <TextView
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="6dp"
-                            android:layout_weight="1.8"
+                            android:layout_weight="1.4"
                             android:gravity="center"
                             android:text="@string/ITEM_NAME"
                             android:textColor="@android:color/black" />
@@ -334,7 +358,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="6dp"
-                            android:layout_weight="1"
+                            android:layout_weight="0.8"
                             android:gravity="center"
                             android:text="@string/QTY"
                             android:textColor="@android:color/black" />
@@ -344,7 +368,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="6dp"
-                            android:layout_weight="0.5"
+                            android:layout_weight="0.6"
                             android:gravity="center"
                             android:text="@string/PRICE"
                             android:textColor="@android:color/black" />

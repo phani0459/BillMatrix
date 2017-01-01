@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,12 +26,6 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
     OnItemSelected onItemSelected;
     private View lastChecked = null;
     private int lastCheckedPos = -1;
-
-    public ArrayList<Float> getItemTotals() {
-        return itemTotals;
-    }
-
-    ArrayList<Float> itemTotals;
 
     public class POSInventoryHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.im_pos_item_del)
@@ -57,7 +52,11 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
     public POSItemAdapter(List<Inventory.InventoryData> inventories, OnItemSelected onItemSelected) {
         this.inventories = inventories;
         this.onItemSelected = onItemSelected;
-        itemTotals = new ArrayList<>();
+    }
+
+    public void removeItem(int position) {
+        inventories.remove(position);
+        notifyDataSetChanged();
     }
 
     public void addInventory(Inventory.InventoryData inventoryData) {
@@ -91,7 +90,7 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
             unit = unit.substring(0, unit.length() - 1);
         }
 
-        final View itemView = (View) holder.itemCodeTextView.getParent();
+        final View itemView = (View) holder.priceTextView.getParent();
 
         holder.qtyNumberButton.setNumber(inventoryData.selectedQTY, true);
         holder.qtyNumberButton.setRange(1, Integer.parseInt(inventoryData.qty));
@@ -104,7 +103,6 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
         final int quantity = Integer.parseInt(holder.qtyNumberButton.getNumber());
         float totalPrice = Float.parseFloat(price) * quantity;
 
-        itemTotals.add(position, totalPrice);
         holder.totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalPrice));
         onItemSelected.itemSelected(0, position);
 
@@ -114,8 +112,14 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
                 float totalPrice = Float.parseFloat(price) * newValue;
                 inventoryData.selectedQTY = newValue + "";
                 holder.totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalPrice));
-                itemTotals.set(position, totalPrice);
                 onItemSelected.itemSelected(0, position);
+            }
+        });
+
+        holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemSelected.itemSelected(1, position);
             }
         });
 

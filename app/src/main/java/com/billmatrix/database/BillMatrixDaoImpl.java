@@ -263,6 +263,19 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.insert(DBConstants.CUSTOMERS_TABLE, null, contentValues);
     }
 
+    public boolean updateCustomer(Customer.CustomerData customerData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.CUSTOMER_NAME, customerData.username);
+        contentValues.put(DBConstants.CUSTOMER_CONTACT, customerData.mobile_number);
+        contentValues.put(DBConstants.DATE, customerData.date);
+        contentValues.put(DBConstants.LOCATION, customerData.location);
+        contentValues.put(DBConstants.STATUS, customerData.status);
+        contentValues.put(DBConstants.ADMIN_ID, customerData.admin_id);
+        contentValues.put(DBConstants.CREATE_DATE, customerData.create_date);
+        contentValues.put(DBConstants.UPDATE_DATE, customerData.update_date);
+        return db.update(DBConstants.CUSTOMERS_TABLE, contentValues, DBConstants.ID + "='" + customerData.id + "'", null) > 0;
+    }
+
     public boolean deleteCustomer(String phone) {
         return db.delete(DBConstants.CUSTOMERS_TABLE, DBConstants.CUSTOMER_CONTACT + "='" + phone + "'", null) > 0;
     }

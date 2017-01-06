@@ -225,14 +225,14 @@
                         android:background="@drawable/tab_button_bg">
 
                         <ImageView
+                            android:id="@+id/im_pos_edit_customer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:layout_marginBottom="12dp"
                             android:layout_marginLeft="24dp"
                             android:layout_marginRight="24dp"
-                            android:layout_marginTop="12dp"
-                            android:src="@drawable/edit_icon" />
+                            android:layout_marginTop="12dp" />
                     </RelativeLayout>
 
                     <EditText
@@ -383,12 +383,26 @@
                             android:textColor="@android:color/black" />
                     </LinearLayout>
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/pos_items_list"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scrollbars="none" />
+                        android:layout_height="match_parent">
 
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/pos_items_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scrollbars="none" />
+
+                        <TextView
+                            android:id="@+id/tv_POS_item_No_Customer"
+                            style="@style/Base.TextAppearance.AppCompat.Large"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:gravity="center"
+                            android:text="@string/select_pos_customer"
+                            android:textColor="#60000000" />
+                    </RelativeLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -432,6 +446,7 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tv_discount_cal"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -480,9 +495,10 @@
                             android:id="@+id/et_pos_discount_code"
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/edit_text_border"
                             android:hint="@string/discount_code"
+                            android:minHeight="48dp"
                             android:padding="8dp"
                             android:singleLine="true"
                             android:textColor="@android:color/black" />
@@ -535,28 +551,63 @@
                         android:layout_weight="1.5"
                         android:background="@drawable/pay_button"
                         android:gravity="center"
-                        android:orientation="vertical"
-                        android:weightSum="2">
+                        android:orientation="vertical">
 
-                        <TextView
-                            style="@style/Base.TextAppearance.AppCompat.Caption"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:background="@drawable/pay_button"
                             android:gravity="center"
-                            android:text="@string/tax_type"
-                            android:textColor="@android:color/white"
-                            android:textStyle="bold" />
+                            android:orientation="horizontal">
 
-                        <TextView
-                            style="@style/Base.TextAppearance.AppCompat.Caption"
+                            <TextView
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:text="@string/Tax_colon"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_pos_taxValue"
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/TOTAL"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:background="@drawable/pay_button"
                             android:gravity="center"
-                            android:text="@string/TOTAL"
-                            android:textColor="@android:color/white"
-                            android:textStyle="bold" />
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/Base.TextAppearance.AppCompat.Caption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:text="@string/TOTAL_colon"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_totalValue"
+                                style="@style/Base.TextAppearance.AppCompat.Large"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/TOTAL"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+                        </LinearLayout>
                     </LinearLayout>
 
 
@@ -569,9 +620,9 @@
                         android:orientation="vertical">
 
                         <TextView
-                            style="@style/Base.TextAppearance.AppCompat.Large"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            style="@style/Base.TextAppearance.AppCompat.Headline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/PAY"
                             android:textColor="@android:color/white"

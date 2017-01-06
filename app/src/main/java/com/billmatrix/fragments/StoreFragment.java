@@ -154,6 +154,18 @@ public class StoreFragment extends Fragment {
         }
     }
 
+    @OnClick(R.id.im_edit_store_details)
+    public void editStoreDetails() {
+        storeNameEditText.setText(headerStoreNameTextView.getText());
+        addressOneEditText.setText(headerStoreAddOneTextView.getText());
+        addressTwoEditText.setText(headerStoreAddTwoTextView.getText());
+        cityEditText.setText(headerStoreCityTextView.getText());
+        zipCodeEditText.setText(headerStoreZipTextView.getText());
+        vatTINEditText.setText(headerStoreVatTextView.getText());
+        cstNOEditText.setText(headerStoreCSTTextView.getText());
+//        phoneEditText.setText(header.getText());
+    }
+
 
     @OnClick(R.id.im_upload_logo)
     public void browseLicenceOne() {
@@ -200,56 +212,56 @@ public class StoreFragment extends Fragment {
         String storeName = storeNameEditText.getText().toString();
 
         if (TextUtils.isEmpty(storeName)) {
-            ((BaseTabActivity) mContext).showToast("Enter Store Name");
+            Utils.showToast("Enter Store Name", mContext);
             return;
         }
 
         String addONE = addressOneEditText.getText().toString();
 
         /*if (TextUtils.isEmpty(addONE)) {
-            ((BaseTabActivity) mContext).showToast("Enter Address Line One");
+            Utils.showToast("Enter Address Line One", mContext);
             return;
         }*/
 
         String addTWO = addressTwoEditText.getText().toString();
 
         /*if (TextUtils.isEmpty(addTWO)) {
-            ((BaseTabActivity) mContext).showToast("Enter Address Line Two");
+            Utils.showToast("Enter Address Line Two", mContext);
             return;
         }*/
 
         String cityState = cityEditText.getText().toString();
 
         /*if (TextUtils.isEmpty(cityState)) {
-            ((BaseTabActivity) mContext).showToast("Enter City and State");
+            Utils.showToast("Enter City and State", mContext);
             return;
         }*/
 
         String zipCode = zipCodeEditText.getText().toString();
 
         /*if (TextUtils.isEmpty(zipCode)) {
-            ((BaseTabActivity) mContext).showToast("Enter Zip Code");
+            Utils.showToast("Enter Zip Code", mContext);
             return;
         }*/
 
         String vatTIN = vatTINEditText.getText().toString();
 
         /*if (TextUtils.isEmpty(vatTIN)) {
-            ((BaseTabActivity) mContext).showToast("Enter VAT TIN");
+            Utils.showToast("Enter VAT TIN", mContext);
             return;
         }*/
 
         String cstNo = cstNOEditText.getText().toString();
 
         /*if (TextUtils.isEmpty(cstNo)) {
-            ((BaseTabActivity) mContext).showToast("Enter CST No");
+            Utils.showToast("Enter CST No", mContext);
             return;
         }*/
 
         String phone = phoneEditText.getText().toString();
 
         /*if (TextUtils.isEmpty(phone)) {
-            ((BaseTabActivity) mContext).showToast("Enter Phone Number");
+            Utils.showToast("Enter Phone Number", mContext);
             return;
         }*/
 

@@ -170,42 +170,42 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         String empStatus = empStatusSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(empName)) {
-            showToast("Enter Employee Name");
+            Utils.showToast("Enter Employee Name", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(empId)) {
-            showToast("Enter Employee Id");
+            Utils.showToast("Enter Employee Id", mContext);
             return;
         }
 
         if (profilefromFile != null && profilefromFile.data != null && empId.equalsIgnoreCase(profilefromFile.data.login_id)) {
-            showToast("Employee Id must not be same as admin Id");
+            Utils.showToast("Employee Id must not be same as admin Id", mContext);
             return;
         }
 
         if (empId.length() < 6) {
-            showToast("Login Id must be more than 6 characters");
+            Utils.showToast("Login Id must be more than 6 characters", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(empPwd)) {
-            showToast("Enter Employee Password");
+            Utils.showToast("Enter Employee Password", mContext);
             return;
         }
 
         if (empPwd.length() < 6) {
-            showToast("Password must be more than 6 characters");
+            Utils.showToast("Password must be more than 6 characters", mContext);
             return;
         }
 
         if (!Utils.isPhoneValid(empMob)) {
-            showToast("Enter Valid Employee Mobile Number");
+            Utils.showToast("Enter Valid Employee Mobile Number", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(empStatus)) {
-            showToast("Select Employee Status");
+            Utils.showToast("Select Employee Status", mContext);
             return;
         }
 
@@ -248,14 +248,14 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 if (Utils.isInternetAvailable(mContext)) {
                     addEmployeetoServer(employeeData);
                 } else {
-                    showToast("Employee Added successfully");
+                    Utils.showToast("Employee Added successfully", mContext);
                 }
             } else {
                 if (selectedEmptoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
                         updateEmployeetoServer(employeeData);
                     } else {
-                        showToast("Employee Updated successfully");
+                        Utils.showToast("Employee Updated successfully", mContext);
                     }
                 }
             }
@@ -263,7 +263,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             isEditing = false;
             isEmployeeAdded = true;
         } else {
-            showToast("Employee Login Id must be unique");
+            Utils.showToast("Employee Login Id must be unique", mContext);
         }
     }
 
@@ -286,7 +286,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
                         if (employeeStatus.containsKey("update_employee") && employeeStatus.get("update_employee").equalsIgnoreCase("Successfully Updated")) {
-                            showToast("Employee Updated successfully");
+                            Utils.showToast("Employee Updated successfully", mContext);
                         }
                     }
                 }
@@ -322,7 +322,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
                         if (employeeStatus.get("delete_employee").equalsIgnoreCase("success")) {
-                            showToast("Employee Deleted successfully");
+                            Utils.showToast("Employee Deleted successfully", mContext);
                         }
                     }
                 }
@@ -359,7 +359,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
                         if (employeeStatus.get("create_employee").equalsIgnoreCase("success")) {
-                            showToast("Employee Added successfully");
+                            Utils.showToast("Employee Added successfully", mContext);
                         }
                     }
                 }
@@ -416,7 +416,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                                 deleteEmployeefromServer(employeesAdapter.getItem(position).id);
                             }
                         } else {
-                            showToast("Employee Deleted successfully");
+                            Utils.showToast("Employee Deleted successfully", mContext);
                         }
                         employeesAdapter.deleteEmployee(position);
                     }
@@ -439,7 +439,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).login_id);
                     employeesAdapter.deleteEmployee(position);
                 } else {
-                    showToast("Save present editing employee before editing other employee");
+                    Utils.showToast("Save present editing employee before editing other employee", mContext);
                 }
                 break;
             case 3:

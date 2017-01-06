@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,7 +12,6 @@ import com.billmatrix.R;
 import com.billmatrix.models.Inventory;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -123,7 +121,7 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
             }
         });
 
-        itemView.setOnClickListener(new View.OnClickListener() {
+        /*itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (lastCheckedPos != position) {
@@ -144,7 +142,7 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
                     }
                 }
             }
-        });
+        });*/
     }
 
     public Inventory.InventoryData getItem(int position) {

@@ -61,7 +61,7 @@ public class DatabaseFragment extends Fragment {
     @OnClick(R.id.btn_sync)
     public void syncWithServer() {
         if (!Utils.isInternetAvailable(mContext)) {
-            ((BaseTabActivity)mContext).showToast("Internet not Available!");
+            Utils.showToast("Internet not Available!", mContext);
             return;
         }
 

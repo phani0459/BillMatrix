@@ -185,10 +185,10 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             } else {
-                                showToast("You are an IN-ACTIVE employee, contact admin to login.");
+                                Utils.showToast("You are an IN-ACTIVE employee, contact admin to login.", mContext);
                             }
                         } else {
-                            showToast("username/password is wrong");
+                            Utils.showToast("username/password is wrong", mContext);
                         }
                     }
                 }
@@ -197,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
             if (progressDialog != null && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            showToast("unable to log! Check for Internet connection");
+            Utils.showToast("unable to log! Check for Internet connection", mContext);
         }
     }
 
@@ -262,11 +262,11 @@ public class LoginActivity extends AppCompatActivity {
                             showAlertDialog("Incorrect Licence Key", "contact BillMatrix admin to reset present Licence key.", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    showToast("Call BillMatrix Admin");
+                                    Utils.showToast("Call BillMatrix Admin", mContext);
                                 }
                             });
                         } else {
-                            showToast("username/password is wrong");
+                            Utils.showToast("username/password is wrong", mContext);
                         }
                     }
                 }
@@ -287,7 +287,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (progressDialog != null && progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-                showToast("unable to login");
+                Utils.showToast("unable to login", mContext);
             }
         });
     }
@@ -318,10 +318,6 @@ public class LoginActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void showToast(String msg) {
-        Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
-    }
-
     public void getIMEINumber() {
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         imeiNumber = telephonyManager.getDeviceId();
@@ -340,15 +336,15 @@ public class LoginActivity extends AppCompatActivity {
         Log.e(TAG, "verify: " + imeiNumber);
 
         if (TextUtils.isEmpty(userName)) {
-            showToast("Enter user name");
+            Utils.showToast("Enter user name", mContext);
             return false;
         }
         if (TextUtils.isEmpty(password)) {
-            showToast("Enter password");
+            Utils.showToast("Enter password", mContext);
             return false;
         }
         if (TextUtils.isEmpty(imeiNumber)) {
-            showToast("Cannot get IMEI Number");
+            Utils.showToast("Cannot get IMEI Number", mContext);
             return false;
         }
         imeiNumber = "8234123";

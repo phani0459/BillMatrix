@@ -1,6 +1,7 @@
 package com.billmatrix.activities;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,17 +14,18 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.FloatProperty;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -39,11 +41,13 @@ import com.billmatrix.models.Customer;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
+import com.billmatrix.utils.ServerUtils;
 import com.billmatrix.utils.Utils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,6 +55,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class POSActivity extends Activity implements OnItemClickListener, POSItemAdapter.OnItemSelected {
 
@@ -89,6 +96,16 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public LinearLayout customerDetailsLayout;
     @BindView(R.id.tv_POS_No_Customer)
     public TextView customerNotSelectedTextView;
+    @BindView(R.id.tv_discount_cal)
+    public TextView discountCalTextView;
+    @BindView(R.id.tv_totalValue)
+    public TextView totalValueTextView;
+    @BindView(R.id.tv_POS_item_No_Customer)
+    public TextView noCustomerItemTextView;
+    @BindView(R.id.im_pos_edit_customer)
+    public ImageView editCustomerImageView;
+    @BindView(R.id.tv_pos_taxValue)
+    public TextView taxValueTextView;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
@@ -98,6 +115,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private ArrayList<Customer.CustomerData> dbCustomers;
     private Customer.CustomerData selectedCustomer;
     private ArrayAdapter<String> customerSpinnerAdapter;
+    private boolean isGuestCustomerSelected;
+    private String adminId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,9 +129,14 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         mContext = this;
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         dbCustomers = new ArrayList<>();
+
+        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+
         ArrayList<String> customerNames = new ArrayList<>();
 
         customerNames.add("SELECT CUSTOMER");
+        customerNames.add("GUEST CUSTOMER 1");
+
         dbCustomers = billMatrixDaoImpl.getCustomers();
 
         if (dbCustomers != null && dbCustomers.size() > 0) {
@@ -120,7 +144,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 customerNames.add(customer.username.toUpperCase());
             }
         }
-        customerNames.add("GUEST CUSTOMER 1");
         customerSpinnerAdapter = Utils.loadSpinner(customersSpinner, mContext, customerNames);
 
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -148,7 +171,190 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f);
         discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
 
+        /**
+         * set texts defaults
+         */
+        totalCartItemsTextView.setText("0" + " " + getString(R.string.ITEMS));
+        subTotalTextView.setText(getString(R.string.sub_total) + " " + "0.00" + "/-");
+        discountCalTextView.setText(getString(R.string.discount) + ": " + "0.00" + "/-");
+        totalValueTextView.setText(" " + "0.00" + "/-");
+        taxValueTextView.setText(" " + "0.00" + "/-");
+
         tabsLayout.addView(buttonLayout);
+    }
+
+    public void showCustomerDetailsDialog(final Customer.CustomerData selectedCustomer) {
+        final Dialog dialog = new Dialog(mContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_pos_customer_details);
+        dialog.setCancelable(false);
+
+        final EditText customerUserName = (EditText) dialog.findViewById(R.id.et_pos_cust_name);
+        final EditText customerMobile = (EditText) dialog.findViewById(R.id.et_pos_cust_mobile);
+        EditText customerEmail = (EditText) dialog.findViewById(R.id.et_pos_cust_email);
+        final EditText customerLocation = (EditText) dialog.findViewById(R.id.et_pos_cust_location);
+
+        Button editCustomerButton = (Button) dialog.findViewById(R.id.btn_edit_add_customer);
+        Button close = (Button) dialog.findViewById(R.id.btn_close_cust_details_dialog);
+
+        if (selectedCustomer != null) {
+            customerEmail.setText("");
+            customerLocation.setText(selectedCustomer.location);
+            customerUserName.setText(selectedCustomer.username);
+            customerMobile.setText(selectedCustomer.mobile_number);
+            editCustomerButton.setText(getString(R.string.save));
+        } else {
+            editCustomerButton.setText(getString(R.string.add));
+        }
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        editCustomerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Customer.CustomerData editedCustomerData = new Customer().new CustomerData();
+                if (selectedCustomer != null) {
+                    editedCustomerData.status = selectedCustomer.status;
+                    editedCustomerData.admin_id = selectedCustomer.admin_id;
+                    editedCustomerData.id = selectedCustomer.id;
+                    editedCustomerData.date = selectedCustomer.date;
+                    editedCustomerData.create_date = selectedCustomer.create_date;
+                    editedCustomerData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                } else {
+                    editedCustomerData.status = "1";
+                    editedCustomerData.admin_id = adminId;
+                    editedCustomerData.date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                    editedCustomerData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                    editedCustomerData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                }
+
+                String customerName = customerUserName.getText().toString();
+
+                if (TextUtils.isEmpty(customerName)) {
+                    Utils.showToast("Enter Customer Name", mContext);
+                    return;
+                }
+
+                String customerContact = customerMobile.getText().toString();
+                if (TextUtils.isEmpty(customerContact)) {
+                    Utils.showToast("Enter Customer Mobile Number", mContext);
+                    return;
+                }
+
+                if (!Utils.isPhoneValid(customerContact)) {
+                    Utils.showToast("Enter Valid Customer Mobile Number", mContext);
+                    return;
+                }
+
+                String customerLocationS = customerLocation.getText().toString();
+                if (TextUtils.isEmpty(customerLocationS)) {
+                    Utils.showToast("Enter Customer Location", mContext);
+                    return;
+                }
+
+                editedCustomerData.location = customerLocationS;
+                editedCustomerData.username = customerName;
+                editedCustomerData.mobile_number = customerContact;
+
+                if (selectedCustomer != null) {
+                    updateCustomerinDB(editedCustomerData, dialog);
+                } else {
+                    addCustomerinDB(editedCustomerData, dialog);
+                }
+            }
+        });
+
+        dialog.show();
+    }
+
+    public void updateCustomerinDB(Customer.CustomerData customerData, Dialog dialog) {
+        boolean isCustomerUpdated = billMatrixDaoImpl.updateCustomer(customerData);
+
+        if (isCustomerUpdated) {
+            if (Utils.isInternetAvailable(mContext)) {
+                ServerUtils.updateCustomertoServer(customerData, mContext);
+            } else {
+                Utils.showToast("Customer Updated successfully", mContext);
+            }
+            dialog.dismiss();
+            selectedCustomer = customerData;
+            isGuestCustomerSelected = false;
+            loadCustomerDetails();
+        } else {
+            Utils.showToast("Customer Mobile Number must be unique", mContext);
+        }
+    }
+
+    public void addCustomerinDB(Customer.CustomerData customerData, Dialog dialog) {
+        long customerAdded  = billMatrixDaoImpl.addCustomer(customerData);
+
+        if (customerAdded != -1) {
+            if (Utils.isInternetAvailable(mContext)) {
+                ServerUtils.addCustomertoServer(customerData, mContext, adminId);
+            } else {
+                Utils.showToast("Customer Updated successfully", mContext);
+            }
+            dialog.dismiss();
+            selectedCustomer = customerData;
+            isGuestCustomerSelected = false;
+            loadCustomerDetails();
+        } else {
+            Utils.showToast("Customer Mobile Number must be unique", mContext);
+        }
+    }
+
+    public void showCloseBillDialog(String username) {
+        final Dialog dialog = new Dialog(mContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_pos_cancel_bill);
+        dialog.setCancelable(false);
+
+        TextView forCustomer = (TextView) dialog.findViewById(R.id.tv_for_customer);
+        forCustomer.setText(getString(R.string.for_customer, username));
+
+        Button yes = (Button) dialog.findViewById(R.id.btn_cancel_bill_yes);
+
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        Button close = (Button) dialog.findViewById(R.id.btn_close_cancel_dialog);
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+
+    @OnClick(R.id.rl_pos_cust_edit)
+    public void editCustomerDetails() {
+        if (selectedCustomer != null) {
+            showCustomerDetailsDialog(selectedCustomer);
+        } else if (isGuestCustomerSelected) {
+            showCustomerDetailsDialog(null);
+        }
+    }
+
+    @OnClick(R.id.rl_pos_cust_close)
+    public void closeCurrentBill() {
+        if (selectedCustomer != null) {
+            showCloseBillDialog(selectedCustomer.username);
+        } else if (isGuestCustomerSelected) {
+            showCloseBillDialog(customerNotSelectedTextView.getText().toString());
+        }
     }
 
     @Override
@@ -162,17 +368,27 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     for (Customer.CustomerData customer : dbCustomers) {
                         if (customer.username.equalsIgnoreCase(selecteCustomerName)) {
                             selectedCustomer = customer;
+                            isGuestCustomerSelected = false;
                             loadCustomerDetails();
                         }
                     }
+                    editCustomerImageView.setImageResource(R.drawable.edit_icon);
                 } else if (selecteCustomerName.equalsIgnoreCase("SELECT CUSTOMER")) {
+                    selectedCustomer = null;
+                    isGuestCustomerSelected = false;
+                    noCustomerItemTextView.setVisibility(View.VISIBLE);
                     customerNotSelectedTextView.setVisibility(View.VISIBLE);
                     customerDetailsLayout.setVisibility(View.GONE);
                     customerNotSelectedTextView.setText(getString(R.string.select_pos_customer));
+                    editCustomerImageView.setImageResource(R.drawable.edit_icon);
                 } else if (selecteCustomerName.contains("GUEST CUSTOMER")) {
+                    selectedCustomer = null;
+                    isGuestCustomerSelected = true;
                     customerNotSelectedTextView.setVisibility(View.VISIBLE);
+                    noCustomerItemTextView.setVisibility(View.GONE);
                     customerDetailsLayout.setVisibility(View.GONE);
-                    customerNotSelectedTextView.setText(getString(R.string.add_guest_as_customer));
+                    customerNotSelectedTextView.setText(selecteCustomerName);
+                    editCustomerImageView.setImageResource(R.drawable.add_customer);
                 }
             }
 
@@ -240,12 +456,16 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         Log.e(TAG, "searchClicked: ");
         if (query.length() > 0) {
             query = query.toLowerCase();
+            selectedCustomer = null;
 
             if (dbCustomers != null && dbCustomers.size() > 0) {
                 for (Customer.CustomerData customerData : dbCustomers) {
                     if (customerData.username.toLowerCase().contains(query)) {
                         Log.e(TAG, "query Searched: " + query);
                         selectedCustomer = customerData;
+
+                        posSearchEditText.setText("");
+                        posSearchEditText.clearFocus();
 
                         try {
                             int customerSelectedPosition = customerSpinnerAdapter.getPosition(customerData.username.toUpperCase());
@@ -260,6 +480,12 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                     }
                 }
+            }
+
+            if (selectedCustomer == null) {
+                customersSpinner.setSelection(0);
+                Utils.showToast("Not able to search Customer", mContext);
+                posSearchEditText.clearFocus();
             }
         }
     }
@@ -276,6 +502,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
             customerNotSelectedTextView.setVisibility(View.GONE);
             customerDetailsLayout.setVisibility(View.VISIBLE);
+            noCustomerItemTextView.setVisibility(View.GONE);
 
         }
     }
@@ -344,58 +571,75 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         alertDialog.show();
     }
 
-    public void showToast(String msg) {
-        Toast.makeText(mContext, msg + "", Toast.LENGTH_LONG).show();
-    }
-
     @Override
     public void onItemClick(int caseInt, int position) {
         Inventory.InventoryData selectedInventory = posInventoryAdapter.getItem(position);
-        if (posItemAdapter.inventories != null && posItemAdapter.inventories.size() > 0) {
-            if (posItemAdapter.inventories.contains(selectedInventory)) {
-                int inventoryQty = Integer.parseInt(selectedInventory.selectedQTY);
-                if (TextUtils.isDigitsOnly(selectedInventory.qty)) {
-                    if (Integer.parseInt(selectedInventory.qty) > inventoryQty) {
-                        inventoryQty = inventoryQty + 1;
-                        selectedInventory.selectedQTY = inventoryQty + "";
-                        posItemAdapter.changeInventory(selectedInventory);
-                    } else {
-                        showToast("Items not available");
+        if (noCustomerItemTextView.getVisibility() == View.GONE) {
+            if (posItemAdapter.inventories != null && posItemAdapter.inventories.size() > 0) {
+                if (posItemAdapter.inventories.contains(selectedInventory)) {
+                    int inventoryQty = Integer.parseInt(selectedInventory.selectedQTY);
+                    if (TextUtils.isDigitsOnly(selectedInventory.qty)) {
+                        if (Integer.parseInt(selectedInventory.qty) > inventoryQty) {
+                            inventoryQty = inventoryQty + 1;
+                            selectedInventory.selectedQTY = inventoryQty + "";
+                            posItemAdapter.changeInventory(selectedInventory);
+                        } else {
+                            Utils.showToast("Items not available", mContext);
+                        }
                     }
+                    return;
+                } else {
+                    selectedInventory.selectedQTY = "1";
                 }
-                return;
             } else {
                 selectedInventory.selectedQTY = "1";
             }
+            posItemAdapter.addInventory(selectedInventory);
+            totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
         } else {
-            selectedInventory.selectedQTY = "1";
+            Utils.showToast("Select Customer before adding items to cart", mContext);
         }
-        posItemAdapter.addInventory(selectedInventory);
-        totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
     }
 
-    private String getSubTotal() {
+    private Float getSubTotal() {
         Float subTotal = 0f;
         for (int i = 0; i < posItemAdapter.inventories.size(); i++) {
             int qty = Integer.parseInt(posItemAdapter.inventories.get(i).selectedQTY);
             float price = Float.parseFloat(posItemAdapter.inventories.get(i).price);
             subTotal = subTotal + (qty * price);
         }
-        return String.format(Locale.getDefault(), "%.2f", subTotal) + "";
+        return subTotal; //String.format(Locale.getDefault(), "%.2f", subTotal) + "";
     }
+
+    public Float getDiscountCalculated(Float subTotal) {
+        Float discountCalculated = 0.00f;
+        if (discountSelected != 0) {
+            discountCalculated = ((subTotal * discountSelected) / 100);
+        }
+        return discountCalculated; //String.format(Locale.getDefault(), "%.2f", discountCalculated) + "";
+    }
+
 
     @Override
     public void itemSelected(int caseInt, final int position) {
         switch (caseInt) {
             case 0:
-                subTotalTextView.setText(getString(R.string.sub_total) + " " + getSubTotal() + "/-");
+                Float subTotal = getSubTotal();
+                Float discount = getDiscountCalculated(subTotal);
+                subTotalTextView.setText(getString(R.string.sub_total) + " " + String.format(Locale.getDefault(), "%.2f", subTotal) + "/-");
+                discountCalTextView.setText(getString(R.string.discount) + ": " + String.format(Locale.getDefault(), "%.2f", discount) + "/-");
+                totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount)) + "/-");
                 break;
             case 1:
                 showAlertDialog("Are you sure?", "You want to remove Item", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         posItemAdapter.removeItem(position);
-                        subTotalTextView.setText(getString(R.string.sub_total) + " " + getSubTotal() + "/-");
+                        Float subTotal = getSubTotal();
+                        Float discount = getDiscountCalculated(subTotal);
+                        subTotalTextView.setText(getString(R.string.sub_total) + " " + String.format(Locale.getDefault(), "%.2f", subTotal) + "/-");
+                        discountCalTextView.setText(getString(R.string.discount) + ": " + String.format(Locale.getDefault(), "%.2f", discount) + "/-");
+                        totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount)) + "/-");
                         totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
                     }
                 });

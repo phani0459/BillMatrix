@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.billmatrix.R;
-import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.GenExpensesAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
@@ -91,28 +90,28 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
         String expenseName = expenseNameEditText.getText().toString();
 
         if (TextUtils.isEmpty(expenseName)) {
-            ((BaseTabActivity) mContext).showToast("Enter Expense Name");
+            Utils.showToast("Enter Expense Name", mContext);
             return;
         }
 
         String purpose = purposeEditText.getText().toString();
 
         if (TextUtils.isEmpty(purpose)) {
-            ((BaseTabActivity) mContext).showToast("Enter Expense Purpose");
+            Utils.showToast("Enter Expense Purpose", mContext);
             return;
         }
 
         String date = dateEditText.getText().toString();
 
         if (TextUtils.isEmpty(date)) {
-            ((BaseTabActivity) mContext).showToast("Enter Expense Date");
+            Utils.showToast("Enter Expense Date", mContext);
             return;
         }
 
         String amount = amountEditText.getText().toString();
 
         if (TextUtils.isEmpty(amount)) {
-            ((BaseTabActivity) mContext).showToast("Enter Expense Amount");
+            Utils.showToast("Enter Expense Amount", mContext);
             return;
         }
 
@@ -138,7 +137,7 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
         dateEditText.setText("");
         amountEditText.setText("");
 //                    } else {
-//                        ((BaseTabActivity) mContext).showToast("Vendor Email / Phone must be unique");
+//                        Utils.showToast("Vendor Email / Phone must be unique");
 //                    }
 
     }

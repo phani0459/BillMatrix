@@ -133,16 +133,16 @@ public class PayInsFragment extends Fragment implements OnItemClickListener {
                     dateEditText.setText("");
                     amountEditText.setText("");
 //                    } else {
-//                        ((BaseTabActivity) mContext).showToast("Vendor Email / Phone must be unique");
+//                        Utils.showToast("Vendor Email / Phone must be unique", mContext);
 //                    }
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Enter Amount");
+                    Utils.showToast("Enter Amount", mContext);
                 }
             } else {
-                ((BaseTabActivity) mContext).showToast("Enter Date");
+                Utils.showToast("Enter Date", mContext);
             }
         } else {
-            ((BaseTabActivity) mContext).showToast("Enter Customer Name");
+            Utils.showToast("Enter Customer Name", mContext);
         }
     }
 

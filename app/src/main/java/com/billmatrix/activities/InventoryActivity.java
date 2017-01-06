@@ -127,14 +127,14 @@ public class InventoryActivity extends BaseTabActivity {
 
         if (inventoryFragment != null) {
             if (inventoryFragment.isEditing) {
-                showToast("Save the changes made before going to other tab");
+                Utils.showToast("Save the changes made before going to other tab", mContext);
                 return;
             }
         }
 
         if (vendorsFragment != null) {
             if (vendorsFragment.isEditing) {
-                showToast("Save the changes made before going to other tab");
+                Utils.showToast("Save the changes made before going to other tab", mContext);
                 return;
             }
         }

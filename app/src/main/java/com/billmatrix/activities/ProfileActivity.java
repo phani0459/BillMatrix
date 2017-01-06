@@ -233,31 +233,31 @@ public class ProfileActivity extends BaseTabActivity {
         String adminName = adminNameEditText.getText().toString();
 
         if (TextUtils.isEmpty(adminName)) {
-            showToast("Enter Administrator");
+            Utils.showToast("Enter Administrator", mContext);
             return;
         }
 
         String loginId = loginIdmEditText.getText().toString();
 
         if (TextUtils.isEmpty(loginId)) {
-            showToast("Enter Login Id");
+            Utils.showToast("Enter Login Id", mContext);
             return;
         }
 
         if (loginId.length() < 6) {
-            showToast("Login Id must be more than 6 characters");
+            Utils.showToast("Login Id must be more than 6 characters", mContext);
             return;
         }
 
         String password = passwordEditText.getText().toString();
 
         if (TextUtils.isEmpty(password)) {
-            showToast("Enter Password");
+            Utils.showToast("Enter Password", mContext);
             return;
         }
 
         if (password.length() < 6) {
-            showToast("password must be more than 6 characters");
+            Utils.showToast("password must be more than 6 characters", mContext);
             return;
         }
 
@@ -267,19 +267,19 @@ public class ProfileActivity extends BaseTabActivity {
         String mobile = mobNumEditText.getText().toString();
 
         if (TextUtils.isEmpty(mobile)) {
-            showToast("Enter Mobile Number");
+            Utils.showToast("Enter Mobile Number", mContext);
             return;
         }
 
         if (!Utils.isPhoneValid(mobile)) {
-            showToast("Enter Valid Mobile Number");
+            Utils.showToast("Enter Valid Mobile Number", mContext);
             return;
         }
 
         String branch = branchAdminEditText.getText().toString();
 
         if (TextUtils.isEmpty(branch)) {
-            showToast("Enter branch Name");
+            Utils.showToast("Enter branch Name", mContext);
             return;
         }
 
@@ -289,7 +289,7 @@ public class ProfileActivity extends BaseTabActivity {
         String location = locationAdminEditText.getText().toString();
 
         if (TextUtils.isEmpty(location)) {
-            showToast("Enter location");
+            Utils.showToast("Enter location", mContext);
             return;
         }
 
@@ -313,7 +313,6 @@ public class ProfileActivity extends BaseTabActivity {
         newData.location = location;
         newData.status = profile.data.status;
         newData.create_date = profile.data.create_date;
-        ;
         newData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
 
         newProfile.data = newData;
@@ -339,7 +338,7 @@ public class ProfileActivity extends BaseTabActivity {
                         HashMap<String, String> employeeStatus = response.body();
                         if (employeeStatus.get("status").equalsIgnoreCase("200")) {
                             if (employeeStatus.containsKey("update_employee") && employeeStatus.get("update_employee").equalsIgnoreCase("Successfully Updated")) {
-                                showToast("Profile Updated successfully");
+                                Utils.showToast("Profile Updated successfully", mContext);
                             }
                         }
                     }
@@ -356,7 +355,7 @@ public class ProfileActivity extends BaseTabActivity {
                 }
             });
         } else {
-            showToast("Profile Updated successfully");
+            Utils.showToast("Profile Updated successfully", mContext);
         }
 
 

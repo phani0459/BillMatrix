@@ -104,12 +104,12 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         String rate = taxRateEditText.getText().toString();
 
         if (TextUtils.isEmpty(taxType) && !taxType.equalsIgnoreCase("select one")) {
-            ((BaseTabActivity) mContext).showToast("Select Tax Type");
+            Utils.showToast("Select Tax Type", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(rate)) {
-            ((BaseTabActivity) mContext).showToast("Enter Tax rate");
+            Utils.showToast("Enter Tax rate", mContext);
             return;
         }
 
@@ -134,7 +134,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
             taxDescEditText.setText("");
             isEditing = false;
         } else {
-            ((BaseTabActivity) mContext).showToast("Tax Type must be unique");
+            Utils.showToast("Tax Type must be unique", mContext);
         }
     }
 

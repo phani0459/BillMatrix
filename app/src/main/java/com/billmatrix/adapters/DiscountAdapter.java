@@ -98,7 +98,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
 
         if (position == 0) {
             holder.deleteImageView.setVisibility(View.INVISIBLE);
-            holder.editImageView.setVisibility(View.INVISIBLE);
+            holder.editImageView.setVisibility(View.VISIBLE);
             holder.snoRadioButton.setChecked(true);
             lastCheckedPos = 0;
             lastChecked = holder.snoRadioButton;

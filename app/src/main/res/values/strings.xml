@@ -220,18 +220,27 @@
     <string name="Employees">Employees</string>
 
     <!-- POS Strings-->
+    <string name="Email">Email</string>
+    <string name="Location">Location</string>
     <string name="sell_item">SELL ITEM</string>
     <string name="PAY">PAY</string>
     <string name="credit">CREDIT</string>
     <string name="INVENTORY">INVENTORY</string>
     <string name="search_customer">Search Customer</string>
     <string name="TOTAL">TOTAL</string>
+    <string name="TOTAL_colon">TOTAL:</string>
+    <string name="Tax_colon">TAX:</string>
     <string name="z_bill">Z BILL</string>
     <string name="cash_or_card">CASH &#8725; CARD</string>
     <string name="ITEMS">ITEMS</string>
     <string name="sub_total">SUB TOTAL:</string>
     <string name="select_pos_customer">SELECT CUSTOMER</string>
     <string name="add_guest_as_customer">ADD GUEST AS CUSTOMER</string>
+    <string name="add_new_customer">ADD NEW CUSTOMER</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="YES">YES</string>
+    <string name="are_you_sure_Cancel_bill">Are you sure, you want to cancel this Bill?</string>
+    <string name="for_customer">For Customer: %1$s</string>
 
     <!-- Hardware Strings-->
     <string name="below_components_detected">BELOW HARDWARE COMPONENTS ARE DETECTED</string>

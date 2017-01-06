@@ -25,6 +25,7 @@ import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -189,32 +190,32 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         String customerStatus = custStatusSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(customerName)) {
-            ((BaseTabActivity) mContext).showToast("Enter Customer Name");
+            Utils.showToast("Enter Customer Name", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(customerContact)) {
-            ((BaseTabActivity) mContext).showToast("Enter Customer Mobile Number");
+            Utils.showToast("Enter Customer Mobile Number", mContext);
             return;
         }
 
         if (!Utils.isPhoneValid(customerContact)) {
-            ((BaseTabActivity) mContext).showToast("Enter Valid Customer Mobile Number");
+            Utils.showToast("Enter Valid Customer Mobile Number", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(customerDate)) {
-            ((BaseTabActivity) mContext).showToast("Select Customer Date");
+            Utils.showToast("Select Customer Date", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(customerLocation)) {
-            ((BaseTabActivity) mContext).showToast("Enter Customer Location");
+            Utils.showToast("Enter Customer Location", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(customerStatus)) {
-            ((BaseTabActivity) mContext).showToast("Select Customer Status");
+            Utils.showToast("Select Customer Status", mContext);
             return;
         }
 
@@ -252,16 +253,16 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
 
             if (addCustomerBtn.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    addCustomertoServer(customerData);
+                    ServerUtils.addCustomertoServer(customerData, mContext, adminId);
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Customer Added successfully");
+                    Utils.showToast("Customer Added successfully", mContext);
                 }
             } else {
                 if (selectedCusttoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        updateCustomertoServer(customerData);
+                        ServerUtils.updateCustomertoServer(customerData, mContext);
                     } else {
-                        ((BaseTabActivity) mContext).showToast("Customer Updated successfully");
+                        Utils.showToast("Customer Updated successfully", mContext);
                     }
                 }
             }
@@ -270,46 +271,8 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
             isCustomerAdded = true;
             ((BaseTabActivity) mContext).ifTabCanChange = true;
         } else {
-            ((BaseTabActivity) mContext).showToast("Customer Mobile Number must be unique");
+            Utils.showToast("Customer Mobile Number must be unique", mContext);
         }
-    }
-
-    private void updateCustomertoServer(Customer.CustomerData customerData) {
-        Log.e(TAG, "updateCustomertoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateCustomer(customerData.id, customerData.username, customerData.mobile_number,
-                customerData.location, customerData.status, customerData.date);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> customerMap = response.body();
-                    if (customerMap.get("status").equalsIgnoreCase("200")) {
-                        if (customerMap.containsKey("update_customer") && customerMap.get("update_customer").equalsIgnoreCase("Successfully Updated")) {
-                            ((BaseTabActivity) mContext).showToast("Customer Updated successfully");
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
     }
 
     public void deleteCustomerfromServer(String customerID) {
@@ -330,45 +293,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
                         if (employeeStatus.get("delete_customer").equalsIgnoreCase("success")) {
-                            ((BaseTabActivity) mContext).showToast("Customer Deleted successfully");
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
-    private void addCustomertoServer(Customer.CustomerData customerData) {
-        Log.e(TAG, "addCustomertoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addCustomer(customerData.username, customerData.mobile_number, customerData.location,
-                customerData.status, customerData.date, adminId);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> customerStatus = response.body();
-                    if (customerStatus.get("status").equalsIgnoreCase("200")) {
-                        if (customerStatus.get("create_customer").equalsIgnoreCase("success")) {
-                            ((BaseTabActivity) mContext).showToast("Customer Added successfully");
+                            Utils.showToast("Customer Deleted successfully", mContext);
                         }
                     }
                 }
@@ -399,7 +324,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                                 deleteCustomerfromServer(customersAdapter.getItem(position).id);
                             }
                         } else {
-                            ((BaseTabActivity) mContext).showToast("Customer Deleted successfully");
+                            Utils.showToast("Customer Deleted successfully", mContext);
                         }
                         customersAdapter.deleteCustomer(position);
                     }
@@ -424,7 +349,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                     billMatrixDaoImpl.deleteCustomer(customersAdapter.getItem(position).mobile_number);
                     customersAdapter.deleteCustomer(position);
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Save present editing customer before editing other customer");
+                    Utils.showToast("Save present editing customer before editing other customer", mContext);
                 }
                 break;
             case 3:

@@ -193,32 +193,32 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         String vendorSince = vendorSince_EditText.getText().toString();
 
         if (TextUtils.isEmpty(vendorName)) {
-            ((BaseTabActivity) mContext).showToast("Enter Vendor Name");
+            Utils.showToast("Enter Vendor Name", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(vendorAdd)) {
-            ((BaseTabActivity) mContext).showToast("Enter Vendor Address");
+            Utils.showToast("Enter Vendor Address", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(vendorMob)) {
-            ((BaseTabActivity) mContext).showToast("Enter Vendor Mobile Number");
+            Utils.showToast("Enter Vendor Mobile Number", mContext);
             return;
         }
 
         if (!Utils.isPhoneValid(vendorMob)) {
-            ((BaseTabActivity) mContext).showToast("Enter Valid Vendor Mobile Number");
+            Utils.showToast("Enter Valid Vendor Mobile Number", mContext);
             return;
         }
 
         if (TextUtils.isEmpty(vendorSince)) {
-            ((BaseTabActivity) mContext).showToast("Enter Vendor Since");
+            Utils.showToast("Enter Vendor Since", mContext);
             return;
         }
 
         if (!TextUtils.isEmpty(vendorEmail) && !Utils.isEmailValid(vendorEmail)) {
-            ((BaseTabActivity) mContext).showToast("Enter Valid Vendor Email");
+            Utils.showToast("Enter Valid Vendor Email", mContext);
             return;
         }
 
@@ -259,14 +259,14 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                 if (Utils.isInternetAvailable(mContext)) {
                     addVendortoServer(vendorData);
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Vendor Added successfully");
+                    Utils.showToast("Vendor Added successfully", mContext);
                 }
             } else {
                 if (selectedVendortoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
                         updateVendortoServer(vendorData);
                     } else {
-                        ((BaseTabActivity) mContext).showToast("Vendor Updated successfully");
+                        Utils.showToast("Vendor Updated successfully", mContext);
                     }
                 }
             }
@@ -275,7 +275,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
             ((BaseTabActivity) mContext).ifTabCanChange = true;
             isVendroAdded = true;
         } else {
-            ((BaseTabActivity) mContext).showToast("Vendor Phone must be unique");
+            Utils.showToast("Vendor Phone must be unique", mContext);
         }
     }
 
@@ -297,7 +297,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
                         if (employeeStatus.get("delete_vendor").equalsIgnoreCase("success")) {
-                            ((BaseTabActivity) mContext).showToast("Vendor Deleted successfully");
+                            Utils.showToast("Vendor Deleted successfully", mContext);
                         }
                     }
                 }
@@ -335,7 +335,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                     HashMap<String, String> vendorMap = response.body();
                     if (vendorMap.get("status").equalsIgnoreCase("200")) {
                         if (vendorMap.get("create_vendor").equalsIgnoreCase("success")) {
-                            ((BaseTabActivity) mContext).showToast("Vendor Added successfully");
+                            Utils.showToast("Vendor Added successfully", mContext);
                         }
                     }
                 }
@@ -373,7 +373,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                     HashMap<String, String> vendorMap = response.body();
                     if (vendorMap.get("status").equalsIgnoreCase("200")) {
                         if (vendorMap.containsKey("update_vendor") && vendorMap.get("update_vendor").equalsIgnoreCase("Successfully Updated")) {
-                            ((BaseTabActivity) mContext).showToast("Vendor Updated successfully");
+                            Utils.showToast("Vendor Updated successfully", mContext);
                         }
                     }
                 }
@@ -444,7 +444,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                                 deleteVendorfromServer(vendorsAdapter.getItem(position).id);
                             }
                         } else {
-                            ((BaseTabActivity) mContext).showToast("Vendor Deleted successfully");
+                            Utils.showToast("Vendor Deleted successfully", mContext);
                         }
                         vendorsAdapter.deleteVendor(position);
                     }
@@ -465,7 +465,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                     billMatrixDaoImpl.deleteVendor(vendorsAdapter.getItem(position).phone);
                     vendorsAdapter.deleteVendor(position);
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Save present editing Vendor before editing other vendor");
+                    Utils.showToast("Save present editing Vendor before editing other vendor", mContext);
                 }
                 break;
             case 3:

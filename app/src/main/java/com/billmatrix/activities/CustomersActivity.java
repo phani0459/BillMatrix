@@ -8,6 +8,7 @@ import com.billmatrix.R;
 import com.billmatrix.fragments.CustomerTransFragment;
 import com.billmatrix.fragments.CustomerWiseDueFragment;
 import com.billmatrix.fragments.CustomersFragment;
+import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;
 
@@ -46,7 +47,7 @@ public class CustomersActivity extends BaseTabActivity {
 
         if (customersFragment != null) {
             if (customersFragment.isEditing) {
-                showToast("Save the changes made before going to other tab");
+                Utils.showToast("Save the changes made before going to other tab", mContext);
                 return;
             }
         }

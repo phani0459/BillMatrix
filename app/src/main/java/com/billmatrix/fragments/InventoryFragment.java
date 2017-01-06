@@ -297,28 +297,28 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         String itemCode = itemCodeEditText.getText().toString();
 
         if (TextUtils.isEmpty(itemCode)) {
-            ((BaseTabActivity) mContext).showToast("Enter Item Code");
+            Utils.showToast("Enter Item Code", mContext);
             return;
         }
 
         String itemName = itemNameeEditText.getText().toString();
 
         if (TextUtils.isEmpty(itemName)) {
-            ((BaseTabActivity) mContext).showToast("Enter Item Name");
+            Utils.showToast("Enter Item Name", mContext);
             return;
         }
 
         String unit = unitSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(unit)) {
-            ((BaseTabActivity) mContext).showToast("Select Unit");
+            Utils.showToast("Select Unit", mContext);
             return;
         }
 
         if (unit.equalsIgnoreCase("Other")) {
             unit = customUnitEditText.getText().toString();
             if (TextUtils.isEmpty(unit)) {
-                ((BaseTabActivity) mContext).showToast("Enter Custom Unit");
+                Utils.showToast("Enter Custom Unit", mContext);
                 return;
             }
         }
@@ -326,28 +326,28 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         String qty = qtyEditText.getText().toString();
 
         if (TextUtils.isEmpty(qty)) {
-            ((BaseTabActivity) mContext).showToast("Enter Quantity");
+            Utils.showToast("Enter Quantity", mContext);
             return;
         }
 
         String price = priceEditText.getText().toString();
 
         if (TextUtils.isEmpty(price)) {
-            ((BaseTabActivity) mContext).showToast("Enter Price");
+            Utils.showToast("Enter Price", mContext);
             return;
         }
 
         String myCost = myCostEditText.getText().toString();
 
         if (TextUtils.isEmpty(myCost)) {
-            ((BaseTabActivity) mContext).showToast("Enter Cost");
+            Utils.showToast("Enter Cost", mContext);
             return;
         }
 
         String date = dateEditText.getText().toString();
 
         if (TextUtils.isEmpty(date)) {
-            ((BaseTabActivity) mContext).showToast("Select Date");
+            Utils.showToast("Select Date", mContext);
             return;
         }
 
@@ -356,7 +356,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         String vendor = vendorSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(vendor) || vendor.equalsIgnoreCase("select vendor")) {
-            ((BaseTabActivity) mContext).showToast("Select Vendor");
+            Utils.showToast("Select Vendor", mContext);
             return;
         }
 
@@ -364,7 +364,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
 
         if (!TextUtils.isEmpty(barcode)) {
             if (barcode.length() < 10) {
-                ((BaseTabActivity) mContext).showToast("Enter valid Barcode");
+                Utils.showToast("Enter valid Barcode", mContext);
                 return;
             }
         }
@@ -421,14 +421,14 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 if (Utils.isInternetAvailable(mContext)) {
                     addInventorytoServer(inventoryData);
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Inventory Added successfully");
+                    Utils.showToast("Inventory Added successfully", mContext);
                 }
             } else {
                 if (selectedInventorytoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
                         updateInventorytoServer(inventoryData);
                     } else {
-                        ((BaseTabActivity) mContext).showToast("Inventory Updated successfully");
+                        Utils.showToast("Inventory Updated successfully", mContext);
                     }
                 }
             }
@@ -437,7 +437,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
             ((BaseTabActivity) mContext).ifTabCanChange = true;
             isInventoryAdded = true;
         } else {
-            ((BaseTabActivity) mContext).showToast("Item Code must be unique");
+            Utils.showToast("Item Code must be unique", mContext);
         }
     }
 
@@ -462,7 +462,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                     HashMap<String, String> customerMap = response.body();
                     if (customerMap.get("status").equalsIgnoreCase("200")) {
                         if (customerMap.containsKey("update_inventory") && customerMap.get("update_inventory").equalsIgnoreCase("Successfully Updated")) {
-                            ((BaseTabActivity) mContext).showToast("Inventory Updated successfully");
+                            Utils.showToast("Inventory Updated successfully", mContext);
                         }
                     }
                 }
@@ -498,7 +498,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
                         if (employeeStatus.get("delete_inventory").equalsIgnoreCase("success")) {
-                            ((BaseTabActivity) mContext).showToast("Inventory Deleted successfully");
+                            Utils.showToast("Inventory Deleted successfully", mContext);
                         }
                     }
                 }
@@ -537,7 +537,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                     HashMap<String, String> customerStatus = response.body();
                     if (customerStatus.get("status").equalsIgnoreCase("200")) {
                         if (customerStatus.get("create_inventory").equalsIgnoreCase("success")) {
-                            ((BaseTabActivity) mContext).showToast("Inventory Added successfully");
+                            Utils.showToast("Inventory Added successfully", mContext);
                         }
                     }
                 }
@@ -568,7 +568,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                                 deleteInventoryfromServer(inventoryAdapter.getItem(position).id);
                             }
                         } else {
-                            ((BaseTabActivity) mContext).showToast("Inventory Deleted successfully");
+                            Utils.showToast("Inventory Deleted successfully", mContext);
                         }
                         inventoryAdapter.deleteInventory(position);
                     }
@@ -611,7 +611,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                     billMatrixDaoImpl.deleteInventory(inventoryAdapter.getItem(position).item_code);
                     inventoryAdapter.deleteInventory(position);
                 } else {
-                    ((BaseTabActivity) mContext).showToast("Save present editing inventory before editing other inventory");
+                    Utils.showToast("Save present editing inventory before editing other inventory", mContext);
                 }
                 break;
             case 3:
@@ -733,7 +733,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
             data.putInt(Global.INTPARA6, 2);
             WorkService.workThread.handleCmd(Global.CMD_POS_SETBARCODE, data);
         } else {
-            ((BaseTabActivity) mContext).showToast(Global.toast_notconnect);
+            Utils.showToast(Global.toast_notconnect, mContext);
         }
     }
 
@@ -893,7 +893,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
                 searchingDialog.show();
                 startDiscovery();
             } else if (resultCode == RESULT_CANCELED) {
-                ((BaseTabActivity) mContext).showToast("Switch On Bluetooth to connect Printer and print");
+                Utils.showToast("Switch On Bluetooth to connect Printer and print", mContext);
             }
         }
     }

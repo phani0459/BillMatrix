@@ -203,11 +203,6 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
-    public void showToast(String msg) {
-        Toast.makeText(mContext, msg + "", Toast.LENGTH_LONG).show();
-    }
-
     String selectedTab;
 
     public abstract void tabChanged(String selectedTab, boolean isInit);

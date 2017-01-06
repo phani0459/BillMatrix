@@ -101,21 +101,21 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
         String description = discountDescEditText.getText().toString();
 
         if (TextUtils.isEmpty(description)) {
-            ((BaseTabActivity) mContext).showToast("Enter Discount Description");
+            Utils.showToast("Enter Discount Description", mContext);
             return;
         }
 
         String code = discountCodeEditText.getText().toString();
 
         if (TextUtils.isEmpty(code)) {
-            ((BaseTabActivity) mContext).showToast("Enter Discount Code");
+            Utils.showToast("Enter Discount Code", mContext);
             return;
         }
 
         String value = discountValueEditText.getText().toString();
 
         if (TextUtils.isEmpty(value)) {
-            ((BaseTabActivity) mContext).showToast("Enter Discount Value");
+            Utils.showToast("Enter Discount Value", mContext);
             return;
         }
 
@@ -142,7 +142,7 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
             discountCodeEditText.setText("");
             isEditing = false;
         } else {
-            ((BaseTabActivity) mContext).showToast("Discount Code must be unique");
+            Utils.showToast("Discount Code must be unique", mContext);
         }
     }
 

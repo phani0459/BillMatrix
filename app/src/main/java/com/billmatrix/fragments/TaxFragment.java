@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -47,6 +48,9 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
     public EditText taxRateEditText;
     @BindView(R.id.taxTypesList)
     public RecyclerView taxTypeRecyclerView;
+    @BindView(R.id.et_other_tax)
+    public EditText otherTaxEditText;
+
     public TaxAdapter taxAdapter;
     private String adminId;
     public boolean isEditing;
@@ -94,6 +98,27 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        taxTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (parent.getAdapter().getItem(position).toString().equalsIgnoreCase("other")) {
+                    otherTaxEditText.setVisibility(View.VISIBLE);
+                } else {
+                    otherTaxEditText.setVisibility(View.GONE);
+                    otherTaxEditText.setText("");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
     @OnClick(R.id.btn_addTaxType)
     public void addTaxType() {
         Utils.hideSoftKeyboard(taxDescEditText);
@@ -106,6 +131,14 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         if (TextUtils.isEmpty(taxType) && !taxType.equalsIgnoreCase("select one")) {
             Utils.showToast("Select Tax Type", mContext);
             return;
+        }
+
+        if (taxType.equalsIgnoreCase("Other")) {
+            taxType = otherTaxEditText.getText().toString();
+            if (TextUtils.isEmpty(taxType)) {
+                Utils.showToast("Enter Tax Type", mContext);
+                return;
+            }
         }
 
         if (TextUtils.isEmpty(rate)) {

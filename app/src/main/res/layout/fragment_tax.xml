@@ -85,16 +85,36 @@
             android:padding="6dp"
             android:textColor="@android:color/black" />
 
-        <Spinner
-            android:id="@+id/sp_tax_type"
-            style="@style/spinner_style"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginRight="12dp"
             android:layout_weight="1.5"
-            android:entries="@array/tax_type_array"
-            android:padding="6dp"
-            android:textColor="@android:color/black" />
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Spinner
+                android:id="@+id/sp_tax_type"
+                style="@style/spinner_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/tax_type_array"
+                android:padding="6dp"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/et_other_tax"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edit_text_border"
+                android:padding="6dp"
+                android:textColor="@android:color/black"
+                android:visibility="gone" />
+        </LinearLayout>
+
 
         <EditText
             android:id="@+id/et_tax_desc"
@@ -116,7 +136,7 @@
             android:layout_weight="1"
             android:background="@drawable/edit_text_border"
             android:drawableRight="@drawable/percentile"
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:paddingLeft="6dp"
             android:textColor="@android:color/black" />
 

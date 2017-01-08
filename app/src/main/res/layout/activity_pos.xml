@@ -521,6 +521,7 @@
                         android:orientation="vertical">
 
                         <Button
+                            android:id="@+id/btn_cash_or_card"
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="match_parent"
                             android:layout_height="32dp"
@@ -533,6 +534,7 @@
                             android:textStyle="bold" />
 
                         <Button
+                            android:id="@+id/btn_credit"
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="match_parent"
                             android:layout_height="32dp"
@@ -540,6 +542,7 @@
                             android:paddingLeft="4dp"
                             android:paddingRight="4dp"
                             android:text="@string/credit"
+                            android:textAllCaps="true"
                             android:textColor="@android:color/white"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -600,7 +603,7 @@
 
                             <TextView
                                 android:id="@+id/tv_totalValue"
-                                style="@style/Base.TextAppearance.AppCompat.Large"
+                                style="@style/Base.TextAppearance.AppCompat.Medium"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
@@ -612,6 +615,7 @@
 
 
                     <LinearLayout
+                        android:id="@+id/ll_pos_pay"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.8"

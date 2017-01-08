@@ -12,6 +12,7 @@ import com.billmatrix.R;
 import com.billmatrix.models.Inventory;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,6 +55,11 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
 
     public void removeItem(int position) {
         inventories.remove(position);
+        notifyDataSetChanged();
+    }
+
+    public void removeAllItems() {
+        inventories = new ArrayList<>();
         notifyDataSetChanged();
     }
 

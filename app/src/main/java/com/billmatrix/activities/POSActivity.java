@@ -30,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.adapters.POSInventoryAdapter;
@@ -47,7 +46,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -55,9 +53,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class POSActivity extends Activity implements OnItemClickListener, POSItemAdapter.OnItemSelected {
 
@@ -183,7 +178,14 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         tabsLayout.addView(buttonLayout);
     }
 
-    public void showCustomerDetailsDialog(final Customer.CustomerData selectedCustomer) {
+    @OnClick(R.id.rl_pos_cust_edit)
+    public void showCustomerDetailsDialog() {
+        if (selectedCustomer == null) {
+            if (!isGuestCustomerSelected) {
+                return;
+            }
+        }
+
         final Dialog dialog = new Dialog(mContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_pos_customer_details);
@@ -228,7 +230,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 } else {
                     editedCustomerData.status = "1";
                     editedCustomerData.admin_id = adminId;
-                    editedCustomerData.date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                    editedCustomerData.date = Constants.getDateFormat().format(System.currentTimeMillis());
                     editedCustomerData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
                     editedCustomerData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
                 }
@@ -291,7 +293,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
     public void addCustomerinDB(Customer.CustomerData customerData, Dialog dialog) {
-        long customerAdded  = billMatrixDaoImpl.addCustomer(customerData);
+        long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
 
         if (customerAdded != -1) {
             if (Utils.isInternetAvailable(mContext)) {
@@ -302,13 +304,242 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             dialog.dismiss();
             selectedCustomer = customerData;
             isGuestCustomerSelected = false;
+
+            customerSpinnerAdapter.add(customerData.username.toUpperCase());
+            editCustomerImageView.setImageResource(R.drawable.edit_icon);
+            try {
+                int customerSelectedPosition = customerSpinnerAdapter.getPosition(customerData.username.toUpperCase());
+                customersSpinner.setSelection(customerSelectedPosition);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             loadCustomerDetails();
         } else {
             Utils.showToast("Customer Mobile Number must be unique", mContext);
         }
     }
 
-    public void showCloseBillDialog(String username) {
+    @OnClick(R.id.ll_pos_pay)
+    public void pay() {
+
+    }
+
+    @OnClick(R.id.btn_credit)
+    public void credit() {
+        paymentTypeDialog(true);
+    }
+
+    @OnClick(R.id.btn_cash_or_card)
+    public void cashOrCard() {
+        paymentTypeDialog(false);
+    }
+
+    public void paymentTypeDialog(boolean isCredit) {
+        String username = "";
+        if (selectedCustomer != null) {
+            username = selectedCustomer.username;
+        } else if (isGuestCustomerSelected) {
+            username = customerNotSelectedTextView.getText().toString();
+        } else {
+            return;
+        }
+        final Dialog dialog = new Dialog(mContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.dialog_pos_cash_card);
+
+        TextView title = (TextView) dialog.findViewById(R.id.tv_payments_title);
+        TextView discount = (TextView) dialog.findViewById(R.id.tv_dialog_discount);
+        TextView tax = (TextView) dialog.findViewById(R.id.tv_dialog_tax);
+        final TextView total = (TextView) dialog.findViewById(R.id.tv_dialog_total);
+        final TextView totalPaid = (TextView) dialog.findViewById(R.id.tv_dialog_total_paid);
+        final TextView balance = (TextView) dialog.findViewById(R.id.tv_dialog_balance);
+        final TextView changeTextView = (TextView) dialog.findViewById(R.id.tv_dialog_change);
+        final EditText cashEditText = (EditText) dialog.findViewById(R.id.et_dialog_cash);
+        final EditText cardEditText = (EditText) dialog.findViewById(R.id.et_dialog_card);
+        final LinearLayout cardLayout = (LinearLayout) dialog.findViewById(R.id.ll_dialog_card);
+
+        Button close = (Button) dialog.findViewById(R.id.btn_close_cash_card_dialog);
+        final Button cashButton = (Button) dialog.findViewById(R.id.btn_dialog_cash);
+        final Button cardButton = (Button) dialog.findViewById(R.id.btn_dialog_card);
+        final Button creditButton = (Button) dialog.findViewById(R.id.btn_dialog_credit);
+
+        title.setText(getString(R.string.payments) + " - " + username);
+
+        if (isCredit) {
+            cashButton.setBackgroundResource(R.drawable.button_disable);
+            creditButton.setBackgroundResource(R.drawable.orange_button);
+            cardButton.setBackgroundResource(R.drawable.button_disable);
+            cardLayout.setVisibility(View.VISIBLE);
+        }
+
+        creditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cardLayout.setVisibility(View.VISIBLE);
+                cashButton.setBackgroundResource(R.drawable.button_disable);
+                creditButton.setBackgroundResource(R.drawable.orange_button);
+                cardButton.setBackgroundResource(R.drawable.button_disable);
+            }
+        });
+
+        cardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cardLayout.setVisibility(View.VISIBLE);
+                cardButton.setBackgroundResource(R.drawable.button_enable);
+                cashButton.setBackgroundResource(R.drawable.button_disable);
+                creditButton.setBackgroundResource(R.drawable.button_disable);
+            }
+        });
+
+        cashButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cardLayout.setVisibility(View.GONE);
+                cardEditText.setText("");
+                cashButton.setBackgroundResource(R.drawable.button_enable);
+                cardButton.setBackgroundResource(R.drawable.button_disable);
+                creditButton.setBackgroundResource(R.drawable.button_disable);
+            }
+        });
+
+        String discountString = discountCalTextView.getText().toString().replace(getString(R.string.discount) + ": ", "");
+        String totalString = totalValueTextView.getText().toString().replace(getString(R.string.sub_total) + " ", "");
+        String taxString = taxValueTextView.getText().toString().replace(" ", "");
+
+        discount.setText(discountString.replace("/-", ""));
+        total.setText(totalString.replace("/-", ""));
+        tax.setText(taxString.replace("/-", ""));
+
+        totalPaid.setText(getString(R.string.zero));
+        changeTextView.setText(getString(R.string.zero));
+        balance.setText(getString(R.string.zero));
+
+        final float billTotalValue = Float.parseFloat(total.getText().toString().equalsIgnoreCase("") ? "0.00" : total.getText().toString());
+
+        cardEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                String cardString = cardEditText.getText().toString();
+                /**
+                 * to enter only 2 values after decimal point
+                 */
+                if (cardString.contains(".") && charSequence.charAt(charSequence.length() - 1) != '.') {
+                    if (cardString.indexOf(".") + 3 <= cardString.length() - 1) {
+                        String formatted = cardString.substring(0, cardString.indexOf(".") + 3);
+                        cardEditText.setText(formatted);
+                        cardEditText.setSelection(formatted.length());
+                    }
+                }
+
+                float moneyPaidFromCard = Float.parseFloat(cardEditText.getText().toString().equalsIgnoreCase("") ? "0.00" : cardEditText.getText().toString());
+                float moneyPaidFromCash = Float.parseFloat(cashEditText.getText().toString().equalsIgnoreCase("") ? "0.00" : cashEditText.getText().toString());
+
+                float changeValue = (moneyPaidFromCard + moneyPaidFromCash) - billTotalValue;
+
+                /**
+                 * if change is negative it is balance
+                 */
+                if (changeValue == 0) {
+                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
+                    balance.setText(getString(R.string.zero));
+                    changeTextView.setText(getString(R.string.zero));
+                } else if (changeValue < 0) {
+                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", (moneyPaidFromCard + moneyPaidFromCash)));
+                    balance.setText(String.format(Locale.getDefault(), "%.2f", -changeValue));
+                    changeTextView.setText(getString(R.string.zero));
+                } else {
+                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
+                    changeTextView.setText(String.format(Locale.getDefault(), "%.2f", changeValue));
+                    balance.setText(getString(R.string.zero));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        cashEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                String cashString = cashEditText.getText().toString();
+                /**
+                 * to enter only 2 values after decimal point
+                 */
+                if (cashString.contains(".") && charSequence.charAt(charSequence.length() - 1) != '.') {
+                    if (cashString.indexOf(".") + 3 <= cashString.length() - 1) {
+                        String formatted = cashString.substring(0, cashString.indexOf(".") + 3);
+                        cashEditText.setText(formatted);
+                        cashEditText.setSelection(formatted.length());
+                    }
+                }
+
+                float moneyPaidFromCard = Float.parseFloat(cardEditText.getText().toString().equalsIgnoreCase("") ? "0.00" : cardEditText.getText().toString());
+                float moneyPaidFromCash = Float.parseFloat(cashEditText.getText().toString().equalsIgnoreCase("") ? "0.00" : cashEditText.getText().toString());
+
+                float changeValue = (moneyPaidFromCard + moneyPaidFromCash) - billTotalValue;
+
+                /**
+                 * if change is negative it is balance
+                 */
+                if (changeValue == 0) {
+                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
+                    balance.setText(getString(R.string.zero));
+                    changeTextView.setText(getString(R.string.zero));
+                } else if (changeValue < 0) {
+                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", (moneyPaidFromCard + moneyPaidFromCash)));
+                    balance.setText(String.format(Locale.getDefault(), "%.2f", -changeValue));
+                    changeTextView.setText(getString(R.string.zero));
+                } else {
+                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
+                    changeTextView.setText(String.format(Locale.getDefault(), "%.2f", changeValue));
+                    balance.setText(getString(R.string.zero));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    @OnClick(R.id.rl_pos_cust_close)
+    public void closeCurrentBill() {
+        String username = "";
+        if (selectedCustomer != null) {
+            username = selectedCustomer.username;
+        } else if (isGuestCustomerSelected) {
+            username = customerNotSelectedTextView.getText().toString();
+        } else {
+            return;
+        }
+
         final Dialog dialog = new Dialog(mContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_pos_cancel_bill);
@@ -322,7 +553,11 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (posItemAdapter.getItemCount() > 0) {
+                    posItemAdapter.removeAllItems();
+                }
+                customersSpinner.setSelection(0);
+                dialog.dismiss();
             }
         });
 
@@ -336,25 +571,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         });
 
         dialog.show();
-    }
 
-
-    @OnClick(R.id.rl_pos_cust_edit)
-    public void editCustomerDetails() {
-        if (selectedCustomer != null) {
-            showCustomerDetailsDialog(selectedCustomer);
-        } else if (isGuestCustomerSelected) {
-            showCustomerDetailsDialog(null);
-        }
-    }
-
-    @OnClick(R.id.rl_pos_cust_close)
-    public void closeCurrentBill() {
-        if (selectedCustomer != null) {
-            showCloseBillDialog(selectedCustomer.username);
-        } else if (isGuestCustomerSelected) {
-            showCloseBillDialog(customerNotSelectedTextView.getText().toString());
-        }
     }
 
     @Override
@@ -469,7 +686,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                         try {
                             int customerSelectedPosition = customerSpinnerAdapter.getPosition(customerData.username.toUpperCase());
-                            Log.e(TAG, "searchClicked: " + customerSelectedPosition);
                             customersSpinner.setSelection(customerSelectedPosition);
                         } catch (Exception e) {
                             e.printStackTrace();

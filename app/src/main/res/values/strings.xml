@@ -16,6 +16,7 @@
     <string name="LOCATION">LOCATION</string>
     <string name="No_results">No Results found, Try again</string>
     <string name="storage_permission_rationale">"Storage permissions are needed for uploading Images."</string>
+    <string name="zero">0.00</string>
 
     <!-- Login Strings-->
     <string name="login_id">Login ID</string>
@@ -180,6 +181,7 @@
         <item>Value Added Tax</item>
         <item>Service Tax</item>
         <item>Excise Duty</item>
+        <item>Other</item>
     </string-array>
 
     <!-- Discount Strings-->
@@ -224,7 +226,7 @@
     <string name="Location">Location</string>
     <string name="sell_item">SELL ITEM</string>
     <string name="PAY">PAY</string>
-    <string name="credit">CREDIT</string>
+    <string name="credit">Credit</string>
     <string name="INVENTORY">INVENTORY</string>
     <string name="search_customer">Search Customer</string>
     <string name="TOTAL">TOTAL</string>
@@ -239,8 +241,18 @@
     <string name="add_new_customer">ADD NEW CUSTOMER</string>
     <string name="customer_name">Customer Name</string>
     <string name="YES">YES</string>
+    <string name="Payments">Payments</string>
     <string name="are_you_sure_Cancel_bill">Are you sure, you want to cancel this Bill?</string>
     <string name="for_customer">For Customer: %1$s</string>
+    <string name="Cash">Cash</string>
+    <string name="Card">Card</string>
+    <string name="Total">Total</string>
+    <string name="Total_Paid">Total Paid</string>
+    <string name="Discount">Discount</string>
+    <string name="Balance">Balance</string>
+    <string name="Change">Change</string>
+    <string name="Tax">Tax</string>
+
 
     <!-- Hardware Strings-->
     <string name="below_components_detected">BELOW HARDWARE COMPONENTS ARE DETECTED</string>

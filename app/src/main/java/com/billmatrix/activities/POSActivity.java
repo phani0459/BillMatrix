@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -85,8 +86,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public SimpleDraweeView customerBannerDraweeView;
     @BindView(R.id.dra_pos_customer_photo)
     public SimpleDraweeView headerLogoDraweeView;
-    @BindView(R.id.pos_searchView)
+    @BindView(R.id.pos_customer_searchView)
     public EditText posSearchEditText;
+    @BindView(R.id.et_pos_items_searchView)
+    public EditText posItemsSearchEditText;
     @BindView(R.id.ll_customerDetails)
     public LinearLayout customerDetailsLayout;
     @BindView(R.id.tv_POS_No_Customer)
@@ -112,6 +115,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private ArrayAdapter<String> customerSpinnerAdapter;
     private boolean isGuestCustomerSelected;
     private String adminId;
+    private ArrayMap<String, Float> selectedtaxes;
+    private int guestCustomerCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,13 +129,14 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         mContext = this;
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         dbCustomers = new ArrayList<>();
+        guestCustomerCount = 1;
 
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         ArrayList<String> customerNames = new ArrayList<>();
 
         customerNames.add("SELECT CUSTOMER");
-        customerNames.add("GUEST CUSTOMER 1");
+        customerNames.add("GUEST CUSTOMER " + guestCustomerCount);
 
         dbCustomers = billMatrixDaoImpl.getCustomers();
 
@@ -165,6 +171,12 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f);
         discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
+        selectedtaxes = new ArrayMap<String, Float>();
+
+        String selectedTaxJSON = Utils.getSharedPreferences(mContext).getString(Constants.PREF_TAX_JSON, "");
+        if (!TextUtils.isEmpty(selectedTaxJSON)) {
+            selectedtaxes = Constants.getGson().fromJson(selectedTaxJSON, Constants.floatArrayMapType);
+        }
 
         /**
          * set texts defaults
@@ -327,6 +339,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     @OnClick(R.id.btn_credit)
     public void credit() {
+        if (isGuestCustomerSelected) {
+            Utils.showToast("Add Guest Customer before allowing for credit", mContext);
+            return;
+        }
         paymentTypeDialog(true);
     }
 
@@ -364,6 +380,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         final Button cashButton = (Button) dialog.findViewById(R.id.btn_dialog_cash);
         final Button cardButton = (Button) dialog.findViewById(R.id.btn_dialog_card);
         final Button creditButton = (Button) dialog.findViewById(R.id.btn_dialog_credit);
+        final Button payButton = (Button) dialog.findViewById(R.id.btn_dialog_pay);
 
         title.setText(getString(R.string.payments) + " - " + username);
 
@@ -526,6 +543,29 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             }
         });
 
+        payButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                float balanceRemaining = Float.parseFloat(balance.getText().toString().equalsIgnoreCase("") ? "0.00" : balance.getText().toString());
+                float totalPaidMoney = Float.parseFloat(totalPaid.getText().toString());
+                if (totalPaidMoney <= 0) {
+                    Utils.showToast("Please enter cash paid", mContext);
+                    return;
+                }
+                if (balanceRemaining <= 0) {
+
+                } else {
+                    if (!isGuestCustomerSelected) {
+                        cashButton.setBackgroundResource(R.drawable.button_disable);
+                        creditButton.setBackgroundResource(R.drawable.orange_button);
+                        cardButton.setBackgroundResource(R.drawable.button_disable);
+                    } else {
+                        Utils.showToast("Add Guest Customer before allowing for credit", mContext);
+                    }
+                }
+            }
+        });
+
         dialog.show();
     }
 
@@ -667,6 +707,65 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 return false;
             }
         });
+
+
+        /**
+         * POS items search
+         */
+        posItemsSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    posItemsSearchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, android.R.drawable.ic_menu_close_clear_cancel, 0);
+                } else {
+                    posItemsSearchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.search_icon, 0);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        posItemsSearchEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (event.getRawX() >= (posItemsSearchEditText.getRight() - posItemsSearchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        if (posItemsSearchEditText.getText().toString().length() > 0) {
+                            posItemsSearchEditText.setText("");
+                            searchItemsClosed();
+                        }
+                        return false;
+                    }
+                }
+                v.clearFocus();
+                return false;
+            }
+        });
+
+        posItemsSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    Utils.hideSoftKeyboard(posItemsSearchEditText);
+                    searchItemsClicked(posItemsSearchEditText.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
     }
 
     public void searchClicked(String query) {
@@ -708,6 +807,18 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     public void searchClosed() {
         Log.e(TAG, "searchClosed: ");
+    }
+
+    public void searchItemsClicked(String query) {
+        Log.e(TAG, "searchItemsClicked: ");
+        if (query.length() > 0) {
+            query = query.toLowerCase();
+            //TODO
+        }
+    }
+
+    public void searchItemsClosed() {
+        Log.e(TAG, "searchItemsClosed: ");
     }
 
     public void loadCustomerDetails() {
@@ -835,27 +946,52 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         return discountCalculated; //String.format(Locale.getDefault(), "%.2f", discountCalculated) + "";
     }
 
+    /**
+     * Calculate tax after deducting discount on subtotal
+     *
+     * @param total
+     * @return
+     */
+    public Float getTaxCalculated(Float total) {
+        Float taxCalculated = 0.00f;
+        Float totalTax = 0.00f;
+        for (String selectedTaxType : selectedtaxes.keySet()) {
+            if (selectedtaxes.get(selectedTaxType) != 0) {
+                totalTax = totalTax + selectedtaxes.get(selectedTaxType);
+            }
+        }
+        if (totalTax != 0) {
+            taxCalculated = ((total * totalTax) / 100);
+        }
+        Log.e(TAG, "getTaxCalculated: " + totalTax);
+        return taxCalculated; //String.format(Locale.getDefault(), "%.2f", discountCalculated) + "";
+    }
 
     @Override
     public void itemSelected(int caseInt, final int position) {
         switch (caseInt) {
             case 0:
-                Float subTotal = getSubTotal();
-                Float discount = getDiscountCalculated(subTotal);
+                float subTotal = getSubTotal();
+                float discount = getDiscountCalculated(subTotal);
+                float tax = getTaxCalculated(subTotal - discount);
                 subTotalTextView.setText(getString(R.string.sub_total) + " " + String.format(Locale.getDefault(), "%.2f", subTotal) + "/-");
                 discountCalTextView.setText(getString(R.string.discount) + ": " + String.format(Locale.getDefault(), "%.2f", discount) + "/-");
-                totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount)) + "/-");
+                totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount + tax)) + "/-");
+                taxValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", tax) + "/-");
                 break;
             case 1:
                 showAlertDialog("Are you sure?", "You want to remove Item", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         posItemAdapter.removeItem(position);
-                        Float subTotal = getSubTotal();
-                        Float discount = getDiscountCalculated(subTotal);
+                        float subTotal = getSubTotal();
+                        float discount = getDiscountCalculated(subTotal);
+                        float tax = getTaxCalculated(subTotal - discount);
+
                         subTotalTextView.setText(getString(R.string.sub_total) + " " + String.format(Locale.getDefault(), "%.2f", subTotal) + "/-");
                         discountCalTextView.setText(getString(R.string.discount) + ": " + String.format(Locale.getDefault(), "%.2f", discount) + "/-");
-                        totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount)) + "/-");
+                        totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount + tax)) + "/-");
+                        taxValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", tax) + "/-");
                         totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
                     }
                 });

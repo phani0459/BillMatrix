@@ -236,7 +236,7 @@
                     </RelativeLayout>
 
                     <EditText
-                        android:id="@+id/pos_searchView"
+                        android:id="@+id/pos_customer_searchView"
                         style="@style/Base.TextAppearance.AppCompat.Small"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

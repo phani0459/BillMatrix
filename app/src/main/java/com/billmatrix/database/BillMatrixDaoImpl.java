@@ -120,7 +120,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         Cursor cursor = null;
         try {
             cursor = db.query(DBConstants.EMPLOYEES_TABLE, null,
-                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    DBConstants.SNO + "<>?", new String[]{""},
                     null, null, null);
 
             if (cursor.moveToFirst()) {
@@ -203,7 +203,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         Cursor cursor = null;
         try {
             cursor = db.query(DBConstants.VENDORS_TABLE, null,
-                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    DBConstants.SNO + "<>?", new String[]{""},
                     null, null, null);
 
             if (cursor.moveToFirst()) {
@@ -290,7 +290,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         Cursor cursor = null;
         try {
             cursor = db.query(DBConstants.CUSTOMERS_TABLE, null,
-                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    DBConstants.SNO + "<>?", new String[]{""},
                     null, null, null);
 
             if (cursor.moveToFirst()) {
@@ -369,7 +369,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         Cursor cursor = null;
         try {
             cursor = db.query(DBConstants.INVENTORY_TABLE, null,
-                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    DBConstants.SNO + "<>?", new String[]{""},
                     null, null, null);
 
             if (cursor.moveToFirst()) {
@@ -448,7 +448,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         Cursor cursor = null;
         try {
             cursor = db.query(DBConstants.TAX_TABLE, null,
-                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    DBConstants.SNO + "<>?", new String[]{""},
                     null, null, null);
 
             if (cursor.moveToFirst()) {
@@ -511,7 +511,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         Cursor cursor = null;
         try {
             cursor = db.query(DBConstants.DISCOUNT_TABLE, null,
-                    DBConstants.SNO + "<>?", new String[]{"0"},
+                    DBConstants.SNO + "<>?", new String[]{""},
                     null, null, null);
 
             if (cursor.moveToFirst()) {

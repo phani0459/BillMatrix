@@ -601,7 +601,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
 
                     int unitSelection = getUnitSelection(selectedInventorytoEdit.unit);
                     unitSpinner.setSelection(unitSelection);
-                    if (unitSelection == 6) {
+                    if (unitSelection == 7) {
                         customUnitEditText.setVisibility(View.VISIBLE);
                         customUnitEditText.setText(selectedInventorytoEdit.unit);
                     } else {
@@ -672,7 +672,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
         } else if (unit.equalsIgnoreCase("Other")) {
             return 7;
         }
-        return 0;
+        return 7;
     }
 
     public void searchClosed() {

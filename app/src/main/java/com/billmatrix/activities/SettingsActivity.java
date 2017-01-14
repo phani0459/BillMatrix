@@ -35,8 +35,33 @@ public class SettingsActivity extends BaseTabActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (TaxFragment.getInstance() != null && selectedTab.equalsIgnoreCase("TAX")) {
+            TaxFragment.getInstance().onBackPressed();
+        } else if (DiscountsFragment.getInstance() != null && selectedTab.equalsIgnoreCase("DISCOUNTS")) {
+            DiscountsFragment.getInstance().onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void tabChanged(String selectedTab, boolean isInit) {
         Utils.hideSoftKeyboard(searchView);
+
+        if (TaxFragment.getInstance() != null) {
+            if (TaxFragment.getInstance().isEditing) {
+                Utils.showToast("Save the changes made before going to other tab", mContext);
+                return;
+            }
+        }
+
+        if (DiscountsFragment.getInstance() != null) {
+            if (DiscountsFragment.getInstance().isEditing) {
+                Utils.showToast("Save the changes made before going to other tab", mContext);
+                return;
+            }
+        }
 
         isInit = true;
         if (getSupportFragmentManager().getFragments() != null && getSupportFragmentManager().getFragments().size() > 0) {
@@ -45,9 +70,9 @@ public class SettingsActivity extends BaseTabActivity {
 
         if (selectedTab.equalsIgnoreCase("STORE")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new StoreFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, StoreFragment.getInstance()).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new StoreFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, StoreFragment.getInstance()).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("DATABASE")) {
             if (isInit) {
@@ -57,9 +82,9 @@ public class SettingsActivity extends BaseTabActivity {
             }
         } else if (selectedTab.equalsIgnoreCase("TAX")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new TaxFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, TaxFragment.getInstance()).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new TaxFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, TaxFragment.getInstance()).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("HARDWARE")) {
             if (isInit) {
@@ -69,9 +94,9 @@ public class SettingsActivity extends BaseTabActivity {
             }
         } else if (selectedTab.equalsIgnoreCase("DISCOUNTS")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new DiscountsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, DiscountsFragment.getInstance()).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new DiscountsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, DiscountsFragment.getInstance()).commit();
             }
         }
 

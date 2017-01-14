@@ -55,7 +55,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
 
     public void deleteDiscount(int position) {
         discounts.remove(position);
-        notifyDataSetChanged();
+        notifyItemRemoved(position);
     }
 
     public void addDiscount(Discount.DiscountData discountData) {
@@ -96,6 +96,15 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
             }
         });
 
+        holder.editImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(2, position);
+            }
+        });
+
+        holder.snoRadioButton.setChecked(false);
+
         if (position == 0) {
             holder.deleteImageView.setVisibility(View.INVISIBLE);
             holder.editImageView.setVisibility(View.VISIBLE);
@@ -117,9 +126,10 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
             }
         }
 
-        holder.snoRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.snoRadioButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            public void onClick(View view) {
+                RadioButton compoundButton = (RadioButton) view;
                 if (lastCheckedPos != position) {
 
                     if (lastChecked != null) {
@@ -145,7 +155,6 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
                     Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f).apply();
                     Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DISCOUNT_CODE, "").apply();
                 }
-
             }
         });
     }

@@ -110,6 +110,10 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (lastChecked != null) {
+                    lastCheckedPos = -1;
+                    lastChecked.setSelected(false);
+                }
                 onItemClickListener.onItemClick(1, position);
             }
         });
@@ -117,6 +121,10 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         holder.editImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (lastChecked != null) {
+                    lastCheckedPos = -1;
+                    lastChecked.setSelected(false);
+                }
                 onItemClickListener.onItemClick(2, position);
             }
         });

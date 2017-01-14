@@ -102,6 +102,16 @@ public class StoreFragment extends Fragment {
     @BindView(R.id.im_save_thank_footer_details)
     public ImageButton saveThankFooterButton;
 
+    private static StoreFragment storeFragment;
+
+    public static StoreFragment getInstance() {
+        if (storeFragment != null) {
+            return storeFragment;
+        }
+
+        storeFragment = new StoreFragment();
+        return storeFragment;
+    }
 
     public StoreFragment() {
         // Required empty public constructor

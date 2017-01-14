@@ -95,10 +95,11 @@ public class Utils {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    public static void loadSpinner(Spinner spinner, Context mContext, int spinnerArray) {
+    public static ArrayAdapter<CharSequence> loadSpinner(Spinner spinner, Context mContext, int spinnerArray) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mContext, spinnerArray, R.layout.spinner_text_item);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        return adapter;
     }
 
     public static ArrayAdapter<String> loadSpinner(Spinner spinner, Context mContext, ArrayList<String> spinnerArray) {
@@ -150,7 +151,7 @@ public class Utils {
         }
     }
 
-    public static  void showToast(String msg, Context mContext) {
+    public static void showToast(String msg, Context mContext) {
         Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
     }
 

@@ -23,7 +23,7 @@
         android:textColor="@android:color/white" />
 
     <EditText
-        android:id="@+id/et_pos_searchView"
+        android:id="@+id/et_pos_items_searchView"
         style="@style/Base.TextAppearance.AppCompat.Caption"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

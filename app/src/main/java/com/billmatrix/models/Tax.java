@@ -7,12 +7,12 @@ import java.util.ArrayList;
  * Created by KANDAGATLAs on 20-11-2016.
  */
 
-public class Tax implements Serializable{
+public class Tax implements Serializable {
     public int status;
     public String taxData;
     public ArrayList<TaxData> data;
 
-    public class TaxData implements Serializable{
+    public class TaxData implements Serializable {
         public String id;
         public String taxType;
         public String taxDescription;

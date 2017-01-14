@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.billmatrix.R;
@@ -46,9 +47,24 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
     public EditText discountCodeEditText;
     @BindView(R.id.et_disc_value)
     public EditText discountValueEditText;
+    @BindView(R.id.btn_addDiscountType)
+    public Button addDiscountButton;
+
     private DiscountAdapter discountAdapter;
     private String adminId;
+    private Discount.DiscountData selectedDiscounttoEdit;
+    private boolean isDiscountAdded;
 
+    private static DiscountsFragment discountFragment;
+
+    public static DiscountsFragment getInstance() {
+        if (discountFragment != null) {
+            return discountFragment;
+        }
+
+        discountFragment = new DiscountsFragment();
+        return discountFragment;
+    }
 
     public DiscountsFragment() {
         // Required empty public constructor
@@ -96,6 +112,22 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
         return v;
     }
 
+    public void onBackPressed() {
+        if (addDiscountButton.getText().toString().equalsIgnoreCase("SAVE")) {
+            ((BaseTabActivity) mContext).showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addDiscountType();
+                    if (isDiscountAdded) {
+                        ((BaseTabActivity) mContext).finish();
+                    }
+                }
+            });
+        } else {
+            ((BaseTabActivity) mContext).finish();
+        }
+    }
+
     @OnClick(R.id.btn_addDiscountType)
     public void addDiscountType() {
         String description = discountDescEditText.getText().toString();
@@ -140,7 +172,12 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
             discountDescEditText.setText("");
             discountValueEditText.setText("");
             discountCodeEditText.setText("");
+
+
+            addDiscountButton.setText(getString(R.string.add));
             isEditing = false;
+            isDiscountAdded = true;
+            ((BaseTabActivity) mContext).ifTabCanChange = true;
         } else {
             Utils.showToast("Discount Code must be unique", mContext);
         }
@@ -163,6 +200,19 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
             case 2:
                 if (!isEditing) {
                     isEditing = true;
+                    ((BaseTabActivity) mContext).ifTabCanChange = false;
+
+                    addDiscountButton.setText(getString(R.string.save));
+                    selectedDiscounttoEdit = discountAdapter.getItem(position);
+
+                    discountDescEditText.setText(selectedDiscounttoEdit.discountDescription);
+                    discountCodeEditText.setText(selectedDiscounttoEdit.discount_code);
+                    discountValueEditText.setText(selectedDiscounttoEdit.discount);
+
+                    billMatrixDaoImpl.deleteDiscount(discountAdapter.getItem(position).discount_code);
+                    discountAdapter.deleteDiscount(position);
+                } else {
+                    Utils.showToast("Save present editing discount before editing other discount", mContext);
                 }
                 break;
             case 3:

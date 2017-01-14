@@ -1,5 +1,8 @@
 package com.billmatrix.utils;
 
+
+import android.support.v4.util.ArrayMap;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -31,6 +34,7 @@ public class Constants {
     public static final String PREF_EMP_LOGIN_ID = "employeeLoginId";
     public static final String PREF_DISCOUNT_VALUE = "discountValue_Selected";
     public static final String PREF_DISCOUNT_CODE = "discountCode_Selected";
+    public static final String PREF_TAX_JSON = "taxJSON";
 
     /**
      * File Names
@@ -68,5 +72,8 @@ public class Constants {
     }
 
     public static Type hashMapType = new TypeToken<HashMap<String, String>>() {
+    }.getType();
+
+    public static Type floatArrayMapType = new TypeToken<ArrayMap<String, Float>>() {
     }.getType();
 }

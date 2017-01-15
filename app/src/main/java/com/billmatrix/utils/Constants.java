@@ -45,6 +45,16 @@ public class Constants {
     public static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
     public static String dateFormat = "dd-MM-yyyy";
 
+    /**
+     * 0 - if add
+     * 1 - if update
+     * -1 - from server
+     */
+    public static String ADD_OFFLINE = "0";
+    public static String UPDATE_OFFLINE = "1";
+    public static String DATA_FROM_SERVER = "-1";
+
+
     public static Gson getGson() {
         if (gson == null) {
             gson = new GsonBuilder()

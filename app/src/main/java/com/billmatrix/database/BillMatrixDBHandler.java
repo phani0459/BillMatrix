@@ -20,7 +20,8 @@ public class BillMatrixDBHandler extends DBHandler {
             + DBConstants.EMPLOYEE_LOGINID + " VARCHAR UNIQUE," + DBConstants.EMPLOYEE_PASSWORD + " VARCHAR,"
             + DBConstants.EMPLOYEE_MOBILE + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.IMEI + " VARCHAR,"
             + DBConstants.TYPE + " VARCHAR," + DBConstants.LOCATION + " VARCHAR," + DBConstants.BRANCH + " VARCHAR,"
-            + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.ID + " VARCHAR" + ")";
+            + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR,"
+            + DBConstants.ID + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR" + ")";
 
     public final static String CREATE_VENDOR_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.VENDORS_TABLE + " (" + DBConstants.SNO

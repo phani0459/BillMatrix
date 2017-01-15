@@ -44,6 +44,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DBConstants.EMPLOYEE_PASSWORD, employeeData.password);
         contentValues.put(DBConstants.STATUS, employeeData.status);
         contentValues.put(DBConstants.ID, employeeData.id);
+        contentValues.put(DBConstants.ADD_UPDATE, employeeData.add_update);
         contentValues.put(DBConstants.ADMIN_ID, employeeData.admin_id);
         contentValues.put(DBConstants.CREATE_DATE, employeeData.create_date);
         contentValues.put(DBConstants.UPDATE_DATE, employeeData.update_date);
@@ -64,6 +65,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.ID + "='" + empId + "'", null) > 0;
     }
 
+    public boolean addUpdateEmployee(String add_update, String empId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.ADD_UPDATE, add_update);
+        return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.ID + "='" + empId + "'", null) > 0;
+    }
+
     public Employee.EmployeeData getParticularEmployee(String empLoginId) {
         Cursor cursor = null;
         try {
@@ -78,6 +85,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 do {
                     employeeData.username = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_NAME)));
+                    employeeData.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ADD_UPDATE)));
                     employeeData.mobile_number = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_MOBILE)));
                     employeeData.login_id = (cursor.getString(cursor
@@ -130,6 +139,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     Employee.EmployeeData employeeData = new Employee().new EmployeeData();
                     employeeData.username = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_NAME)));
+                    employeeData.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DBConstants.ADD_UPDATE)));
                     employeeData.mobile_number = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.EMPLOYEE_MOBILE)));
                     employeeData.login_id = (cursor.getString(cursor

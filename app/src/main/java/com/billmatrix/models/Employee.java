@@ -26,6 +26,12 @@ public class Employee implements Serializable {
         public String status;
         public String create_date;
         public String update_date;
+        /**
+         * 0 - if add
+         * 1 - if update
+         * -1 - from server
+         */
+        public String add_update;
 
         @Override
         public String toString() {
@@ -34,7 +40,8 @@ public class Employee implements Serializable {
                     + "\n mobile_number=" + mobile_number + "\n password=" + password
                     + "\n imei_number=" + imei_number + "\n type=" + type
                     + "\n branch =" + branch + "\n location=" + location
-                    + "\n status=" + status + "\n create_date=" + create_date + "\n update_date=" + update_date;
+                    + "\n status=" + status + "\n create_date=" + create_date
+                    + "\n update_date=" + update_date + "\n add_update=" + add_update;
         }
 
 

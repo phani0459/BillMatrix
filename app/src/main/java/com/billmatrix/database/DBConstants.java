@@ -25,6 +25,12 @@ public class DBConstants {
     public final static String LOCATION = "location";
     public final static String DATE = "date";
     public final static String TYPE = "type";
+    /**
+     * 0 - if add
+     * 1 - if update
+     * -1 - from server
+     */
+    public final static String ADD_UPDATE = "add_or_update";
 
 
     public final static String EMPLOYEES_TABLE = "TABLE_EMPLOYEES";

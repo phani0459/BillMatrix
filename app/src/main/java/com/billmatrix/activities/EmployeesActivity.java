@@ -18,6 +18,7 @@ import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
+import com.billmatrix.utils.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         empMobile_EditText.setFilters(Utils.getInputFilter(10));
         empLoginId_EditText.setFilters(Utils.getInputFilter(12));
         empPwd_EditText.setFilters(Utils.getInputFilter(12));
+        ServerUtils.setIsSync(false);
 
         List<Employee.EmployeeData> employees = new ArrayList<>();
         try {
@@ -135,6 +137,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     Employee employee = response.body();
                     if (employee.status == 200 && employee.employeedata.equalsIgnoreCase("success")) {
                         for (Employee.EmployeeData employeeData : employee.data) {
+                            employeeData.add_update = Constants.DATA_FROM_SERVER;
                             billMatrixDaoImpl.addEmployee(employeeData);
                             employeesAdapter.addEmployee(employeeData);
                         }
@@ -211,10 +214,12 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
         if (addEmpButton.getText().toString().equalsIgnoreCase("ADD")) {
             employeeData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+            employeeData.add_update = Constants.ADD_OFFLINE;
         } else {
             if (selectedEmptoEdit != null) {
                 employeeData.id = selectedEmptoEdit.id;
                 employeeData.create_date = selectedEmptoEdit.create_date;
+                employeeData.add_update = Constants.UPDATE_OFFLINE;
             }
         }
         employeeData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
@@ -246,14 +251,14 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
             if (addEmpButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    addEmployeetoServer(employeeData);
+                    ServerUtils.addEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, adminId);
                 } else {
                     Utils.showToast("Employee Added successfully", mContext);
                 }
             } else {
                 if (selectedEmptoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        updateEmployeetoServer(employeeData);
+                        ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl);
                     } else {
                         Utils.showToast("Employee Updated successfully", mContext);
                     }
@@ -265,116 +270,6 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         } else {
             Utils.showToast("Employee Login Id must be unique", mContext);
         }
-    }
-
-    private void updateEmployeetoServer(Employee.EmployeeData employeeData) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateEmployee(employeeData.id, employeeData.username, employeeData.password, employeeData.mobile_number,
-                employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch, employeeData.status);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> employeeStatus = response.body();
-                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        if (employeeStatus.containsKey("update_employee") && employeeStatus.get("update_employee").equalsIgnoreCase("Successfully Updated")) {
-                            Utils.showToast("Employee Updated successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
-    public void deleteEmployeefromServer(String empId) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteEmployee(empId);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> employeeStatus = response.body();
-                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        if (employeeStatus.get("delete_employee").equalsIgnoreCase("success")) {
-                            Utils.showToast("Employee Deleted successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
-    private void addEmployeetoServer(Employee.EmployeeData employeeData) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.username, employeeData.password, employeeData.mobile_number, adminId,
-                employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> employeeStatus = response.body();
-                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        if (employeeStatus.get("create_employee").equalsIgnoreCase("success")) {
-                            Utils.showToast("Employee Added successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
     }
 
     @Override
@@ -412,8 +307,8 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     public void onClick(DialogInterface dialog, int which) {
                         billMatrixDaoImpl.updateEmployee("-1", employeesAdapter.getItem(position).id);
                         if (Utils.isInternetAvailable(mContext)) {
-                                if (!TextUtils.isEmpty(employeesAdapter.getItem(position).id)) {
-                                deleteEmployeefromServer(employeesAdapter.getItem(position).id);
+                            if (!TextUtils.isEmpty(employeesAdapter.getItem(position).id)) {
+                                ServerUtils.deleteEmployeefromServer(employeesAdapter.getItem(position), mContext, billMatrixDaoImpl);
                             }
                         } else {
                             Utils.showToast("Employee Deleted successfully", mContext);

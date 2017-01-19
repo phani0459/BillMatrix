@@ -112,6 +112,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private float discountSelected;
     private ArrayList<Customer.CustomerData> dbCustomers;
     private Customer.CustomerData selectedCustomer;
+    private String selectedGuestCustomerName;
     private ArrayAdapter<String> customerSpinnerAdapter;
     private boolean isGuestCustomerSelected;
     private String adminId;
@@ -596,6 +597,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 if (posItemAdapter.getItemCount() > 0) {
                     posItemAdapter.removeAllItems();
                 }
+                billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
                 customersSpinner.setSelection(0);
                 dialog.dismiss();
             }
@@ -620,18 +622,22 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         customersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                posItemAdapter.removeAllItems();
                 String selecteCustomerName = (String) adapterView.getAdapter().getItem(i);
                 if (!selecteCustomerName.equalsIgnoreCase("SELECT CUSTOMER") && !selecteCustomerName.contains("GUEST CUSTOMER")) {
                     for (Customer.CustomerData customer : dbCustomers) {
                         if (customer.username.equalsIgnoreCase(selecteCustomerName)) {
+                            selectedGuestCustomerName = null;
                             selectedCustomer = customer;
                             isGuestCustomerSelected = false;
                             loadCustomerDetails();
+                            loadPreviousItems(selecteCustomerName);
                         }
                     }
                     editCustomerImageView.setImageResource(R.drawable.edit_icon);
                 } else if (selecteCustomerName.equalsIgnoreCase("SELECT CUSTOMER")) {
                     selectedCustomer = null;
+                    selectedGuestCustomerName = null;
                     isGuestCustomerSelected = false;
                     noCustomerItemTextView.setVisibility(View.VISIBLE);
                     customerNotSelectedTextView.setVisibility(View.VISIBLE);
@@ -641,12 +647,17 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 } else if (selecteCustomerName.contains("GUEST CUSTOMER")) {
                     selectedCustomer = null;
                     isGuestCustomerSelected = true;
+                    selectedGuestCustomerName = selecteCustomerName;
+                    loadPreviousItems(selecteCustomerName);
+
                     customerNotSelectedTextView.setVisibility(View.VISIBLE);
                     noCustomerItemTextView.setVisibility(View.GONE);
                     customerDetailsLayout.setVisibility(View.GONE);
                     customerNotSelectedTextView.setText(selecteCustomerName);
                     editCustomerImageView.setImageResource(R.drawable.add_customer);
                 }
+
+                loadFooterValues();
             }
 
             @Override
@@ -766,6 +777,15 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         });
 
 
+    }
+
+    private void loadPreviousItems(String selecteCustomerName) {
+        ArrayList<Inventory.InventoryData> previousItems = billMatrixDaoImpl.getPOSItem(selecteCustomerName);
+        if (previousItems != null && previousItems.size() > 0) {
+            for (Inventory.InventoryData inventoryData : previousItems) {
+                posItemAdapter.addInventory(inventoryData);
+            }
+        }
     }
 
     public void searchClicked(String query) {
@@ -902,18 +922,28 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public void onItemClick(int caseInt, int position) {
         Inventory.InventoryData selectedInventory = posInventoryAdapter.getItem(position);
         if (noCustomerItemTextView.getVisibility() == View.GONE) {
-            if (posItemAdapter.inventories != null && posItemAdapter.inventories.size() > 0) {
-                if (posItemAdapter.inventories.contains(selectedInventory)) {
-                    int inventoryQty = Integer.parseInt(selectedInventory.selectedQTY);
+            /**
+             * to add next guest customer in customer spinner
+             */
+            if (isGuestCustomerSelected) {
+
+            }
+            if (posItemAdapter.inventoryIDs != null && posItemAdapter.inventoryIDs.size() > 0) {
+                if (posItemAdapter.inventoryIDs.contains(selectedInventory.id)) {
+                    Inventory.InventoryData inventoryFromAdapter = posItemAdapter.getInventoryonID(selectedInventory.id);
+                    int inventoryQty = Integer.parseInt(inventoryFromAdapter.selectedQTY);
                     if (TextUtils.isDigitsOnly(selectedInventory.qty)) {
                         if (Integer.parseInt(selectedInventory.qty) > inventoryQty) {
                             inventoryQty = inventoryQty + 1;
-                            selectedInventory.selectedQTY = inventoryQty + "";
-                            posItemAdapter.changeInventory(selectedInventory);
+                            inventoryFromAdapter.selectedQTY = inventoryQty + "";
+                            posItemAdapter.changeInventory(inventoryFromAdapter);
                         } else {
                             Utils.showToast("Items not available", mContext);
                         }
                     }
+                    billMatrixDaoImpl.updatePOSItem(inventoryFromAdapter.selectedQTY, inventoryFromAdapter.item_code,
+                            selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+                    loadFooterValues();
                     return;
                 } else {
                     selectedInventory.selectedQTY = "1";
@@ -922,7 +952,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 selectedInventory.selectedQTY = "1";
             }
             posItemAdapter.addInventory(selectedInventory);
-            totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
+            billMatrixDaoImpl.addPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName, selectedInventory);
+            loadFooterValues();
         } else {
             Utils.showToast("Select Customer before adding items to cart", mContext);
         }
@@ -963,26 +994,33 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         if (totalTax != 0) {
             taxCalculated = ((total * totalTax) / 100);
         }
-        Log.e(TAG, "getTaxCalculated: " + totalTax);
         return taxCalculated; //String.format(Locale.getDefault(), "%.2f", discountCalculated) + "";
+    }
+
+    public void loadFooterValues() {
+        float subTotal = getSubTotal();
+        float discount = getDiscountCalculated(subTotal);
+        float tax = getTaxCalculated(subTotal - discount);
+        subTotalTextView.setText(getString(R.string.sub_total) + " " + String.format(Locale.getDefault(), "%.2f", subTotal) + "/-");
+        discountCalTextView.setText(getString(R.string.discount) + ": " + String.format(Locale.getDefault(), "%.2f", discount) + "/-");
+        totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount + tax)) + "/-");
+        taxValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", tax) + "/-");
+        totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
     }
 
     @Override
     public void itemSelected(int caseInt, final int position) {
         switch (caseInt) {
             case 0:
-                float subTotal = getSubTotal();
-                float discount = getDiscountCalculated(subTotal);
-                float tax = getTaxCalculated(subTotal - discount);
-                subTotalTextView.setText(getString(R.string.sub_total) + " " + String.format(Locale.getDefault(), "%.2f", subTotal) + "/-");
-                discountCalTextView.setText(getString(R.string.discount) + ": " + String.format(Locale.getDefault(), "%.2f", discount) + "/-");
-                totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount + tax)) + "/-");
-                taxValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", tax) + "/-");
+                loadFooterValues();
+                billMatrixDaoImpl.updatePOSItem(posItemAdapter.getItem(position).selectedQTY, posItemAdapter.getItem(position).item_code,
+                        selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
                 break;
             case 1:
                 showAlertDialog("Are you sure?", "You want to remove Item", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        billMatrixDaoImpl.deletePOSItem(posItemAdapter.getItem(position).item_code, selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
                         posItemAdapter.removeItem(position);
                         float subTotal = getSubTotal();
                         float discount = getDiscountCalculated(subTotal);

@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInventoryHolder> {
 
     public List<Inventory.InventoryData> inventories;
+    public List<String> inventoryIDs;
     OnItemSelected onItemSelected;
     private View lastChecked = null;
     private int lastCheckedPos = -1;
@@ -51,21 +52,34 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
     public POSItemAdapter(List<Inventory.InventoryData> inventories, OnItemSelected onItemSelected) {
         this.inventories = inventories;
         this.onItemSelected = onItemSelected;
+        inventoryIDs = new ArrayList<>();
     }
 
     public void removeItem(int position) {
+        inventoryIDs.remove(inventories.get(position).id);
         inventories.remove(position);
         notifyDataSetChanged();
     }
 
     public void removeAllItems() {
         inventories = new ArrayList<>();
+        inventoryIDs = new ArrayList<>();
         notifyDataSetChanged();
     }
 
     public void addInventory(Inventory.InventoryData inventoryData) {
         inventories.add(inventoryData);
+        inventoryIDs.add(inventoryData.id);
         notifyItemChanged(inventories.size());
+    }
+
+    public Inventory.InventoryData getInventoryonID(String id) {
+        for (int i = 0; i < inventories.size(); i++) {
+            if (inventories.get(i).id.equals(id)) {
+                return inventories.get(i);
+            }
+        }
+        return null;
     }
 
     public void changeInventory(Inventory.InventoryData inventoryData) {
@@ -108,7 +122,6 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
         float totalPrice = Float.parseFloat(price) * quantity;
 
         holder.totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalPrice));
-        onItemSelected.itemSelected(0, position);
 
         holder.qtyNumberButton.setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
             @Override

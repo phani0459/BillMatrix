@@ -103,6 +103,8 @@ public class LoginActivity extends AppCompatActivity {
     @OnClick(R.id.btn_login)
     public void checkInternetAndLogin() {
 
+        Utils.hideSoftKeyboard(userNameEditText);
+
         if (!verify()) {
             return;
         }
@@ -258,7 +260,7 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(mContext, ControlPanelActivity.class);
                             startActivity(intent);
                             finish();
-                        } else if (loginMap.containsKey("message") && loginMap.get("message").equalsIgnoreCase("incorrect IMEI")){
+                        } else if (loginMap.containsKey("message") && loginMap.get("message").equalsIgnoreCase("incorrect IMEI")) {
                             showAlertDialog("Incorrect Licence Key", "contact BillMatrix admin to reset present Licence key.", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {

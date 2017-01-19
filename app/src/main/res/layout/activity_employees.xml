@@ -117,8 +117,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:src="@drawable/edit_icon" />
+            android:src="@drawable/edit_icon"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <LinearLayout
@@ -225,7 +225,9 @@
             android:layout_marginRight="12dp"
             android:layout_weight="1.2"
             android:background="@drawable/edit_text_border"
+            android:digits="@string/only_alphaNumeric"
             android:gravity="center"
+            android:inputType="text"
             android:padding="6dp"
             android:textColor="@android:color/black" />
 
@@ -237,7 +239,9 @@
             android:layout_marginRight="12dp"
             android:layout_weight="1"
             android:background="@drawable/edit_text_border"
+            android:digits="@string/only_alphaNumeric"
             android:gravity="center"
+            android:inputType="text"
             android:padding="6dp"
             android:textColor="@android:color/black" />
 

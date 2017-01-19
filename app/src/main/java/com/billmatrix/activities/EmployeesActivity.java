@@ -22,7 +22,6 @@ import com.billmatrix.utils.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;

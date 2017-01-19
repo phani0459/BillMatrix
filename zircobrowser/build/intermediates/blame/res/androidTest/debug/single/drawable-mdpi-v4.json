@@ -60,12 +60,12 @@
         "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable-mdpi-v4\\fav_icn_unknown.png"
     },
     {
-        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-mdpi-v4\\stat_sys_download_anim0.png",
-        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable-mdpi-v4\\stat_sys_download_anim0.png"
-    },
-    {
         "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-mdpi-v4\\stat_sys_download_anim3.png",
         "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable-mdpi-v4\\stat_sys_download_anim3.png"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-mdpi-v4\\stat_sys_download_anim0.png",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable-mdpi-v4\\stat_sys_download_anim0.png"
     },
     {
         "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-mdpi-v4\\ic_btn_close_tab.png",

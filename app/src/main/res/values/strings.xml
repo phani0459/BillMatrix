@@ -17,6 +17,7 @@
     <string name="No_results">No Results found, Try again</string>
     <string name="storage_permission_rationale">"Storage permissions are needed for uploading Images."</string>
     <string name="zero">0.00</string>
+    <string name="only_alphaNumeric">0123456789.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM</string>
 
     <!-- Login Strings-->
     <string name="login_id">Login ID</string>

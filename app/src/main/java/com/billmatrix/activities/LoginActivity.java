@@ -110,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         progressDialog = Utils.getProgressDialog(mContext, "Loading...");
+        progressDialog.setCancelable(false);
 
         if (Utils.isInternetAvailable(mContext)) {
             login();

@@ -21,9 +21,11 @@ import com.billmatrix.LogoutService;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Customer;
+import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Profile;
+import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
@@ -117,6 +119,8 @@ public class ControlPanelActivity extends AppCompatActivity {
          * Customers
          * Vendors
          * Inventory
+         * Tax
+         * Discounts
          */
         getDataFromServer(adminId);
     }
@@ -376,12 +380,10 @@ public class ControlPanelActivity extends AppCompatActivity {
         }
     }
 
-    private void getInventoryFromServer(String adminId) {
+    private void getInventoryFromServer(final String adminId) {
         ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
         if (inventories != null && inventories.size() > 0) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            getTaxesFromServer(adminId);
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
@@ -407,10 +409,7 @@ public class ControlPanelActivity extends AppCompatActivity {
                                 }
                             }
 
-                            if (progressDialog != null && progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-
+                            getTaxesFromServer(adminId);
                         }
 
                         /**
@@ -427,6 +426,108 @@ public class ControlPanelActivity extends AppCompatActivity {
                         }
                     });
                 }
+            }
+        }
+    }
+
+    private void getTaxesFromServer(final String adminId) {
+        ArrayList<Tax.TaxData> taxes = billMatrixDaoImpl.getTax();
+        if (taxes != null && taxes.size() > 0) {
+            getDiscountsFromServer(adminId);
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                Log.e(TAG, "getTaxesFromServer: ");
+                Call<Tax> call = Utils.getBillMatrixAPI(mContext).getAdminTaxes(adminId);
+
+                call.enqueue(new Callback<Tax>() {
+
+                    /**
+                     * Successful HTTP response.
+                     * @param call server call
+                     * @param response server response
+                     */
+                    @Override
+                    public void onResponse(Call<Tax> call, Response<Tax> response) {
+                        Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                        if (response.body() != null) {
+                            Tax tax = response.body();
+                            if (tax.status == 200 && tax.Taxdata.equalsIgnoreCase("success")) {
+                                for (Tax.TaxData taxData : tax.data) {
+                                    billMatrixDaoImpl.addTax(taxData);
+                                }
+                            }
+                        }
+
+                        getDiscountsFromServer(adminId);
+
+                    }
+
+                    /**
+                     *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                     * @param call server call
+                     * @param t error
+                     */
+                    @Override
+                    public void onFailure(Call<Tax> call, Throwable t) {
+                        Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                        if (progressDialog != null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    private void getDiscountsFromServer(String adminId) {
+        ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
+        if (discounts != null && discounts.size() > 0) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                Log.e(TAG, "getDiscountsFromServer: ");
+                Call<Discount> call = Utils.getBillMatrixAPI(mContext).getAdminDiscounts(adminId);
+
+                call.enqueue(new Callback<Discount>() {
+
+                    /**
+                     * Successful HTTP response.
+                     * @param call server call
+                     * @param response server response
+                     */
+                    @Override
+                    public void onResponse(Call<Discount> call, Response<Discount> response) {
+                        Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                        if (response.body() != null) {
+                            Discount discount = response.body();
+                            if (discount.status == 200 && discount.Discountdata.equalsIgnoreCase("success")) {
+                                for (Discount.DiscountData discountData : discount.data) {
+                                    billMatrixDaoImpl.addDiscount(discountData);
+                                }
+                            }
+                        }
+
+                        if (progressDialog != null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+
+                    }
+
+                    /**
+                     *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                     * @param call server call
+                     * @param t error
+                     */
+                    @Override
+                    public void onFailure(Call<Discount> call, Throwable t) {
+                        Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                        if (progressDialog != null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                });
             }
         }
     }

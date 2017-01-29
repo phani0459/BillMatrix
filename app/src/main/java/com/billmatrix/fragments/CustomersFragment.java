@@ -22,6 +22,7 @@ import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.CustomersAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.utils.Constants;
@@ -183,6 +184,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         Utils.hideSoftKeyboard(customerNameEditText);
 
         Customer.CustomerData customerData = new Customer().new CustomerData();
+        Customer.CustomerData customerFromServer = new Customer().new CustomerData();
         String customerName = customerNameEditText.getText().toString();
         String customerContact = customerContactEditText.getText().toString();
         String customerDate = customerDate_EditText.getText().toString();
@@ -239,7 +241,6 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
 
         if (customerAdded != -1) {
-            customersAdapter.addCustomer(customerData);
             customersRecyclerView.smoothScrollToPosition(customersAdapter.getItemCount());
 
             /**
@@ -253,19 +254,23 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
 
             if (addCustomerBtn.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    ServerUtils.addCustomertoServer(customerData, mContext, adminId);
+                    customerFromServer = ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl);
                 } else {
+                    customerFromServer = customerData;
                     Utils.showToast("Customer Added successfully", mContext);
                 }
             } else {
                 if (selectedCusttoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        ServerUtils.updateCustomertoServer(customerData, mContext);
+                        customerFromServer = ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl);
                     } else {
+                        customerFromServer = customerData;
                         Utils.showToast("Customer Updated successfully", mContext);
                     }
                 }
             }
+
+            customersAdapter.addCustomer(customerFromServer);
             addCustomerBtn.setText(getString(R.string.add));
             isEditing = false;
             isCustomerAdded = true;
@@ -275,7 +280,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         }
     }
 
-    public void deleteCustomerfromServer(String customerID) {
+    public void deleteCustomerfromServer(final String customerID) {
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteCustomer(customerID);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
@@ -290,10 +295,11 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
             public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
                 Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                 if (response.body() != null) {
-                    HashMap<String, String> employeeStatus = response.body();
-                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        if (employeeStatus.get("delete_customer").equalsIgnoreCase("success")) {
+                    HashMap<String, String> customerStatus = response.body();
+                    if (customerStatus.get("status").equalsIgnoreCase("200")) {
+                        if (customerStatus.get("delete_customer").equalsIgnoreCase("success")) {
                             Utils.showToast("Customer Deleted successfully", mContext);
+                            billMatrixDaoImpl.deleteCustomer(DBConstants.ID, customerID);
                         }
                     }
                 }
@@ -346,7 +352,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                     } else {
                         custStatusSpinner.setSelection(1);
                     }
-                    billMatrixDaoImpl.deleteCustomer(customersAdapter.getItem(position).mobile_number);
+                    billMatrixDaoImpl.deleteCustomer(DBConstants.CUSTOMER_CONTACT, customersAdapter.getItem(position).mobile_number);
                     customersAdapter.deleteCustomer(position);
                 } else {
                     Utils.showToast("Save present editing customer before editing other customer", mContext);

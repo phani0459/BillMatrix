@@ -1,9 +1,12 @@
 package com.billmatrix.interfaces;
 
+import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
+import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Profile;
+import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 
 import java.util.HashMap;
@@ -61,15 +64,15 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("create_customer")
-    Call<HashMap<String, String>> addCustomer(@Field("username") String custName,
-                                              @Field("mobile_number") String mobileNumber, @Field("location") String location,
-                                              @Field("status") String status, @Field("date") String date, @Field("admin_id") String admin_id);
+    Call<CreateJob> addCustomer(@Field("username") String custName,
+                                @Field("mobile_number") String mobileNumber, @Field("location") String location,
+                                @Field("status") String status, @Field("date") String date, @Field("admin_id") String admin_id);
 
     @FormUrlEncoded
     @POST("update_customer")
-    Call<HashMap<String, String>> updateCustomer(@Field("id") String id, @Field("username") String custName,
-                                                 @Field("mobile_number") String mobileNumber, @Field("location") String location, @Field("status") String status,
-                                                 @Field("date") String date);
+    Call<CreateJob> updateCustomer(@Field("id") String id, @Field("username") String custName,
+                                   @Field("mobile_number") String mobileNumber, @Field("location") String location, @Field("status") String status,
+                                   @Field("date") String date);
 
     @FormUrlEncoded
     @POST("delete_customer")
@@ -117,4 +120,41 @@ public interface BillMatrixAPI {
     @FormUrlEncoded
     @POST("delete_inventory")
     Call<HashMap<String, String>> deleteInventory(@Field("id") String inventoryID);
+
+    @FormUrlEncoded
+    @POST("create_tax")
+    Call<HashMap<String, String>> addTax(@Field("admin_id") String adminId, @Field("tax_type") String tax_type, @Field("tax_description") String tax_description,
+                                         @Field("tax_rate") String tax_rate, @Field("status") String status);
+
+    @FormUrlEncoded
+    @POST("admin_taxes")
+    Call<Tax> getAdminTaxes(@Field("admin_id") String adminId);
+
+    @FormUrlEncoded
+    @POST("update_tax")
+    Call<HashMap<String, String>> updateTax(@Field("id") String id, @Field("admin_id") String admin_id, @Field("tax_type") String tax_type,
+                                            @Field("tax_description") String tax_description, @Field("tax_rate") String tax_rate, @Field("status") String status);
+
+    @FormUrlEncoded
+    @POST("delete_tax")
+    Call<HashMap<String, String>> deleteTax(@Field("id") String id);
+
+    @FormUrlEncoded
+    @POST("create_discount")
+    Call<HashMap<String, String>> addDiscount(@Field("admin_id") String adminId, @Field("discount_code") String discount_code, @Field("discount_description") String description,
+                                              @Field("discount") String tax_rate, @Field("status") String status);
+
+    @FormUrlEncoded
+    @POST("admin_discounts")
+    Call<Discount> getAdminDiscounts(@Field("admin_id") String adminId);
+
+    @FormUrlEncoded
+    @POST("update_discount")
+    Call<HashMap<String, String>> updateDiscount(@Field("id") String id, @Field("admin_id") String admin_id, @Field("discount_code") String discount_code,
+                                                 @Field("discount_description") String description, @Field("discount") String discount, @Field("status") String status);
+
+    @FormUrlEncoded
+    @POST("delete_discount")
+    Call<HashMap<String, String>> deleteDiscount(@Field("id") String id);
+
 }

@@ -50,17 +50,22 @@ public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.VendorHolder> {
         }
     }
 
-    public void deleteTax(int position) {
-        if (selectedtaxes.keySet().contains(taxes.get(position).taxType)) {
-            selectedtaxes.remove(taxes.get(position).taxType);
+    public void deleteTax(int position, boolean isEdit) {
+        if (!isEdit && selectedtaxes.keySet().contains(taxes.get(position).tax_type)) {
+            selectedtaxes.remove(taxes.get(position).tax_type);
+            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_TAX_JSON, Constants.getGson().toJson(selectedtaxes)).apply();
         }
         taxes.remove(position);
-        notifyItemRemoved(position);
+        notifyDataSetChanged();
     }
 
-    public void addTax(Tax.TaxData taxData) {
+    public void addTax(Tax.TaxData taxData, boolean isAdd) {
+        if (!isAdd && selectedtaxes.keySet().contains(taxData.tax_type)) {
+            selectedtaxes.put(taxData.tax_type, Float.parseFloat(taxData.tax_rate));
+            Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_TAX_JSON, Constants.getGson().toJson(selectedtaxes)).apply();
+        }
         taxes.add(taxData);
-        notifyItemInserted(taxes.size());
+        notifyDataSetChanged();
     }
 
     public TaxAdapter(List<Tax.TaxData> taxes, OnItemClickListener onClickListener, Context mContext) {
@@ -92,9 +97,9 @@ public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.VendorHolder> {
         final Tax.TaxData taxData = taxes.get(position);
 
         holder.snoCheckBox.setText((position + 1) + "");
-        holder.taxTypeTextView.setText(taxData.taxType);
-        holder.taxDescTextView.setText(taxData.taxDescription);
-        holder.taxRateTextView.setText(taxData.taxRate.trim());
+        holder.taxTypeTextView.setText(taxData.tax_type);
+        holder.taxDescTextView.setText(taxData.tax_description);
+        holder.taxRateTextView.setText(taxData.tax_rate.trim());
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +118,7 @@ public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.VendorHolder> {
          */
         holder.snoCheckBox.setChecked(false);
         for (String selectedTaxType : selectedtaxes.keySet()) {
-            if (selectedTaxType.equalsIgnoreCase(taxData.taxType)) {
+            if (selectedTaxType.equalsIgnoreCase(taxData.tax_type)) {
                 holder.snoCheckBox.setChecked(true);
             }
         }
@@ -121,13 +126,13 @@ public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.VendorHolder> {
         holder.snoCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (selectedtaxes.keySet().contains(taxData.taxType)) {
-                    selectedtaxes.remove(taxData.taxType);
+                if (selectedtaxes.keySet().contains(taxData.tax_type)) {
+                    selectedtaxes.remove(taxData.tax_type);
                 } else {
                     try {
-                        selectedtaxes.put(taxData.taxType, Float.parseFloat(taxData.taxRate));
+                        selectedtaxes.put(taxData.tax_type, Float.parseFloat(taxData.tax_rate));
                     } catch (NumberFormatException e) {
-                        selectedtaxes.put(taxData.taxType, 0.0f);
+                        selectedtaxes.put(taxData.tax_type, 0.0f);
                         e.printStackTrace();
                     }
                 }

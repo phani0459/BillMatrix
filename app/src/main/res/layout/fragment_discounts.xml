@@ -120,7 +120,7 @@
             android:background="@drawable/edit_text_border"
             android:drawableRight="@drawable/percentile"
             android:imeOptions="actionDone"
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:paddingLeft="6dp"
             android:textColor="@android:color/black" />
 

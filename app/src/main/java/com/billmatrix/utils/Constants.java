@@ -35,6 +35,7 @@ public class Constants {
     public static final String PREF_DISCOUNT_VALUE = "discountValue_Selected";
     public static final String PREF_DISCOUNT_CODE = "discountCode_Selected";
     public static final String PREF_TAX_JSON = "taxJSON";
+    public static final String PREF_DEFAULT_DISCOUNT_CODE = "discCode";
 
     /**
      * File Names

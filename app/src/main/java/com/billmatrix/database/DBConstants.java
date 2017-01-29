@@ -4,7 +4,7 @@ package com.billmatrix.database;
  * Created by KANDAGATLAs on 06-11-2016.
  */
 
-class DBConstants {
+public class DBConstants {
 
     static final String DB_NAME = "BillMatrix.db";
     static final int DB_VERSION = 1;
@@ -17,7 +17,7 @@ class DBConstants {
     final static String EMAIL = "email";
     final static String STATUS = "Status";
     final static String ADMIN_ID = "adminID";
-    final static String ID = "_id";
+    public final static String ID = "_id";
     final static String IMEI = "imei";
     final static String CREATE_DATE = "create_Date";
     final static String UPDATE_DATE = "update_date";
@@ -61,7 +61,7 @@ class DBConstants {
      * Customer Column Names
      */
     final static String CUSTOMER_NAME = "Customer_Name";
-    final static String CUSTOMER_CONTACT = "customer_contact";
+    public final static String CUSTOMER_CONTACT = "customer_contact";
 
     /**
      * Inventory Column Names
@@ -81,9 +81,9 @@ class DBConstants {
     /**
      * TAX Column Names
      */
-    final static String TAX_TYPE = "taxType";
-    final static String TAX_DESC = "taxDescription";
-    final static String TAX_RATE = "taxRate";
+    final static String TAX_TYPE = "tax_type";
+    final static String TAX_DESC = "tax_description";
+    final static String TAX_RATE = "tax_rate";
 
 
     /**

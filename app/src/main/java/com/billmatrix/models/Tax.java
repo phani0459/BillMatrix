@@ -9,14 +9,14 @@ import java.util.ArrayList;
 
 public class Tax implements Serializable {
     public int status;
-    public String taxData;
+    public String Taxdata;
     public ArrayList<TaxData> data;
 
     public class TaxData implements Serializable {
         public String id;
-        public String taxType;
-        public String taxDescription;
-        public String taxRate;
+        public String tax_type;
+        public String tax_description;
+        public String tax_rate;
         public String admin_id;
         public String status;
         public String create_date;

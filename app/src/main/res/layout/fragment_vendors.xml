@@ -150,6 +150,8 @@
                 android:layout_marginRight="12dp"
                 android:layout_weight="1.4"
                 android:background="@drawable/edit_text_border"
+                android:digits="@string/only_alphaNumeric"
+                android:inputType="text"
                 android:gravity="center"
                 android:padding="6dp"
                 android:textColor="@android:color/black" />

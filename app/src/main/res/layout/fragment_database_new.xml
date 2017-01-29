@@ -78,11 +78,11 @@
         style="@style/Base.TextAppearance.AppCompat.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:drawablePadding="8dp"
-        android:drawableRight="@drawable/sync_green"
+        android:drawableRight="@drawable/sync_withserver"
         android:gravity="center"
         android:text="@string/sync_with_server"
         android:textColor="@android:color/black" />
@@ -97,177 +97,240 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Inventory"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:background="#A2A2A2"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/im_inventory_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Inventory"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Customers"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:background="#A2A2A2"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/im_customers_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Customers"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Reports"
-                android:textColor="@android:color/black" />
+                android:layout_marginRight="8dp"
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:background="#A2A2A2"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/im_reports_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Reports"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Purchases"
-                android:textColor="@android:color/black" />
+                android:layout_marginRight="8dp"
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:background="#A2A2A2"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/im_purchases_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Purchases"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Sales"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
 
+                <ImageView
+                    android:id="@+id/im_sales_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
+
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Sales"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
         </LinearLayout>
-
-        <View
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp"
-            android:background="#A2A2A2"
-            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Employees"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+                <ImageView
+                    android:id="@+id/im_employees_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
+
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Employees"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Vendors"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:background="#A2A2A2"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/im_vendors_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Vendors"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Discounts"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:background="#A2A2A2"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/im_discounts_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Discounts"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/Header_n_Footer"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:background="#A2A2A2"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/im_header_footer_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
 
-            <CheckBox
-                style="@style/Base.TextAppearance.AppCompat.Medium"
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Header_n_Footer"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/generated_report"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/im_generated_report_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
+
+                <CheckBox
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/generated_report"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
@@ -275,10 +338,53 @@
         android:id="@+id/btn_sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="left"
         android:layout_margin="16dp"
-        android:layout_marginTop="8dp"
         android:background="@drawable/green_button"
-        android:text="@string/sync"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="@string/sync_selected"
         android:textColor="@android:color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:drawableLeft="@drawable/sync_green"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:text="@string/sync_in_progress"
+            android:textColor="@color/cp_green" />
+
+        <TextView
+            android:id="@+id/textView"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:drawableLeft="@drawable/sync_red"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:text="@string/pending_sync"
+            android:textColor="@color/cp_red" />
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:drawableLeft="@drawable/sync_grey"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:text="@string/sync_ed"
+            android:textColor="@color/headerBG" />
+
+    </LinearLayout>
 </LinearLayout>

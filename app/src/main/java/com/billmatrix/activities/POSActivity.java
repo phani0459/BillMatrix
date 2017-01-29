@@ -104,6 +104,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public ImageView editCustomerImageView;
     @BindView(R.id.tv_pos_taxValue)
     public TextView taxValueTextView;
+    @BindView(R.id.btn_cash_or_card)
+    public Button cashCardButton;
+    @BindView(R.id.btn_credit)
+    public Button creditButton;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
@@ -143,7 +147,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         if (dbCustomers != null && dbCustomers.size() > 0) {
             for (Customer.CustomerData customer : dbCustomers) {
-                customerNames.add(customer.username.toUpperCase());
+                if (customer.status.equalsIgnoreCase("1")) {
+                    customerNames.add(customer.username.toUpperCase());
+                }
             }
         }
         customerSpinnerAdapter = Utils.loadSpinner(customersSpinner, mContext, customerNames);
@@ -204,6 +210,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         dialog.setContentView(R.layout.dialog_pos_customer_details);
         dialog.setCancelable(false);
 
+        final String previousCustomerName;
         final EditText customerUserName = (EditText) dialog.findViewById(R.id.et_pos_cust_name);
         final EditText customerMobile = (EditText) dialog.findViewById(R.id.et_pos_cust_mobile);
         EditText customerEmail = (EditText) dialog.findViewById(R.id.et_pos_cust_email);
@@ -217,8 +224,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             customerLocation.setText(selectedCustomer.location);
             customerUserName.setText(selectedCustomer.username);
             customerMobile.setText(selectedCustomer.mobile_number);
+            previousCustomerName = selectedCustomer.username;
             editCustomerButton.setText(getString(R.string.save));
         } else {
+            previousCustomerName = "";
             editCustomerButton.setText(getString(R.string.add));
         }
 
@@ -277,7 +286,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 editedCustomerData.mobile_number = customerContact;
 
                 if (selectedCustomer != null) {
-                    updateCustomerinDB(editedCustomerData, dialog);
+                    updateCustomerinDB(editedCustomerData, dialog, previousCustomerName);
                 } else {
                     addCustomerinDB(editedCustomerData, dialog);
                 }
@@ -287,15 +296,28 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         dialog.show();
     }
 
-    public void updateCustomerinDB(Customer.CustomerData customerData, Dialog dialog) {
+    public void updateCustomerinDB(Customer.CustomerData customerData, Dialog dialog, String previousCustomerName) {
         boolean isCustomerUpdated = billMatrixDaoImpl.updateCustomer(customerData);
 
         if (isCustomerUpdated) {
             if (Utils.isInternetAvailable(mContext)) {
-                ServerUtils.updateCustomertoServer(customerData, mContext);
+                ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl);
             } else {
                 Utils.showToast("Customer Updated successfully", mContext);
             }
+
+            /**
+             * If Customer Name is updated, remove previous name and add new Name to spinner
+             */
+            customerSpinnerAdapter.remove(previousCustomerName.toUpperCase());
+            customerSpinnerAdapter.add(customerData.username.toUpperCase());
+            try {
+                int customerSelectedPosition = customerSpinnerAdapter.getPosition(customerData.username.toUpperCase());
+                customersSpinner.setSelection(customerSelectedPosition);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             dialog.dismiss();
             selectedCustomer = customerData;
             isGuestCustomerSelected = false;
@@ -310,7 +332,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         if (customerAdded != -1) {
             if (Utils.isInternetAvailable(mContext)) {
-                ServerUtils.addCustomertoServer(customerData, mContext, adminId);
+                ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl);
             } else {
                 Utils.showToast("Customer Updated successfully", mContext);
             }
@@ -335,24 +357,47 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     @OnClick(R.id.ll_pos_pay)
     public void pay() {
-
+        if (isPaymentTypeClicked) {
+            paymentTypeDialog();
+        } else {
+            Utils.showToast("Select Payment type", mContext);
+        }
     }
 
+    public boolean isPaymentTypeClicked;
+
     @OnClick(R.id.btn_credit)
-    public void credit() {
+    public void credit(View v) {
         if (isGuestCustomerSelected) {
             Utils.showToast("Add Guest Customer before allowing for credit", mContext);
             return;
         }
-        paymentTypeDialog(true);
+        if (selectedCustomer != null) {
+        } else {
+            return;
+        }
+        isPaymentTypeClicked = true;
+        cashCardButton.setBackgroundResource(R.drawable.button_enable);
+        v.setBackgroundResource(R.drawable.credit_button);
+        creditButtonClicked = true;
     }
 
     @OnClick(R.id.btn_cash_or_card)
-    public void cashOrCard() {
-        paymentTypeDialog(false);
+    public void cashOrCard(View v) {
+        if (selectedCustomer != null) {
+        } else if (isGuestCustomerSelected) {
+        } else {
+            return;
+        }
+        creditButtonClicked = false;
+        isPaymentTypeClicked = true;
+        creditButton.setBackgroundResource(R.drawable.button_enable);
+        v.setBackgroundResource(R.drawable.green_button);
     }
 
-    public void paymentTypeDialog(boolean isCredit) {
+    boolean creditButtonClicked = false;
+
+    public void paymentTypeDialog() {
         String username = "";
         if (selectedCustomer != null) {
             username = selectedCustomer.username;
@@ -385,7 +430,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         title.setText(getString(R.string.payments) + " - " + username);
 
-        if (isCredit) {
+        if (creditButtonClicked) {
             cashButton.setBackgroundResource(R.drawable.button_disable);
             creditButton.setBackgroundResource(R.drawable.orange_button);
             cardButton.setBackgroundResource(R.drawable.button_disable);
@@ -395,6 +440,11 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         creditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isGuestCustomerSelected) {
+                    Utils.showToast("Add Guest Customer before allowing for credit", mContext);
+                    return;
+                }
+                creditButtonClicked = true;
                 cardLayout.setVisibility(View.VISIBLE);
                 cashButton.setBackgroundResource(R.drawable.button_disable);
                 creditButton.setBackgroundResource(R.drawable.orange_button);
@@ -409,6 +459,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 cardButton.setBackgroundResource(R.drawable.button_enable);
                 cashButton.setBackgroundResource(R.drawable.button_disable);
                 creditButton.setBackgroundResource(R.drawable.button_disable);
+                creditButtonClicked = false;
             }
         });
 
@@ -420,6 +471,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 cashButton.setBackgroundResource(R.drawable.button_enable);
                 cardButton.setBackgroundResource(R.drawable.button_disable);
                 creditButton.setBackgroundResource(R.drawable.button_disable);
+                creditButtonClicked = false;
             }
         });
 
@@ -430,12 +482,12 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         discount.setText(discountString.replace("/-", ""));
         total.setText(totalString.replace("/-", ""));
         tax.setText(taxString.replace("/-", ""));
+        balance.setText(total.getText().toString());
 
         totalPaid.setText(getString(R.string.zero));
         changeTextView.setText(getString(R.string.zero));
-        balance.setText(getString(R.string.zero));
 
-        final float billTotalValue = Float.parseFloat(total.getText().toString().equalsIgnoreCase("") ? "0.00" : total.getText().toString());
+        final float billTotalValue = Float.parseFloat(total.getText().toString().equalsIgnoreCase("") ? getString(R.string.zero) : total.getText().toString());
 
         cardEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -549,7 +601,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             public void onClick(View view) {
                 float balanceRemaining = Float.parseFloat(balance.getText().toString().equalsIgnoreCase("") ? "0.00" : balance.getText().toString());
                 float totalPaidMoney = Float.parseFloat(totalPaid.getText().toString());
-                if (totalPaidMoney <= 0) {
+                if (totalPaidMoney <= 0 && !creditButtonClicked) {
                     Utils.showToast("Please enter cash paid", mContext);
                     return;
                 }
@@ -598,6 +650,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     posItemAdapter.removeAllItems();
                 }
                 billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+                if (isGuestCustomerSelected) {
+                    int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
+                    if (guestCustInt == guestCustomerCount && guestCustInt != 1) {
+                        guestCustomerCount = guestCustomerCount - 1;
+                        customerSpinnerAdapter.remove(selectedGuestCustomerName);
+                    }
+                }
                 customersSpinner.setSelection(0);
                 dialog.dismiss();
             }
@@ -623,6 +682,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 posItemAdapter.removeAllItems();
+                creditButton.setBackgroundResource(R.drawable.button_enable);
+                cashCardButton.setBackgroundResource(R.drawable.button_enable);
+                isPaymentTypeClicked = false;
+
                 String selecteCustomerName = (String) adapterView.getAdapter().getItem(i);
                 if (!selecteCustomerName.equalsIgnoreCase("SELECT CUSTOMER") && !selecteCustomerName.contains("GUEST CUSTOMER")) {
                     for (Customer.CustomerData customer : dbCustomers) {
@@ -859,6 +922,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, null).apply();
         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_LOGIN_ID, "").apply();
         FileUtils.deleteFile(mContext, Constants.EMPLOYEE_FILE_NAME);
+        billMatrixDaoImpl.deleteAllPOSItems();
     }
 
     @OnClick(R.id.btn_pos_logout)
@@ -923,10 +987,14 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         Inventory.InventoryData selectedInventory = posInventoryAdapter.getItem(position);
         if (noCustomerItemTextView.getVisibility() == View.GONE) {
             /**
-             * to add next guest customer in customer spinner
+             * to add next guest customer in customer spinner if selected customer is guest and there are no more guest customers in spinner
              */
             if (isGuestCustomerSelected) {
-
+                int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
+                if (guestCustInt == guestCustomerCount) {
+                    guestCustomerCount = guestCustomerCount + 1;
+                    customerSpinnerAdapter.insert("GUEST CUSTOMER " + guestCustomerCount, guestCustomerCount);
+                }
             }
             if (posItemAdapter.inventoryIDs != null && posItemAdapter.inventoryIDs.size() > 0) {
                 if (posItemAdapter.inventoryIDs.contains(selectedInventory.id)) {

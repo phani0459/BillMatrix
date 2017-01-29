@@ -29,7 +29,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.billmatrix.R;
-import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Discount;
 import com.billmatrix.utils.Utils;
@@ -156,7 +155,7 @@ public class StoreFragment extends Fragment {
             noDiscountsTextView.setVisibility(View.GONE);
             for (Discount.DiscountData discount : discounts) {
                 CheckBox checkBox = new CheckBox(mContext);
-                checkBox.setText(discount.discountDescription);
+                checkBox.setText(discount.discount_description);
                 storeDiscountsLayout.addView(checkBox);
             }
         } else {

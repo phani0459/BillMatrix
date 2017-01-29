@@ -209,6 +209,9 @@
     <string name="sync_to_server">SYNCHRONIZE TO SERVER</string>
     <string name="sync_with_server">SYNCHRONIZE WITH SERVER</string>
     <string name="sync_from_server">SYNCHRONIZE FROM SERVER</string>
+    <string name="sync_in_progress">SYNC IN PROGRESS</string>
+    <string name="pending_sync">PENDING SYNCHRONIZATION</string>
+    <string name="sync_ed">SYNCHRONIZED</string>
     <string name="Inventory">Inventory</string>
     <string name="Reports">Reports</string>
     <string name="Customers">Customers</string>
@@ -219,6 +222,7 @@
     <string name="Header_n_Footer">Header and Footer</string>
     <string name="generated_report">Generated Report (Custom)</string>
     <string name="sync">SYNC</string>
+    <string name="sync_selected">SYNC SELECTED</string>
     <string name="sync_all">SYNC ALL</string>
     <string name="Employees">Employees</string>
 

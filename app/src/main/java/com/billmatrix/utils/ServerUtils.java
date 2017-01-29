@@ -1,9 +1,11 @@
 package com.billmatrix.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
 
@@ -31,13 +33,13 @@ public class ServerUtils {
      * @param mContext     Context
      * @param adminId      admin ID
      */
-    public static void addCustomertoServer(Customer.CustomerData customerData, final Context mContext, String adminId) {
+    public static Customer.CustomerData addCustomertoServer(final Customer.CustomerData customerData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
         Log.e(TAG, "addCustomertoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addCustomer(customerData.username, customerData.mobile_number, customerData.location,
+        final Customer.CustomerData updatedCustomer = customerData;
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addCustomer(customerData.username, customerData.mobile_number, customerData.location,
                 customerData.status, customerData.date, adminId);
 
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
+        call.enqueue(new Callback<CreateJob>() {
 
             /**
              * Successful HTTP response.
@@ -45,13 +47,23 @@ public class ServerUtils {
              * @param response server response
              */
             @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
                 Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                 if (response.body() != null) {
-                    HashMap<String, String> customerStatus = response.body();
-                    if (customerStatus.get("status").equalsIgnoreCase("200")) {
-                        if (customerStatus.get("create_customer").equalsIgnoreCase("success")) {
+                    CreateJob customerStatus = response.body();
+                    if (customerStatus.status.equalsIgnoreCase("200")) {
+                        if (customerStatus.create_customer.equalsIgnoreCase("success")) {
                             Utils.showToast("Customer Added successfully", mContext);
+                            updatedCustomer.id = customerStatus.data.id;
+                            updatedCustomer.username = customerStatus.data.username;
+                            updatedCustomer.mobile_number = customerStatus.data.mobile_number;
+                            updatedCustomer.date = customerStatus.data.date;
+                            updatedCustomer.location = customerStatus.data.location;
+                            updatedCustomer.status = customerStatus.data.status;
+                            updatedCustomer.admin_id = customerStatus.data.admin_id;
+                            updatedCustomer.create_date = customerStatus.data.create_date;
+                            updatedCustomer.update_date = customerStatus.data.update_date;
+                            billMatrixDaoImpl.updateCustomer(updatedCustomer);
                         }
                     }
                 }
@@ -63,19 +75,21 @@ public class ServerUtils {
              * @param t error
              */
             @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+            public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });
+
+        return updatedCustomer;
     }
 
-    public static void updateCustomertoServer(Customer.CustomerData customerData, final Context mContext) {
+    public static Customer.CustomerData updateCustomertoServer(final Customer.CustomerData customerData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
         Log.e(TAG, "updateCustomertoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateCustomer(customerData.id, customerData.username, customerData.mobile_number,
+        final Customer.CustomerData updatedCustomer = customerData;
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateCustomer(customerData.id, customerData.username, customerData.mobile_number,
                 customerData.location, customerData.status, customerData.date);
 
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
+        call.enqueue(new Callback<CreateJob>() {
 
             /**
              * Successful HTTP response.
@@ -83,14 +97,25 @@ public class ServerUtils {
              * @param response server response
              */
             @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
                 Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                Log.e(TAG, "onResponse: " + response.body());
                 if (response.body() != null) {
-                    HashMap<String, String> customerMap = response.body();
-                    if (customerMap.get("status").equalsIgnoreCase("200")) {
-                        if (customerMap.containsKey("update_customer") && customerMap.get("update_customer").equalsIgnoreCase("Successfully Updated")) {
+                    CreateJob customerStatus = response.body();
+                    if (customerStatus.status.equalsIgnoreCase("200")) {
+                        if (!TextUtils.isEmpty(customerStatus.update_customer) && customerStatus.update_customer.equalsIgnoreCase("Successfully Updated")) {
                             Utils.showToast("Customer Updated successfully", mContext);
                         }
+                        updatedCustomer.id = customerStatus.data.id;
+                        updatedCustomer.username = customerStatus.data.username;
+                        updatedCustomer.mobile_number = customerStatus.data.mobile_number;
+                        updatedCustomer.date = customerStatus.data.date;
+                        updatedCustomer.location = customerStatus.data.location;
+                        updatedCustomer.status = customerStatus.data.status;
+                        updatedCustomer.admin_id = customerStatus.data.admin_id;
+                        updatedCustomer.create_date = customerStatus.data.create_date;
+                        updatedCustomer.update_date = customerStatus.data.update_date;
+                        billMatrixDaoImpl.updateCustomer(updatedCustomer);
                     }
                 }
             }
@@ -101,10 +126,12 @@ public class ServerUtils {
              * @param t error
              */
             @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+            public void onFailure(Call<CreateJob> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + call.request().url().queryParameterNames());
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });
+        return updatedCustomer;
     }
 
     /*********************************************************************

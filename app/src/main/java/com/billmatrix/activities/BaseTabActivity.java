@@ -152,6 +152,7 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, null).apply();
         Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_LOGIN_ID, "").apply();
         FileUtils.deleteFile(mContext, Constants.EMPLOYEE_FILE_NAME);
+        billMatrixDaoImpl.deleteAllPOSItems();
     }
 
     @OnTouch(R.id.tv_reports)
@@ -203,6 +204,7 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+
     String selectedTab;
 
     public abstract void tabChanged(String selectedTab, boolean isInit);

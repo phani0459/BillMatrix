@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +28,15 @@ import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -101,18 +106,55 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         if (taxes != null && taxes.size() > 0) {
             for (Tax.TaxData taxData : taxes) {
                 if (!taxData.status.equalsIgnoreCase("-1")) {
-                    taxAdapter.addTax(taxData);
+                    taxAdapter.addTax(taxData, addTaxButton.getText().toString().equalsIgnoreCase("ADD"));
                 }
             }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
-//                    getCustomersFromServer(adminId);
+                    getTaxesFromServer(adminId);
                 }
             }
         }
 
         return v;
+    }
+
+    private void getTaxesFromServer(String adminId) {
+        Log.e(TAG, "getTaxesFromServer: ");
+        Call<Tax> call = Utils.getBillMatrixAPI(mContext).getAdminTaxes(adminId);
+
+        call.enqueue(new Callback<Tax>() {
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<Tax> call, Response<Tax> response) {
+                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                if (response.body() != null) {
+                    Tax tax = response.body();
+                    if (tax.status == 200 && tax.Taxdata.equalsIgnoreCase("success")) {
+                        for (Tax.TaxData taxData : tax.data) {
+                            billMatrixDaoImpl.addTax(taxData);
+                            taxAdapter.addTax(taxData, true);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<Tax> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -174,15 +216,15 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         }
 
         taxData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
-        taxData.taxType = taxType;
-        taxData.taxDescription = desc;
-        taxData.taxRate = rate;
+        taxData.tax_type = taxType;
+        taxData.tax_description = desc;
+        taxData.tax_rate = rate;
         taxData.status = "1";
 
         long taxAdded = billMatrixDaoImpl.addTax(taxData);
 
         if (taxAdded != -1) {
-            taxAdapter.addTax(taxData);
+            taxAdapter.addTax(taxData, addTaxButton.getText().toString().equalsIgnoreCase("ADD"));
             taxTypeRecyclerView.smoothScrollToPosition(taxAdapter.getItemCount());
 
             /**
@@ -194,14 +236,14 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
 
             if (addTaxButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-//                    addTaxtoServer(taxData);
+                    addTaxtoServer(taxData);
                 } else {
                     Utils.showToast("Tax Added successfully", mContext);
                 }
             } else {
                 if (selectedTaxtoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-//                        updateTaxtoServer(taxData);
+                        updateTaxtoServer(taxData);
                     } else {
                         Utils.showToast("Tax Updated successfully", mContext);
                     }
@@ -216,6 +258,81 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         } else {
             Utils.showToast("Tax Type must be unique", mContext);
         }
+    }
+
+    private void updateTaxtoServer(Tax.TaxData taxData) {
+        Log.e(TAG, "updateTaxtoServer: ");
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateTax(taxData.id, adminId, taxData.tax_type, taxData.tax_description,
+                taxData.tax_rate, "1");
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> vendorMap = response.body();
+                    if (vendorMap.get("status").equalsIgnoreCase("200")) {
+                        if (vendorMap.containsKey("update_tax") && vendorMap.get("update_tax").equalsIgnoreCase("Successfully Updated")) {
+                            Utils.showToast("Tax Updated successfully", mContext);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
+    private void addTaxtoServer(Tax.TaxData taxData) {
+        Log.e(TAG, "addTaxtoServer: ");
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addTax(adminId, taxData.tax_type, taxData.tax_description, taxData.tax_rate, "1");
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> taxMap = response.body();
+                    if (taxMap.get("status").equalsIgnoreCase("200")) {
+                        if (taxMap.get("create_tax").equalsIgnoreCase("success")) {
+                            Utils.showToast("Tax Added successfully", mContext);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     public void onBackPressed() {
@@ -241,8 +358,15 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Tax Type", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.deleteTax(taxAdapter.getItem(position).taxType);
-                        taxAdapter.deleteTax(position);
+                        billMatrixDaoImpl.updateTax("-1", taxAdapter.getItem(position).tax_type);
+                        if (Utils.isInternetAvailable(mContext)) {
+                            if (!TextUtils.isEmpty(taxAdapter.getItem(position).id)) {
+                                deleteTaxfromServer(taxAdapter.getItem(position).id, taxAdapter.getItem(position).tax_type);
+                            }
+                        } else {
+                            Utils.showToast("Customer Deleted successfully", mContext);
+                        }
+                        taxAdapter.deleteTax(position, false);
                     }
                 });
                 break;
@@ -257,12 +381,12 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
                     try {
                         taxTypeSpinner.setSelection(4);
                         otherTaxEditText.setVisibility(View.VISIBLE);
-                        otherTaxEditText.setText(selectedTaxtoEdit.taxType);
+                        otherTaxEditText.setText(selectedTaxtoEdit.tax_type);
 
                         String[] taxTypeArray = getResources().getStringArray(R.array.tax_type_array);
                         for (String aTaxTypeString : taxTypeArray) {
-                            if (aTaxTypeString.equalsIgnoreCase(selectedTaxtoEdit.taxType)) {
-                                int taxTypeSelectedPosition = taxSpinnerAdapter.getPosition(selectedTaxtoEdit.taxType);
+                            if (aTaxTypeString.equalsIgnoreCase(selectedTaxtoEdit.tax_type)) {
+                                int taxTypeSelectedPosition = taxSpinnerAdapter.getPosition(selectedTaxtoEdit.tax_type);
                                 taxTypeSpinner.setSelection(taxTypeSelectedPosition);
                                 otherTaxEditText.setVisibility(View.GONE);
                                 break;
@@ -272,11 +396,11 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
                         e.printStackTrace();
                         taxTypeSpinner.setSelection(0);
                     }
-                    taxDescEditText.setText(selectedTaxtoEdit.taxDescription);
-                    taxRateEditText.setText(selectedTaxtoEdit.taxRate);
+                    taxDescEditText.setText(selectedTaxtoEdit.tax_description);
+                    taxRateEditText.setText(selectedTaxtoEdit.tax_rate);
 
-                    billMatrixDaoImpl.deleteTax(taxAdapter.getItem(position).taxType);
-                    taxAdapter.deleteTax(position);
+                    billMatrixDaoImpl.deleteTax(taxAdapter.getItem(position).tax_type);
+                    taxAdapter.deleteTax(position, true);
                 } else {
                     Utils.showToast("Save present editing tax before editing other tax", mContext);
                 }
@@ -284,5 +408,42 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
             case 3:
                 break;
         }
+    }
+
+    private void deleteTaxfromServer(final String id, final String taxType) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteTax(id);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> taxStatus = response.body();
+                    if (taxStatus.get("status").equalsIgnoreCase("200")) {
+                        if (taxStatus.get("delete_tax").equalsIgnoreCase("success")) {
+                            Utils.showToast("Tax Deleted successfully", mContext);
+                            billMatrixDaoImpl.deleteTax(taxType);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 }

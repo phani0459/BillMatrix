@@ -9,13 +9,13 @@ import java.util.ArrayList;
 
 public class Discount implements Serializable {
     public int status;
-    public String discountData;
+    public String Discountdata;
     public ArrayList<DiscountData> data;
 
     public class DiscountData implements Serializable {
         public String id;
         public String discount_code;
-        public String discountDescription;
+        public String discount_description;
         public String discount;
         public String admin_id;
         public String status;

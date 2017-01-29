@@ -3,12 +3,9 @@ package com.billmatrix.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -55,12 +52,17 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
 
     public void deleteDiscount(int position) {
         discounts.remove(position);
-        notifyItemRemoved(position);
+        notifyDataSetChanged();
+    }
+
+    public void insertDefaultDiscount(Discount.DiscountData discountData) {
+        discounts.add(0, discountData);
+        notifyDataSetChanged();
     }
 
     public void addDiscount(Discount.DiscountData discountData) {
         discounts.add(discountData);
-        notifyItemInserted(discounts.size());
+        notifyDataSetChanged();
     }
 
     public DiscountAdapter(Context mContext, List<Discount.DiscountData> discountDatas, OnItemClickListener onClickListener) {
@@ -86,7 +88,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
         final Discount.DiscountData discountData = discounts.get(position);
 
         holder.snoRadioButton.setText("" + (position + 1));
-        holder.discDescTextView.setText(discountData.discountDescription);
+        holder.discDescTextView.setText(discountData.discount_description);
         holder.discCodeTextView.setText(discountData.discount_code);
         holder.discValueTextView.setText(discountData.discount.trim());
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {

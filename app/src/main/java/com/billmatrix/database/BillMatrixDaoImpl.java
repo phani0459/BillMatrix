@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.billmatrix.models.Customer;
@@ -16,7 +17,10 @@ import com.billmatrix.models.Vendor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.billmatrix.database.DBConstants.CUSTOMERS_TABLE;
+import static com.billmatrix.database.DBConstants.CUSTOMER_CONTACT;
 import static com.billmatrix.database.DBConstants.CUSTOMER_NAME;
+import static com.billmatrix.database.DBConstants.ID;
 import static com.billmatrix.database.DBConstants.ITEM_CODE;
 import static com.billmatrix.database.DBConstants.POS_ITEMS_TABLE;
 import static com.billmatrix.database.DBConstants.TAG;
@@ -46,7 +50,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DBConstants.EMPLOYEE_LOGINID, employeeData.login_id);
         contentValues.put(DBConstants.EMPLOYEE_PASSWORD, employeeData.password);
         contentValues.put(DBConstants.STATUS, employeeData.status);
-        contentValues.put(DBConstants.ID, employeeData.id);
+        contentValues.put(ID, employeeData.id);
         contentValues.put(DBConstants.ADD_UPDATE, employeeData.add_update);
         contentValues.put(DBConstants.ADMIN_ID, employeeData.admin_id);
         contentValues.put(DBConstants.CREATE_DATE, employeeData.create_date);
@@ -58,6 +62,30 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.insert(DBConstants.EMPLOYEES_TABLE, null, contentValues);
     }
 
+    public boolean updateEmployee(Employee.EmployeeData employeeData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.EMPLOYEE_NAME, employeeData.username);
+        contentValues.put(DBConstants.EMPLOYEE_MOBILE, employeeData.mobile_number);
+        contentValues.put(DBConstants.EMPLOYEE_LOGINID, employeeData.login_id);
+        contentValues.put(DBConstants.EMPLOYEE_PASSWORD, employeeData.password);
+        contentValues.put(DBConstants.STATUS, employeeData.status);
+        contentValues.put(ID, employeeData.id);
+        contentValues.put(DBConstants.ADD_UPDATE, employeeData.add_update);
+        contentValues.put(DBConstants.ADMIN_ID, employeeData.admin_id);
+        contentValues.put(DBConstants.CREATE_DATE, employeeData.create_date);
+        contentValues.put(DBConstants.UPDATE_DATE, employeeData.update_date);
+        contentValues.put(DBConstants.BRANCH, employeeData.branch);
+        contentValues.put(DBConstants.LOCATION, employeeData.location);
+        contentValues.put(DBConstants.IMEI, employeeData.imei_number);
+        contentValues.put(DBConstants.TYPE, employeeData.type);
+        if (!TextUtils.isEmpty(employeeData.id)) {
+            return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, ID + "='" + employeeData.id + "'", null) > 0;
+        } else {
+            contentValues.put(ID, employeeData.id);
+            return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.EMPLOYEE_LOGINID + "='" + employeeData.login_id + "'", null) > 0;
+        }
+    }
+
     public boolean deleteEmployee(String loginID) {
         return db.delete(DBConstants.EMPLOYEES_TABLE, DBConstants.EMPLOYEE_LOGINID + "='" + loginID + "'", null) > 0;
     }
@@ -65,13 +93,13 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     public boolean updateEmployee(String status, String empId) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBConstants.STATUS, status);
-        return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.ID + "='" + empId + "'", null) > 0;
+        return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, ID + "='" + empId + "'", null) > 0;
     }
 
     public boolean addUpdateEmployee(String add_update, String empId) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBConstants.ADD_UPDATE, add_update);
-        return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, DBConstants.ID + "='" + empId + "'", null) > 0;
+        return db.update(DBConstants.EMPLOYEES_TABLE, contentValues, ID + "='" + empId + "'", null) > 0;
     }
 
     public Employee.EmployeeData getParticularEmployee(String empLoginId) {
@@ -99,7 +127,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     employeeData.status = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.STATUS)));
                     employeeData.id = cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.ID));
+                            .getColumnIndexOrThrow(ID));
                     employeeData.admin_id = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ADMIN_ID)));
                     employeeData.create_date = (cursor.getString(cursor
@@ -153,7 +181,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     employeeData.status = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.STATUS)));
                     employeeData.id = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.ID)));
+                            .getColumnIndexOrThrow(ID)));
                     employeeData.admin_id = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ADMIN_ID)));
                     employeeData.create_date = (cursor.getString(cursor
@@ -265,45 +293,63 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public long addCustomer(Customer.CustomerData customerData) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DBConstants.ID, customerData.id);
+        contentValues.put(ID, customerData.id);
         contentValues.put(DBConstants.CUSTOMER_NAME, customerData.username);
-        contentValues.put(DBConstants.CUSTOMER_CONTACT, customerData.mobile_number);
+        contentValues.put(CUSTOMER_CONTACT, customerData.mobile_number);
         contentValues.put(DBConstants.DATE, customerData.date);
         contentValues.put(DBConstants.LOCATION, customerData.location);
         contentValues.put(DBConstants.STATUS, customerData.status);
         contentValues.put(DBConstants.ADMIN_ID, customerData.admin_id);
         contentValues.put(DBConstants.CREATE_DATE, customerData.create_date);
         contentValues.put(DBConstants.UPDATE_DATE, customerData.update_date);
-        return db.insert(DBConstants.CUSTOMERS_TABLE, null, contentValues);
+        return db.insert(CUSTOMERS_TABLE, null, contentValues);
+    }
+
+    public boolean isCustomerIdEmpty(String phone) {
+        String query = "SELECT " + ID + " FROM " + CUSTOMERS_TABLE + " WHERE " + CUSTOMER_CONTACT + " = '" + phone + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String id = cursor.getString(cursor.getColumnIndex(ID));
+            cursor.close();
+            return TextUtils.isEmpty(id);
+        }
+        return true;
     }
 
     public boolean updateCustomer(Customer.CustomerData customerData) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBConstants.CUSTOMER_NAME, customerData.username);
-        contentValues.put(DBConstants.CUSTOMER_CONTACT, customerData.mobile_number);
+        contentValues.put(CUSTOMER_CONTACT, customerData.mobile_number);
         contentValues.put(DBConstants.DATE, customerData.date);
         contentValues.put(DBConstants.LOCATION, customerData.location);
         contentValues.put(DBConstants.STATUS, customerData.status);
         contentValues.put(DBConstants.ADMIN_ID, customerData.admin_id);
         contentValues.put(DBConstants.CREATE_DATE, customerData.create_date);
         contentValues.put(DBConstants.UPDATE_DATE, customerData.update_date);
-        return db.update(DBConstants.CUSTOMERS_TABLE, contentValues, DBConstants.ID + "='" + customerData.id + "'", null) > 0;
+        if (!isCustomerIdEmpty(customerData.mobile_number)) {
+            return db.update(CUSTOMERS_TABLE, contentValues, ID + "='" + customerData.id + "'", null) > 0;
+        } else {
+            contentValues.put(ID, customerData.id);
+            Log.e(TAG, "updateCustomer: "+customerData.id );
+            return db.update(CUSTOMERS_TABLE, contentValues, CUSTOMER_CONTACT + "='" + customerData.mobile_number + "'", null) > 0;
+        }
     }
 
-    public boolean deleteCustomer(String phone) {
-        return db.delete(DBConstants.CUSTOMERS_TABLE, DBConstants.CUSTOMER_CONTACT + "='" + phone + "'", null) > 0;
+    public boolean deleteCustomer(String columnName, String string) {
+        return db.delete(CUSTOMERS_TABLE, columnName + "='" + string + "'", null) > 0;
     }
 
     public boolean updateCustomer(String status, String customerMobile) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBConstants.STATUS, status);
-        return db.update(DBConstants.CUSTOMERS_TABLE, contentValues, DBConstants.CUSTOMER_CONTACT + "='" + customerMobile + "'", null) > 0;
+        return db.update(CUSTOMERS_TABLE, contentValues, CUSTOMER_CONTACT + "='" + customerMobile + "'", null) > 0;
     }
 
     public ArrayList<Customer.CustomerData> getCustomers() {
         Cursor cursor = null;
         try {
-            cursor = db.query(DBConstants.CUSTOMERS_TABLE, null,
+            cursor = db.query(CUSTOMERS_TABLE, null,
                     DBConstants.SNO + "<>?", new String[]{""},
                     null, null, null);
 
@@ -312,11 +358,11 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 do {
                     Customer.CustomerData customerData = new Customer().new CustomerData();
                     customerData.id = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.ID)));
+                            .getColumnIndexOrThrow(ID)));
                     customerData.username = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.CUSTOMER_NAME)));
                     customerData.mobile_number = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.CUSTOMER_CONTACT)));
+                            .getColumnIndexOrThrow(CUSTOMER_CONTACT)));
                     customerData.date = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.DATE)));
                     customerData.location = (cursor.getString(cursor
@@ -361,7 +407,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DBConstants.VENDOR, inventoryData.vendor);
         contentValues.put(DBConstants.BARCODE, inventoryData.barcode);
         contentValues.put(DBConstants.PHOTO, inventoryData.photo);
-        contentValues.put(DBConstants.ID, inventoryData.id);
+        contentValues.put(ID, inventoryData.id);
         contentValues.put(DBConstants.STATUS, inventoryData.status);
         contentValues.put(DBConstants.ADMIN_ID, inventoryData.admin_id);
         contentValues.put(DBConstants.CREATE_DATE, inventoryData.create_date);
@@ -413,7 +459,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     inventoryData.photo = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.PHOTO)));
                     inventoryData.id = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.ID)));
+                            .getColumnIndexOrThrow(ID)));
                     inventoryData.admin_id = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ADMIN_ID)));
                     inventoryData.status = (cursor.getString(cursor
@@ -443,10 +489,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public long addTax(Tax.TaxData taxData) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DBConstants.TAX_TYPE, taxData.taxType);
-        contentValues.put(DBConstants.TAX_DESC, taxData.taxDescription);
-        contentValues.put(DBConstants.TAX_RATE, taxData.taxRate);
-        contentValues.put(DBConstants.ID, taxData.id);
+        contentValues.put(DBConstants.TAX_TYPE, taxData.tax_type);
+        contentValues.put(DBConstants.TAX_DESC, taxData.tax_description);
+        contentValues.put(DBConstants.TAX_RATE, taxData.tax_rate);
+        contentValues.put(ID, taxData.id);
         contentValues.put(DBConstants.ADMIN_ID, taxData.admin_id);
         contentValues.put(DBConstants.STATUS, taxData.status);
         contentValues.put(DBConstants.CREATE_DATE, taxData.create_date);
@@ -456,6 +502,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public boolean deleteTax(String taxType) {
         return db.delete(DBConstants.TAX_TABLE, DBConstants.TAX_TYPE + "='" + taxType + "'", null) > 0;
+    }
+
+    public boolean updateTax(String status, String taxType) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBConstants.STATUS, status);
+        return db.update(DBConstants.TAX_TABLE, contentValues, DBConstants.TAX_TYPE + "='" + taxType + "'", null) > 0;
     }
 
     public ArrayList<Tax.TaxData> getTax() {
@@ -469,14 +521,14 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 List<Tax.TaxData> taxes = new ArrayList<>();
                 do {
                     Tax.TaxData tax = new Tax().new TaxData();
-                    tax.taxType = cursor.getString(cursor
+                    tax.tax_type = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.TAX_TYPE));
-                    tax.taxDescription = cursor.getString(cursor
+                    tax.tax_description = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.TAX_DESC));
-                    tax.taxRate = cursor.getString(cursor
+                    tax.tax_rate = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.TAX_RATE));
                     tax.id = cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.ID));
+                            .getColumnIndexOrThrow(ID));
                     tax.admin_id = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ADMIN_ID));
                     tax.status = cursor.getString(cursor
@@ -507,9 +559,9 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     public long addDiscount(Discount.DiscountData discountData) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBConstants.DISCOUNT_CODE, discountData.discount_code);
-        contentValues.put(DBConstants.DISCOUNT_DESC, discountData.discountDescription);
+        contentValues.put(DBConstants.DISCOUNT_DESC, discountData.discount_description);
         contentValues.put(DBConstants.DISCOUNT_VALUE, discountData.discount);
-        contentValues.put(DBConstants.ID, discountData.id);
+        contentValues.put(ID, discountData.id);
         contentValues.put(DBConstants.ADMIN_ID, discountData.admin_id);
         contentValues.put(DBConstants.STATUS, discountData.status);
         contentValues.put(DBConstants.CREATE_DATE, discountData.create_date);
@@ -534,12 +586,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     Discount.DiscountData discount = new Discount().new DiscountData();
                     discount.discount_code = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.DISCOUNT_CODE));
-                    discount.discountDescription = cursor.getString(cursor
+                    discount.discount_description = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.DISCOUNT_DESC));
                     discount.discount = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.DISCOUNT_VALUE));
                     discount.id = cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.ID));
+                            .getColumnIndexOrThrow(ID));
                     discount.admin_id = cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ADMIN_ID));
                     discount.status = cursor.getString(cursor
@@ -582,7 +634,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DBConstants.VENDOR, inventoryData.vendor);
         contentValues.put(DBConstants.BARCODE, inventoryData.barcode);
         contentValues.put(DBConstants.PHOTO, inventoryData.photo);
-        contentValues.put(DBConstants.ID, inventoryData.id);
+        contentValues.put(ID, inventoryData.id);
         contentValues.put(DBConstants.STATUS, inventoryData.status);
         contentValues.put(DBConstants.ADMIN_ID, inventoryData.admin_id);
         return db.insert(DBConstants.POS_ITEMS_TABLE, null, contentValues);
@@ -591,6 +643,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     public void deletePOSItem(String itemCode, String customerName) {
         String query = "DELETE FROM " + POS_ITEMS_TABLE + " WHERE " + ITEM_CODE + "='" + itemCode + "' AND " + CUSTOMER_NAME + "='" + customerName + "'";
         db.execSQL(query);
+    }
+
+    public void deleteAllPOSItems() {
+        db.execSQL("DELETE FROM " + POS_ITEMS_TABLE);
     }
 
     public void deleteAllCustomerItems(String customerName) {
@@ -639,7 +695,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     inventoryData.photo = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.PHOTO)));
                     inventoryData.id = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DBConstants.ID)));
+                            .getColumnIndexOrThrow(ID)));
                     inventoryData.admin_id = (cursor.getString(cursor
                             .getColumnIndexOrThrow(DBConstants.ADMIN_ID)));
                     inventoryData.status = (cursor.getString(cursor

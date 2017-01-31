@@ -46,17 +46,17 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("update_employee")
-    Call<HashMap<String, String>> updateEmployee(@Field("id") String id, @Field("username") String empName, @Field("password") String password,
-                                                 @Field("mobile_number") String mobileNumber,
-                                                 @Field("login_id") String login_id, @Field("imei_number") String imei_number,
-                                                 @Field("location") String location, @Field("branch") String branch, @Field("status") String status);
+    Call<CreateJob> updateEmployee(@Field("id") String id, @Field("username") String empName, @Field("password") String password,
+                                   @Field("mobile_number") String mobileNumber,
+                                   @Field("login_id") String login_id, @Field("imei_number") String imei_number,
+                                   @Field("location") String location, @Field("branch") String branch, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("create_employee")
-    Call<HashMap<String, String>> addEmployee(@Field("username") String empName, @Field("password") String password,
-                                              @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id,
-                                              @Field("login_id") String login_id, @Field("imei_number") String imei_number,
-                                              @Field("location") String location, @Field("branch") String branch);
+    Call<CreateJob> addEmployee(@Field("username") String empName, @Field("password") String password,
+                                @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id,
+                                @Field("login_id") String login_id, @Field("imei_number") String imei_number,
+                                @Field("location") String location, @Field("branch") String branch);
 
     @FormUrlEncoded
     @POST("admin_customers")
@@ -80,15 +80,15 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("create_vendor")
-    Call<HashMap<String, String>> addVendor(@Field("name") String vendorName,
-                                            @Field("email") String email, @Field("phone") String phone,
-                                            @Field("since") String since, @Field("address") String address, @Field("status") String status, @Field("admin_id") String admin_id);
+    Call<CreateJob> addVendor(@Field("name") String vendorName,
+                              @Field("email") String email, @Field("phone") String phone,
+                              @Field("since") String since, @Field("address") String address, @Field("status") String status, @Field("admin_id") String admin_id);
 
     @FormUrlEncoded
     @POST("update_vendor")
-    Call<HashMap<String, String>> updateVendor(@Field("id") String id, @Field("email") String email,
-                                               @Field("phone") String phone, @Field("since") String since, @Field("status") String status,
-                                               @Field("address") String address, @Field("name") String name);
+    Call<CreateJob> updateVendor(@Field("id") String id, @Field("email") String email,
+                                 @Field("phone") String phone, @Field("since") String since, @Field("status") String status,
+                                 @Field("address") String address, @Field("name") String name);
 
     @FormUrlEncoded
     @POST("admin_vendors")

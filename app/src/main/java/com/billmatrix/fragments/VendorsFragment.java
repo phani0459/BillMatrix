@@ -22,9 +22,12 @@ import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.VendorsAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnItemClickListener;
+import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -158,6 +161,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                     Vendor vendor = response.body();
                     if (vendor.status == 200 && vendor.Vendordata.equalsIgnoreCase("success")) {
                         for (Vendor.VendorData vendorData : vendor.data) {
+                            vendorData.add_update = Constants.DATA_FROM_SERVER;
                             billMatrixDaoImpl.addVendor(vendorData);
                             vendorsAdapter.addVendor(vendorData);
                         }
@@ -224,10 +228,14 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
 
         if (addVendorButton.getText().toString().equalsIgnoreCase("ADD")) {
             vendorData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+            vendorData.add_update = Constants.ADD_OFFLINE;
         } else {
             if (selectedVendortoEdit != null) {
                 vendorData.id = selectedVendortoEdit.id;
                 vendorData.create_date = selectedVendortoEdit.create_date;
+                if (selectedVendortoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                    vendorData.add_update = Constants.UPDATE_OFFLINE;
+                }
             }
         }
 
@@ -257,14 +265,14 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
 
             if (addVendorButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    addVendortoServer(vendorData);
+                    ServerUtils.addVendortoServer(vendorData, mContext, adminId, billMatrixDaoImpl);
                 } else {
                     Utils.showToast("Vendor Added successfully", mContext);
                 }
             } else {
                 if (selectedVendortoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        updateVendortoServer(vendorData);
+                        ServerUtils.updateVendortoServer(vendorData, mContext, billMatrixDaoImpl);
                     } else {
                         Utils.showToast("Vendor Updated successfully", mContext);
                     }
@@ -277,118 +285,6 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         } else {
             Utils.showToast("Vendor Phone must be unique", mContext);
         }
-    }
-
-    public void deleteVendorfromServer(String vendorId) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteVendor(vendorId);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> employeeStatus = response.body();
-                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        if (employeeStatus.get("delete_vendor").equalsIgnoreCase("success")) {
-                            Utils.showToast("Vendor Deleted successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
-    private void addVendortoServer(Vendor.VendorData vendorData) {
-        Log.e(TAG, "addVendortoServer: " + vendorData.toString());
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addVendor(vendorData.name, vendorData.email, vendorData.phone,
-                vendorData.since, vendorData.address, vendorData.status, adminId);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> vendorMap = response.body();
-                    if (vendorMap.get("status").equalsIgnoreCase("200")) {
-                        if (vendorMap.get("create_vendor").equalsIgnoreCase("success")) {
-                            Utils.showToast("Vendor Added successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
-    private void updateVendortoServer(Vendor.VendorData vendorData) {
-        Log.e(TAG, "updateVendortoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateVendor(vendorData.id, vendorData.email, vendorData.phone,
-                vendorData.since, vendorData.status, vendorData.address, vendorData.name);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> vendorMap = response.body();
-                    if (vendorMap.get("status").equalsIgnoreCase("200")) {
-                        if (vendorMap.containsKey("update_vendor") && vendorMap.get("update_vendor").equalsIgnoreCase("Successfully Updated")) {
-                            Utils.showToast("Vendor Updated successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
     }
 
     public void searchClicked(String query) {
@@ -438,10 +334,15 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Vendor", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.updateVendor("-1", vendorsAdapter.getItem(position).phone);
+                        Vendor.VendorData selectedVendor = vendorsAdapter.getItem(position);
+                        if (selectedVendor.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                            billMatrixDaoImpl.updateVendor(DBConstants.STATUS, "-1", selectedVendor.phone);
+                        } else {
+                            billMatrixDaoImpl.deleteVendor(selectedVendor.phone);
+                        }
                         if (Utils.isInternetAvailable(mContext)) {
-                            if (!TextUtils.isEmpty(vendorsAdapter.getItem(position).id)) {
-                                deleteVendorfromServer(vendorsAdapter.getItem(position).id);
+                            if (!TextUtils.isEmpty(selectedVendor.id)) {
+                                ServerUtils.deleteVendorfromServer(selectedVendor, mContext, billMatrixDaoImpl);
                             }
                         } else {
                             Utils.showToast("Vendor Deleted successfully", mContext);

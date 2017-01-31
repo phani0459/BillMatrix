@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.ServerUtils;
@@ -89,6 +90,55 @@ public class DatabaseFragment extends Fragment {
 
     }
 
+    private void syncCustomers() {
+        customersSyncIcon.setImageResource(R.drawable.sync_green);
+
+        ArrayList<Customer.CustomerData> dbCustomers = billMatrixDaoImpl.getCustomers();
+        ArrayList<Customer.CustomerData> deletedCustomers = new ArrayList<>();
+        ArrayList<Customer.CustomerData> addedCustomers = new ArrayList<>();
+        ArrayList<Customer.CustomerData> updatedCustomers = new ArrayList<>();
+
+        if (dbCustomers != null && dbCustomers.size() > 0) {
+            for (Customer.CustomerData customer : dbCustomers) {
+                if (customer.status.equalsIgnoreCase("-1")) {
+                    deletedCustomers.add(customer);
+                }
+
+                if (!TextUtils.isEmpty(customer.add_update)) {
+                    if (customer.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                        addedCustomers.add(customer);
+                    }
+
+                    if (customer.add_update.equalsIgnoreCase(Constants.UPDATE_OFFLINE)) {
+                        updatedCustomers.add(customer);
+                    }
+                }
+            }
+        }
+
+        if (deletedCustomers.size() > 0) {
+            for (int i = 0; i < deletedCustomers.size(); i++) {
+                Customer.CustomerData deletedCustomer = deletedCustomers.get(i);
+                ServerUtils.deleteCustomerfromServer(deletedCustomer, mContext, billMatrixDaoImpl);
+            }
+        }
+
+        if (addedCustomers.size() > 0) {
+            for (int i = 0; i < addedCustomers.size(); i++) {
+                Customer.CustomerData addedCustomer = addedCustomers.get(i);
+                ServerUtils.addCustomertoServer(addedCustomer, mContext, adminId, billMatrixDaoImpl);
+            }
+        }
+
+        if (updatedCustomers.size() > 0) {
+            for (int i = 0; i < updatedCustomers.size(); i++) {
+                Customer.CustomerData updatedCustomer = updatedCustomers.get(i);
+                ServerUtils.updateCustomertoServer(updatedCustomer, mContext, billMatrixDaoImpl);
+            }
+        }
+
+    }
+
     private void syncEmployees() {
 
         employeesSyncIcon.setImageResource(R.drawable.sync_green);
@@ -136,5 +186,7 @@ public class DatabaseFragment extends Fragment {
                 ServerUtils.updateEmployeetoServer(updatedEmp, mContext, billMatrixDaoImpl);
             }
         }
+
+        syncCustomers();
     }
 }

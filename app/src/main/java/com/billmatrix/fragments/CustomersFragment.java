@@ -83,6 +83,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         List<Customer.CustomerData> customers = new ArrayList<>();
+        ServerUtils.setIsSync(false);
 
         customerContactEditText.setFilters(Utils.getInputFilter(10));
 
@@ -157,6 +158,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                     Customer customer = response.body();
                     if (customer.status == 200 && customer.Customerdata.equalsIgnoreCase("success")) {
                         for (Customer.CustomerData customerData : customer.data) {
+                            customerData.add_update = Constants.DATA_FROM_SERVER;
                             billMatrixDaoImpl.addCustomer(customerData);
                             customersAdapter.addCustomer(customerData);
                         }
@@ -223,10 +225,14 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
 
         if (addCustomerBtn.getText().toString().equalsIgnoreCase("ADD")) {
             customerData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+            customerData.add_update = Constants.ADD_OFFLINE;
         } else {
             if (selectedCusttoEdit != null) {
                 customerData.id = selectedCusttoEdit.id;
                 customerData.create_date = selectedCusttoEdit.create_date;
+                if (selectedCusttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                    customerData.add_update = Constants.UPDATE_OFFLINE;
+                }
             }
         }
 
@@ -280,43 +286,6 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
         }
     }
 
-    public void deleteCustomerfromServer(final String customerID) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteCustomer(customerID);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> customerStatus = response.body();
-                    if (customerStatus.get("status").equalsIgnoreCase("200")) {
-                        if (customerStatus.get("delete_customer").equalsIgnoreCase("success")) {
-                            Utils.showToast("Customer Deleted successfully", mContext);
-                            billMatrixDaoImpl.deleteCustomer(DBConstants.ID, customerID);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
     @Override
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
@@ -324,10 +293,15 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Customer", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.updateCustomer("-1", customersAdapter.getItem(position).mobile_number);
+                        Customer.CustomerData selectedCustomer = customersAdapter.getItem(position);
+                        if (selectedCustomer.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                            billMatrixDaoImpl.updateCustomer(DBConstants.STATUS, "-1", customersAdapter.getItem(position).mobile_number);
+                        } else {
+                            billMatrixDaoImpl.deleteCustomer(DBConstants.CUSTOMER_CONTACT, selectedCustomer.mobile_number);
+                        }
                         if (Utils.isInternetAvailable(mContext)) {
                             if (!TextUtils.isEmpty(customersAdapter.getItem(position).id)) {
-                                deleteCustomerfromServer(customersAdapter.getItem(position).id);
+                                ServerUtils.deleteCustomerfromServer(customersAdapter.getItem(position), mContext, billMatrixDaoImpl);
                             }
                         } else {
                             Utils.showToast("Customer Deleted successfully", mContext);

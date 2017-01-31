@@ -30,14 +30,14 @@ class BillMatrixDBHandler extends DBHandler {
             + DBConstants.VENDOR_ADDRESS + " VARCHAR," + DBConstants.PHONE + " VARCHAR UNIQUE,"
             + DBConstants.EMAIL + " VARCHAR," + DBConstants.ID + " VARCHAR," + DBConstants.CREATE_DATE
             + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.LOCATION + " VARCHAR,"
-            + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR" + ")";
+            + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR" + ")";
 
     private final static String CREATE_CUSTOMER_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.CUSTOMERS_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.CUSTOMER_NAME + " VARCHAR," + DBConstants.ID + " VARCHAR," + DBConstants.EMAIL + " VARCHAR,"
             + DBConstants.CUSTOMER_CONTACT + " VARCHAR UNIQUE," + DBConstants.DATE + " VARCHAR," + DBConstants.LOCATION + " VARCHAR,"
             + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR,"
-            + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR" + ")";
+            + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR" + ")";
 
     private final static String CREATE_INVENTORY_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.INVENTORY_TABLE + " (" + DBConstants.SNO

@@ -13,6 +13,7 @@ import android.widget.Spinner;
 
 import com.billmatrix.R;
 import com.billmatrix.adapters.EmployeesAdapter;
+import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
@@ -165,6 +166,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         Utils.hideSoftKeyboard(empName_EditText);
 
         Employee.EmployeeData employeeData = new Employee().new EmployeeData();
+        Employee.EmployeeData employeeFromServer = new Employee().new EmployeeData();
         String empName = empName_EditText.getText().toString();
         String empId = empLoginId_EditText.getText().toString();
         String empPwd = empPwd_EditText.getText().toString();
@@ -218,7 +220,9 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             if (selectedEmptoEdit != null) {
                 employeeData.id = selectedEmptoEdit.id;
                 employeeData.create_date = selectedEmptoEdit.create_date;
-                employeeData.add_update = Constants.UPDATE_OFFLINE;
+                if (selectedEmptoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                    employeeData.add_update = Constants.UPDATE_OFFLINE;
+                }
             }
         }
         employeeData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
@@ -236,7 +240,6 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         long empAdded = billMatrixDaoImpl.addEmployee(employeeData);
 
         if (empAdded != -1) {
-            employeesAdapter.addEmployee(employeeData);
             employeesRecyclerView.smoothScrollToPosition(employeesAdapter.getItemCount());
 
             /**
@@ -250,19 +253,26 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
             if (addEmpButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    ServerUtils.addEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, adminId);
+                    employeeFromServer = ServerUtils.addEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, adminId);
                 } else {
+                    employeeFromServer = employeeData;
                     Utils.showToast("Employee Added successfully", mContext);
                 }
             } else {
                 if (selectedEmptoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl);
+                        employeeFromServer = ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl);
                     } else {
+                        employeeFromServer = employeeData;
                         Utils.showToast("Employee Updated successfully", mContext);
                     }
                 }
             }
+
+            employeeFromServer.location = locationEditText.getText().toString();
+            employeeFromServer.branch = branchAdminEditText.getText().toString();
+
+            employeesAdapter.addEmployee(employeeFromServer);
             addEmpButton.setText(getString(R.string.add));
             isEditing = false;
             isEmployeeAdded = true;
@@ -304,10 +314,15 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 showAlertDialog("Are you sure?", "You want to delete employee", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.updateEmployee("-1", employeesAdapter.getItem(position).id);
+                        Employee.EmployeeData selectedEmp = employeesAdapter.getItem(position);
+                        if (selectedEmp.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                            billMatrixDaoImpl.updateEmployee(DBConstants.STATUS, "-1", selectedEmp.id);
+                        } else {
+                            billMatrixDaoImpl.deleteEmployee(selectedEmp.login_id);
+                        }
                         if (Utils.isInternetAvailable(mContext)) {
-                            if (!TextUtils.isEmpty(employeesAdapter.getItem(position).id)) {
-                                ServerUtils.deleteEmployeefromServer(employeesAdapter.getItem(position), mContext, billMatrixDaoImpl);
+                            if (!TextUtils.isEmpty(selectedEmp.id)) {
+                                ServerUtils.deleteEmployeefromServer(selectedEmp, mContext, billMatrixDaoImpl);
                             }
                         } else {
                             Utils.showToast("Employee Deleted successfully", mContext);

@@ -24,12 +24,12 @@
         "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable\\spinner_black_20_3.png"
     },
     {
-        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\spinner_black_20_5.png",
-        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable\\spinner_black_20_5.png"
-    },
-    {
         "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\spinner_black_20_2.png",
         "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable\\spinner_black_20_2.png"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\spinner_black_20_5.png",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\bundles\\debug\\res\\drawable\\spinner_black_20_5.png"
     },
     {
         "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\icon.png",

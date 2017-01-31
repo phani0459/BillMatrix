@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.billmatrix.R;
@@ -151,13 +152,16 @@ public class StoreFragment extends Fragment {
 
     public void showDiscounts() {
         ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
+        RadioGroup radioGroup = new RadioGroup(mContext);
+        radioGroup.setOrientation(RadioGroup.VERTICAL);
         if (discounts != null && discounts.size() > 0) {
             noDiscountsTextView.setVisibility(View.GONE);
             for (Discount.DiscountData discount : discounts) {
-                CheckBox checkBox = new CheckBox(mContext);
-                checkBox.setText(discount.discount_description);
-                storeDiscountsLayout.addView(checkBox);
+                RadioButton radioButton = new RadioButton(mContext);
+                radioButton.setText(discount.discount_description);
+                radioGroup.addView(radioButton);
             }
+            storeDiscountsLayout.addView(radioGroup);
         } else {
             noDiscountsTextView.setVisibility(View.VISIBLE);
         }

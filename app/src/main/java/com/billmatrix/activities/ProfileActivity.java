@@ -14,10 +14,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
+import com.billmatrix.utils.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.HashMap;
@@ -237,7 +239,7 @@ public class ProfileActivity extends BaseTabActivity {
             return;
         }
 
-        String loginId = loginIdmEditText.getText().toString();
+        final String loginId = loginIdmEditText.getText().toString();
 
         if (TextUtils.isEmpty(loginId)) {
             Utils.showToast("Enter Login Id", mContext);
@@ -320,11 +322,10 @@ public class ProfileActivity extends BaseTabActivity {
         FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(newProfile));
 
         if (Utils.isInternetAvailable(mContext)) {
-            Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateEmployee(profile.data.id, adminName, password, mobile,
+            Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateEmployee(profile.data.id, adminName, password, mobile,
                     loginId, profile.data.imei_number, location, branch, profile.data.status);
 
-            call.enqueue(new Callback<HashMap<String, String>>() {
-
+            call.enqueue(new Callback<CreateJob>() {
 
                 /**
                  * Successful HTTP response.
@@ -332,12 +333,12 @@ public class ProfileActivity extends BaseTabActivity {
                  * @param response server response
                  */
                 @Override
-                public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
                     Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                     if (response.body() != null) {
-                        HashMap<String, String> employeeStatus = response.body();
-                        if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                            if (employeeStatus.containsKey("update_employee") && employeeStatus.get("update_employee").equalsIgnoreCase("Successfully Updated")) {
+                        CreateJob employeeStatus = response.body();
+                        if (employeeStatus.status.equalsIgnoreCase("200")) {
+                            if (!TextUtils.isEmpty(employeeStatus.update_employee) && employeeStatus.update_employee.equalsIgnoreCase("Successfully Updated")) {
                                 Utils.showToast("Profile Updated successfully", mContext);
                             }
                         }
@@ -350,7 +351,7 @@ public class ProfileActivity extends BaseTabActivity {
                  * @param t error
                  */
                 @Override
-                public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                public void onFailure(Call<CreateJob> call, Throwable t) {
                     Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
                 }
             });

@@ -22,6 +22,12 @@ public class Customer implements Serializable {
         public String admin_id;
         public String create_date;
         public String update_date;
+        /**
+         * 0 - if add
+         * 1 - if update
+         * -1 - from server
+         */
+        public String add_update;
 
         @Override
         public String toString() {
@@ -29,7 +35,7 @@ public class Customer implements Serializable {
                     + "\n username=" + username
                     + "\n mobile_number=" + mobile_number + "\n date=" + date
                     + "\n location=" + location + "\n status=" + status
-                    + "\n create_date=" + create_date + "\n update_date=" + update_date;
+                    + "\n create_date=" + create_date + "\n update_date=" + update_date + "\n add_update=" + add_update;
         }
 
     }

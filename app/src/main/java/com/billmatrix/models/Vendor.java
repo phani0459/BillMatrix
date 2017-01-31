@@ -23,6 +23,7 @@ public class Vendor implements Serializable {
         public String email;
         public String create_date;
         public String update_date;
+        public String add_update;
 
         @Override
         public String toString() {
@@ -30,7 +31,7 @@ public class Vendor implements Serializable {
                     + "\n name=" + name
                     + "\n since=" + since + "\n address=" + address
                     + "\n phone=" + phone + "\n status=" + status + "\n email=" + email
-                    + "\n create_date=" + create_date + "\n update_date=" + update_date;
+                    + "\n create_date=" + create_date + "\n update_date=" + update_date + "\n add_update=" + add_update;
         }
 
     }

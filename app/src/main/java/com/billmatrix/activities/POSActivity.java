@@ -147,6 +147,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         if (dbCustomers != null && dbCustomers.size() > 0) {
             for (Customer.CustomerData customer : dbCustomers) {
+                /**
+                 * Show only Customers who are active
+                 */
                 if (customer.status.equalsIgnoreCase("1")) {
                     customerNames.add(customer.username.toUpperCase());
                 }
@@ -859,23 +862,28 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
             if (dbCustomers != null && dbCustomers.size() > 0) {
                 for (Customer.CustomerData customerData : dbCustomers) {
-                    if (customerData.username.toLowerCase().contains(query)) {
-                        Log.e(TAG, "query Searched: " + query);
-                        selectedCustomer = customerData;
+                    /**
+                     * Show customers who are active only
+                     */
+                    if (customerData.status.equalsIgnoreCase("1")) {
+                        if (customerData.username.toLowerCase().contains(query)) {
+                            Log.e(TAG, "query Searched: " + query);
+                            selectedCustomer = customerData;
 
-                        posSearchEditText.setText("");
-                        posSearchEditText.clearFocus();
+                            posSearchEditText.setText("");
+                            posSearchEditText.clearFocus();
 
-                        try {
-                            int customerSelectedPosition = customerSpinnerAdapter.getPosition(customerData.username.toUpperCase());
-                            customersSpinner.setSelection(customerSelectedPosition);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            customersSpinner.setSelection(0);
+                            try {
+                                int customerSelectedPosition = customerSpinnerAdapter.getPosition(customerData.username.toUpperCase());
+                                customersSpinner.setSelection(customerSelectedPosition);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                customersSpinner.setSelection(0);
+                            }
+
+                            loadCustomerDetails();
+
                         }
-
-                        loadCustomerDetails();
-
                     }
                 }
             }

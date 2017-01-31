@@ -13,9 +13,9 @@ public class DBConstants {
      * Common Column Names
      */
     final static String SNO = "SNo";
-    final static String PHONE = "phone";
+    public final static String PHONE = "phone";
     final static String EMAIL = "email";
-    final static String STATUS = "Status";
+    public final static String STATUS = "Status";
     final static String ADMIN_ID = "adminID";
     public final static String ID = "_id";
     final static String IMEI = "imei";
@@ -30,7 +30,7 @@ public class DBConstants {
      * 1 - if update
      * -1 - from server
      */
-    final static String ADD_UPDATE = "add_or_update";
+    public final static String ADD_UPDATE = "add_or_update";
 
 
     final static String EMPLOYEES_TABLE = "TABLE_EMPLOYEES";

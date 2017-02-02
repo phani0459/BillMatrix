@@ -19,10 +19,7 @@ import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
-import com.billmatrix.utils.ServerUtils;
 import com.billmatrix.utils.Utils;
-
-import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;

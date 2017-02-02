@@ -1,4 +1,4 @@
-package com.billmatrix.utils;
+package com.billmatrix.network;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -10,6 +10,8 @@ import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Vendor;
+import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.Utils;
 
 import java.util.HashMap;
 
@@ -24,6 +26,16 @@ import retrofit2.Response;
 public class ServerUtils {
 
     private static final String TAG = ServerUtils.class.getSimpleName();
+
+    public static boolean isSync() {
+        return isSync;
+    }
+
+    public static void setIsSync(boolean isSync) {
+        ServerUtils.isSync = isSync;
+    }
+
+    private static boolean isSync;
 
     /*********************************************************************
      ***************************  CUSTOMERS  *****************************
@@ -240,16 +252,6 @@ public class ServerUtils {
 
         return employeeData;
     }
-
-    public static boolean isSync() {
-        return isSync;
-    }
-
-    public static void setIsSync(boolean isSync) {
-        ServerUtils.isSync = isSync;
-    }
-
-    private static boolean isSync;
 
     public static void deleteEmployeefromServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteEmployee(employeeData.id);
@@ -470,13 +472,10 @@ public class ServerUtils {
             public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
                 Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                 if (response.body() != null) {
-                    HashMap<String, String> employeeStatus = response.body();
-                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        if (employeeStatus.get("delete_vendor").equalsIgnoreCase("success")) {
-                            if (!isSync) Utils.showToast("Vendor Deleted successfully", mContext);
-
-                            billMatrixDaoImpl.deleteVendor(vendorData.phone);
-                        }
+                    HashMap<String, String> vendorStatus = response.body();
+                    if (vendorStatus.get("status").equalsIgnoreCase("200")) {
+                        if (!isSync) Utils.showToast("Vendor Deleted successfully", mContext);
+                        billMatrixDaoImpl.deleteVendor(vendorData.phone);
                     }
                 }
             }

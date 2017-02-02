@@ -21,5 +21,6 @@ public class Tax implements Serializable {
         public String status;
         public String create_date;
         public String update_date;
+        public String add_update;
     }
 }

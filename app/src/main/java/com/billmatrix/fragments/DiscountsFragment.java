@@ -19,8 +19,10 @@ import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.DiscountAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Discount;
+import com.billmatrix.network.ServerData;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -38,7 +40,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DiscountsFragment extends Fragment implements OnItemClickListener {
+public class DiscountsFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
     private static final String TAG = DiscountsFragment.class.getSimpleName();
     private Context mContext;
@@ -97,8 +99,8 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
         discountAdapter = new DiscountAdapter(mContext, discounts, this);
         discountsRecyclerView.setAdapter(discountAdapter);
 
-        discounts = billMatrixDaoImpl.getDiscount();
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        discounts = billMatrixDaoImpl.getDiscount();
 
         if (discounts != null && discounts.size() > 0) {
             for (Discount.DiscountData discountData : discounts) {
@@ -119,39 +121,26 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener {
 
     private void getDiscountsFromServer(String adminId) {
         Log.e(TAG, "getDiscountsFromServer: ");
-        Call<Discount> call = Utils.getBillMatrixAPI(mContext).getAdminDiscounts(adminId);
+        ServerData serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+        serverData.getDiscountsFromServer(adminId);
+    }
 
-        call.enqueue(new Callback<Discount>() {
+    @Override
+    public void onDataFetch(int dataFetched) {
+        ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
 
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<Discount> call, Response<Discount> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
-                if (response.body() != null) {
-                    Discount discount = response.body();
-                    if (discount.status == 200 && discount.Discountdata.equalsIgnoreCase("success")) {
-                        for (Discount.DiscountData discountData : discount.data) {
-                            billMatrixDaoImpl.addDiscount(discountData);
-                            discountAdapter.addDiscount(discountData);
-                        }
-                    }
+        if (discounts != null && discounts.size() > 0) {
+            for (Discount.DiscountData discountData : discounts) {
+                if (!discountData.status.equalsIgnoreCase("-1")) {
+                    discountAdapter.addDiscount(discountData);
                 }
             }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<Discount> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
+        }
     }
 
     private void addDiscounttoServer(Discount.DiscountData discountData) {

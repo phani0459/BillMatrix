@@ -22,8 +22,10 @@ import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.TaxAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Tax;
+import com.billmatrix.network.ServerData;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -41,7 +43,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TaxFragment extends Fragment implements OnItemClickListener {
+public class TaxFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
     private static final String TAG = TaxFragment.class.getSimpleName();
     private Context mContext;
@@ -100,8 +102,8 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
         taxAdapter = new TaxAdapter(taxes, this, mContext);
         taxTypeRecyclerView.setAdapter(taxAdapter);
 
-        taxes = billMatrixDaoImpl.getTax();
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        taxes = billMatrixDaoImpl.getTax();
 
         if (taxes != null && taxes.size() > 0) {
             for (Tax.TaxData taxData : taxes) {
@@ -122,39 +124,26 @@ public class TaxFragment extends Fragment implements OnItemClickListener {
 
     private void getTaxesFromServer(String adminId) {
         Log.e(TAG, "getTaxesFromServer: ");
-        Call<Tax> call = Utils.getBillMatrixAPI(mContext).getAdminTaxes(adminId);
+        ServerData serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+        serverData.getTaxesFromServer(adminId);
+    }
 
-        call.enqueue(new Callback<Tax>() {
+    @Override
+    public void onDataFetch(int dataFetched) {
+        ArrayList<Tax.TaxData> taxes = billMatrixDaoImpl.getTax();
 
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<Tax> call, Response<Tax> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
-                if (response.body() != null) {
-                    Tax tax = response.body();
-                    if (tax.status == 200 && tax.Taxdata.equalsIgnoreCase("success")) {
-                        for (Tax.TaxData taxData : tax.data) {
-                            billMatrixDaoImpl.addTax(taxData);
-                            taxAdapter.addTax(taxData, true);
-                        }
-                    }
+        if (taxes != null && taxes.size() > 0) {
+            for (Tax.TaxData taxData : taxes) {
+                if (!taxData.status.equalsIgnoreCase("-1")) {
+                    taxAdapter.addTax(taxData, addTaxButton.getText().toString().equalsIgnoreCase("ADD"));
                 }
             }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<Tax> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
+        }
     }
 
     @Override

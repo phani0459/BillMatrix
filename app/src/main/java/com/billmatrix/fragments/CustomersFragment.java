@@ -23,14 +23,15 @@ import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.CustomersAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
+import com.billmatrix.network.ServerData;
 import com.billmatrix.utils.Constants;
-import com.billmatrix.utils.ServerUtils;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -40,7 +41,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CustomersFragment extends Fragment implements OnItemClickListener {
+public class CustomersFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
     private static final String TAG = CustomersFragment.class.getSimpleName();
 
@@ -142,40 +143,26 @@ public class CustomersFragment extends Fragment implements OnItemClickListener {
 
     private void getCustomersFromServer(String adminId) {
         Log.e(TAG, "getCustomersFromServer: ");
-        Call<Customer> call = Utils.getBillMatrixAPI(mContext).getAdminCustomers(adminId);
+        ServerData serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+        serverData.getCustomersFromServer(adminId);
+    }
 
-        call.enqueue(new Callback<Customer>() {
+    @Override
+    public void onDataFetch(int dataFetched) {
+        ArrayList<Customer.CustomerData> customers = billMatrixDaoImpl.getCustomers();
 
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<Customer> call, Response<Customer> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
-                if (response.body() != null) {
-                    Customer customer = response.body();
-                    if (customer.status == 200 && customer.Customerdata.equalsIgnoreCase("success")) {
-                        for (Customer.CustomerData customerData : customer.data) {
-                            customerData.add_update = Constants.DATA_FROM_SERVER;
-                            billMatrixDaoImpl.addCustomer(customerData);
-                            customersAdapter.addCustomer(customerData);
-                        }
-                    }
+        if (customers != null && customers.size() > 0) {
+            for (Customer.CustomerData customerData : customers) {
+                if (!customerData.status.equalsIgnoreCase("-1")) {
+                    customersAdapter.addCustomer(customerData);
                 }
             }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<Customer> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
+        }
     }
 
     public boolean isCustomerAdded;

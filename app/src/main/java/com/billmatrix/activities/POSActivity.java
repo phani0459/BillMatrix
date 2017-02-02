@@ -41,7 +41,7 @@ import com.billmatrix.models.Customer;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
-import com.billmatrix.utils.ServerUtils;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Utils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;

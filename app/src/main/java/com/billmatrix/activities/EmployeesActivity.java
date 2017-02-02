@@ -14,12 +14,14 @@ import android.widget.Spinner;
 import com.billmatrix.R;
 import com.billmatrix.adapters.EmployeesAdapter;
 import com.billmatrix.database.DBConstants;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
+import com.billmatrix.network.ServerData;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
-import com.billmatrix.utils.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -27,15 +29,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by KANDAGATLAs on 23-10-2016.
  */
 
-public class EmployeesActivity extends BaseTabActivity implements OnItemClickListener {
+public class EmployeesActivity extends BaseTabActivity implements OnItemClickListener, OnDataFetchListener {
 
     private static final String TAG = EmployeesActivity.class.getSimpleName();
     @BindView(R.id.employees)
@@ -119,43 +118,28 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         }
     }
 
-    public void getEmployeesFromServer(String loginId) {
+    public void getEmployeesFromServer(String adminId) {
         Log.e(TAG, "getEmployeesFromServer: ");
-        Call<Employee> call = Utils.getBillMatrixAPI(mContext).getAdminEmployees(loginId);
+        ServerData serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+        serverData.getEmployeesFromServer(adminId);
+    }
 
-        call.enqueue(new Callback<Employee>() {
+    @Override
+    public void onDataFetch(int dataFetched) {
+        ArrayList<Employee.EmployeeData> employees = billMatrixDaoImpl.getEmployees();
 
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<Employee> call, Response<Employee> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
-                if (response.body() != null) {
-                    Employee employee = response.body();
-                    if (employee.status == 200 && employee.employeedata.equalsIgnoreCase("success")) {
-                        for (Employee.EmployeeData employeeData : employee.data) {
-                            employeeData.add_update = Constants.DATA_FROM_SERVER;
-                            billMatrixDaoImpl.addEmployee(employeeData);
-                            employeesAdapter.addEmployee(employeeData);
-                        }
-                    }
+        if (employees != null && employees.size() > 0) {
+            for (Employee.EmployeeData employeeData : employees) {
+                if (!employeeData.status.equalsIgnoreCase("-1")) {
+                    employeesAdapter.addEmployee(employeeData);
                 }
             }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<Employee> call, Throwable t) {
-                t.printStackTrace();
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
+        }
     }
 
     public boolean isEmployeeAdded;

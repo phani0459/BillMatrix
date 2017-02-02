@@ -23,15 +23,15 @@ import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.VendorsAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Vendor;
+import com.billmatrix.network.ServerData;
 import com.billmatrix.utils.Constants;
-import com.billmatrix.utils.ServerUtils;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,7 +44,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class VendorsFragment extends Fragment implements OnItemClickListener {
+public class VendorsFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
 
     private static final String TAG = VendorsFragment.class.getSimpleName();
@@ -143,43 +143,28 @@ public class VendorsFragment extends Fragment implements OnItemClickListener {
         }
     }
 
-    private void getVendorsFromServer(String loginId) {
+    private void getVendorsFromServer(String adminId) {
         Log.e(TAG, "getVendorsFromServer: ");
-        Call<Vendor> call = Utils.getBillMatrixAPI(mContext).getAdminVendors(loginId);
+        ServerData serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+        serverData.getVendorsFromServer(adminId);
+    }
 
-        call.enqueue(new Callback<Vendor>() {
+    @Override
+    public void onDataFetch(int dataFetched) {
+        ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
 
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<Vendor> call, Response<Vendor> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
-                if (response.body() != null) {
-                    Vendor vendor = response.body();
-                    if (vendor.status == 200 && vendor.Vendordata.equalsIgnoreCase("success")) {
-                        for (Vendor.VendorData vendorData : vendor.data) {
-                            vendorData.add_update = Constants.DATA_FROM_SERVER;
-                            billMatrixDaoImpl.addVendor(vendorData);
-                            vendorsAdapter.addVendor(vendorData);
-                        }
-                    }
+        if (vendors != null && vendors.size() > 0) {
+            for (Vendor.VendorData vendorData : vendors) {
+                if (!vendorData.status.equalsIgnoreCase("-1")) {
+                    vendorsAdapter.addVendor(vendorData);
                 }
             }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<Vendor> call, Throwable t) {
-                t.printStackTrace();
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
+        }
     }
 
     private boolean isVendroAdded;

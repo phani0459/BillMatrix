@@ -30,6 +30,7 @@ public class Inventory implements Serializable {
         public String status;
         public String create_date;
         public String update_date;
+        public String add_update;
         public String customerName;
     }
 }

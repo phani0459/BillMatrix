@@ -37,9 +37,11 @@ import com.billmatrix.WorkService;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.InventoryAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Vendor;
+import com.billmatrix.network.ServerData;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 import com.lvrenyang.pos.Cmd;
@@ -64,7 +66,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class InventoryFragment extends Fragment implements OnItemClickListener {
+public class InventoryFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
     private static final String TAG = InventoryFragment.class.getSimpleName();
     private Context mContext;
@@ -251,39 +253,26 @@ public class InventoryFragment extends Fragment implements OnItemClickListener {
 
     private void getInventoryFromServer(String adminId) {
         Log.e(TAG, "getInventoryFromServer: ");
-        Call<Inventory> call = Utils.getBillMatrixAPI(mContext).getAdminInventory(adminId);
+        ServerData serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+        serverData.getInventoryFromServer(adminId);
+    }
 
-        call.enqueue(new Callback<Inventory>() {
+    @Override
+    public void onDataFetch(int dataFetched) {
+        ArrayList<Inventory.InventoryData> inventoryDatas = billMatrixDaoImpl.getInventory();
 
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<Inventory> call, Response<Inventory> response) {
-                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
-                if (response.body() != null) {
-                    Inventory inventory = response.body();
-                    if (inventory.status == 200 && inventory.InventoryData.equalsIgnoreCase("success")) {
-                        for (Inventory.InventoryData inventoryData : inventory.data) {
-                            billMatrixDaoImpl.addInventory(inventoryData);
-                            inventoryAdapter.addInventory(inventoryData);
-                        }
-                    }
+        if (inventoryDatas != null && inventoryDatas.size() > 0) {
+            for (Inventory.InventoryData inventoryData : inventoryDatas) {
+                if (!inventoryData.status.equalsIgnoreCase("-1")) {
+                    inventoryAdapter.addInventory(inventoryData);
                 }
             }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<Inventory> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
+        }
     }
 
     private boolean isInventoryAdded;

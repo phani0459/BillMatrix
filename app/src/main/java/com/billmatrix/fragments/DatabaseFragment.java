@@ -13,10 +13,11 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
 import com.billmatrix.utils.Constants;
-import com.billmatrix.utils.ServerUtils;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DatabaseFragment extends Fragment {
+public class DatabaseFragment extends Fragment implements OnDataFetchListener {
 
     private static final String TAG = DatabaseFragment.class.getSimpleName();
     private Context mContext;
@@ -188,5 +189,34 @@ public class DatabaseFragment extends Fragment {
         }
 
         syncCustomers();
+    }
+
+    /**
+     * Sequence to fetch data from server
+     * Employees - 0
+     * Customers - 1
+     * Vendors - 2
+     * Inventory - 3
+     * Tax - 4
+     * Discounts - 5
+     */
+    @Override
+    public void onDataFetch(int dataFetched) {
+        switch (dataFetched) {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+        }
     }
 }

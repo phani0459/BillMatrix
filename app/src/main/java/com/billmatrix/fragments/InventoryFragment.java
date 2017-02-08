@@ -152,7 +152,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         barCodeEditText.setFilters(Utils.getInputFilter(12));
 
         dateEditText.setInputType(InputType.TYPE_NULL);
-        final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, false);
+        final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true);
 
         dateEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -708,7 +708,6 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
     /**
      * Printer Code
      */
-
     public void printBarcode() {
         if (WorkService.workThread != null && WorkService.workThread.isConnected()) {
             Log.e(TAG, "printBarcode: " + selectedInventorytoEdit.barcode);
@@ -726,6 +725,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         }
     }
 
+    /**
+     * Printer Code
+     *
+     * @param v
+     */
     @OnClick(R.id.btn_prnt_bar_code)
     public void enableBluetooth(View v) {
         searchingDialog = Utils.getProgressDialog(mContext, "Searching...");

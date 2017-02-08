@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.DrawableClickListener;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
@@ -55,6 +56,7 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
 
         ButterKnife.bind(this);
         Fresco.initialize(getApplicationContext());
+        ServerUtils.setOnDataChangeListener(null);
 
         mContext = this;
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);

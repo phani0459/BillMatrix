@@ -37,9 +37,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CustomersFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
@@ -247,7 +244,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
 
             if (addCustomerBtn.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    customerFromServer = ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl);
+                    customerFromServer = ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl, false);
                 } else {
                     customerFromServer = customerData;
                     Utils.showToast("Customer Added successfully", mContext);
@@ -255,7 +252,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
             } else {
                 if (selectedCusttoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        customerFromServer = ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl);
+                        customerFromServer = ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl, false);
                     } else {
                         customerFromServer = customerData;
                         Utils.showToast("Customer Updated successfully", mContext);
@@ -288,7 +285,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                         }
                         if (Utils.isInternetAvailable(mContext)) {
                             if (!TextUtils.isEmpty(customersAdapter.getItem(position).id)) {
-                                ServerUtils.deleteCustomerfromServer(customersAdapter.getItem(position), mContext, billMatrixDaoImpl);
+                                ServerUtils.deleteCustomerfromServer(customersAdapter.getItem(position), mContext, billMatrixDaoImpl, false);
                             }
                         } else {
                             Utils.showToast("Customer Deleted successfully", mContext);

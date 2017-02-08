@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Discount;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Utils;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -93,6 +95,8 @@ public class StoreFragment extends Fragment {
     public SimpleDraweeView headerLogoDraweeView;
     @BindView(R.id.rbtn_thnk_footer)
     public RadioButton thankYouFooterRadioButton;
+    @BindView(R.id.rbth_discount_footer)
+    public RadioButton discountFooterRadioButton;
     @BindView(R.id.ll_store_discounts)
     public LinearLayout storeDiscountsLayout;
     @BindView(R.id.tv_no_discounts)
@@ -101,6 +105,8 @@ public class StoreFragment extends Fragment {
     public EditText thankFooterEditText;
     @BindView(R.id.im_save_thank_footer_details)
     public ImageButton saveThankFooterButton;
+    @BindView(R.id.view_discount_disable)
+    public View discountDisableView;
 
     private static StoreFragment storeFragment;
 
@@ -125,6 +131,7 @@ public class StoreFragment extends Fragment {
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        ServerUtils.setOnDataChangeListener(null);
 
         zipCodeEditText.setFilters(Utils.getInputFilter(6));
         phoneEditText.setFilters(Utils.getInputFilter(10));
@@ -134,6 +141,29 @@ public class StoreFragment extends Fragment {
         showDiscounts();
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        discountFooterRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    discountDisableView.setVisibility(View.GONE);
+                    thankYouFooterRadioButton.setChecked(false);
+                }
+            }
+        });
+        thankYouFooterRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    discountDisableView.setVisibility(View.VISIBLE);
+                    discountFooterRadioButton.setChecked(false);
+                }
+            }
+        });
     }
 
     @OnClick(R.id.im_edit_thank_footer_details)

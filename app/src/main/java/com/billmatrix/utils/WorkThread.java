@@ -336,6 +336,7 @@ public class WorkThread extends Thread {
                     Bitmap mBitmap = (Bitmap) data.getParcelable(Global.PARCE1);
                     int nWidth = data.getInt(Global.INTPARA1);
                     int nMode = data.getInt(Global.INTPARA2);
+                    int feedLines = data.getInt(Global.INTPARA3);
                     byte[] precbuf = new byte[1];
                     int timeout = 1000;
                     boolean result = Pos.POS_QueryStatus(precbuf, timeout);
@@ -343,6 +344,9 @@ public class WorkThread extends Thread {
                             .obtainMessage(Global.CMD_POS_PRINTPICTURERESULT);
                     if (result) {
                         Pos.POS_PrintPicture(mBitmap, nWidth, nMode);
+                        for (int i = 0; i < feedLines; i++) {
+                            Pos.POS_FeedLine();
+                        }
                         if (Pos.POS_QueryStatus(precbuf, timeout))
                             smsg.arg1 = 1;
                         else

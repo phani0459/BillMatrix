@@ -42,9 +42,10 @@ public class Constants {
      */
     public static String PROFILE_FILE_NAME = "ProfileModel";
     public static String EMPLOYEE_FILE_NAME = "Employee_Profile";
-    public static Gson gson;
-    public static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
-    public static String dateFormat = "dd-MM-yyyy";
+    private static Gson gson;
+    private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+    private static String dateFormat = "dd-MM-yyyy";
+    private static String timeFormat = "HH:mm:ss";
 
     /**
      * 0 - if add
@@ -65,8 +66,8 @@ public class Constants {
         return gson;
     }
 
-    public static SimpleDateFormat simpleDateFormat;
-    public static SimpleDateFormat simpleDateTimeFormat;
+    private static SimpleDateFormat simpleDateFormat, simpleTimeFormat;
+    private static SimpleDateFormat simpleDateTimeFormat;
 
     public static SimpleDateFormat getDateTimeFormat() {
         if (simpleDateTimeFormat == null) {
@@ -80,6 +81,13 @@ public class Constants {
             simpleDateFormat = new SimpleDateFormat(Constants.dateFormat, Locale.getDefault());
         }
         return simpleDateFormat;
+    }
+
+    public static SimpleDateFormat getTimeFormat() {
+        if (simpleTimeFormat == null) {
+            simpleTimeFormat = new SimpleDateFormat(Constants.timeFormat, Locale.getDefault());
+        }
+        return simpleTimeFormat;
     }
 
     public static Type hashMapType = new TypeToken<HashMap<String, String>>() {

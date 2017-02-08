@@ -95,6 +95,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.delete(EMPLOYEES_TABLE, EMPLOYEE_LOGINID + "='" + loginID + "'", null) > 0;
     }
 
+    public void deleteAllEmployees() {
+        db.delete(EMPLOYEES_TABLE, null, null);
+    }
+
     public boolean updateEmployee(String columnName, String status, String empId) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(columnName, status);
@@ -227,6 +231,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(ADD_UPDATE, vendorData.add_update);
         contentValues.put(CREATE_DATE, vendorData.create_date);
         contentValues.put(UPDATE_DATE, vendorData.update_date);
+        contentValues.put(ADD_UPDATE, vendorData.add_update);
 
         return db.insert(VENDORS_TABLE, null, contentValues);
     }
@@ -254,6 +259,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(ADD_UPDATE, vendorData.add_update);
         contentValues.put(CREATE_DATE, vendorData.create_date);
         contentValues.put(UPDATE_DATE, vendorData.update_date);
+        contentValues.put(ADD_UPDATE, vendorData.add_update);
 
         if (!isVendorIdEmpty(vendorData.phone)) {
             return db.update(VENDORS_TABLE, contentValues, ID + "='" + vendorData.id + "'", null) > 0;
@@ -261,6 +267,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             contentValues.put(ID, vendorData.id);
             return db.update(VENDORS_TABLE, contentValues, PHONE + "='" + vendorData.phone + "'", null) > 0;
         }
+    }
+
+    public void deleteAllVendors() {
+        db.delete(VENDORS_TABLE, null, null);
     }
 
     private boolean isVendorIdEmpty(String phone) {
@@ -308,6 +318,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(CREATE_DATE)));
                     vendorData.update_date = (cursor.getString(cursor
                             .getColumnIndexOrThrow(UPDATE_DATE)));
+                    vendorData.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
                     vendors.add(vendorData);
                 } while (cursor.moveToNext());
 
@@ -352,6 +364,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             return TextUtils.isEmpty(id);
         }
         return true;
+    }
+
+    public void deleteAllCustomers() {
+        db.delete(CUSTOMERS_TABLE, null, null);
     }
 
     public boolean updateCustomer(Customer.CustomerData customerData) {
@@ -451,6 +467,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(ADMIN_ID, inventoryData.admin_id);
         contentValues.put(CREATE_DATE, inventoryData.create_date);
         contentValues.put(UPDATE_DATE, inventoryData.update_date);
+        contentValues.put(ADD_UPDATE, inventoryData.add_update);
         return db.insert(INVENTORY_TABLE, null, contentValues);
     }
 
@@ -507,6 +524,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(CREATE_DATE)));
                     inventoryData.update_date = (cursor.getString(cursor
                             .getColumnIndexOrThrow(UPDATE_DATE)));
+                    inventoryData.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
                     inventories.add(inventoryData);
                 } while (cursor.moveToNext());
 
@@ -536,6 +555,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(STATUS, taxData.status);
         contentValues.put(CREATE_DATE, taxData.create_date);
         contentValues.put(UPDATE_DATE, taxData.update_date);
+        contentValues.put(ADD_UPDATE, taxData.add_update);
         return db.insert(TAX_TABLE, null, contentValues);
     }
 
@@ -570,6 +590,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(ID));
                     tax.admin_id = cursor.getString(cursor
                             .getColumnIndexOrThrow(ADMIN_ID));
+                    tax.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
                     tax.status = cursor.getString(cursor
                             .getColumnIndexOrThrow(STATUS));
                     tax.update_date = cursor.getString(cursor
@@ -605,6 +627,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(STATUS, discountData.status);
         contentValues.put(CREATE_DATE, discountData.create_date);
         contentValues.put(UPDATE_DATE, discountData.update_date);
+        contentValues.put(ADD_UPDATE, discountData.add_update);
         return db.insert(DISCOUNT_TABLE, null, contentValues);
     }
 
@@ -635,6 +658,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(ADMIN_ID));
                     discount.status = cursor.getString(cursor
                             .getColumnIndexOrThrow(STATUS));
+                    discount.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
                     discount.update_date = cursor.getString(cursor
                             .getColumnIndexOrThrow(UPDATE_DATE));
                     discount.create_date = cursor.getString(cursor
@@ -700,6 +725,9 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     }
 
     public ArrayList<Inventory.InventoryData> getPOSItem(String customerName) {
+        if (customerName == null) {
+            return null;
+        }
         Cursor cursor = null;
         try {
             String query = "SELECT * FROM " + POS_ITEMS_TABLE + " WHERE " + CUSTOMER_NAME + " = '" + customerName + "'";

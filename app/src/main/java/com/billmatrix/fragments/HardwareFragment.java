@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.WorkService;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Global;
 import com.billmatrix.utils.WorkThread;
 
@@ -41,6 +42,7 @@ public class HardwareFragment extends Fragment {
         ButterKnife.bind(this, v);
 
         mContext = getActivity();
+        ServerUtils.setOnDataChangeListener(null);
 
         if (WorkService.workThread != null) {
             if (WorkService.workThread.getDeviceAddress() != null) {

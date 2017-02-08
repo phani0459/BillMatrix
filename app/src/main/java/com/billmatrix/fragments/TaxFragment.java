@@ -26,6 +26,7 @@ import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Tax;
 import com.billmatrix.network.ServerData;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -92,6 +93,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        ServerUtils.setOnDataChangeListener(null);
 
         taxSpinnerAdapter = Utils.loadSpinner(taxTypeSpinner, mContext, R.array.tax_type_array);
 

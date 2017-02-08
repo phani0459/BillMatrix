@@ -1,11 +1,21 @@
 package com.billmatrix.activities;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +23,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -31,20 +42,25 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.billmatrix.R;
+import com.billmatrix.WorkService;
 import com.billmatrix.adapters.POSInventoryAdapter;
 import com.billmatrix.adapters.POSItemAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
-import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Utils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.lvrenyang.utils.DataUtils;
+
+import org.zirco.myprinter.Global;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +139,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private ArrayMap<String, Float> selectedtaxes;
     private int guestCustomerCount;
 
+    private BluetoothAdapter adapter;
+    private BroadcastReceiver broadcastReceiver;
+    private ProgressDialog connectingProgressDialog;
+    private MHandler mHandler;
+    private ProgressDialog searchingDialog;
+    private static final int BLUETOOTH_ENABLE_REQUEST_ID = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,6 +158,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         dbCustomers = new ArrayList<>();
         guestCustomerCount = 1;
+        connectingProgressDialog = Utils.getProgressDialog(mContext, "");
 
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
@@ -198,16 +222,23 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         taxValueTextView.setText(" " + "0.00" + "/-");
 
         tabsLayout.addView(buttonLayout);
+
+        /**
+         * Printer Code
+         */
+
+        mHandler = new MHandler();
+        WorkService.addHandler(mHandler);
+        initBroadcast();
+
+        if (null == WorkService.workThread) {
+            Intent intent = new Intent(mContext, WorkService.class);
+            mContext.startService(intent);
+        }
     }
 
     @OnClick(R.id.rl_pos_cust_edit)
     public void showCustomerDetailsDialog() {
-        if (selectedCustomer == null) {
-            if (!isGuestCustomerSelected) {
-                return;
-            }
-        }
-
         final Dialog dialog = new Dialog(mContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_pos_customer_details);
@@ -216,22 +247,43 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         final String previousCustomerName;
         final EditText customerUserName = (EditText) dialog.findViewById(R.id.et_pos_cust_name);
         final EditText customerMobile = (EditText) dialog.findViewById(R.id.et_pos_cust_mobile);
-        EditText customerEmail = (EditText) dialog.findViewById(R.id.et_pos_cust_email);
+        final EditText customerDate = (EditText) dialog.findViewById(R.id.et_pos_cust_date);
         final EditText customerLocation = (EditText) dialog.findViewById(R.id.et_pos_cust_location);
+        final TextView customerTitle = (TextView) dialog.findViewById(R.id.dialog_customer_title);
 
         Button editCustomerButton = (Button) dialog.findViewById(R.id.btn_edit_add_customer);
         Button close = (Button) dialog.findViewById(R.id.btn_close_cust_details_dialog);
 
+        customerDate.setInputType(InputType.TYPE_NULL);
+        final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate, true);
+
+        customerDate.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!datePickerDialog.isShowing()) {
+                    Utils.hideSoftKeyboard(customerDate);
+                    datePickerDialog.show();
+                }
+                return false;
+            }
+        });
+
         if (selectedCustomer != null) {
-            customerEmail.setText("");
+            customerDate.setText(selectedCustomer.date);
             customerLocation.setText(selectedCustomer.location);
             customerUserName.setText(selectedCustomer.username);
             customerMobile.setText(selectedCustomer.mobile_number);
             previousCustomerName = selectedCustomer.username;
+            customerTitle.setText("EDIT CUSTOMER");
             editCustomerButton.setText(getString(R.string.save));
         } else {
+            customerTitle.setText(getString(R.string.add_new_customer));
             previousCustomerName = "";
             editCustomerButton.setText(getString(R.string.add));
+
+            if (isGuestCustomerSelected) {
+                customerTitle.setText("ADD GUEST CUSTOMER");
+            }
         }
 
         close.setOnClickListener(new View.OnClickListener() {
@@ -284,6 +336,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     return;
                 }
 
+                editedCustomerData.date = customerDate.getText().toString();
                 editedCustomerData.location = customerLocationS;
                 editedCustomerData.username = customerName;
                 editedCustomerData.mobile_number = customerContact;
@@ -304,7 +357,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         if (isCustomerUpdated) {
             if (Utils.isInternetAvailable(mContext)) {
-                ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl);
+                ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl, false);
             } else {
                 Utils.showToast("Customer Updated successfully", mContext);
             }
@@ -335,7 +388,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         if (customerAdded != -1) {
             if (Utils.isInternetAvailable(mContext)) {
-                ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl);
+                ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl, false);
             } else {
                 Utils.showToast("Customer Updated successfully", mContext);
             }
@@ -368,6 +421,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
     public boolean isPaymentTypeClicked;
+    String paymentType;
 
     @OnClick(R.id.btn_credit)
     public void credit(View v) {
@@ -383,6 +437,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         cashCardButton.setBackgroundResource(R.drawable.button_enable);
         v.setBackgroundResource(R.drawable.credit_button);
         creditButtonClicked = true;
+        paymentType = "Credit";
     }
 
     @OnClick(R.id.btn_cash_or_card)
@@ -396,6 +451,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         isPaymentTypeClicked = true;
         creditButton.setBackgroundResource(R.drawable.button_enable);
         v.setBackgroundResource(R.drawable.green_button);
+        paymentType = "Cash";
     }
 
     boolean creditButtonClicked = false;
@@ -452,6 +508,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 cashButton.setBackgroundResource(R.drawable.button_disable);
                 creditButton.setBackgroundResource(R.drawable.orange_button);
                 cardButton.setBackgroundResource(R.drawable.button_disable);
+                paymentType = "Credit";
             }
         });
 
@@ -463,6 +520,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 cashButton.setBackgroundResource(R.drawable.button_disable);
                 creditButton.setBackgroundResource(R.drawable.button_disable);
                 creditButtonClicked = false;
+                paymentType = "Card";
             }
         });
 
@@ -475,6 +533,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 cardButton.setBackgroundResource(R.drawable.button_disable);
                 creditButton.setBackgroundResource(R.drawable.button_disable);
                 creditButtonClicked = false;
+                paymentType = "Cash";
             }
         });
 
@@ -609,7 +668,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     return;
                 }
                 if (balanceRemaining <= 0) {
-
+                    enableBluetooth();
                 } else {
                     if (!isGuestCustomerSelected) {
                         cashButton.setBackgroundResource(R.drawable.button_disable);
@@ -709,7 +768,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     customerNotSelectedTextView.setVisibility(View.VISIBLE);
                     customerDetailsLayout.setVisibility(View.GONE);
                     customerNotSelectedTextView.setText(getString(R.string.select_pos_customer));
-                    editCustomerImageView.setImageResource(R.drawable.edit_icon);
+                    editCustomerImageView.setImageResource(R.drawable.add_customer);
                 } else if (selecteCustomerName.contains("GUEST CUSTOMER")) {
                     selectedCustomer = null;
                     isGuestCustomerSelected = true;
@@ -1014,7 +1073,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                             inventoryFromAdapter.selectedQTY = inventoryQty + "";
                             posItemAdapter.changeInventory(inventoryFromAdapter);
                         } else {
-                            Utils.showToast("Items not available", mContext);
+                            Utils.showToast("This item is out of stock", mContext);
                         }
                     }
                     billMatrixDaoImpl.updatePOSItem(inventoryFromAdapter.selectedQTY, inventoryFromAdapter.item_code,
@@ -1116,4 +1175,293 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 break;
         }
     }
+
+
+    /*************************************************************
+     * **********PRINTER CODE *************************************
+     *************************************************************/
+
+    public void enableBluetooth() {
+        searchingDialog = Utils.getProgressDialog(mContext, "Searching...");
+        searchingDialog.setCancelable(false);
+
+        adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter == null) {
+            return;
+        }
+
+        if (!adapter.isEnabled()) {
+            searchingDialog.dismiss();
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, BLUETOOTH_ENABLE_REQUEST_ID);
+        } else {
+            if (WorkService.workThread != null && WorkService.workThread.isConnected()) {
+                printBill();
+            } else {
+                searchingDialog.show();
+                startDiscovery();
+            }
+        }
+    }
+
+    private void printBill() {
+        View parent = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.bill, null);
+        View view = parent.findViewById(R.id.ll_bill_Layout);
+
+        setBill(view);
+
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        Bitmap mBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(mBitmap);
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        view.draw(canvas);
+
+        int nPaperWidth = 384;
+
+        if (mBitmap != null) {
+            if (WorkService.workThread.isConnected()) {
+                Bundle data = new Bundle();
+                data.putParcelable(Global.PARCE1, mBitmap);
+                data.putInt(Global.INTPARA1, nPaperWidth);
+                data.putInt(Global.INTPARA2, 0);
+                data.putInt(Global.INTPARA3, 3);
+                WorkService.workThread.handleCmd(Global.CMD_POS_PRINTPICTURE, data);
+            } else {
+                Toast.makeText(this, Global.toast_notconnect, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        /**
+         * Clear user bill Items
+         */
+        if (posItemAdapter.getItemCount() > 0) {
+            posItemAdapter.removeAllItems();
+        }
+        billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+        if (isGuestCustomerSelected) {
+            int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
+            if (guestCustInt == guestCustomerCount && guestCustInt != 1) {
+                guestCustomerCount = guestCustomerCount - 1;
+                customerSpinnerAdapter.remove(selectedGuestCustomerName);
+            }
+        }
+        customersSpinner.setSelection(0);
+    }
+
+    public TextView storeNameTextView;
+    public TextView addOneTextView;
+    public TextView addTwoTextView;
+    public TextView phoneTextView;
+    public TextView tinTextView;
+    public TextView dateTextView;
+    public TextView timeTextView;
+    public TextView userNameTextView;
+    public TextView billNoTextView;
+    public TextView grandTotalTextView;
+    public TextView billTotalItemTextView;
+    public TextView billTotalQTYTextView, paymentTypeTextView, savedMoneyTextView;
+
+    private void setBill(View view) {
+        storeNameTextView = (TextView) view.findViewById(R.id.tv_storeName);
+        addOneTextView = (TextView) view.findViewById(R.id.tv_add_1);
+        addTwoTextView = (TextView) view.findViewById(R.id.tv_add_2);
+        phoneTextView = (TextView) view.findViewById(R.id.tv_phone);
+        tinTextView = (TextView) view.findViewById(R.id.tv_TIN);
+        dateTextView = (TextView) view.findViewById(R.id.tv_date);
+        billNoTextView = (TextView) view.findViewById(R.id.tv_BillNo);
+        timeTextView = (TextView) view.findViewById(R.id.tv_time);
+        userNameTextView = (TextView) view.findViewById(R.id.tv_userName);
+        grandTotalTextView = (TextView) view.findViewById(R.id.tv_grandtotal_value);
+        billTotalItemTextView = (TextView) view.findViewById(R.id.tv_totalItems);
+        billTotalQTYTextView = (TextView) view.findViewById(R.id.tv_totalQTY);
+        paymentTypeTextView = (TextView) view.findViewById(R.id.tv_paymentType);
+        savedMoneyTextView = (TextView) view.findViewById(R.id.tv_savedMoney);
+
+        LinearLayout billItemsLayout = (LinearLayout) view.findViewById(R.id.ll_bill_items_layout);
+        int totalItemsCount = 0;
+
+        ArrayList<Inventory.InventoryData> previousItems = billMatrixDaoImpl.getPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+        if (previousItems != null && previousItems.size() > 0) {
+            for (Inventory.InventoryData inventoryData : previousItems) {
+                View billItemLayout = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.bill_item_layout, null);
+                TextView itemNameTextView = (TextView) billItemLayout.findViewById(R.id.tv_BillItemName);
+                TextView qtyTextView = (TextView) billItemLayout.findViewById(R.id.tv_BillItemQTY);
+                TextView mrpTextView = (TextView) billItemLayout.findViewById(R.id.tv_BillItemMRP);
+                TextView priceTextView = (TextView) billItemLayout.findViewById(R.id.tv_BillItemPRICE);
+                TextView totalTextView = (TextView) billItemLayout.findViewById(R.id.tv_BillItemTOTAL);
+
+                float totalPrice = Float.parseFloat(inventoryData.price) * Float.parseFloat(inventoryData.selectedQTY);
+
+                itemNameTextView.setText(inventoryData.item_name);
+                qtyTextView.setText(inventoryData.selectedQTY);
+                mrpTextView.setText(inventoryData.price);
+                priceTextView.setText(inventoryData.price);
+                totalTextView.setText(String.format(Locale.getDefault(), "%.1f", totalPrice));
+                totalItemsCount = totalItemsCount + Integer.parseInt(inventoryData.selectedQTY);
+
+                billItemsLayout.addView(billItemLayout);
+            }
+        }
+
+        userNameTextView.setText("USER: " + (selectedCustomer != null ? selectedCustomer.username : selectedGuestCustomerName));
+        dateTextView.setText(Constants.getDateFormat().format(System.currentTimeMillis()));
+        timeTextView.setText(Constants.getTimeFormat().format(System.currentTimeMillis()));
+        savedMoneyTextView.setText(discountCalTextView.getText().toString().replace("/-", "").replace(getString(R.string.discount) + ": ", ""));
+        billTotalItemTextView.setText(posItemAdapter.getItemCount() + "");
+        billTotalQTYTextView.setText(totalItemsCount + "");
+        paymentTypeTextView.setText(paymentType);
+        grandTotalTextView.setText(totalValueTextView.getText().toString().replace("/-", ""));
+    }
+
+    private void initBroadcast() {
+        broadcastReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    if (device == null)
+                        return;
+                    final String address = device.getAddress();
+                    String deviceName = device.getName();
+                    if (TextUtils.isEmpty(deviceName)) {
+                        deviceName = "BT";
+                    } else if (deviceName.equals(address)) {
+                        deviceName = "BT";
+                    }
+
+                    android.app.AlertDialog devicesDialog = new android.app.AlertDialog.Builder(mContext)
+                            .setTitle("Connect to " + deviceName)
+                            .setMessage("" + address)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    /**
+                                     * dismiss search
+                                     */
+                                    searchingDialog.dismiss();
+
+                                    connectingProgressDialog.setMessage("Connecting" + " " + address);
+                                    connectingProgressDialog.setIndeterminate(true);
+                                    connectingProgressDialog.setCancelable(false);
+                                    connectingProgressDialog.show();
+
+                                    WorkService.workThread.setDeviceAddress(address);
+                                    WorkService.workThread.setDeviceName(device.getName());
+                                    WorkService.workThread.connectBt(address);
+                                }
+                            }).create();
+
+                    devicesDialog.show();
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                    //TODO: disable progress bar
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                    //TODO: disable progress bar
+                }
+
+            }
+
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        mContext.registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    class MHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                /**
+                 * DrawerService of onStartCommand Will send this message
+                 */
+                case Global.MSG_ALLTHREAD_READY: {
+                    if (WorkService.workThread.isConnected()) {
+                        connectingProgressDialog.cancel();
+                    } else {
+                        connectingProgressDialog.cancel();
+                    }
+                    break;
+                }
+
+                case Global.MSG_WORKTHREAD_SEND_CONNECTBTRESULT: {
+                    int result = msg.arg1;
+                    Toast.makeText(mContext, (result == 1) ? "Printer Connected" : "Connecting Printer failed. Try Again!", Toast.LENGTH_SHORT).show();
+                    connectingProgressDialog.cancel();
+                    break;
+                }
+
+                case Global.CMD_POS_SETBARCODERESULT: {
+                    int result = msg.arg1;
+                    Toast.makeText(mContext, (result == 1) ? Global.toast_success : Global.toast_fail, Toast.LENGTH_SHORT).show();
+                    Log.v("TAG", "Result: " + result);
+                    break;
+                }
+
+                case Global.CMD_POS_PRINTPICTURERESULT: {
+                    int result = msg.arg1;
+                    Toast.makeText(mContext, (result == 1) ? Global.toast_success : Global.toast_fail, Toast.LENGTH_SHORT).show();
+                    Log.v("TAG", "Result: " + result);
+                    break;
+                }
+
+                case com.lvrenyang.utils.Constant.MSG_BTHEARTBEATTHREAD_UPDATESTATUS:
+                case com.lvrenyang.utils.Constant.MSG_NETHEARTBEATTHREAD_UPDATESTATUS: {
+                    int statusOK = msg.arg1;
+                    int status = msg.arg2;
+                    Log.e("TAG", "statusOK: " + statusOK + " status: " + DataUtils.byteToStr((byte) status));
+                    if (statusOK == 1) {
+                        Log.e("SSSSSSSSS" + statusOK, "statusOK");
+                    } else {
+                        Log.e("NOOOO" + statusOK, "statusOKstatusOK");
+                    }
+                    connectingProgressDialog.cancel();
+                    break;
+                }
+                case Global.CMD_POS_WRITE_BT_FLOWCONTROL_RESULT: {
+                    int result = msg.arg1;
+                    Log.e("TAG", "Result: " + result);
+                    connectingProgressDialog.cancel();
+                    break;
+                }
+            }
+        }
+    }
+
+    public void startDiscovery() {
+        adapter.cancelDiscovery();
+        adapter.startDiscovery();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == BLUETOOTH_ENABLE_REQUEST_ID) {
+            if (resultCode == RESULT_OK) {
+                searchingDialog.show();
+                startDiscovery();
+            } else if (resultCode == RESULT_CANCELED) {
+                Utils.showToast("Switch On Bluetooth to connect Printer and print", mContext);
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        WorkService.delHandler(mHandler);
+        mHandler = null;
+        unInitBroadcast();
+    }
+
+    private void unInitBroadcast() {
+        if (broadcastReceiver != null)
+            mContext.unregisterReceiver(broadcastReceiver);
+    }
+
 }

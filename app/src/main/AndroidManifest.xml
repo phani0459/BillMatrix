@@ -79,9 +79,7 @@
             android:enabled="true"
             android:exported="false"
             android:stopWithTask="false" />
-
         <service android:name=".WorkService" />
-
     </application>
 
 </manifest>

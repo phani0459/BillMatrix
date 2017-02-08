@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +17,30 @@ import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
-import com.billmatrix.utils.Constants;
+import com.billmatrix.models.Vendor;
+import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
+import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
  */
+@SuppressWarnings("ALL")
 public class DatabaseFragment extends Fragment implements OnDataFetchListener {
 
     private static final String TAG = DatabaseFragment.class.getSimpleName();
@@ -58,6 +70,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener {
     public ImageView headerFooterSyncIcon;
     @BindView(R.id.im_generated_report_sync)
     public ImageView generatedReportSyncIcon;
+    private ServerData serverData;
 
     public DatabaseFragment() {
         // Required empty public constructor
@@ -74,6 +87,15 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener {
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
+        serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+
+        ServerUtils.setOnDataChangeListener(null);
+
         return v;
     }
 
@@ -87,11 +109,10 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener {
         Utils.showToast("Sync Started", mContext);
         ServerUtils.setIsSync(true);
 
-        syncEmployees();
-
+        syncEmployees(ServerUtils.STATUS_DELETING);
     }
 
-    private void syncCustomers() {
+    private void syncCustomers(int currentStatus) {
         customersSyncIcon.setImageResource(R.drawable.sync_green);
 
         ArrayList<Customer.CustomerData> dbCustomers = billMatrixDaoImpl.getCustomers();
@@ -117,31 +138,176 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener {
             }
         }
 
-        if (deletedCustomers.size() > 0) {
-            for (int i = 0; i < deletedCustomers.size(); i++) {
-                Customer.CustomerData deletedCustomer = deletedCustomers.get(i);
-                ServerUtils.deleteCustomerfromServer(deletedCustomer, mContext, billMatrixDaoImpl);
-            }
+        if (deletedCustomers.size() == 0 && updatedCustomers.size() == 0 && addedCustomers.size() == 0) {
+            syncVendors(ServerUtils.STATUS_DELETING);
+            return;
         }
 
-        if (addedCustomers.size() > 0) {
-            for (int i = 0; i < addedCustomers.size(); i++) {
-                Customer.CustomerData addedCustomer = addedCustomers.get(i);
-                ServerUtils.addCustomertoServer(addedCustomer, mContext, adminId, billMatrixDaoImpl);
-            }
-        }
-
-        if (updatedCustomers.size() > 0) {
-            for (int i = 0; i < updatedCustomers.size(); i++) {
-                Customer.CustomerData updatedCustomer = updatedCustomers.get(i);
-                ServerUtils.updateCustomertoServer(updatedCustomer, mContext, billMatrixDaoImpl);
-            }
+        switch (currentStatus) {
+            case ServerUtils.STATUS_DELETING:
+                if (deletedCustomers.size() > 0) {
+                    Observable<ArrayList<Customer.CustomerData>> deletedCustomersObservable = Observable.fromArray(deletedCustomers);
+                    syncCustomerswithServer(deletedCustomersObservable, currentStatus);
+                } else if (addedCustomers.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_ADDING;
+                    Observable<ArrayList<Customer.CustomerData>> addedCustomersObservable = Observable.fromArray(addedCustomers);
+                    syncCustomerswithServer(addedCustomersObservable, currentStatus);
+                } else if (updatedCustomers.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Customer.CustomerData>> updatedCustomersObservable = Observable.fromArray(updatedCustomers);
+                    syncCustomerswithServer(updatedCustomersObservable, currentStatus);
+                }
+                break;
+            case ServerUtils.STATUS_ADDING:
+                if (addedCustomers.size() > 0) {
+                    Observable<ArrayList<Customer.CustomerData>> addedCustomersObservable = Observable.fromArray(addedCustomers);
+                    syncCustomerswithServer(addedCustomersObservable, currentStatus);
+                } else if (updatedCustomers.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Customer.CustomerData>> updatedCustomersObservable = Observable.fromArray(updatedCustomers);
+                    syncCustomerswithServer(updatedCustomersObservable, currentStatus);
+                }
+                break;
+            case ServerUtils.STATUS_UPDATING:
+                if (updatedCustomers.size() > 0) {
+                    Observable<ArrayList<Customer.CustomerData>> updatedCustomersObservable = Observable.fromArray(updatedCustomers);
+                    syncCustomerswithServer(updatedCustomersObservable, currentStatus);
+                } else {
+                    syncVendors(ServerUtils.STATUS_DELETING);
+                }
+                break;
         }
 
     }
 
-    private void syncEmployees() {
 
+    public void syncCustomerswithServer(Observable<ArrayList<Customer.CustomerData>> observableCustomers, final int status) {
+
+        observableCustomers.flatMap(new Function<List<Customer.CustomerData>, ObservableSource<Customer.CustomerData>>() { // flatMap - to return users one by one
+            @Override
+            public ObservableSource<Customer.CustomerData> apply(List<Customer.CustomerData> employeesList) throws Exception {
+                return Observable.fromIterable(employeesList); // returning Customers one by one from CustomerLsit.
+            }
+        }).flatMap(new Function<Customer.CustomerData, ObservableSource<ArrayList<String>>>() {
+            @Override
+            public ObservableSource<ArrayList<String>> apply(Customer.CustomerData emp) throws Exception {
+                // here we get the user one by one
+                // and does correstponding sync in server
+                // for that Customer
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        ServerUtils.deleteCustomerfromServer(emp, mContext, billMatrixDaoImpl, false);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        ServerUtils.addCustomertoServer(emp, mContext, adminId, billMatrixDaoImpl, false);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        ServerUtils.updateCustomertoServer(emp, mContext, billMatrixDaoImpl, false);
+                        break;
+
+                }
+                return Observable.fromArray(new ArrayList<String>());
+            }
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ArrayList<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onNext(ArrayList<String> strings) {
+            }
+
+            @Override
+            public void onComplete() {
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        syncCustomers(ServerUtils.STATUS_ADDING);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        syncCustomers(ServerUtils.STATUS_UPDATING);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        Log.e(TAG, "get all customers: ");
+                        billMatrixDaoImpl.deleteAllCustomers();
+                        serverData.getCustomersFromServer(adminId);
+                        break;
+
+                }
+                Log.e(TAG, "onComplete");
+            }
+        });
+    }
+
+    public void syncEmployeeswithServer(Observable<ArrayList<Employee.EmployeeData>> observableEmployees, final int status) {
+
+        observableEmployees.flatMap(new Function<List<Employee.EmployeeData>, ObservableSource<Employee.EmployeeData>>() { // flatMap - to return users one by one
+            @Override
+            public ObservableSource<Employee.EmployeeData> apply(List<Employee.EmployeeData> employeesList) throws Exception {
+                return Observable.fromIterable(employeesList); // returning Employees one by one from EmployeesList.
+            }
+        }).flatMap(new Function<Employee.EmployeeData, ObservableSource<ArrayList<String>>>() {
+            @Override
+            public ObservableSource<ArrayList<String>> apply(Employee.EmployeeData emp) throws Exception {
+                // here we get the user one by one
+                // and does correstponding sync in server
+                // for that employee
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        ServerUtils.deleteEmployeefromServer(emp, mContext, billMatrixDaoImpl, false);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        ServerUtils.addEmployeetoServer(emp, mContext, billMatrixDaoImpl, adminId, false);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        ServerUtils.updateEmployeetoServer(emp, mContext, billMatrixDaoImpl, false);
+                        break;
+
+                }
+                return Observable.fromArray(new ArrayList<String>());
+            }
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ArrayList<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onNext(ArrayList<String> strings) {
+            }
+
+            @Override
+            public void onComplete() {
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        syncEmployees(ServerUtils.STATUS_ADDING);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        syncEmployees(ServerUtils.STATUS_UPDATING);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        Log.e(TAG, "get all employees: ");
+                        billMatrixDaoImpl.deleteAllEmployees();
+                        serverData.getEmployeesFromServer(adminId);
+                        break;
+
+                }
+                Log.e(TAG, "onComplete");
+            }
+        });
+    }
+
+    private void syncEmployees(int currentStatus) {
         employeesSyncIcon.setImageResource(R.drawable.sync_green);
 
         ArrayList<Employee.EmployeeData> dbEmployees = billMatrixDaoImpl.getEmployees();
@@ -167,28 +333,47 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener {
             }
         }
 
-        if (deletedEmployees.size() > 0) {
-            for (int i = 0; i < deletedEmployees.size(); i++) {
-                Employee.EmployeeData deletedEmp = deletedEmployees.get(i);
-                ServerUtils.deleteEmployeefromServer(deletedEmp, mContext, billMatrixDaoImpl);
-            }
+        if (deletedEmployees.size() == 0 && updatedEmployees.size() == 0 && addedEmployees.size() == 0) {
+            employeesSyncIcon.setImageResource(R.drawable.sync_grey);
+            syncCustomers(ServerUtils.STATUS_DELETING);
+            return;
         }
 
-        if (addedEmployees.size() > 0) {
-            for (int i = 0; i < addedEmployees.size(); i++) {
-                Employee.EmployeeData addedEmp = addedEmployees.get(i);
-                ServerUtils.addEmployeetoServer(addedEmp, mContext, billMatrixDaoImpl, adminId);
-            }
+        switch (currentStatus) {
+            case ServerUtils.STATUS_DELETING:
+                if (deletedEmployees.size() > 0) {
+                    Observable<ArrayList<Employee.EmployeeData>> deletedEmployeesObservable = Observable.fromArray(deletedEmployees);
+                    syncEmployeeswithServer(deletedEmployeesObservable, currentStatus);
+                } else if (addedEmployees.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_ADDING;
+                    Observable<ArrayList<Employee.EmployeeData>> addedEmployeesObservable = Observable.fromArray(addedEmployees);
+                    syncEmployeeswithServer(addedEmployeesObservable, currentStatus);
+                } else if (updatedEmployees.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Employee.EmployeeData>> updatedEmployeesObservable = Observable.fromArray(updatedEmployees);
+                    syncEmployeeswithServer(updatedEmployeesObservable, currentStatus);
+                }
+                break;
+            case ServerUtils.STATUS_ADDING:
+                if (addedEmployees.size() > 0) {
+                    Observable<ArrayList<Employee.EmployeeData>> addedEmployeesObservable = Observable.fromArray(addedEmployees);
+                    syncEmployeeswithServer(addedEmployeesObservable, currentStatus);
+                } else if (updatedEmployees.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Employee.EmployeeData>> updatedEmployeesObservable = Observable.fromArray(updatedEmployees);
+                    syncEmployeeswithServer(updatedEmployeesObservable, currentStatus);
+                }
+                break;
+            case ServerUtils.STATUS_UPDATING:
+                if (updatedEmployees.size() > 0) {
+                    Observable<ArrayList<Employee.EmployeeData>> updatedEmployeesObservable = Observable.fromArray(updatedEmployees);
+                    syncEmployeeswithServer(updatedEmployeesObservable, currentStatus);
+                } else {
+                    employeesSyncIcon.setImageResource(R.drawable.sync_grey);
+                    syncCustomers(ServerUtils.STATUS_DELETING);
+                }
+                break;
         }
-
-        if (updatedEmployees.size() > 0) {
-            for (int i = 0; i < updatedEmployees.size(); i++) {
-                Employee.EmployeeData updatedEmp = updatedEmployees.get(i);
-                ServerUtils.updateEmployeetoServer(updatedEmp, mContext, billMatrixDaoImpl);
-            }
-        }
-
-        syncCustomers();
     }
 
     /**
@@ -204,8 +389,12 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener {
     public void onDataFetch(int dataFetched) {
         switch (dataFetched) {
             case 0:
+                employeesSyncIcon.setImageResource(R.drawable.sync_grey);
+                syncCustomers(ServerUtils.STATUS_DELETING);
                 break;
             case 1:
+                customersSyncIcon.setImageResource(R.drawable.sync_grey);
+                syncVendors(ServerUtils.STATUS_DELETING);
                 break;
             case 2:
                 break;
@@ -219,4 +408,138 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener {
                 break;
         }
     }
+
+
+    private void syncVendors(int currentStatus) {
+        vendorsSyncIcon.setImageResource(R.drawable.sync_green);
+
+        ArrayList<Vendor.VendorData> dbVendors = billMatrixDaoImpl.getVendors();
+        ArrayList<Vendor.VendorData> deletedVendors = new ArrayList<>();
+        ArrayList<Vendor.VendorData> addedVendors = new ArrayList<>();
+        ArrayList<Vendor.VendorData> updatedVendors = new ArrayList<>();
+
+        if (dbVendors != null && dbVendors.size() > 0) {
+            for (Vendor.VendorData vendor : dbVendors) {
+                if (vendor.status.equalsIgnoreCase("-1")) {
+                    deletedVendors.add(vendor);
+                }
+
+                if (!TextUtils.isEmpty(vendor.add_update)) {
+                    if (vendor.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                        addedVendors.add(vendor);
+                    }
+
+                    if (vendor.add_update.equalsIgnoreCase(Constants.UPDATE_OFFLINE)) {
+                        updatedVendors.add(vendor);
+                    }
+                }
+            }
+        }
+
+        if (deletedVendors.size() == 0 && updatedVendors.size() == 0 && addedVendors.size() == 0) {
+            vendorsSyncIcon.setImageResource(R.drawable.sync_grey);
+            //TODO Sync inventory
+            return;
+        }
+
+        switch (currentStatus) {
+            case ServerUtils.STATUS_DELETING:
+                if (deletedVendors.size() > 0) {
+                    Observable<ArrayList<Vendor.VendorData>> deletedVendorsObservable = Observable.fromArray(deletedVendors);
+                    syncVendorswithServer(deletedVendorsObservable, currentStatus);
+                } else if (addedVendors.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_ADDING;
+                    Observable<ArrayList<Vendor.VendorData>> addedVendorsObservable = Observable.fromArray(addedVendors);
+                    syncVendorswithServer(addedVendorsObservable, currentStatus);
+                } else if (updatedVendors.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Vendor.VendorData>> updatedVendorsObservable = Observable.fromArray(updatedVendors);
+                    syncVendorswithServer(updatedVendorsObservable, currentStatus);
+                }
+                break;
+            case ServerUtils.STATUS_ADDING:
+                if (addedVendors.size() > 0) {
+                    Observable<ArrayList<Vendor.VendorData>> addedVendorsObservable = Observable.fromArray(addedVendors);
+                    syncVendorswithServer(addedVendorsObservable, currentStatus);
+                } else if (updatedVendors.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Vendor.VendorData>> updatedVendorsObservable = Observable.fromArray(updatedVendors);
+                    syncVendorswithServer(updatedVendorsObservable, currentStatus);
+                }
+                break;
+            case ServerUtils.STATUS_UPDATING:
+                if (updatedVendors.size() > 0) {
+                    Observable<ArrayList<Vendor.VendorData>> updatedVendorsObservable = Observable.fromArray(updatedVendors);
+                    syncVendorswithServer(updatedVendorsObservable, currentStatus);
+                } else {
+                    vendorsSyncIcon.setImageResource(R.drawable.sync_grey);
+                    //TODO sync inventory
+                }
+                break;
+        }
+    }
+
+    public void syncVendorswithServer(Observable<ArrayList<Vendor.VendorData>> observableVendors, final int status) {
+
+        observableVendors.flatMap(new Function<List<Vendor.VendorData>, ObservableSource<Vendor.VendorData>>() { // flatMap - to return vendors one by one
+            @Override
+            public ObservableSource<Vendor.VendorData> apply(List<Vendor.VendorData> employeesList) throws Exception {
+                return Observable.fromIterable(employeesList); // returning Vendors one by one from VendorsList.
+            }
+        }).flatMap(new Function<Vendor.VendorData, ObservableSource<ArrayList<String>>>() {
+            @Override
+            public ObservableSource<ArrayList<String>> apply(Vendor.VendorData emp) throws Exception {
+                // here we get the vendor one by one
+                // and does corresponding sync in server
+                // for that vendor
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        ServerUtils.deleteVendorfromServer(emp, mContext, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        ServerUtils.addVendortoServer(emp, mContext, adminId, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        ServerUtils.updateVendortoServer(emp, mContext, billMatrixDaoImpl);
+                        break;
+
+                }
+                return Observable.fromArray(new ArrayList<String>());
+            }
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ArrayList<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onNext(ArrayList<String> strings) {
+            }
+
+            @Override
+            public void onComplete() {
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        syncVendors(ServerUtils.STATUS_ADDING);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        syncVendors(ServerUtils.STATUS_UPDATING);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        Log.e(TAG, "get all vendors: ");
+                        billMatrixDaoImpl.deleteAllVendors();
+                        serverData.getVendorsFromServer(adminId);
+                        break;
+
+                }
+                Log.e(TAG, "Vendors onComplete");
+            }
+        });
+    }
+
 }

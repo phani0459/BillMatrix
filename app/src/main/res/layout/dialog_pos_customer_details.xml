@@ -14,6 +14,7 @@
         android:padding="8dp">
 
         <TextView
+            android:id="@+id/dialog_customer_title"
             style="@style/Base.TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -108,17 +109,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="12dp"
                 android:gravity="left"
-                android:text="@string/Email"
+                android:text="@string/Date"
                 android:textColor="@android:color/black" />
 
             <EditText
-                android:id="@+id/et_pos_cust_email"
+                android:id="@+id/et_pos_cust_date"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_border"
                 android:imeOptions="actionNext"
-                android:inputType="textEmailAddress"
                 android:padding="8dp"
                 android:singleLine="true"
                 android:textColor="@android:color/black" />

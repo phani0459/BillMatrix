@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
+import com.billmatrix.interfaces.OnDataChangeListener;
 import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
@@ -26,6 +27,16 @@ import retrofit2.Response;
 public class ServerUtils {
 
     private static final String TAG = ServerUtils.class.getSimpleName();
+    public static final int STATUS_DELETING = -1;
+    public static final int STATUS_ADDING = 0;
+    public static final int STATUS_UPDATING = 1;
+
+    private static boolean isSync;
+    private static OnDataChangeListener onDataChangeListener;
+
+    public static void setOnDataChangeListener(OnDataChangeListener onDataChangeListener) {
+        ServerUtils.onDataChangeListener = onDataChangeListener;
+    }
 
     public static boolean isSync() {
         return isSync;
@@ -34,8 +45,6 @@ public class ServerUtils {
     public static void setIsSync(boolean isSync) {
         ServerUtils.isSync = isSync;
     }
-
-    private static boolean isSync;
 
     /*********************************************************************
      ***************************  CUSTOMERS  *****************************
@@ -46,8 +55,9 @@ public class ServerUtils {
      * @param customerData customer data to be added to server
      * @param mContext     Context
      * @param adminId      admin ID
+     * @param isLast
      */
-    public static Customer.CustomerData addCustomertoServer(final Customer.CustomerData customerData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
+    public static Customer.CustomerData addCustomertoServer(final Customer.CustomerData customerData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl, final boolean isLast) {
         Log.e(TAG, "addCustomertoServer: ");
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addCustomer(customerData.username, customerData.mobile_number, customerData.location,
                 customerData.status, customerData.date, adminId);
@@ -81,6 +91,9 @@ public class ServerUtils {
 
                             billMatrixDaoImpl.updateCustomer(customerData);
 
+                            if (onDataChangeListener != null)
+                                onDataChangeListener.onDataChange(1, STATUS_ADDING, isLast);
+
                         } else {
                             if (!isSync)
                                 Utils.showToast(customerStatus.create_customer + "", mContext);
@@ -103,7 +116,7 @@ public class ServerUtils {
         return customerData;
     }
 
-    public static Customer.CustomerData updateCustomertoServer(final Customer.CustomerData customerData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+    public static Customer.CustomerData updateCustomertoServer(final Customer.CustomerData customerData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, final boolean isLast) {
         Log.e(TAG, "updateCustomertoServer: ");
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateCustomer(customerData.id, customerData.username, customerData.mobile_number,
                 customerData.location, customerData.status, customerData.date);
@@ -136,6 +149,8 @@ public class ServerUtils {
                             customerData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateCustomer(customerData);
+                            if (onDataChangeListener != null)
+                                onDataChangeListener.onDataChange(1, STATUS_UPDATING, isLast);
                         }
                     }
                 }
@@ -154,7 +169,7 @@ public class ServerUtils {
         return customerData;
     }
 
-    public static void deleteCustomerfromServer(final Customer.CustomerData customer, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+    public static void deleteCustomerfromServer(final Customer.CustomerData customer, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, final boolean isLast) {
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteCustomer(customer.id);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
@@ -174,6 +189,8 @@ public class ServerUtils {
                         if (customerStatus.get("delete_customer").equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Customer Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteCustomer(DBConstants.ID, customer.id);
+                            if (onDataChangeListener != null)
+                                onDataChangeListener.onDataChange(1, STATUS_DELETING, isLast);
                         }
                     }
                 }
@@ -195,7 +212,7 @@ public class ServerUtils {
      * ************************** EMPLOYEES ******************************
      *********************************************************************/
 
-    public static Employee.EmployeeData updateEmployeetoServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+    public static Employee.EmployeeData updateEmployeetoServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, final boolean isLast) {
         final Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateEmployee(employeeData.id, employeeData.username,
                 employeeData.password, employeeData.mobile_number, employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch,
                 employeeData.status);
@@ -235,6 +252,9 @@ public class ServerUtils {
                         employeeData.add_update = Constants.DATA_FROM_SERVER;
 
                         billMatrixDaoImpl.updateEmployee(employeeData);
+
+                        if (onDataChangeListener != null)
+                            onDataChangeListener.onDataChange(0, STATUS_UPDATING, isLast);
                     }
                 }
             }
@@ -253,7 +273,7 @@ public class ServerUtils {
         return employeeData;
     }
 
-    public static void deleteEmployeefromServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+    public static void deleteEmployeefromServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, final boolean isLast) {
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteEmployee(employeeData.id);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
@@ -270,9 +290,13 @@ public class ServerUtils {
                 if (response.body() != null) {
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
+                        Log.e("employeeStatus.", "" + employeeStatus.get("status"));
                         if (employeeStatus.get("delete_employee").equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Employee Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteEmployee(employeeData.login_id);
+
+                            if (onDataChangeListener != null)
+                                onDataChangeListener.onDataChange(0, STATUS_DELETING, isLast);
                         }
                     }
                 }
@@ -290,7 +314,7 @@ public class ServerUtils {
         });
     }
 
-    public static Employee.EmployeeData addEmployeetoServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, String adminId) {
+    public static Employee.EmployeeData addEmployeetoServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, String adminId, final boolean isLast) {
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.username, employeeData.password, employeeData.mobile_number, adminId,
                 employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch);
 
@@ -327,6 +351,9 @@ public class ServerUtils {
                             employeeData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateEmployee(employeeData);
+
+                            if (onDataChangeListener != null)
+                                onDataChangeListener.onDataChange(0, STATUS_ADDING, isLast);
 
                         } else {
                             if (!isSync)

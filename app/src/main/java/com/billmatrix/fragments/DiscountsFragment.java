@@ -23,6 +23,7 @@ import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Discount;
 import com.billmatrix.network.ServerData;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -85,6 +86,7 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        ServerUtils.setOnDataChangeListener(null);
 
         discountsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         Discount.DiscountData defaultDiscount = new Discount().new DiscountData();

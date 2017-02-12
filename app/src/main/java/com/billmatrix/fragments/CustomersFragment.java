@@ -231,8 +231,6 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
         long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
 
         if (customerAdded != -1) {
-            customersRecyclerView.smoothScrollToPosition(customersAdapter.getItemCount());
-
             /**
              * reset all edit texts
              */
@@ -246,6 +244,10 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                 if (Utils.isInternetAvailable(mContext)) {
                     customerFromServer = ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl, false);
                 } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
                     customerFromServer = customerData;
                     Utils.showToast("Customer Added successfully", mContext);
                 }
@@ -254,6 +256,10 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                     if (Utils.isInternetAvailable(mContext)) {
                         customerFromServer = ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl, false);
                     } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
                         customerFromServer = customerData;
                         Utils.showToast("Customer Updated successfully", mContext);
                     }
@@ -261,6 +267,8 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
             }
 
             customersAdapter.addCustomer(customerFromServer);
+            customersRecyclerView.smoothScrollToPosition(customersAdapter.getItemCount());
+
             addCustomerBtn.setText(getString(R.string.add));
             isEditing = false;
             isCustomerAdded = true;
@@ -284,10 +292,14 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                             billMatrixDaoImpl.deleteCustomer(DBConstants.CUSTOMER_CONTACT, selectedCustomer.mobile_number);
                         }
                         if (Utils.isInternetAvailable(mContext)) {
-                            if (!TextUtils.isEmpty(customersAdapter.getItem(position).id)) {
-                                ServerUtils.deleteCustomerfromServer(customersAdapter.getItem(position), mContext, billMatrixDaoImpl, false);
+                            if (!TextUtils.isEmpty(selectedCustomer.id)) {
+                                ServerUtils.deleteCustomerfromServer(selectedCustomer, mContext, billMatrixDaoImpl, false);
                             }
                         } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
                             Utils.showToast("Customer Deleted successfully", mContext);
                         }
                         customersAdapter.deleteCustomer(position);

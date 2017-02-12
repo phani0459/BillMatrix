@@ -17,64 +17,67 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.PayInsHolder> {
+public class PayOutsAdapter extends RecyclerView.Adapter<PayOutsAdapter.PayOutsHolder> {
 
     private List<PayIn.PayInData> payIns;
     OnItemClickListener onItemClickListener;
 
-    public class PayInsHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.tv_item_payIns_sno)
+    public class PayOutsHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.tv_item_payOuts_sno)
         TextView snoTextView;
-        @BindView(R.id.tv_item_payIns_custName)
+        @BindView(R.id.tv_item_payOuts_vendorName)
         TextView nameTextView;
-        @BindView(R.id.tv_item_payIns_amount)
+        @BindView(R.id.tv_item_payOuts_amount)
         TextView amountTextView;
-        @BindView(R.id.tv_item_payIns_date)
+        @BindView(R.id.tv_item_payOuts_mode)
+        TextView modeTextView;
+        @BindView(R.id.tv_item_payOuts_date)
         TextView dateTextView;
-        @BindView(R.id.im_item_payIn_edit)
+        @BindView(R.id.im_item_payOut_edit)
         ImageView editImageView;
-        @BindView(R.id.im_item_payIn_del)
+        @BindView(R.id.im_item_payOut_del)
         ImageView deleteImageView;
 
-        public PayInsHolder(View view) {
+        public PayOutsHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
     }
 
-    public void deletePayIn(int position) {
+    public void deletePayOut(int position) {
         payIns.remove(position);
         notifyDataSetChanged();
     }
 
-    public void addPayIn(PayIn.PayInData payInData) {
+    public void addPayOut(PayIn.PayInData payInData) {
         payIns.add(payInData);
         notifyDataSetChanged();
     }
 
-    public PayInsAdapter(List<PayIn.PayInData> payIns, OnItemClickListener onClickListener) {
+    public PayOutsAdapter(List<PayIn.PayInData> payIns, OnItemClickListener onClickListener) {
         this.payIns = payIns;
         this.onItemClickListener = onClickListener;
     }
 
-    public void removeAllPayIns() {
+    public void removeAllPayOuts() {
         payIns = new ArrayList<>();
         notifyDataSetChanged();
     }
 
     @Override
-    public PayInsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.pay_in_item, parent, false);
+    public PayOutsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.pay_out_item, parent, false);
 
-        return new PayInsHolder(itemView);
+        return new PayOutsHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(PayInsHolder holder, final int position) {
+    public void onBindViewHolder(PayOutsHolder holder, final int position) {
         PayIn.PayInData payInData = payIns.get(position);
 
         holder.snoTextView.setText("" + (position + 1));
         holder.nameTextView.setText(payInData.payee_name);
+        holder.modeTextView.setText(payInData.mode_of_payment);
         holder.dateTextView.setText(payInData.date_of_payment);
         holder.amountTextView.setText(payInData.amount.trim());
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {

@@ -49,6 +49,7 @@ import com.billmatrix.WorkService;
 import com.billmatrix.adapters.POSInventoryAdapter;
 import com.billmatrix.adapters.POSItemAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Inventory;
@@ -200,7 +201,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         List<Inventory.InventoryData> itemsInventory = new ArrayList<>();
         posItemsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        posItemAdapter = new POSItemAdapter(itemsInventory, this);
+        posItemAdapter = new POSItemAdapter(itemsInventory, this, mContext);
         posItemsRecyclerView.setAdapter(posItemAdapter);
 
         discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f);
@@ -250,6 +251,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         final EditText customerDate = (EditText) dialog.findViewById(R.id.et_pos_cust_date);
         final EditText customerLocation = (EditText) dialog.findViewById(R.id.et_pos_cust_location);
         final TextView customerTitle = (TextView) dialog.findViewById(R.id.dialog_customer_title);
+
+        customerMobile.setFilters(Utils.getInputFilter(10));
 
         Button editCustomerButton = (Button) dialog.findViewById(R.id.btn_edit_add_customer);
         Button close = (Button) dialog.findViewById(R.id.btn_close_cust_details_dialog);
@@ -304,12 +307,16 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     editedCustomerData.date = selectedCustomer.date;
                     editedCustomerData.create_date = selectedCustomer.create_date;
                     editedCustomerData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                    if (selectedCustomer.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                        editedCustomerData.add_update = Constants.UPDATE_OFFLINE;
+                    }
                 } else {
                     editedCustomerData.status = "1";
                     editedCustomerData.admin_id = adminId;
                     editedCustomerData.date = Constants.getDateFormat().format(System.currentTimeMillis());
                     editedCustomerData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
                     editedCustomerData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                    editedCustomerData.add_update = Constants.ADD_OFFLINE;
                 }
 
                 String customerName = customerUserName.getText().toString();
@@ -341,57 +348,45 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 editedCustomerData.username = customerName;
                 editedCustomerData.mobile_number = customerContact;
 
+                Log.e(TAG, "onClick: " + editedCustomerData.toString());
+
                 if (selectedCustomer != null) {
-                    updateCustomerinDB(editedCustomerData, dialog, previousCustomerName);
-                } else {
-                    addCustomerinDB(editedCustomerData, dialog);
+                    billMatrixDaoImpl.deleteCustomer(DBConstants.ID, selectedCustomer.id);
                 }
+
+                addCustomerinDB(editedCustomerData, dialog, previousCustomerName);
             }
         });
 
         dialog.show();
     }
 
-    public void updateCustomerinDB(Customer.CustomerData customerData, Dialog dialog, String previousCustomerName) {
-        boolean isCustomerUpdated = billMatrixDaoImpl.updateCustomer(customerData);
+    public void addCustomerinDB(Customer.CustomerData customerData, Dialog dialog, String previousCustomerName) {
+        long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
 
-        if (isCustomerUpdated) {
-            if (Utils.isInternetAvailable(mContext)) {
-                ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl, false);
+        if (customerAdded != -1) {
+            if (TextUtils.isEmpty(customerData.id)) {
+                if (Utils.isInternetAvailable(mContext)) {
+                    ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl, false);
+                } else {
+                    Utils.showToast("Customer Added successfully", mContext);
+                }
             } else {
-                Utils.showToast("Customer Updated successfully", mContext);
+                if (Utils.isInternetAvailable(mContext)) {
+                    ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl, false);
+                } else {
+                    Utils.showToast("Customer Updated successfully", mContext);
+                }
             }
 
             /**
              * If Customer Name is updated, remove previous name and add new Name to spinner
              */
-            customerSpinnerAdapter.remove(previousCustomerName.toUpperCase());
-            customerSpinnerAdapter.add(customerData.username.toUpperCase());
-            try {
-                int customerSelectedPosition = customerSpinnerAdapter.getPosition(customerData.username.toUpperCase());
-                customersSpinner.setSelection(customerSelectedPosition);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (TextUtils.isEmpty(previousCustomerName)) {
+                customerSpinnerAdapter.remove(previousCustomerName.toUpperCase());
+                customerSpinnerAdapter.add(customerData.username.toUpperCase());
             }
 
-            dialog.dismiss();
-            selectedCustomer = customerData;
-            isGuestCustomerSelected = false;
-            loadCustomerDetails();
-        } else {
-            Utils.showToast("Customer Mobile Number must be unique", mContext);
-        }
-    }
-
-    public void addCustomerinDB(Customer.CustomerData customerData, Dialog dialog) {
-        long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
-
-        if (customerAdded != -1) {
-            if (Utils.isInternetAvailable(mContext)) {
-                ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl, false);
-            } else {
-                Utils.showToast("Customer Updated successfully", mContext);
-            }
             dialog.dismiss();
             selectedCustomer = customerData;
             isGuestCustomerSelected = false;
@@ -413,6 +408,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     @OnClick(R.id.ll_pos_pay)
     public void pay() {
+        if (posItemAdapter.getItemCount() <= 0) {
+            return;
+        }
         if (isPaymentTypeClicked) {
             paymentTypeDialog();
         } else {
@@ -425,6 +423,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     @OnClick(R.id.btn_credit)
     public void credit(View v) {
+        if (posItemAdapter.getItemCount() <= 0) {
+            return;
+        }
         if (isGuestCustomerSelected) {
             Utils.showToast("Add Guest Customer before allowing for credit", mContext);
             return;
@@ -442,6 +443,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     @OnClick(R.id.btn_cash_or_card)
     public void cashOrCard(View v) {
+        if (posItemAdapter.getItemCount() <= 0) {
+            return;
+        }
         if (selectedCustomer != null) {
         } else if (isGuestCustomerSelected) {
         } else {
@@ -810,28 +814,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             }
         });
 
-        posSearchEditText.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_LEFT = 0;
-                final int DRAWABLE_TOP = 1;
-                final int DRAWABLE_RIGHT = 2;
-                final int DRAWABLE_BOTTOM = 3;
-
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (event.getRawX() >= (posSearchEditText.getRight() - posSearchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        if (posSearchEditText.getText().toString().length() > 0) {
-                            posSearchEditText.setText("");
-                            searchClosed();
-                        }
-                        return false;
-                    }
-                }
-                v.clearFocus();
-                return false;
-            }
-        });
-
         posSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -867,6 +849,29 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             }
         });
 
+        posSearchEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (event.getRawX() >= (posSearchEditText.getRight() - posSearchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        Log.e(TAG, "onTouch: 0");
+                        if (posSearchEditText.getText().toString().length() > 0) {
+                            posSearchEditText.setText("");
+                            searchClosed();
+                        }
+                        return true;
+                    }
+                }
+                v.clearFocus();
+                return false;
+            }
+        });
+
         posItemsSearchEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -877,6 +882,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (event.getRawX() >= (posItemsSearchEditText.getRight() - posItemsSearchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        Log.e(TAG, "onTouch: ");
                         if (posItemsSearchEditText.getText().toString().length() > 0) {
                             posItemsSearchEditText.setText("");
                             searchItemsClosed();
@@ -1219,19 +1225,33 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         int nPaperWidth = 384;
 
-        if (mBitmap != null) {
-            if (WorkService.workThread.isConnected()) {
-                Bundle data = new Bundle();
-                data.putParcelable(Global.PARCE1, mBitmap);
-                data.putInt(Global.INTPARA1, nPaperWidth);
-                data.putInt(Global.INTPARA2, 0);
-                data.putInt(Global.INTPARA3, 3);
-                WorkService.workThread.handleCmd(Global.CMD_POS_PRINTPICTURE, data);
-            } else {
-                Toast.makeText(this, Global.toast_notconnect, Toast.LENGTH_SHORT).show();
-            }
-        }
+        if (WorkService.workThread.isConnected()) {
+            Bundle data = new Bundle();
+            data.putParcelable(Global.PARCE1, mBitmap);
+            data.putInt(Global.INTPARA1, nPaperWidth);
+            data.putInt(Global.INTPARA2, 0);
+            data.putInt(Global.INTPARA3, 3);
+            WorkService.workThread.handleCmd(Global.CMD_POS_PRINTPICTURE, data);
 
+            /**
+             * Remove customer bill items to close the bill
+             */
+            if (posItemAdapter.getItemCount() > 0) {
+                posItemAdapter.removeAllItems();
+            }
+            billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+            if (isGuestCustomerSelected) {
+                int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
+                if (guestCustInt == guestCustomerCount && guestCustInt != 1) {
+                    guestCustomerCount = guestCustomerCount - 1;
+                    customerSpinnerAdapter.remove(selectedGuestCustomerName);
+                }
+            }
+            customersSpinner.setSelection(0);
+
+        } else {
+            Toast.makeText(this, Global.toast_notconnect, Toast.LENGTH_SHORT).show();
+        }
         /**
          * Clear user bill Items
          */
@@ -1259,7 +1279,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public TextView userNameTextView;
     public TextView billNoTextView;
     public TextView grandTotalTextView;
-    public TextView billTotalItemTextView;
+    public TextView billTotalItemTextView, footerTextView;
     public TextView billTotalQTYTextView, paymentTypeTextView, savedMoneyTextView;
 
     private void setBill(View view) {
@@ -1277,6 +1297,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         billTotalQTYTextView = (TextView) view.findViewById(R.id.tv_totalQTY);
         paymentTypeTextView = (TextView) view.findViewById(R.id.tv_paymentType);
         savedMoneyTextView = (TextView) view.findViewById(R.id.tv_savedMoney);
+        footerTextView = (TextView) view.findViewById(R.id.tv_bill_footer);
 
         LinearLayout billItemsLayout = (LinearLayout) view.findViewById(R.id.ll_bill_items_layout);
         int totalItemsCount = 0;
@@ -1312,6 +1333,15 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         billTotalQTYTextView.setText(totalItemsCount + "");
         paymentTypeTextView.setText(paymentType);
         grandTotalTextView.setText(totalValueTextView.getText().toString().replace("/-", ""));
+
+        String footer = Utils.getSharedPreferences(mContext).getString(Constants.PREF_FOOTER_TEXT, null);
+
+        if (TextUtils.isEmpty(footer)) {
+            footer = "GET " + Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_VALUE, "0") + "% USING "
+                    + Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, "No Discount");
+        }
+
+        footerTextView.setText(footer);
     }
 
     private void initBroadcast() {

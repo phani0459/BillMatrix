@@ -98,6 +98,10 @@ public class ServerData {
                                         billMatrixDaoImpl.addEmployee(employeeData);
                                     }
                                 }
+                                /**
+                                 * To remove pending sync Icon in database page
+                                 */
+                                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, false).apply();
                             }
                             if (isFromLogin()) getCustomersFromServer(adminId);
                             if (onDataFetchListener != null) onDataFetchListener.onDataFetch(0);
@@ -149,6 +153,10 @@ public class ServerData {
                                         billMatrixDaoImpl.addCustomer(customerData);
                                     }
                                 }
+                                /**
+                                 * To remove pending sync Icon in database page
+                                 */
+                                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, false).apply();
                             }
 
                             if (isFromLogin()) getVendorsFromServer(adminId);
@@ -201,6 +209,10 @@ public class ServerData {
                                         billMatrixDaoImpl.addVendor(vendorData);
                                     }
                                 }
+                                /**
+                                 * To remove pending sync Icon in database page
+                                 */
+                                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, false).apply();
                             }
 
                             if (isFromLogin()) getInventoryFromServer(adminId);
@@ -255,6 +267,10 @@ public class ServerData {
                                         billMatrixDaoImpl.addInventory(inventoryData);
                                     }
                                 }
+                                /**
+                                 * To remove pending sync Icon in database page
+                                 */
+                                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, false).apply();
                             }
 
                             if (isFromLogin()) getTaxesFromServer(adminId);
@@ -306,6 +322,10 @@ public class ServerData {
                                     billMatrixDaoImpl.addTax(taxData);
                                 }
                             }
+                            /**
+                             * To remove pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, false).apply();
                         }
 
                         if (isFromLogin()) getDiscountsFromServer(adminId);
@@ -359,6 +379,10 @@ public class ServerData {
                                     billMatrixDaoImpl.addDiscount(discountData);
                                 }
                             }
+                            /**
+                             * To remove pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, false).apply();
                         }
 
                         if (progressDialog != null && progressDialog.isShowing()) {

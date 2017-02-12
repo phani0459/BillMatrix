@@ -105,17 +105,17 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("create_inventory")
-    Call<HashMap<String, String>> addInventory(@Field("admin_id") String adminId, @Field("item_code") String item_code, @Field("item_name") String item_name,
-                                               @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
-                                               @Field("date") String date, @Field("warehouse") String warehouse, @Field("vendor") String vendor,
-                                               @Field("barcode") String barcode, @Field("photo") String photo, @Field("status") String status);
+    Call<CreateJob> addInventory(@Field("admin_id") String adminId, @Field("item_code") String item_code, @Field("item_name") String item_name,
+                                 @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
+                                 @Field("date") String date, @Field("warehouse") String warehouse, @Field("vendor") String vendor,
+                                 @Field("barcode") String barcode, @Field("photo") String photo, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("update_inventory")
-    Call<HashMap<String, String>> updateInventory(@Field("id") String id, @Field("item_code") String item_code, @Field("item_name") String item_name,
-                                                  @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
-                                                  @Field("date") String date, @Field("warehouse") String warehouse, @Field("vendor") String vendor,
-                                                  @Field("barcode") String barcode, @Field("photo") String photo, @Field("status") String status);
+    Call<CreateJob> updateInventory(@Field("id") String id, @Field("item_code") String item_code, @Field("item_name") String item_name,
+                                    @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
+                                    @Field("date") String date, @Field("warehouse") String warehouse, @Field("vendor") String vendor,
+                                    @Field("barcode") String barcode, @Field("photo") String photo, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("delete_inventory")

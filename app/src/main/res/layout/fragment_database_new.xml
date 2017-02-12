@@ -114,6 +114,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_inventory_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -136,6 +137,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_customers_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -159,6 +161,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_reports_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -182,6 +185,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_purchases_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -204,6 +208,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_sales_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -235,6 +240,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_employees_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -257,6 +263,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_vendors_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -279,6 +286,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_discounts_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -301,6 +309,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_header_footer_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -323,6 +332,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
+                    android:id="@+id/cb_generated_report_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -340,7 +350,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_margin="16dp"
-        android:background="@drawable/green_button"
+        android:background="@drawable/button_disable"
+        android:enabled="false"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="@string/sync_selected"

@@ -11,13 +11,68 @@ import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.PayIn;
 import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.billmatrix.database.DBConstants.*;
+import static com.billmatrix.database.DBConstants.ADD_UPDATE;
+import static com.billmatrix.database.DBConstants.ADMIN_ID;
+import static com.billmatrix.database.DBConstants.AMOUNT;
+import static com.billmatrix.database.DBConstants.BARCODE;
+import static com.billmatrix.database.DBConstants.BRANCH;
+import static com.billmatrix.database.DBConstants.CREATE_DATE;
+import static com.billmatrix.database.DBConstants.CUSTOMERS_TABLE;
+import static com.billmatrix.database.DBConstants.CUSTOMER_CONTACT;
+import static com.billmatrix.database.DBConstants.CUSTOMER_NAME;
+import static com.billmatrix.database.DBConstants.DATE;
+import static com.billmatrix.database.DBConstants.DISCOUNT_CODE;
+import static com.billmatrix.database.DBConstants.DISCOUNT_DESC;
+import static com.billmatrix.database.DBConstants.DISCOUNT_TABLE;
+import static com.billmatrix.database.DBConstants.DISCOUNT_VALUE;
+import static com.billmatrix.database.DBConstants.EMAIL;
+import static com.billmatrix.database.DBConstants.EMPLOYEES_TABLE;
+import static com.billmatrix.database.DBConstants.EMPLOYEE_LOGINID;
+import static com.billmatrix.database.DBConstants.EMPLOYEE_MOBILE;
+import static com.billmatrix.database.DBConstants.EMPLOYEE_NAME;
+import static com.billmatrix.database.DBConstants.EMPLOYEE_PASSWORD;
+import static com.billmatrix.database.DBConstants.ID;
+import static com.billmatrix.database.DBConstants.IMEI;
+import static com.billmatrix.database.DBConstants.INVENTORY_TABLE;
+import static com.billmatrix.database.DBConstants.ITEM_CODE;
+import static com.billmatrix.database.DBConstants.ITEM_NAME;
+import static com.billmatrix.database.DBConstants.LOCATION;
+import static com.billmatrix.database.DBConstants.MODE;
+import static com.billmatrix.database.DBConstants.MY_COST;
+import static com.billmatrix.database.DBConstants.PAYEE_NAME;
+import static com.billmatrix.database.DBConstants.PAYMENTS_TABLE;
+import static com.billmatrix.database.DBConstants.PAYMENT_TYPE;
+import static com.billmatrix.database.DBConstants.PHONE;
+import static com.billmatrix.database.DBConstants.PHOTO;
+import static com.billmatrix.database.DBConstants.POS_ITEMS_TABLE;
+import static com.billmatrix.database.DBConstants.PRICE;
+import static com.billmatrix.database.DBConstants.PURPOSE;
+import static com.billmatrix.database.DBConstants.QUANTITY;
+import static com.billmatrix.database.DBConstants.SELECTED_QTY;
+import static com.billmatrix.database.DBConstants.SNO;
+import static com.billmatrix.database.DBConstants.STATUS;
+import static com.billmatrix.database.DBConstants.TAG;
+import static com.billmatrix.database.DBConstants.TAX_DESC;
+import static com.billmatrix.database.DBConstants.TAX_RATE;
+import static com.billmatrix.database.DBConstants.TAX_TABLE;
+import static com.billmatrix.database.DBConstants.TAX_TYPE;
+import static com.billmatrix.database.DBConstants.TYPE;
+import static com.billmatrix.database.DBConstants.UNIT;
+import static com.billmatrix.database.DBConstants.UPDATE_DATE;
+import static com.billmatrix.database.DBConstants.VENDOR;
+import static com.billmatrix.database.DBConstants.VENDORS_TABLE;
+import static com.billmatrix.database.DBConstants.VENDOR_ADDRESS;
+import static com.billmatrix.database.DBConstants.VENDOR_ID;
+import static com.billmatrix.database.DBConstants.VENDOR_NAME;
+import static com.billmatrix.database.DBConstants.VENDOR_SINCE;
+import static com.billmatrix.database.DBConstants.WAREHOUSE;
 
 /**
  * Created by KANDAGATLAs on 06-11-2016.
@@ -460,7 +515,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(DATE, inventoryData.date);
         contentValues.put(WAREHOUSE, inventoryData.warehouse);
         contentValues.put(VENDOR, inventoryData.vendor);
-        contentValues.put(BARCODE, inventoryData.barcode);
+        contentValues.put(BARCODE, (!TextUtils.isEmpty(inventoryData.barcode) ? inventoryData.barcode : null));
         contentValues.put(PHOTO, inventoryData.photo);
         contentValues.put(ID, inventoryData.id);
         contentValues.put(STATUS, inventoryData.status);
@@ -475,10 +530,54 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.delete(INVENTORY_TABLE, ITEM_CODE + "='" + itemCode + "'", null) > 0;
     }
 
-    public boolean updateInventory(String status, String itemCode) {
+    public boolean updateInventory(String column, String status, String itemCode) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(STATUS, status);
+        contentValues.put(column, status);
         return db.update(INVENTORY_TABLE, contentValues, ITEM_CODE + "='" + itemCode + "'", null) > 0;
+    }
+
+    public void deleteAllInventories() {
+        db.delete(INVENTORY_TABLE, null, null);
+    }
+
+    public boolean updateInventory(Inventory.InventoryData inventoryData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ITEM_CODE, inventoryData.item_code);
+        contentValues.put(ITEM_NAME, inventoryData.item_name);
+        contentValues.put(UNIT, inventoryData.unit);
+        contentValues.put(QUANTITY, inventoryData.qty);
+        contentValues.put(PRICE, inventoryData.price);
+        contentValues.put(MY_COST, inventoryData.mycost);
+        contentValues.put(DATE, inventoryData.date);
+        contentValues.put(WAREHOUSE, inventoryData.warehouse);
+        contentValues.put(VENDOR, inventoryData.vendor);
+        contentValues.put(BARCODE, (!TextUtils.isEmpty(inventoryData.barcode) ? inventoryData.barcode : null));
+        contentValues.put(PHOTO, inventoryData.photo);
+        contentValues.put(ID, inventoryData.id);
+        contentValues.put(STATUS, inventoryData.status);
+        contentValues.put(ADMIN_ID, inventoryData.admin_id);
+        contentValues.put(CREATE_DATE, inventoryData.create_date);
+        contentValues.put(UPDATE_DATE, inventoryData.update_date);
+        contentValues.put(ADD_UPDATE, inventoryData.add_update);
+
+        if (!isInventoryIdEmpty(inventoryData.item_code)) {
+            return db.update(INVENTORY_TABLE, contentValues, ID + "='" + inventoryData.id + "'", null) > 0;
+        } else {
+            contentValues.put(ID, inventoryData.id);
+            return db.update(INVENTORY_TABLE, contentValues, ITEM_CODE + "='" + inventoryData.item_code + "'", null) > 0;
+        }
+    }
+
+    private boolean isInventoryIdEmpty(String itemCode) {
+        String query = "SELECT " + ID + " FROM " + INVENTORY_TABLE + " WHERE " + ITEM_CODE + " = '" + itemCode + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String id = cursor.getString(cursor.getColumnIndex(ID));
+            cursor.close();
+            return TextUtils.isEmpty(id);
+        }
+        return true;
     }
 
     public ArrayList<Inventory.InventoryData> getInventory() {
@@ -492,40 +591,40 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 List<Inventory.InventoryData> inventories = new ArrayList<>();
                 do {
                     Inventory.InventoryData inventoryData = new Inventory().new InventoryData();
-                    inventoryData.item_code = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(ITEM_CODE)));
-                    inventoryData.item_name = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(ITEM_NAME)));
-                    inventoryData.unit = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(UNIT)));
-                    inventoryData.qty = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(QUANTITY)));
-                    inventoryData.price = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(PRICE)));
-                    inventoryData.mycost = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(MY_COST)));
-                    inventoryData.date = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(DATE)));
-                    inventoryData.warehouse = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(WAREHOUSE)));
-                    inventoryData.vendor = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(VENDOR)));
-                    inventoryData.barcode = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(BARCODE)));
-                    inventoryData.photo = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(PHOTO)));
-                    inventoryData.id = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(ID)));
-                    inventoryData.admin_id = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(ADMIN_ID)));
-                    inventoryData.status = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(STATUS)));
-                    inventoryData.create_date = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(CREATE_DATE)));
-                    inventoryData.update_date = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(UPDATE_DATE)));
-                    inventoryData.add_update = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(ADD_UPDATE)));
+                    inventoryData.item_code = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ITEM_CODE));
+                    inventoryData.item_name = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ITEM_NAME));
+                    inventoryData.unit = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UNIT));
+                    inventoryData.qty = cursor.getString(cursor
+                            .getColumnIndexOrThrow(QUANTITY));
+                    inventoryData.price = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PRICE));
+                    inventoryData.mycost = cursor.getString(cursor
+                            .getColumnIndexOrThrow(MY_COST));
+                    inventoryData.date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DATE));
+                    inventoryData.warehouse = cursor.getString(cursor
+                            .getColumnIndexOrThrow(WAREHOUSE));
+                    inventoryData.vendor = cursor.getString(cursor
+                            .getColumnIndexOrThrow(VENDOR));
+                    inventoryData.barcode = cursor.getString(cursor
+                            .getColumnIndexOrThrow(BARCODE));
+                    inventoryData.photo = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PHOTO));
+                    inventoryData.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ID));
+                    inventoryData.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADMIN_ID));
+                    inventoryData.status = cursor.getString(cursor
+                            .getColumnIndexOrThrow(STATUS));
+                    inventoryData.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CREATE_DATE));
+                    inventoryData.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UPDATE_DATE));
+                    inventoryData.add_update = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE));
                     inventories.add(inventoryData);
                 } while (cursor.moveToNext());
 
@@ -773,6 +872,79 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 } while (cursor.moveToNext());
 
                 return (ArrayList<Inventory.InventoryData>) inventories;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    /*************************************************
+     * ********* PURCHASES METHODS ********************
+     *************************************************/
+    public long addPayment(PayIn.PayInData payInData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ID, payInData.id);
+        contentValues.put(PAYEE_NAME, payInData.payee_name);
+        contentValues.put(DATE, payInData.date_of_payment);
+        contentValues.put(AMOUNT, payInData.amount);
+        contentValues.put(ADMIN_ID, payInData.admin_id);
+        contentValues.put(CREATE_DATE, payInData.create_date);
+        contentValues.put(UPDATE_DATE, payInData.update_date);
+        contentValues.put(STATUS, payInData.status);
+        contentValues.put(PURPOSE, payInData.purpose_of_payment);
+        contentValues.put(MODE, payInData.mode_of_payment);
+        contentValues.put(PAYMENT_TYPE, payInData.payment_type);
+        contentValues.put(ADD_UPDATE, payInData.add_update);
+        return db.insert(PAYMENTS_TABLE, null, contentValues);
+    }
+
+    public boolean deletePayment(String discCode) {
+        return db.delete(PAYMENTS_TABLE, DISCOUNT_CODE + "='" + discCode + "'", null) > 0;
+    }
+
+    public ArrayList<PayIn.PayInData> getPayments(String paymentType) {
+        Cursor cursor = null;
+        try {
+            String query = "SELECT * FROM " + PAYMENTS_TABLE + " WHERE " + PAYMENT_TYPE + " = '" + paymentType + "'";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor.moveToFirst()) {
+                List<PayIn.PayInData> payments = new ArrayList<>();
+                do {
+                    PayIn.PayInData paymentData = new PayIn().new PayInData();
+                    paymentData.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ID));
+                    paymentData.payee_name = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PAYEE_NAME));
+                    paymentData.date_of_payment = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DATE));
+                    paymentData.amount = cursor.getString(cursor
+                            .getColumnIndexOrThrow(AMOUNT));
+                    paymentData.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADMIN_ID));
+                    paymentData.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UPDATE_DATE));
+                    paymentData.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CREATE_DATE));
+                    paymentData.status = cursor.getString(cursor
+                            .getColumnIndexOrThrow(STATUS));
+                    paymentData.purpose_of_payment = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PURPOSE));
+                    paymentData.mode_of_payment = cursor.getString(cursor
+                            .getColumnIndexOrThrow(MODE));
+                    paymentData.payment_type = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PAYMENT_TYPE));
+                    paymentData.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
+                    payments.add(paymentData);
+                } while (cursor.moveToNext());
+
+                return (ArrayList<PayIn.PayInData>) payments;
             }
         } catch (IllegalArgumentException e) {
             Log.d(TAG, e.toString());

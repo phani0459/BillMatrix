@@ -93,7 +93,6 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
-        ServerUtils.setOnDataChangeListener(null);
 
         taxSpinnerAdapter = Utils.loadSpinner(taxTypeSpinner, mContext, R.array.tax_type_array);
 
@@ -229,6 +228,10 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
                 if (Utils.isInternetAvailable(mContext)) {
                     addTaxtoServer(taxData);
                 } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
                     Utils.showToast("Tax Added successfully", mContext);
                 }
             } else {
@@ -236,6 +239,10 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
                     if (Utils.isInternetAvailable(mContext)) {
                         updateTaxtoServer(taxData);
                     } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
                         Utils.showToast("Tax Updated successfully", mContext);
                     }
                 }
@@ -355,7 +362,11 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
                                 deleteTaxfromServer(taxAdapter.getItem(position).id, taxAdapter.getItem(position).tax_type);
                             }
                         } else {
-                            Utils.showToast("Customer Deleted successfully", mContext);
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
+                            Utils.showToast("Tax Deleted successfully", mContext);
                         }
                         taxAdapter.deleteTax(position, false);
                     }

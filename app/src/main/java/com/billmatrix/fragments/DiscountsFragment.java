@@ -23,7 +23,6 @@ import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Discount;
 import com.billmatrix.network.ServerData;
-import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -86,7 +85,6 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
-        ServerUtils.setOnDataChangeListener(null);
 
         discountsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         Discount.DiscountData defaultDiscount = new Discount().new DiscountData();
@@ -267,6 +265,10 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                 if (Utils.isInternetAvailable(mContext)) {
                     addDiscounttoServer(discountData);
                 } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
                     Utils.showToast("Discount Added successfully", mContext);
                 }
             } else {
@@ -274,6 +276,10 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                     if (Utils.isInternetAvailable(mContext)) {
                         updateDiscounttoServer(discountData);
                     } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
                         Utils.showToast("Discount Updated successfully", mContext);
                     }
                 }
@@ -341,7 +347,11 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                                 deleteDiscountfromServer(discountAdapter.getItem(position).id, discountAdapter.getItem(position).discount_code);
                             }
                         } else {
-                            Utils.showToast("Customer Deleted successfully", mContext);
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
+                            Utils.showToast("Discount Deleted successfully", mContext);
                         }
                         discountAdapter.deleteDiscount(position);
                     }
@@ -387,10 +397,8 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                 if (response.body() != null) {
                     HashMap<String, String> taxStatus = response.body();
                     if (taxStatus.get("status").equalsIgnoreCase("200")) {
-                        if (taxStatus.get("delete_discount ").equalsIgnoreCase("success")) {
-                            Utils.showToast("Discount Deleted successfully", mContext);
-                            billMatrixDaoImpl.deleteDiscount(disc_code);
-                        }
+                        Utils.showToast("Discount Deleted successfully", mContext);
+                        billMatrixDaoImpl.deleteDiscount(disc_code);
                     }
                 }
             }

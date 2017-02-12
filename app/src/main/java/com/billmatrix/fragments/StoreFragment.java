@@ -34,6 +34,7 @@ import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Discount;
 import com.billmatrix.network.ServerUtils;
+import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -54,6 +55,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class StoreFragment extends Fragment {
 
     private static int RESULT_UPLOAD_LOGO = 1;
+    private static int RESULT_EDIT_LOGO = 2;
     private static final int REQUEST_READ_STORAGE = 14;
     private Context mContext;
     private Uri logoUri;
@@ -131,7 +133,6 @@ public class StoreFragment extends Fragment {
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
-        ServerUtils.setOnDataChangeListener(null);
 
         zipCodeEditText.setFilters(Utils.getInputFilter(6));
         phoneEditText.setFilters(Utils.getInputFilter(10));
@@ -146,12 +147,25 @@ public class StoreFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        if (Utils.getSharedPreferences(mContext).getBoolean(Constants.PREF_IS_DISCOUNT_FOOTER_SELECTED, false)) {
+            discountFooterRadioButton.setChecked(true);
+            discountDisableView.setVisibility(View.GONE);
+            thankYouFooterRadioButton.setChecked(false);
+        } else {
+            discountFooterRadioButton.setChecked(false);
+            discountDisableView.setVisibility(View.VISIBLE);
+            thankYouFooterRadioButton.setChecked(true);
+        }
+
         discountFooterRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
                     discountDisableView.setVisibility(View.GONE);
                     thankYouFooterRadioButton.setChecked(false);
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_IS_DISCOUNT_FOOTER_SELECTED, true).apply();
+                    Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_FOOTER_TEXT, null).apply();
                 }
             }
         });
@@ -161,6 +175,8 @@ public class StoreFragment extends Fragment {
                 if (b) {
                     discountDisableView.setVisibility(View.VISIBLE);
                     discountFooterRadioButton.setChecked(false);
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_IS_DISCOUNT_FOOTER_SELECTED, false).apply();
+                    Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_FOOTER_TEXT, thankFooterEditText.getText().toString()).apply();
                 }
             }
         });
@@ -186,10 +202,38 @@ public class StoreFragment extends Fragment {
         radioGroup.setOrientation(RadioGroup.VERTICAL);
         if (discounts != null && discounts.size() > 0) {
             noDiscountsTextView.setVisibility(View.GONE);
-            for (Discount.DiscountData discount : discounts) {
+            for (final Discount.DiscountData discountData : discounts) {
                 RadioButton radioButton = new RadioButton(mContext);
-                radioButton.setText(discount.discount_description);
+                radioButton.setText(discountData.discount_description);
                 radioGroup.addView(radioButton);
+
+                /**
+                 * to show previously selected discount as selected
+                 */
+                String selectedDiscountCode = Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, "");
+
+                if (!TextUtils.isEmpty(selectedDiscountCode)) {
+                    if (selectedDiscountCode.equalsIgnoreCase(discountData.discount_code)) {
+                        radioButton.setChecked(true);
+                    } else {
+                        radioButton.setChecked(false);
+                    }
+                }
+
+                radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        if (b) {
+                            if (TextUtils.isDigitsOnly(discountData.discount)) {
+                                Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_VALUE, Float.parseFloat(discountData.discount)).apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DISCOUNT_CODE, discountData.discount_code).apply();
+                            } else {
+                                Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f).apply();
+                                Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DISCOUNT_CODE, "").apply();
+                            }
+                        }
+                    }
+                });
             }
             storeDiscountsLayout.addView(radioGroup);
         } else {
@@ -211,8 +255,19 @@ public class StoreFragment extends Fragment {
 
 
     @OnClick(R.id.im_upload_logo)
-    public void browseLicenceOne() {
+    public void browseStoreLogo() {
         startActivityForResult(getPickImageChooserIntent(), RESULT_UPLOAD_LOGO);
+    }
+
+    @OnClick(R.id.im_edit_storeImage)
+    public void editStoreLogo() {
+        startActivityForResult(getPickImageChooserIntent(), RESULT_EDIT_LOGO);
+    }
+
+    @OnClick(R.id.im_remove_storeLogo)
+    public void removeStoreLogo() {
+        headerLogoDraweeView.setImageURI(Uri.EMPTY);
+        headerLogoDraweeView.setBackgroundResource(R.drawable.avatar);
     }
 
     /**
@@ -408,9 +463,13 @@ public class StoreFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_UPLOAD_LOGO && resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             logoUri = getPickImageResultUri(data);
-            logoDraweeView.setImageURI(logoUri);
+            if (requestCode == RESULT_UPLOAD_LOGO) {
+                logoDraweeView.setImageURI(logoUri);
+            } else if (requestCode == RESULT_EDIT_LOGO) {
+                headerLogoDraweeView.setImageURI(logoUri);
+            }
         }
     }
 

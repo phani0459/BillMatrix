@@ -32,7 +32,6 @@ public class DBConstants {
      */
     public final static String ADD_UPDATE = "add_or_update";
 
-
     final static String EMPLOYEES_TABLE = "TABLE_EMPLOYEES";
     final static String VENDORS_TABLE = "TABLE_VENDORS";
     final static String CUSTOMERS_TABLE = "TABLE_CUSTOMERS";
@@ -40,6 +39,7 @@ public class DBConstants {
     final static String POS_ITEMS_TABLE = "TABLE_POS_ITEMS";
     final static String TAX_TABLE = "TABLE_TAX";
     final static String DISCOUNT_TABLE = "TABLE_DISCOUNT";
+    final static String PAYMENTS_TABLE = "TABLE_PAYMENTS";
 
     /**
      * Employees Column Names
@@ -97,6 +97,15 @@ public class DBConstants {
      * POS Column Names
      */
     final static String SELECTED_QTY = "discCode";
+
+    /**
+     * Payments columns
+     */
+    final static String PAYEE_NAME = "payee_name";
+    final static String AMOUNT = "amount";
+    final static String PURPOSE = "purpose_of_payment";
+    final static String MODE = "mode_of_payment";
+    final static String PAYMENT_TYPE = "payment_type";
 
     static final String TAG = "BillMatrix_DataBase";
 }

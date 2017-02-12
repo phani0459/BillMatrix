@@ -36,6 +36,25 @@ public class Constants {
     public static final String PREF_DISCOUNT_CODE = "discountCode_Selected";
     public static final String PREF_TAX_JSON = "taxJSON";
     public static final String PREF_DEFAULT_DISCOUNT_CODE = "discCode";
+    public static final String PREF_IS_DISCOUNT_FOOTER_SELECTED = "footerType";
+    public static final String PREF_FOOTER_TEXT = "footerText";
+
+    /**
+     * Edited Offline
+     */
+
+    public static final String PREF_EMPLOYEES_EDITED_OFFLINE = "empOffline";
+    public static final String PREF_INVENTORY_EDITED_OFFLINE = "inventoryOffline";
+    public static final String PREF_CUSTOMERS_EDITED_OFFLINE = "customersOffline";
+    public static final String PREF_REPORTS_EDITED_OFFLINE = "reportsOffline";
+    public static final String PREF_PURCS_EDITED_OFFLINE = "pursOffline";
+    public static final String PREF_SALES_EDITED_OFFLINE = "salesOffline";
+    public static final String PREF_VENDORS_EDITED_OFFLINE = "vendorsOffline";
+    public static final String PREF_DISCS_EDITED_OFFLINE = "discsOffline";
+    public static final String PREF_HnF_EDITED_OFFLINE = "HnFOffline";
+    public static final String PREF_GEN_REPORT_EDITED_OFFLINE = "GenRepOffline";
+    public static final String PREF_TAXES_EDITED_OFFLINE = "TaxesOffline";
+
 
     /**
      * File Names

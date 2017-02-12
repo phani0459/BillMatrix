@@ -14,11 +14,16 @@ public class PayIn implements Serializable {
 
     public class PayInData {
         public String id;
-        public String name;
-        public String date;
+        public String payee_name;
+        public String date_of_payment;
         public String amount;
         public String admin_id;
         public String create_date;
         public String update_date;
+        public String status;
+        public String purpose_of_payment;
+        public String mode_of_payment;
+        public String payment_type;
+        public String add_update;
     }
 }

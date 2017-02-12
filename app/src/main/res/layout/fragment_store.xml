@@ -379,6 +379,7 @@
                                 android:orientation="horizontal">
 
                                 <ImageView
+                                    android:id="@+id/im_edit_storeImage"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="0.5"
@@ -386,6 +387,7 @@
                                     android:src="@drawable/edit_icon" />
 
                                 <ImageView
+                                    android:id="@+id/im_remove_storeLogo"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="0.5"

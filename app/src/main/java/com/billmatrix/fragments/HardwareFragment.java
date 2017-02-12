@@ -42,7 +42,6 @@ public class HardwareFragment extends Fragment {
         ButterKnife.bind(this, v);
 
         mContext = getActivity();
-        ServerUtils.setOnDataChangeListener(null);
 
         if (WorkService.workThread != null) {
             if (WorkService.workThread.getDeviceAddress() != null) {

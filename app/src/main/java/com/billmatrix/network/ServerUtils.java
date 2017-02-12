@@ -6,10 +6,10 @@ import android.util.Log;
 
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
-import com.billmatrix.interfaces.OnDataChangeListener;
 import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Employee;
+import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
@@ -32,11 +32,6 @@ public class ServerUtils {
     public static final int STATUS_UPDATING = 1;
 
     private static boolean isSync;
-    private static OnDataChangeListener onDataChangeListener;
-
-    public static void setOnDataChangeListener(OnDataChangeListener onDataChangeListener) {
-        ServerUtils.onDataChangeListener = onDataChangeListener;
-    }
 
     public static boolean isSync() {
         return isSync;
@@ -90,9 +85,6 @@ public class ServerUtils {
                             customerData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateCustomer(customerData);
-
-                            if (onDataChangeListener != null)
-                                onDataChangeListener.onDataChange(1, STATUS_ADDING, isLast);
 
                         } else {
                             if (!isSync)
@@ -149,8 +141,6 @@ public class ServerUtils {
                             customerData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateCustomer(customerData);
-                            if (onDataChangeListener != null)
-                                onDataChangeListener.onDataChange(1, STATUS_UPDATING, isLast);
                         }
                     }
                 }
@@ -189,8 +179,6 @@ public class ServerUtils {
                         if (customerStatus.get("delete_customer").equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Customer Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteCustomer(DBConstants.ID, customer.id);
-                            if (onDataChangeListener != null)
-                                onDataChangeListener.onDataChange(1, STATUS_DELETING, isLast);
                         }
                     }
                 }
@@ -253,8 +241,6 @@ public class ServerUtils {
 
                         billMatrixDaoImpl.updateEmployee(employeeData);
 
-                        if (onDataChangeListener != null)
-                            onDataChangeListener.onDataChange(0, STATUS_UPDATING, isLast);
                     }
                 }
             }
@@ -295,8 +281,6 @@ public class ServerUtils {
                             if (!isSync) Utils.showToast("Employee Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteEmployee(employeeData.login_id);
 
-                            if (onDataChangeListener != null)
-                                onDataChangeListener.onDataChange(0, STATUS_DELETING, isLast);
                         }
                     }
                 }
@@ -351,10 +335,6 @@ public class ServerUtils {
                             employeeData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateEmployee(employeeData);
-
-                            if (onDataChangeListener != null)
-                                onDataChangeListener.onDataChange(0, STATUS_ADDING, isLast);
-
                         } else {
                             if (!isSync)
                                 Utils.showToast(employeeStatus.create_employee + "", mContext);
@@ -377,7 +357,7 @@ public class ServerUtils {
         return employeeData;
     }
 
-    public static void addVendortoServer(final Vendor.VendorData vendorData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
+    public static Vendor.VendorData addVendortoServer(final Vendor.VendorData vendorData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
         Log.e(TAG, "addVendortoServer: " + vendorData.toString());
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addVendor(vendorData.name, vendorData.email, vendorData.phone,
                 vendorData.since, vendorData.address, vendorData.status, adminId);
@@ -429,9 +409,11 @@ public class ServerUtils {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });
+
+        return vendorData;
     }
 
-    public static void updateVendortoServer(final Vendor.VendorData vendorData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+    public static Vendor.VendorData updateVendortoServer(final Vendor.VendorData vendorData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
         Log.e(TAG, "updateVendortoServer: ");
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateVendor(vendorData.id, vendorData.email, vendorData.phone,
                 vendorData.since, vendorData.status, vendorData.address, vendorData.name);
@@ -482,6 +464,7 @@ public class ServerUtils {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });
+        return vendorData;
     }
 
     public static void deleteVendorfromServer(final Vendor.VendorData vendorData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
@@ -519,4 +502,164 @@ public class ServerUtils {
         });
     }
 
+    /****************************************************************
+     * *****************INVENTORY METHODS ***************************
+     ****************************************************************/
+
+    public static Inventory.InventoryData updateInventorytoServer(final Inventory.InventoryData inventoryData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Log.e(TAG, "updateCustomertoServer: ");
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateInventory(inventoryData.id, inventoryData.item_code, inventoryData.item_name,
+                inventoryData.unit, inventoryData.qty, inventoryData.price, inventoryData.mycost, inventoryData.date, inventoryData.warehouse,
+                inventoryData.vendor, inventoryData.barcode, inventoryData.photo, inventoryData.status);
+
+        call.enqueue(new Callback<CreateJob>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    CreateJob inventoryStatus = response.body();
+                    if (inventoryStatus.status.equalsIgnoreCase("200")) {
+                        if (!isSync) Utils.showToast("Inventory Updated successfully", mContext);
+                    }
+
+                    inventoryData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                    inventoryData.admin_id = inventoryStatus.data.admin_id;
+                    inventoryData.id = inventoryStatus.data.id;
+                    inventoryData.item_code = inventoryStatus.data.item_code;
+                    inventoryData.item_name = inventoryStatus.data.item_name;
+                    inventoryData.unit = inventoryStatus.data.unit;
+                    inventoryData.qty = inventoryStatus.data.qty;
+                    inventoryData.price = inventoryStatus.data.price;
+                    inventoryData.mycost = inventoryStatus.data.mycost;
+                    inventoryData.date = inventoryStatus.data.date;
+                    inventoryData.warehouse = inventoryStatus.data.warehouse;
+                    inventoryData.vendor = inventoryStatus.data.vendor;
+                    inventoryData.barcode = inventoryStatus.data.barcode;
+                    inventoryData.photo = inventoryStatus.data.photo;
+                    inventoryData.status = inventoryStatus.data.status;
+                    inventoryData.create_date = inventoryStatus.data.create_date;
+                    inventoryData.update_date = inventoryStatus.data.update_date;
+                    inventoryData.add_update = Constants.DATA_FROM_SERVER;
+
+                    billMatrixDaoImpl.updateInventory(inventoryData);
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<CreateJob> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+
+        return inventoryData;
+    }
+
+    public static void deleteInventoryfromServer(final Inventory.InventoryData inventoryData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteInventory(inventoryData.id);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> inventoryStatus = response.body();
+                    if (inventoryStatus.get("status").equalsIgnoreCase("200")) {
+                        if (inventoryStatus.containsKey("delete_inventory") && inventoryStatus.get("delete_inventory").equalsIgnoreCase("success")) {
+                            if (!isSync)
+                                Utils.showToast("Inventory Deleted successfully", mContext);
+                            billMatrixDaoImpl.deleteInventory(inventoryData.item_code);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
+    public static Inventory.InventoryData addInventorytoServer(final Inventory.InventoryData inventoryData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Log.e(TAG, "addInventorytoServer: ");
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addInventory(adminId, inventoryData.item_code, inventoryData.item_name,
+                inventoryData.unit, inventoryData.qty, inventoryData.price, inventoryData.mycost, inventoryData.date, inventoryData.warehouse, inventoryData.vendor,
+                inventoryData.barcode, inventoryData.photo, "1");
+
+        call.enqueue(new Callback<CreateJob>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    CreateJob inventoryStatus = response.body();
+                    if (inventoryStatus.status.equalsIgnoreCase("200")) {
+                        if (!isSync) Utils.showToast("Inventory Added successfully", mContext);
+                    }
+
+                    inventoryData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                    inventoryData.admin_id = inventoryStatus.data.admin_id;
+                    inventoryData.id = inventoryStatus.data.id;
+                    inventoryData.item_code = inventoryStatus.data.item_code;
+                    inventoryData.item_name = inventoryStatus.data.item_name;
+                    inventoryData.unit = inventoryStatus.data.unit;
+                    inventoryData.qty = inventoryStatus.data.qty;
+                    inventoryData.price = inventoryStatus.data.price;
+                    inventoryData.mycost = inventoryStatus.data.mycost;
+                    inventoryData.date = inventoryStatus.data.date;
+                    inventoryData.warehouse = inventoryStatus.data.warehouse;
+                    inventoryData.vendor = inventoryStatus.data.vendor;
+                    inventoryData.barcode = inventoryStatus.data.barcode;
+                    inventoryData.photo = inventoryStatus.data.photo;
+                    inventoryData.status = inventoryStatus.data.status;
+                    inventoryData.create_date = inventoryStatus.data.create_date;
+                    inventoryData.update_date = inventoryStatus.data.update_date;
+                    inventoryData.add_update = Constants.DATA_FROM_SERVER;
+
+                    billMatrixDaoImpl.updateInventory(inventoryData);
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<CreateJob> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+        return inventoryData;
+    }
 }

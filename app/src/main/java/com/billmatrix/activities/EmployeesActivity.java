@@ -239,6 +239,10 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 if (Utils.isInternetAvailable(mContext)) {
                     employeeFromServer = ServerUtils.addEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, adminId, false);
                 } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
                     employeeFromServer = employeeData;
                     Utils.showToast("Employee Added successfully", mContext);
                 }
@@ -247,6 +251,10 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     if (Utils.isInternetAvailable(mContext)) {
                         employeeFromServer = ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, false);
                     } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
                         employeeFromServer = employeeData;
                         Utils.showToast("Employee Updated successfully", mContext);
                     }
@@ -309,6 +317,10 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                                 ServerUtils.deleteEmployeefromServer(selectedEmp, mContext, billMatrixDaoImpl, false);
                             }
                         } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
                             Utils.showToast("Employee Deleted successfully", mContext);
                         }
                         employeesAdapter.deleteEmployee(position);

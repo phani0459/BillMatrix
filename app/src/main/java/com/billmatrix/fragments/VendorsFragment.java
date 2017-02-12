@@ -175,6 +175,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         isVendroAdded = false;
 
         Vendor.VendorData vendorData = new Vendor().new VendorData();
+        Vendor.VendorData vendorFromServer = new Vendor().new VendorData();
         String vendorEmail = vendorEmail_EditText.getText().toString();
         String vendorAdd = vendorAdd_EditText.getText().toString();
         String vendorName = vendorName_EditText.getText().toString();
@@ -236,9 +237,6 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
 
         if (vendorAdded != -1) {
-            vendorsAdapter.addVendor(vendorData);
-            vendorsRecyclerView.smoothScrollToPosition(vendorsAdapter.getItemCount());
-
             /**
              * reset all edit texts
              */
@@ -250,19 +248,32 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
 
             if (addVendorButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    ServerUtils.addVendortoServer(vendorData, mContext, adminId, billMatrixDaoImpl);
+                    vendorFromServer = ServerUtils.addVendortoServer(vendorData, mContext, adminId, billMatrixDaoImpl);
                 } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
+                    vendorFromServer = vendorData;
                     Utils.showToast("Vendor Added successfully", mContext);
                 }
             } else {
                 if (selectedVendortoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        ServerUtils.updateVendortoServer(vendorData, mContext, billMatrixDaoImpl);
+                        vendorFromServer = ServerUtils.updateVendortoServer(vendorData, mContext, billMatrixDaoImpl);
                     } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
+                        vendorFromServer = vendorData;
                         Utils.showToast("Vendor Updated successfully", mContext);
                     }
                 }
             }
+
+            vendorsAdapter.addVendor(vendorFromServer);
+            vendorsRecyclerView.smoothScrollToPosition(vendorsAdapter.getItemCount());
             isEditing = false;
             addVendorButton.setText(getString(R.string.add));
             ((BaseTabActivity) mContext).ifTabCanChange = true;
@@ -330,6 +341,10 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
                                 ServerUtils.deleteVendorfromServer(selectedVendor, mContext, billMatrixDaoImpl);
                             }
                         } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
                             Utils.showToast("Vendor Deleted successfully", mContext);
                         }
                         vendorsAdapter.deleteVendor(position);

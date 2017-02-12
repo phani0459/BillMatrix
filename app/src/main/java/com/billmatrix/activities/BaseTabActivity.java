@@ -56,7 +56,6 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
 
         ButterKnife.bind(this);
         Fresco.initialize(getApplicationContext());
-        ServerUtils.setOnDataChangeListener(null);
 
         mContext = this;
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);

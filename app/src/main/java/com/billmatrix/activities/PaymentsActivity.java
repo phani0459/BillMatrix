@@ -20,12 +20,15 @@ public class PaymentsActivity extends BaseTabActivity {
 
     @BindView(R.id.frameLayout)
     public FrameLayout frameLayout;
+    public static final String PAYOUT = "PAY OUTS";
+    public static final String PAYIN = "PAY INS";
+    public static final String GEN_EXPENSE = "GEN. EXPENSES";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setPageTitle(String.format("<span>%s Payments </span>", getArrowString()));
-        addTabButtons(3, "PAY OUTS", "PAY INS", "GEN. EXPENSES");
+        addTabButtons(3, PAYOUT, PAYIN, GEN_EXPENSE);
 
         frameLayout.setVisibility(View.VISIBLE);
 

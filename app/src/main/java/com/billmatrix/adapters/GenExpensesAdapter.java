@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.GeneralExpense;
+import com.billmatrix.models.PayIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 
 public class GenExpensesAdapter extends RecyclerView.Adapter<GenExpensesAdapter.ExpenseHolder> {
 
-    private List<GeneralExpense.GeneralExpenseData> genExpenses;
+    private List<PayIn.PayInData> genExpenses;
     OnItemClickListener onItemClickListener;
 
     public class ExpenseHolder extends RecyclerView.ViewHolder {
@@ -49,12 +49,12 @@ public class GenExpensesAdapter extends RecyclerView.Adapter<GenExpensesAdapter.
         notifyDataSetChanged();
     }
 
-    public void addGenExpense(GeneralExpense.GeneralExpenseData paymentData) {
+    public void addGenExpense(PayIn.PayInData paymentData) {
         genExpenses.add(paymentData);
         notifyDataSetChanged();
     }
 
-    public GenExpensesAdapter(List<GeneralExpense.GeneralExpenseData> genExpenses, OnItemClickListener onClickListener) {
+    public GenExpensesAdapter(List<PayIn.PayInData> genExpenses, OnItemClickListener onClickListener) {
         this.genExpenses = genExpenses;
         this.onItemClickListener = onClickListener;
     }
@@ -73,12 +73,12 @@ public class GenExpensesAdapter extends RecyclerView.Adapter<GenExpensesAdapter.
 
     @Override
     public void onBindViewHolder(ExpenseHolder holder, final int position) {
-        GeneralExpense.GeneralExpenseData paymentData = genExpenses.get(position);
+        PayIn.PayInData paymentData = genExpenses.get(position);
 
         holder.snoTextView.setText("" + (position + 1));
-        holder.nameTextView.setText(paymentData.name);
-        holder.purposeTextView.setText(paymentData.purpose);
-        holder.dateTextView.setText(paymentData.date);
+        holder.nameTextView.setText(paymentData.payee_name);
+        holder.purposeTextView.setText(paymentData.purpose_of_payment);
+        holder.dateTextView.setText(paymentData.date_of_payment);
         holder.amountTextView.setText(paymentData.amount.trim());
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +88,7 @@ public class GenExpensesAdapter extends RecyclerView.Adapter<GenExpensesAdapter.
         });
     }
 
-    public GeneralExpense.GeneralExpenseData getItem(int position) {
+    public PayIn.PayInData getItem(int position) {
         return genExpenses.get(position);
     }
 

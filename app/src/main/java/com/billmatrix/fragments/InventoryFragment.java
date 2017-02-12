@@ -37,11 +37,13 @@ import com.billmatrix.WorkService;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.InventoryAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.network.ServerData;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 import com.lvrenyang.pos.Cmd;
@@ -283,6 +285,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         isInventoryAdded = false;
 
         Inventory.InventoryData inventoryData = new Inventory().new InventoryData();
+        Inventory.InventoryData inventoryFromServer = new Inventory().new InventoryData();
         String itemCode = itemCodeEditText.getText().toString();
 
         if (TextUtils.isEmpty(itemCode)) {
@@ -362,10 +365,14 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
         if (addInventoryButton.getText().toString().equalsIgnoreCase("ADD")) {
             inventoryData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+            inventoryData.add_update = Constants.ADD_OFFLINE;
         } else {
             if (selectedInventorytoEdit != null) {
                 inventoryData.id = selectedInventorytoEdit.id;
                 inventoryData.create_date = selectedInventorytoEdit.create_date;
+                if (selectedInventorytoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                    inventoryData.add_update = Constants.UPDATE_OFFLINE;
+                }
             }
         }
 
@@ -387,9 +394,6 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         long inventoryAdded = billMatrixDaoImpl.addInventory(inventoryData);
 
         if (inventoryAdded != -1) {
-            inventoryAdapter.addInventory(inventoryData);
-            inventoryRecyclerView.smoothScrollToPosition(inventoryAdapter.getItemCount());
-
             /**
              * reset all edit texts
              */
@@ -408,19 +412,32 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
             if (addInventoryButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    addInventorytoServer(inventoryData);
+                    inventoryFromServer = ServerUtils.addInventorytoServer(inventoryData, mContext, adminId, billMatrixDaoImpl);
                 } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
                     Utils.showToast("Inventory Added successfully", mContext);
+                    inventoryFromServer = inventoryData;
                 }
             } else {
                 if (selectedInventorytoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        updateInventorytoServer(inventoryData);
+                        inventoryFromServer = ServerUtils.updateInventorytoServer(inventoryData, mContext, billMatrixDaoImpl);
                     } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        inventoryFromServer = inventoryData;
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
                         Utils.showToast("Inventory Updated successfully", mContext);
                     }
                 }
             }
+
+            inventoryAdapter.addInventory(inventoryFromServer);
+            inventoryRecyclerView.smoothScrollToPosition(inventoryAdapter.getItemCount());
             addInventoryButton.setText(getString(R.string.add));
             isEditing = false;
             ((BaseTabActivity) mContext).ifTabCanChange = true;
@@ -430,120 +447,6 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         }
     }
 
-    private void updateInventorytoServer(Inventory.InventoryData inventoryData) {
-        Log.e(TAG, "updateCustomertoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateInventory(inventoryData.id, inventoryData.item_code, inventoryData.item_name,
-                inventoryData.unit, inventoryData.qty, inventoryData.price, inventoryData.mycost, inventoryData.date, inventoryData.warehouse,
-                inventoryData.vendor, inventoryData.barcode, inventoryData.photo, inventoryData.status);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> customerMap = response.body();
-                    if (customerMap.get("status").equalsIgnoreCase("200")) {
-                        if (customerMap.containsKey("update_inventory") && customerMap.get("update_inventory").equalsIgnoreCase("Successfully Updated")) {
-                            Utils.showToast("Inventory Updated successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
-    public void deleteInventoryfromServer(String inventoryID) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteInventory(inventoryID);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> employeeStatus = response.body();
-                    if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        if (employeeStatus.get("delete_inventory").equalsIgnoreCase("success")) {
-                            Utils.showToast("Inventory Deleted successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
-    private void addInventorytoServer(Inventory.InventoryData inventoryData) {
-        Log.e(TAG, "addInventorytoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addInventory(adminId, inventoryData.item_code, inventoryData.item_name,
-                inventoryData.unit, inventoryData.qty, inventoryData.price, inventoryData.mycost, inventoryData.date, inventoryData.warehouse, inventoryData.vendor,
-                inventoryData.barcode, inventoryData.photo, "1");
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> customerStatus = response.body();
-                    if (customerStatus.get("status").equalsIgnoreCase("200")) {
-                        if (customerStatus.get("create_inventory").equalsIgnoreCase("success")) {
-                            Utils.showToast("Inventory Added successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
     @Override
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
@@ -551,12 +454,21 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Inventory", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.updateInventory("-1", inventoryAdapter.getItem(position).item_code);
+                        Inventory.InventoryData selectedInventory = inventoryAdapter.getItem(position);
+                        if (selectedInventory.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                            billMatrixDaoImpl.updateInventory(DBConstants.STATUS, "-1", selectedInventory.item_code);
+                        } else {
+                            billMatrixDaoImpl.deleteInventory(selectedInventory.item_code);
+                        }
                         if (Utils.isInternetAvailable(mContext)) {
-                            if (!TextUtils.isEmpty(inventoryAdapter.getItem(position).id)) {
-                                deleteInventoryfromServer(inventoryAdapter.getItem(position).id);
+                            if (!TextUtils.isEmpty(selectedInventory.id)) {
+                                ServerUtils.deleteInventoryfromServer(selectedInventory, mContext, billMatrixDaoImpl);
                             }
                         } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
                             Utils.showToast("Inventory Deleted successfully", mContext);
                         }
                         inventoryAdapter.deleteInventory(position);
@@ -691,7 +603,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
             if (inventories != null && inventories.size() > 0) {
                 for (Inventory.InventoryData inventoryData : inventories) {
-                    if (inventoryData.barcode.toLowerCase().contains(query) || inventoryData.item_name.toLowerCase().contains(query) ||
+                    if ((!TextUtils.isEmpty(inventoryData.barcode) && inventoryData.barcode.toLowerCase().contains(query)) ||
+                            inventoryData.item_name.toLowerCase().contains(query) ||
                             inventoryData.item_code.toLowerCase().contains(query)) {
                         noInventory = true;
                         inventoryAdapter.addInventory(inventoryData);

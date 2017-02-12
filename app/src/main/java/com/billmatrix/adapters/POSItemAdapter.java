@@ -1,5 +1,6 @@
 package com.billmatrix.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.utils.Utils;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import butterknife.ButterKnife;
 
 public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInventoryHolder> {
 
+    private final Context mContext;
     public List<Inventory.InventoryData> inventories;
     public List<String> inventoryIDs;
     OnItemSelected onItemSelected;
@@ -49,9 +52,10 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
         }
     }
 
-    public POSItemAdapter(List<Inventory.InventoryData> inventories, OnItemSelected onItemSelected) {
+    public POSItemAdapter(List<Inventory.InventoryData> inventories, OnItemSelected onItemSelected, Context mContext) {
         this.inventories = inventories;
         this.onItemSelected = onItemSelected;
+        this.mContext = mContext;
         inventoryIDs = new ArrayList<>();
     }
 
@@ -108,10 +112,9 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
             unit = unit.substring(0, unit.length() - 1);
         }
 
-        final View itemView = (View) holder.priceTextView.getParent();
+        /*final View itemView = (View) holder.priceTextView.getParent();*/
 
         holder.qtyNumberButton.setNumber(inventoryData.selectedQTY, true);
-        holder.qtyNumberButton.setRange(1, Integer.parseInt(inventoryData.qty));
 
         holder.itemCodeTextView.setText(inventoryData.item_code.toUpperCase());
         holder.itemNameTextView.setText(inventoryData.item_name.toUpperCase());
@@ -126,6 +129,11 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
         holder.qtyNumberButton.setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
             @Override
             public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
+                if (newValue > Integer.parseInt(inventoryData.qty)) {
+                    view.setNumber(inventoryData.selectedQTY);
+                    Utils.showToast("This item is out of stock", mContext);
+                    return;
+                }
                 float totalPrice = Float.parseFloat(price) * newValue;
                 inventoryData.selectedQTY = newValue + "";
                 holder.totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalPrice));

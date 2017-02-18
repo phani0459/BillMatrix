@@ -19,8 +19,10 @@ import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.models.Customer;
+import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.Payments;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
@@ -202,6 +204,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
         serverData.setFromLogin(false);
         serverData.setProgressDialog(null);
+        serverData.setPaymentType(null);
         serverData.setContext(mContext);
         serverData.setOnDataFetchListener(this);
 
@@ -215,7 +218,6 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         discountSyncCheckbox.setOnCheckedChangeListener(this);
         headerFooterSyncCheckbox.setOnCheckedChangeListener(this);
         generatedReportSyncCheckbox.setOnCheckedChangeListener(this);
-
 
         /**
          * If edited offline true, set pending sync icon
@@ -285,7 +287,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         } else if (reportsSyncCheckbox.isChecked()) {
             //TODO sync Reports
         } else if (purchasesSyncCheckbox.isChecked()) {
-            //TODO sync Purchases
+            syncPayments(ServerUtils.STATUS_DELETING);
         } else if (salesSyncCheckbox.isChecked()) {
             //TODO sync sales
         } else if (employeesSyncCheckbox.isChecked()) {
@@ -293,7 +295,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         } else if (vendorsSyncCheckbox.isChecked()) {
             syncVendors(ServerUtils.STATUS_DELETING);
         } else if (discountSyncCheckbox.isChecked()) {
-            //TODO sync Discounts
+            syncDiscounts(ServerUtils.STATUS_DELETING);
         } else if (headerFooterSyncCheckbox.isChecked()) {
             //TODO sync Header and footer
         } else if (generatedReportSyncCheckbox.isChecked()) {
@@ -395,13 +397,13 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                 // for that employee
                 switch (status) {
                     case ServerUtils.STATUS_DELETING:
-                        ServerUtils.deleteEmployeefromServer(emp, mContext, billMatrixDaoImpl, false);
+                        ServerUtils.deleteEmployeefromServer(emp, mContext, billMatrixDaoImpl);
                         break;
                     case ServerUtils.STATUS_ADDING:
-                        ServerUtils.addEmployeetoServer(emp, mContext, billMatrixDaoImpl, adminId, false);
+                        ServerUtils.addEmployeetoServer(emp, mContext, billMatrixDaoImpl, adminId);
                         break;
                     case ServerUtils.STATUS_UPDATING:
-                        ServerUtils.updateEmployeetoServer(emp, mContext, billMatrixDaoImpl, false);
+                        ServerUtils.updateEmployeetoServer(emp, mContext, billMatrixDaoImpl);
                         break;
 
                 }
@@ -540,13 +542,13 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                 // for that Customer
                 switch (status) {
                     case ServerUtils.STATUS_DELETING:
-                        ServerUtils.deleteCustomerfromServer(emp, mContext, billMatrixDaoImpl, false);
+                        ServerUtils.deleteCustomerfromServer(emp, mContext, billMatrixDaoImpl);
                         break;
                     case ServerUtils.STATUS_ADDING:
-                        ServerUtils.addCustomertoServer(emp, mContext, adminId, billMatrixDaoImpl, false);
+                        ServerUtils.addCustomertoServer(emp, mContext, adminId, billMatrixDaoImpl);
                         break;
                     case ServerUtils.STATUS_UPDATING:
-                        ServerUtils.updateCustomertoServer(emp, mContext, billMatrixDaoImpl, false);
+                        ServerUtils.updateCustomertoServer(emp, mContext, billMatrixDaoImpl);
                         break;
 
                 }
@@ -870,6 +872,292 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
 
                 }
                 Log.e(TAG, "Inventory onComplete");
+            }
+        });
+    }
+
+    /*****************************************************
+     * ******** Discounts SYNC ***************************
+     **************************************************/
+
+    private void syncDiscounts(int currentStatus) {
+        discountSyncIcon.setImageResource(R.drawable.sync_green);
+
+        ArrayList<Discount.DiscountData> dbDiscounts = billMatrixDaoImpl.getDiscount();
+        ArrayList<Discount.DiscountData> deletedDiscounts = new ArrayList<>();
+        ArrayList<Discount.DiscountData> addedDiscounts = new ArrayList<>();
+        ArrayList<Discount.DiscountData> updatedDiscounts = new ArrayList<>();
+
+        if (dbDiscounts != null && dbDiscounts.size() > 0) {
+            for (Discount.DiscountData discount : dbDiscounts) {
+                if (discount.status.equalsIgnoreCase("-1")) {
+                    deletedDiscounts.add(discount);
+                }
+
+                if (!TextUtils.isEmpty(discount.add_update)) {
+                    if (discount.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                        addedDiscounts.add(discount);
+                    }
+
+                    if (discount.add_update.equalsIgnoreCase(Constants.UPDATE_OFFLINE)) {
+                        updatedDiscounts.add(discount);
+                    }
+                }
+            }
+        }
+
+        if (deletedDiscounts.size() <= 0 && updatedDiscounts.size() <= 0 && addedDiscounts.size() <= 0) {
+            billMatrixDaoImpl.deleteAllDiscounts();
+            serverData.getDiscountsFromServer(adminId);
+            return;
+        }
+
+        switch (currentStatus) {
+            case ServerUtils.STATUS_DELETING:
+                if (deletedDiscounts.size() > 0) {
+                    Observable<ArrayList<Discount.DiscountData>> deletedDiscountsObservable = Observable.fromArray(deletedDiscounts);
+                    syncDiscountswithServer(deletedDiscountsObservable, currentStatus);
+                } else if (addedDiscounts.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_ADDING;
+                    Observable<ArrayList<Discount.DiscountData>> addedDiscountsObservable = Observable.fromArray(addedDiscounts);
+                    syncDiscountswithServer(addedDiscountsObservable, currentStatus);
+                } else if (updatedDiscounts.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Discount.DiscountData>> updatedDiscountsObservable = Observable.fromArray(updatedDiscounts);
+                    syncDiscountswithServer(updatedDiscountsObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllDiscounts();
+                    serverData.getDiscountsFromServer(adminId);
+                }
+                break;
+            case ServerUtils.STATUS_ADDING:
+                if (addedDiscounts.size() > 0) {
+                    Observable<ArrayList<Discount.DiscountData>> addedDiscountsObservable = Observable.fromArray(addedDiscounts);
+                    syncDiscountswithServer(addedDiscountsObservable, currentStatus);
+                } else if (updatedDiscounts.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Discount.DiscountData>> updatedDiscountsObservable = Observable.fromArray(updatedDiscounts);
+                    syncDiscountswithServer(updatedDiscountsObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllDiscounts();
+                    serverData.getDiscountsFromServer(adminId);
+                }
+                break;
+            case ServerUtils.STATUS_UPDATING:
+                if (updatedDiscounts.size() > 0) {
+                    Observable<ArrayList<Discount.DiscountData>> updatedDiscountsObservable = Observable.fromArray(updatedDiscounts);
+                    syncDiscountswithServer(updatedDiscountsObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllDiscounts();
+                    serverData.getDiscountsFromServer(adminId);
+                }
+                break;
+        }
+
+    }
+
+    public void syncDiscountswithServer(Observable<ArrayList<Discount.DiscountData>> observableDiscounts, final int status) {
+
+        observableDiscounts.flatMap(new Function<List<Discount.DiscountData>, ObservableSource<Discount.DiscountData>>() { // flatMap - to return users one by one
+            @Override
+            public ObservableSource<Discount.DiscountData> apply(List<Discount.DiscountData> employeesList) throws Exception {
+                return Observable.fromIterable(employeesList); // returning Discounts one by one from DiscountsList.
+            }
+        }).flatMap(new Function<Discount.DiscountData, ObservableSource<ArrayList<String>>>() {
+            @Override
+            public ObservableSource<ArrayList<String>> apply(Discount.DiscountData disc) throws Exception {
+                // here we get the user one by one
+                // and does correstponding sync in server
+                // for that Customer
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        ServerUtils.deleteDiscountfromServer(disc, mContext, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        ServerUtils.addDiscounttoServer(disc, adminId, mContext, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        ServerUtils.updateDiscounttoServer(disc, mContext, adminId, billMatrixDaoImpl);
+                        break;
+
+                }
+                return Observable.fromArray(new ArrayList<String>());
+            }
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ArrayList<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onNext(ArrayList<String> strings) {
+            }
+
+            @Override
+            public void onComplete() {
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        syncDiscounts(ServerUtils.STATUS_ADDING);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        syncDiscounts(ServerUtils.STATUS_UPDATING);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        Log.e(TAG, "get all customers: ");
+                        billMatrixDaoImpl.deleteAllDiscounts();
+                        serverData.getDiscountsFromServer(adminId);
+                        break;
+
+                }
+                Log.e(TAG, "onComplete");
+            }
+        });
+    }
+
+    /*****************************************************
+     * ******** Payments SYNC ***************************
+     **************************************************/
+
+    private void syncPayments(int currentStatus) {
+        purchasesSyncIcon.setImageResource(R.drawable.sync_green);
+
+        ArrayList<Payments.PaymentData> dbPayments = billMatrixDaoImpl.getPayments(null);
+        ArrayList<Payments.PaymentData> deletedPayments = new ArrayList<>();
+        ArrayList<Payments.PaymentData> addedPayments = new ArrayList<>();
+        ArrayList<Payments.PaymentData> updatedPayments = new ArrayList<>();
+
+        if (dbPayments != null && dbPayments.size() > 0) {
+            for (Payments.PaymentData paymentData : dbPayments) {
+                if (paymentData.status.equalsIgnoreCase("-1")) {
+                    deletedPayments.add(paymentData);
+                }
+
+                if (!TextUtils.isEmpty(paymentData.add_update)) {
+                    if (paymentData.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                        addedPayments.add(paymentData);
+                    }
+
+                    if (paymentData.add_update.equalsIgnoreCase(Constants.UPDATE_OFFLINE)) {
+                        updatedPayments.add(paymentData);
+                    }
+                }
+            }
+        }
+
+        if (deletedPayments.size() <= 0 && updatedPayments.size() <= 0 && addedPayments.size() <= 0) {
+            billMatrixDaoImpl.deleteAllPayments();
+            serverData.getPaymentsFromServer(adminId);
+            return;
+        }
+
+        switch (currentStatus) {
+            case ServerUtils.STATUS_DELETING:
+                if (deletedPayments.size() > 0) {
+                    Observable<ArrayList<Payments.PaymentData>> deletedPaymentsObservable = Observable.fromArray(deletedPayments);
+                    syncPaymentswithServer(deletedPaymentsObservable, currentStatus);
+                } else if (addedPayments.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_ADDING;
+                    Observable<ArrayList<Payments.PaymentData>> addedPaymentsObservable = Observable.fromArray(addedPayments);
+                    syncPaymentswithServer(addedPaymentsObservable, currentStatus);
+                } else if (updatedPayments.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Payments.PaymentData>> updatedPaymentsObservable = Observable.fromArray(updatedPayments);
+                    syncPaymentswithServer(updatedPaymentsObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllPayments();
+                    serverData.getPaymentsFromServer(adminId);
+                }
+                break;
+            case ServerUtils.STATUS_ADDING:
+                if (addedPayments.size() > 0) {
+                    Observable<ArrayList<Payments.PaymentData>> addedPaymentsObservable = Observable.fromArray(addedPayments);
+                    syncPaymentswithServer(addedPaymentsObservable, currentStatus);
+                } else if (updatedPayments.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Payments.PaymentData>> updatedPaymentsObservable = Observable.fromArray(updatedPayments);
+                    syncPaymentswithServer(updatedPaymentsObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllPayments();
+                    serverData.getPaymentsFromServer(adminId);
+                }
+                break;
+            case ServerUtils.STATUS_UPDATING:
+                if (updatedPayments.size() > 0) {
+                    Observable<ArrayList<Payments.PaymentData>> updatedPaymentsObservable = Observable.fromArray(updatedPayments);
+                    syncPaymentswithServer(updatedPaymentsObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllPayments();
+                    serverData.getPaymentsFromServer(adminId);
+                }
+                break;
+        }
+
+    }
+
+    public void syncPaymentswithServer(Observable<ArrayList<Payments.PaymentData>> observablePayments, final int status) {
+
+        observablePayments.flatMap(new Function<List<Payments.PaymentData>, ObservableSource<Payments.PaymentData>>() { // flatMap - to return users one by one
+            @Override
+            public ObservableSource<Payments.PaymentData> apply(List<Payments.PaymentData> employeesList) throws Exception {
+                return Observable.fromIterable(employeesList); // returning Payments one by one from PaymentsList.
+            }
+        }).flatMap(new Function<Payments.PaymentData, ObservableSource<ArrayList<String>>>() {
+            @Override
+            public ObservableSource<ArrayList<String>> apply(Payments.PaymentData paymentData) throws Exception {
+                // here we get the user one by one
+                // and does correstponding sync in server
+                // for that Customer
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        ServerUtils.deletePaymentfromServer(paymentData, mContext, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        ServerUtils.addPaymenttoServer(paymentData, mContext, adminId, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        ServerUtils.updatePaymenttoServer(paymentData, mContext, billMatrixDaoImpl);
+                        break;
+
+                }
+                return Observable.fromArray(new ArrayList<String>());
+            }
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ArrayList<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onNext(ArrayList<String> strings) {
+            }
+
+            @Override
+            public void onComplete() {
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        syncPayments(ServerUtils.STATUS_ADDING);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        syncPayments(ServerUtils.STATUS_UPDATING);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        Log.e(TAG, "get all Payments: ");
+                        billMatrixDaoImpl.deleteAllPayments();
+                        serverData.getPaymentsFromServer(adminId);
+                        break;
+
+                }
+                Log.e(TAG, "onComplete");
             }
         });
     }

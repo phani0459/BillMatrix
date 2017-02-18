@@ -11,12 +11,14 @@ import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.Payments;
 import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +35,15 @@ public class ServerData {
     private boolean fromLogin;
     private Context mContext;
     private ProgressDialog progressDialog;
+    private String paymentType;
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
 
     public void setOnDataFetchListener(OnDataFetchListener onDataFetchListener) {
         this.onDataFetchListener = onDataFetchListener;
@@ -68,6 +79,7 @@ public class ServerData {
      * Inventory
      * Tax
      * Discounts
+     * Payments
      */
 
     public void getEmployeesFromServer(final String adminId) {
@@ -350,7 +362,7 @@ public class ServerData {
         }
     }
 
-    public void getDiscountsFromServer(String adminId) {
+    public void getDiscountsFromServer(final String adminId) {
         ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
         if (discounts != null && discounts.size() > 0) {
             if (progressDialog != null && progressDialog.isShowing()) {
@@ -385,9 +397,7 @@ public class ServerData {
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, false).apply();
                         }
 
-                        if (progressDialog != null && progressDialog.isShowing()) {
-                            progressDialog.dismiss();
-                        }
+                        if (isFromLogin()) getPaymentsFromServer(adminId);
                         if (onDataFetchListener != null) onDataFetchListener.onDataFetch(5);
 
                     }
@@ -399,6 +409,65 @@ public class ServerData {
                      */
                     @Override
                     public void onFailure(Call<Discount> call, Throwable t) {
+                        Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                        if (progressDialog != null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    public void getPaymentsFromServer(final String adminId) {
+        ArrayList<Payments.PaymentData> payments = billMatrixDaoImpl.getPayments(paymentType);
+        if (payments != null && payments.size() > 0) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                Log.e(TAG, "getPaymentsFromServer: ");
+                Call<Payments> call = Utils.getBillMatrixAPI(mContext).getAdminPayments(adminId, paymentType);
+
+                call.enqueue(new Callback<Payments>() {
+
+                    /**
+                     * Successful HTTP response.
+                     * @param call server call
+                     * @param response server response
+                     */
+                    @Override
+                    public void onResponse(Call<Payments> call, Response<Payments> response) {
+                        Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                        if (response.body() != null) {
+                            Payments payments = response.body();
+                            if (payments.status == 200 && payments.data != null && payments.data.size() > 0) {
+                                for (Payments.PaymentData paymentData : payments.data) {
+                                    paymentData.add_update = Constants.DATA_FROM_SERVER;
+                                    billMatrixDaoImpl.addPayment(paymentData);
+                                }
+                            }
+                            /**
+                             * To remove pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, false).apply();
+                        }
+
+                        if (progressDialog != null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                        if (onDataFetchListener != null) onDataFetchListener.onDataFetch(6);
+
+                    }
+
+                    /**
+                     *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                     * @param call server call
+                     * @param t error
+                     */
+                    @Override
+                    public void onFailure(Call<Payments> call, Throwable t) {
                         Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
                         if (progressDialog != null && progressDialog.isShowing()) {
                             progressDialog.dismiss();

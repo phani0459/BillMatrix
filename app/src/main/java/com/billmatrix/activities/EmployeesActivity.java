@@ -237,7 +237,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
             if (addEmpButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    employeeFromServer = ServerUtils.addEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, adminId, false);
+                    employeeFromServer = ServerUtils.addEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, adminId);
                 } else {
                     /**
                      * To show pending sync Icon in database page
@@ -249,7 +249,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             } else {
                 if (selectedEmptoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        employeeFromServer = ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, false);
+                        employeeFromServer = ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl);
                     } else {
                         /**
                          * To show pending sync Icon in database page
@@ -314,7 +314,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                         }
                         if (Utils.isInternetAvailable(mContext)) {
                             if (!TextUtils.isEmpty(selectedEmp.id)) {
-                                ServerUtils.deleteEmployeefromServer(selectedEmp, mContext, billMatrixDaoImpl, false);
+                                ServerUtils.deleteEmployeefromServer(selectedEmp, mContext, billMatrixDaoImpl);
                             }
                         } else {
                             /**

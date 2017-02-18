@@ -10,9 +10,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.billmatrix.R;
@@ -20,9 +22,12 @@ import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.activities.PaymentsActivity;
 import com.billmatrix.adapters.GenExpensesAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.database.DBConstants;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.Discount;
-import com.billmatrix.models.PayIn;
+import com.billmatrix.models.Payments;
+import com.billmatrix.network.ServerData;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
@@ -36,8 +41,9 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GenExpensesFragment extends Fragment implements OnItemClickListener {
+public class GenExpensesFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
+    private static final String TAG = GenExpensesFragment.class.getSimpleName();
     @BindView(R.id.et_gen_exp_date)
     public EditText dateEditText;
     @BindView(R.id.genExpensesList)
@@ -48,12 +54,16 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
     public EditText purposeEditText;
     @BindView(R.id.et_expenseAmt)
     public EditText amountEditText;
+    @BindView(R.id.btn_addGenExpense)
+    public Button addPaymentButton;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
     public GenExpensesAdapter expensesAdapter;
     private String adminId;
-    private ArrayList<PayIn.PayInData> paymentsfromDB;
+    private boolean isPaymentAdded;
+    private boolean isEditing;
+    private Payments.PaymentData selectedPaymenttoEdit;
 
     public GenExpensesFragment() {
         // Required empty public constructor
@@ -84,24 +94,24 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
 
         genExpensesList.setLayoutManager(new LinearLayoutManager(mContext));
 
-        List<PayIn.PayInData> genExpenses = new ArrayList<>();
+        List<Payments.PaymentData> paymentsfromDB = new ArrayList<>();
 
-        expensesAdapter = new GenExpensesAdapter(genExpenses, this);
+        expensesAdapter = new GenExpensesAdapter(paymentsfromDB, this);
         genExpensesList.setAdapter(expensesAdapter);
 
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
         paymentsfromDB = billMatrixDaoImpl.getPayments(PaymentsActivity.GEN_EXPENSE);
 
         if (paymentsfromDB != null && paymentsfromDB.size() > 0) {
-            for (PayIn.PayInData payInData : paymentsfromDB) {
-                if (!payInData.status.equalsIgnoreCase("-1")) {
-                    expensesAdapter.addGenExpense(payInData);
+            for (Payments.PaymentData paymentData : paymentsfromDB) {
+                if (!paymentData.status.equalsIgnoreCase("-1")) {
+                    expensesAdapter.addGenExpense(paymentData);
                 }
             }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
-//                    getDiscountsFromServer(adminId);
+                    getPaymentsFromServer(adminId);
                 }
             }
         }
@@ -109,8 +119,37 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
         return v;
     }
 
+    private void getPaymentsFromServer(String adminId) {
+        Log.e(TAG, "getPaymentsFromServer: ");
+        ServerData serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setPaymentType(PaymentsActivity.GEN_EXPENSE);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+        serverData.getPaymentsFromServer(adminId);
+    }
+
+    @Override
+    public void onDataFetch(int dataFetched) {
+        ArrayList<Payments.PaymentData> paymentsfromDB = billMatrixDaoImpl.getPayments(PaymentsActivity.GEN_EXPENSE);
+
+        if (paymentsfromDB != null && paymentsfromDB.size() > 0) {
+            for (Payments.PaymentData paymentData : paymentsfromDB) {
+                if (!paymentData.status.equalsIgnoreCase("-1")) {
+                    expensesAdapter.addGenExpense(paymentData);
+                }
+            }
+        }
+    }
+
     @OnClick(R.id.btn_addGenExpense)
     public void addExpense() {
+        Utils.hideSoftKeyboard(amountEditText);
+
+        Payments.PaymentData paymentData = new Payments().new PaymentData();
+        Payments.PaymentData paymentFromServer = new Payments().new PaymentData();
         String expenseName = expenseNameEditText.getText().toString();
 
         if (TextUtils.isEmpty(expenseName)) {
@@ -139,33 +178,89 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
             return;
         }
 
-        PayIn.PayInData paymentData = new PayIn().new PayInData();
-        paymentData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        if (addPaymentButton.getText().toString().equalsIgnoreCase("ADD")) {
+            paymentData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+            paymentData.id = "PM_" + (billMatrixDaoImpl.getPaymentsCount() + 1);
+            paymentData.add_update = Constants.ADD_OFFLINE;
+        } else {
+            if (selectedPaymenttoEdit != null) {
+                paymentData.id = selectedPaymenttoEdit.id;
+                paymentData.create_date = selectedPaymenttoEdit.create_date;
+                if (selectedPaymenttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                    paymentData.add_update = Constants.UPDATE_OFFLINE;
+                }
+            }
+        }
+
         paymentData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
         paymentData.payee_name = expenseName;
         paymentData.purpose_of_payment = purpose;
+        paymentData.mode_of_payment = "";
         paymentData.date_of_payment = date;
         paymentData.amount = amount;
         paymentData.status = "1";
+        paymentData.admin_id = adminId;
         paymentData.payment_type = PaymentsActivity.GEN_EXPENSE;
 
-        long vendorAdded = billMatrixDaoImpl.addPayment(paymentData);
+        billMatrixDaoImpl.addPayment(paymentData);
 
-        if (vendorAdded != -1) {
-            expensesAdapter.addGenExpense(paymentData);
-            genExpensesList.smoothScrollToPosition(expensesAdapter.getItemCount());
+        /**
+         * reset all edit texts
+         */
+        expenseNameEditText.setText("");
+        purposeEditText.setText("");
+        dateEditText.setText("");
+        amountEditText.setText("");
 
-            /**
-             * reset all edit texts
-             */
-            expenseNameEditText.setText("");
-            purposeEditText.setText("");
-            dateEditText.setText("");
-            amountEditText.setText("");
+        if (addPaymentButton.getText().toString().equalsIgnoreCase("ADD")) {
+            if (Utils.isInternetAvailable(mContext)) {
+                paymentFromServer = ServerUtils.addPaymenttoServer(paymentData, mContext, adminId, billMatrixDaoImpl);
+            } else {
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                Utils.showToast("Payment Added successfully", mContext);
+                paymentFromServer = paymentData;
+            }
         } else {
-            Utils.showToast("Vendor Email / Phone must be unique", mContext);
+            if (selectedPaymenttoEdit != null) {
+                if (Utils.isInternetAvailable(mContext)) {
+                    paymentFromServer = ServerUtils.updatePaymenttoServer(paymentData, mContext, billMatrixDaoImpl);
+                } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    paymentFromServer = paymentData;
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                    Utils.showToast("Payment Updated successfully", mContext);
+                }
+            }
         }
 
+        expensesAdapter.addGenExpense(paymentFromServer);
+        genExpensesList.smoothScrollToPosition(expensesAdapter.getItemCount());
+        addPaymentButton.setText(getString(R.string.add));
+        isEditing = false;
+        isPaymentAdded = true;
+        ((BaseTabActivity) mContext).ifTabCanChange = true;
+
+    }
+
+    public void onBackPressed() {
+        if (addPaymentButton.getText().toString().equalsIgnoreCase("SAVE")) {
+            ((BaseTabActivity) mContext).showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addExpense();
+                    if (isPaymentAdded) {
+                        ((BaseTabActivity) mContext).finish();
+                    }
+                }
+            });
+        } else {
+            ((BaseTabActivity) mContext).finish();
+        }
     }
 
     @Override
@@ -175,12 +270,45 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete General Expense?", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-//                        billMatrixDaoImpl.deleteVendor(payInsAdapter.getItem(position).customername);
+                        Payments.PaymentData selectedPayment = expensesAdapter.getItem(position);
+                        if (selectedPayment.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                            billMatrixDaoImpl.updatePaymentStatus(DBConstants.STATUS, "-1", selectedPayment.id);
+                        } else {
+                            billMatrixDaoImpl.deletePayment(DBConstants.ID, selectedPayment.id);
+                        }
+                        if (Utils.isInternetAvailable(mContext)) {
+                            if (!TextUtils.isEmpty(selectedPayment.id)) {
+                                ServerUtils.deletePaymentfromServer(selectedPayment, mContext, billMatrixDaoImpl);
+                            }
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                            Utils.showToast("General Expense Deleted successfully", mContext);
+                        }
                         expensesAdapter.deleteGenExpense(position);
                     }
                 });
                 break;
             case 2:
+                if (!isEditing) {
+                    isEditing = true;
+                    ((BaseTabActivity) mContext).ifTabCanChange = false;
+
+                    addPaymentButton.setText(getString(R.string.save));
+                    selectedPaymenttoEdit = expensesAdapter.getItem(position);
+
+                    expenseNameEditText.setText(selectedPaymenttoEdit.payee_name);
+                    purposeEditText.setText(selectedPaymenttoEdit.purpose_of_payment);
+                    dateEditText.setText(selectedPaymenttoEdit.date_of_payment);
+                    amountEditText.setText(selectedPaymenttoEdit.amount);
+
+                    billMatrixDaoImpl.deletePayment(DBConstants.ID, expensesAdapter.getItem(position).id);
+                    expensesAdapter.deleteGenExpense(position);
+                } else {
+                    Utils.showToast("Save present editing Payment before editing other payment", mContext);
+                }
                 break;
             case 3:
                 break;

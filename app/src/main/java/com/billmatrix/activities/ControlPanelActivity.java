@@ -95,6 +95,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
         serverData.setProgressDialog(progressDialog);
         serverData.setFromLogin(true);
+        serverData.setPaymentType(null);
         serverData.setContext(mContext);
 
         copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
@@ -123,6 +124,7 @@ public class ControlPanelActivity extends AppCompatActivity {
          * Inventory
          * Tax
          * Discounts
+         * Payments
          */
         getDataFromServer(adminId);
     }

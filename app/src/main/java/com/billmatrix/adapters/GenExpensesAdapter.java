@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.PayIn;
+import com.billmatrix.models.Payments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 
 public class GenExpensesAdapter extends RecyclerView.Adapter<GenExpensesAdapter.ExpenseHolder> {
 
-    private List<PayIn.PayInData> genExpenses;
+    private List<Payments.PaymentData> genExpenses;
     OnItemClickListener onItemClickListener;
 
     public class ExpenseHolder extends RecyclerView.ViewHolder {
@@ -49,12 +49,12 @@ public class GenExpensesAdapter extends RecyclerView.Adapter<GenExpensesAdapter.
         notifyDataSetChanged();
     }
 
-    public void addGenExpense(PayIn.PayInData paymentData) {
+    public void addGenExpense(Payments.PaymentData paymentData) {
         genExpenses.add(paymentData);
         notifyDataSetChanged();
     }
 
-    public GenExpensesAdapter(List<PayIn.PayInData> genExpenses, OnItemClickListener onClickListener) {
+    public GenExpensesAdapter(List<Payments.PaymentData> genExpenses, OnItemClickListener onClickListener) {
         this.genExpenses = genExpenses;
         this.onItemClickListener = onClickListener;
     }
@@ -73,7 +73,7 @@ public class GenExpensesAdapter extends RecyclerView.Adapter<GenExpensesAdapter.
 
     @Override
     public void onBindViewHolder(ExpenseHolder holder, final int position) {
-        PayIn.PayInData paymentData = genExpenses.get(position);
+        Payments.PaymentData paymentData = genExpenses.get(position);
 
         holder.snoTextView.setText("" + (position + 1));
         holder.nameTextView.setText(paymentData.payee_name);
@@ -86,9 +86,15 @@ public class GenExpensesAdapter extends RecyclerView.Adapter<GenExpensesAdapter.
                 onItemClickListener.onItemClick(1, position);
             }
         });
+        holder.editImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(2, position);
+            }
+        });
     }
 
-    public PayIn.PayInData getItem(int position) {
+    public Payments.PaymentData getItem(int position) {
         return genExpenses.get(position);
     }
 

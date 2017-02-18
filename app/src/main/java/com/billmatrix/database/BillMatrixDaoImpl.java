@@ -11,7 +11,7 @@ import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
-import com.billmatrix.models.PayIn;
+import com.billmatrix.models.Payments;
 import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 
@@ -129,7 +129,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(EMPLOYEE_LOGINID, employeeData.login_id);
         contentValues.put(EMPLOYEE_PASSWORD, employeeData.password);
         contentValues.put(STATUS, employeeData.status);
-        contentValues.put(ID, employeeData.id);
         contentValues.put(ADD_UPDATE, employeeData.add_update);
         contentValues.put(ADMIN_ID, employeeData.admin_id);
         contentValues.put(CREATE_DATE, employeeData.create_date);
@@ -517,7 +516,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(VENDOR, inventoryData.vendor);
         contentValues.put(BARCODE, (!TextUtils.isEmpty(inventoryData.barcode) ? inventoryData.barcode : null));
         contentValues.put(PHOTO, inventoryData.photo);
-        contentValues.put(ID, inventoryData.id);
         contentValues.put(STATUS, inventoryData.status);
         contentValues.put(ADMIN_ID, inventoryData.admin_id);
         contentValues.put(CREATE_DATE, inventoryData.create_date);
@@ -734,6 +732,47 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.delete(DISCOUNT_TABLE, DISCOUNT_CODE + "='" + discCode + "'", null) > 0;
     }
 
+    public boolean updateDiscount(String columnName, String status, String discCode) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(columnName, status);
+        return db.update(DISCOUNT_TABLE, contentValues, DISCOUNT_CODE + "='" + discCode + "'", null) > 0;
+    }
+
+    public void deleteAllDiscounts() {
+        db.delete(DISCOUNT_TABLE, null, null);
+    }
+
+    public boolean updateDiscount(Discount.DiscountData discountData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DISCOUNT_CODE, discountData.discount_code);
+        contentValues.put(DISCOUNT_DESC, discountData.discount_description);
+        contentValues.put(DISCOUNT_VALUE, discountData.discount);
+        contentValues.put(ADMIN_ID, discountData.admin_id);
+        contentValues.put(STATUS, discountData.status);
+        contentValues.put(CREATE_DATE, discountData.create_date);
+        contentValues.put(UPDATE_DATE, discountData.update_date);
+        contentValues.put(ADD_UPDATE, discountData.add_update);
+
+        if (!isDiscountIdEmpty(discountData.discount_code)) {
+            return db.update(DISCOUNT_TABLE, contentValues, ID + "='" + discountData.discount_code + "'", null) > 0;
+        } else {
+            contentValues.put(ID, discountData.id);
+            return db.update(DISCOUNT_TABLE, contentValues, DISCOUNT_CODE + "='" + discountData.discount_code + "'", null) > 0;
+        }
+    }
+
+    private boolean isDiscountIdEmpty(String discount_code) {
+        String query = "SELECT " + ID + " FROM " + DISCOUNT_TABLE + " WHERE " + DISCOUNT_CODE + " = '" + discount_code + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String id = cursor.getString(cursor.getColumnIndex(ID));
+            cursor.close();
+            return TextUtils.isEmpty(id);
+        }
+        return true;
+    }
+
     public ArrayList<Discount.DiscountData> getDiscount() {
         Cursor cursor = null;
         try {
@@ -886,37 +925,84 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     /*************************************************
      * ********* PURCHASES METHODS ********************
      *************************************************/
-    public long addPayment(PayIn.PayInData payInData) {
+    public long addPayment(Payments.PaymentData paymentData) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ID, payInData.id);
-        contentValues.put(PAYEE_NAME, payInData.payee_name);
-        contentValues.put(DATE, payInData.date_of_payment);
-        contentValues.put(AMOUNT, payInData.amount);
-        contentValues.put(ADMIN_ID, payInData.admin_id);
-        contentValues.put(CREATE_DATE, payInData.create_date);
-        contentValues.put(UPDATE_DATE, payInData.update_date);
-        contentValues.put(STATUS, payInData.status);
-        contentValues.put(PURPOSE, payInData.purpose_of_payment);
-        contentValues.put(MODE, payInData.mode_of_payment);
-        contentValues.put(PAYMENT_TYPE, payInData.payment_type);
-        contentValues.put(ADD_UPDATE, payInData.add_update);
+        contentValues.put(ID, paymentData.id);
+        contentValues.put(PAYEE_NAME, paymentData.payee_name);
+        contentValues.put(DATE, paymentData.date_of_payment);
+        contentValues.put(AMOUNT, paymentData.amount);
+        contentValues.put(ADMIN_ID, paymentData.admin_id);
+        contentValues.put(CREATE_DATE, paymentData.create_date);
+        contentValues.put(UPDATE_DATE, paymentData.update_date);
+        contentValues.put(STATUS, paymentData.status);
+        contentValues.put(PURPOSE, paymentData.purpose_of_payment);
+        contentValues.put(MODE, paymentData.mode_of_payment);
+        contentValues.put(PAYMENT_TYPE, paymentData.payment_type);
+        contentValues.put(ADD_UPDATE, paymentData.add_update);
         return db.insert(PAYMENTS_TABLE, null, contentValues);
     }
 
-    public boolean deletePayment(String discCode) {
-        return db.delete(PAYMENTS_TABLE, DISCOUNT_CODE + "='" + discCode + "'", null) > 0;
+    public boolean deletePayment(String columnName, String compareColumn) {
+        return db.delete(PAYMENTS_TABLE, columnName + "='" + compareColumn + "'", null) > 0;
     }
 
-    public ArrayList<PayIn.PayInData> getPayments(String paymentType) {
+    public void deleteAllPayments() {
+        db.delete(PAYMENTS_TABLE, null, null);
+    }
+
+    public boolean updatePaymentStatus(String columnName, String status, String _id) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(columnName, status);
+        return db.update(PAYMENTS_TABLE, contentValues, ID + "='" + _id + "'", null) > 0;
+    }
+
+    public boolean updatePayment(Payments.PaymentData paymentData, String previousID) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PAYEE_NAME, paymentData.payee_name);
+        contentValues.put(DATE, paymentData.date_of_payment);
+        contentValues.put(AMOUNT, paymentData.amount);
+        contentValues.put(ADMIN_ID, paymentData.admin_id);
+        contentValues.put(CREATE_DATE, paymentData.create_date);
+        contentValues.put(UPDATE_DATE, paymentData.update_date);
+        contentValues.put(STATUS, paymentData.status);
+        contentValues.put(PURPOSE, paymentData.purpose_of_payment);
+        contentValues.put(MODE, paymentData.mode_of_payment);
+        contentValues.put(PAYMENT_TYPE, paymentData.payment_type);
+        contentValues.put(ADD_UPDATE, paymentData.add_update);
+
+        if (!TextUtils.isEmpty(previousID) && previousID.contains("PM_")) {
+            contentValues.put(ID, paymentData.id);
+            return db.update(PAYMENTS_TABLE, contentValues, ID + "='" + previousID + "'", null) > 0;
+        } else {
+            return db.update(PAYMENTS_TABLE, contentValues, ID + "='" + paymentData.id + "'", null) > 0;
+        }
+    }
+
+    public int getPaymentsCount() {
+        String countQuery = "SELECT * FROM " + PAYMENTS_TABLE;
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int cnt = cursor.getCount();
+        cursor.close();
+        return cnt;
+    }
+
+    public ArrayList<Payments.PaymentData> getPayments(String paymentType) {
         Cursor cursor = null;
         try {
-            String query = "SELECT * FROM " + PAYMENTS_TABLE + " WHERE " + PAYMENT_TYPE + " = '" + paymentType + "'";
+            String query = "";
+
+            if (TextUtils.isEmpty(paymentType)) {
+                query = "SELECT * FROM " + PAYMENTS_TABLE;
+            } else {
+                query = "SELECT * FROM " + PAYMENTS_TABLE + " WHERE " + PAYMENT_TYPE + " = '" + paymentType + "'";
+            }
+
             cursor = db.rawQuery(query, null);
 
             if (cursor.moveToFirst()) {
-                List<PayIn.PayInData> payments = new ArrayList<>();
+                List<Payments.PaymentData> payments = new ArrayList<>();
                 do {
-                    PayIn.PayInData paymentData = new PayIn().new PayInData();
+                    Payments.PaymentData paymentData = new Payments().new PaymentData();
                     paymentData.id = cursor.getString(cursor
                             .getColumnIndexOrThrow(ID));
                     paymentData.payee_name = cursor.getString(cursor
@@ -944,7 +1030,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     payments.add(paymentData);
                 } while (cursor.moveToNext());
 
-                return (ArrayList<PayIn.PayInData>) payments;
+                return (ArrayList<Payments.PaymentData>) payments;
             }
         } catch (IllegalArgumentException e) {
             Log.d(TAG, e.toString());

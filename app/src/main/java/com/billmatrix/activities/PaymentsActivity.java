@@ -23,6 +23,9 @@ public class PaymentsActivity extends BaseTabActivity {
     public static final String PAYOUT = "PAY OUTS";
     public static final String PAYIN = "PAY INS";
     public static final String GEN_EXPENSE = "GEN. EXPENSES";
+    private PayOutsFragment payOutsFragment;
+    private PayInsFragment payInsFragment;
+    private GenExpensesFragment genExpensesFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,19 @@ public class PaymentsActivity extends BaseTabActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (payOutsFragment != null && selectedTab.equalsIgnoreCase(PAYOUT)) {
+            payOutsFragment.onBackPressed();
+        } else if (payInsFragment != null && selectedTab.equalsIgnoreCase(PAYIN)) {
+            payInsFragment.onBackPressed();
+        } else if (genExpensesFragment != null && selectedTab.equalsIgnoreCase(GEN_EXPENSE)) {
+            genExpensesFragment.onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void tabChanged(String selectedTab, boolean isInit) {
         Utils.hideSoftKeyboard(searchView);
 
@@ -43,23 +59,27 @@ public class PaymentsActivity extends BaseTabActivity {
             isInit = false;
         }
 
-        if (selectedTab.equalsIgnoreCase("PAY OUTS")) {
+        payOutsFragment = new PayOutsFragment();
+        payInsFragment = new PayInsFragment();
+        genExpensesFragment = new GenExpensesFragment();
+
+        if (selectedTab.equalsIgnoreCase(PAYOUT)) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new PayOutsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, payOutsFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PayOutsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, payOutsFragment).commit();
             }
-        } else if (selectedTab.equalsIgnoreCase("PAY INS")) {
+        } else if (selectedTab.equalsIgnoreCase(PAYIN)) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new PayInsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, payInsFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PayInsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, payInsFragment).commit();
             }
         } else {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, genExpensesFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, genExpensesFragment).commit();
             }
         }
 

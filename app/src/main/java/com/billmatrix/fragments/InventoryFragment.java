@@ -3,6 +3,7 @@ package com.billmatrix.fragments;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -24,10 +25,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +38,7 @@ import android.widget.Toast;
 import com.billmatrix.R;
 import com.billmatrix.WorkService;
 import com.billmatrix.activities.BaseTabActivity;
+import com.billmatrix.adapters.DevicesAdapter;
 import com.billmatrix.adapters.InventoryAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
@@ -52,15 +56,11 @@ import com.lvrenyang.utils.DataUtils;
 import org.zirco.myprinter.Global;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -132,6 +132,9 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
     private MHandler mHandler;
     private ProgressDialog searchingDialog;
     private ArrayAdapter<String> vendorSpinnerAdapter;
+    private Dialog devicesDialog;
+    private DevicesAdapter devicesAdapter;
+    private ListView devicesListView;
 
     public InventoryFragment() {
         // Required empty public constructor
@@ -233,6 +236,25 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             Intent intent = new Intent(mContext, WorkService.class);
             mContext.startService(intent);
         }
+
+        /**
+         * Initiate devices Dialog
+         */
+        devicesDialog = new Dialog(mContext);
+        devicesDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        devicesDialog.setCancelable(false);
+        devicesDialog.setContentView(R.layout.dialog_printer_devices);
+        devicesListView = (ListView) devicesDialog.findViewById(R.id.lv_printers);
+        Button close = (Button) devicesDialog.findViewById(R.id.btn_close_printers_dialog);
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                devicesDialog.dismiss();
+            }
+        });
+
+        devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
+        devicesListView.setAdapter(devicesAdapter);
 
         return v;
     }
@@ -678,41 +700,34 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     if (device == null)
                         return;
-                    final String address = device.getAddress();
-                    String deviceName = device.getName();
-                    if (TextUtils.isEmpty(deviceName)) {
-                        deviceName = "BT";
-                    } else if (deviceName.equals(address)) {
-                        deviceName = "BT";
-                    }
 
-                    AlertDialog devicesDialog = new AlertDialog.Builder(mContext)
-                            .setTitle("Connect to " + deviceName)
-                            .setMessage("" + address)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    /**
-                                     * dismiss search
-                                     */
-                                    searchingDialog.dismiss();
+                    /**
+                     * dismiss search
+                     */
+                    if (searchingDialog != null && searchingDialog.isShowing())
+                        searchingDialog.dismiss();
 
-                                    connectingProgressDialog.setMessage("Connecting" + " " + address);
-                                    connectingProgressDialog.setIndeterminate(true);
-                                    connectingProgressDialog.setCancelable(false);
-                                    connectingProgressDialog.show();
+                    devicesAdapter.add(device);
+                    devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                            connectingProgressDialog.setMessage("Connecting" + " " + devicesAdapter.getItem(position).getAddress());
+                            connectingProgressDialog.setIndeterminate(true);
+                            connectingProgressDialog.setCancelable(false);
+                            connectingProgressDialog.show();
 
-                                    WorkService.workThread.setDeviceAddress(address);
-                                    WorkService.workThread.setDeviceName(device.getName());
-                                    WorkService.workThread.connectBt(address);
-                                }
-                            }).create();
+                            WorkService.workThread.connectBt(devicesAdapter.getItem(position).getAddress());
+
+                            devicesDialog.dismiss();
+                        }
+                    });
 
                     devicesDialog.show();
+
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                    //TODO: disable progress bar
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                    //TODO: disable progress bar
+                    if (searchingDialog != null && searchingDialog.isShowing())
+                        searchingDialog.dismiss();
                 }
 
             }

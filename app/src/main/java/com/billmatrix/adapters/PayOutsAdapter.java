@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.PayIn;
+import com.billmatrix.models.Payments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 
 public class PayOutsAdapter extends RecyclerView.Adapter<PayOutsAdapter.PayOutsHolder> {
 
-    private List<PayIn.PayInData> payIns;
+    private List<Payments.PaymentData> payIns;
     OnItemClickListener onItemClickListener;
 
     public class PayOutsHolder extends RecyclerView.ViewHolder {
@@ -49,12 +49,12 @@ public class PayOutsAdapter extends RecyclerView.Adapter<PayOutsAdapter.PayOutsH
         notifyDataSetChanged();
     }
 
-    public void addPayOut(PayIn.PayInData payInData) {
-        payIns.add(payInData);
+    public void addPayOut(Payments.PaymentData paymentData) {
+        payIns.add(paymentData);
         notifyDataSetChanged();
     }
 
-    public PayOutsAdapter(List<PayIn.PayInData> payIns, OnItemClickListener onClickListener) {
+    public PayOutsAdapter(List<Payments.PaymentData> payIns, OnItemClickListener onClickListener) {
         this.payIns = payIns;
         this.onItemClickListener = onClickListener;
     }
@@ -73,22 +73,28 @@ public class PayOutsAdapter extends RecyclerView.Adapter<PayOutsAdapter.PayOutsH
 
     @Override
     public void onBindViewHolder(PayOutsHolder holder, final int position) {
-        PayIn.PayInData payInData = payIns.get(position);
+        Payments.PaymentData paymentData = payIns.get(position);
 
         holder.snoTextView.setText("" + (position + 1));
-        holder.nameTextView.setText(payInData.payee_name);
-        holder.modeTextView.setText(payInData.mode_of_payment);
-        holder.dateTextView.setText(payInData.date_of_payment);
-        holder.amountTextView.setText(payInData.amount.trim());
+        holder.nameTextView.setText(paymentData.payee_name);
+        holder.modeTextView.setText(paymentData.mode_of_payment);
+        holder.dateTextView.setText(paymentData.date_of_payment);
+        holder.amountTextView.setText(paymentData.amount.trim());
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onItemClickListener.onItemClick(1, position);
             }
         });
+        holder.editImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(2, position);
+            }
+        });
     }
 
-    public PayIn.PayInData getItem(int position) {
+    public Payments.PaymentData getItem(int position) {
         return payIns.get(position);
     }
 

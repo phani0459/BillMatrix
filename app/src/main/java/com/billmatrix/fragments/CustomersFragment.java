@@ -242,7 +242,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
 
             if (addCustomerBtn.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    customerFromServer = ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl, false);
+                    customerFromServer = ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl);
                 } else {
                     /**
                      * To show pending sync Icon in database page
@@ -254,7 +254,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
             } else {
                 if (selectedCusttoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        customerFromServer = ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl, false);
+                        customerFromServer = ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl);
                     } else {
                         /**
                          * To show pending sync Icon in database page
@@ -287,13 +287,13 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                     public void onClick(DialogInterface dialog, int which) {
                         Customer.CustomerData selectedCustomer = customersAdapter.getItem(position);
                         if (selectedCustomer.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
-                            billMatrixDaoImpl.updateCustomer(DBConstants.STATUS, "-1", customersAdapter.getItem(position).mobile_number);
+                            billMatrixDaoImpl.updateCustomer(DBConstants.STATUS, "-1", selectedCustomer.mobile_number);
                         } else {
                             billMatrixDaoImpl.deleteCustomer(DBConstants.CUSTOMER_CONTACT, selectedCustomer.mobile_number);
                         }
                         if (Utils.isInternetAvailable(mContext)) {
                             if (!TextUtils.isEmpty(selectedCustomer.id)) {
-                                ServerUtils.deleteCustomerfromServer(selectedCustomer, mContext, billMatrixDaoImpl, false);
+                                ServerUtils.deleteCustomerfromServer(selectedCustomer, mContext, billMatrixDaoImpl);
                             }
                         } else {
                             /**

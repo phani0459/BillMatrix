@@ -151,10 +151,10 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
                 }
 
                 if (TextUtils.isDigitsOnly(discountData.discount)) {
-                    Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_VALUE, Float.parseFloat(discountData.discount)).apply();
+                    Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, Float.parseFloat(discountData.discount)).apply();
                     Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DISCOUNT_CODE, discountData.discount_code).apply();
                 } else {
-                    Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f).apply();
+                    Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f).apply();
                     Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DISCOUNT_CODE, "").apply();
                 }
             }

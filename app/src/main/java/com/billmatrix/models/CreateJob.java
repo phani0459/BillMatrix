@@ -11,10 +11,23 @@ public class CreateJob {
     public String update_employee;
     public String create_employee;
     public String create_vendor;
+    public String create_payment;
+    public String update_payment;
     public String update_vendor;
+    public String update_discount;
+    public String create_discount;
     public CreatedJob data;
 
     public class CreatedJob {
+        public String discount_code;
+        public String discount_description;
+        public String discount;
+        public String payee_name;
+        public String date_of_payment;
+        public String amount;
+        public String purpose_of_payment;
+        public String mode_of_payment;
+        public String payment_type;
         public String username;
         public String login_id;
         public String mobile_number;

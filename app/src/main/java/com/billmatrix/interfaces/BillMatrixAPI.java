@@ -5,6 +5,7 @@ import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.Payments;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
@@ -141,8 +142,8 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("create_discount")
-    Call<HashMap<String, String>> addDiscount(@Field("admin_id") String adminId, @Field("discount_code") String discount_code, @Field("discount_description") String description,
-                                              @Field("discount") String tax_rate, @Field("status") String status);
+    Call<CreateJob> addDiscount(@Field("admin_id") String adminId, @Field("discount_code") String discount_code, @Field("discount_description") String description,
+                                @Field("discount") String tax_rate, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("admin_discounts")
@@ -150,11 +151,31 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("update_discount")
-    Call<HashMap<String, String>> updateDiscount(@Field("id") String id, @Field("admin_id") String admin_id, @Field("discount_code") String discount_code,
-                                                 @Field("discount_description") String description, @Field("discount") String discount, @Field("status") String status);
+    Call<CreateJob> updateDiscount(@Field("id") String id, @Field("admin_id") String admin_id, @Field("discount_code") String discount_code,
+                                   @Field("discount_description") String description, @Field("discount") String discount, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("delete_discount")
     Call<HashMap<String, String>> deleteDiscount(@Field("id") String id);
+
+    @FormUrlEncoded
+    @POST("delete_payment")
+    Call<HashMap<String, String>> deletePayment(@Field("id") String id);
+
+    @FormUrlEncoded
+    @POST("create_payment")
+    Call<CreateJob> addPayment(@Field("admin_id") String adminId, @Field("payee_name") String payee_name, @Field("mode_of_payment") String mode_of_payment,
+                               @Field("date_of_payment") String date_of_payment, @Field("amount") String amount, @Field("status") String status,
+                               @Field("purpose_of_payment") String purpose_of_payment, @Field("payment_type") String payment_type);
+
+    @FormUrlEncoded
+    @POST("update_payment")
+    Call<CreateJob> updatePayment(@Field("id") String id, @Field("admin_id") String adminId, @Field("payee_name") String payee_name, @Field("mode_of_payment") String mode_of_payment,
+                                  @Field("date_of_payment") String date_of_payment, @Field("amount") String amount, @Field("status") String status,
+                                  @Field("purpose_of_payment") String purpose_of_payment, @Field("payment_type") String payment_type);
+
+    @FormUrlEncoded
+    @POST("admin_payments")
+    Call<Payments> getAdminPayments(@Field("admin_id") String adminId, @Field("payment_type") String payment_type);
 
 }

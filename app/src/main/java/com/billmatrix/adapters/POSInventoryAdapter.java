@@ -1,5 +1,6 @@
 package com.billmatrix.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import com.billmatrix.R;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Inventory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,9 +35,19 @@ public class POSInventoryAdapter extends RecyclerView.Adapter<POSInventoryAdapte
         }
     }
 
-    public POSInventoryAdapter(List<Inventory.InventoryData> inventories, OnItemClickListener onClickListener) {
+    public void addInventory(Inventory.InventoryData inventoryData) {
+        inventories.add(inventoryData);
+        notifyDataSetChanged();
+    }
+
+    public POSInventoryAdapter(List<Inventory.InventoryData> inventories, OnItemClickListener onClickListener, Context mContext) {
         this.inventories = inventories;
         this.onItemClickListener = onClickListener;
+    }
+
+    public void removeAllInventories() {
+        inventories = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override

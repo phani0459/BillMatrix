@@ -19,23 +19,21 @@ import com.billmatrix.R;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.DiscountAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Discount;
 import com.billmatrix.network.ServerData;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -143,44 +141,6 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         }
     }
 
-    private void addDiscounttoServer(Discount.DiscountData discountData) {
-        Log.e(TAG, "addDiscounttoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).addDiscount(adminId, discountData.discount_code, discountData.discount_description,
-                discountData.discount, "1");
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> taxMap = response.body();
-                    if (taxMap.get("status").equalsIgnoreCase("200")) {
-                        if (taxMap.get("create_discount").equalsIgnoreCase("success")) {
-                            Utils.showToast("Discount Added successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
-    }
-
     public void onBackPressed() {
         if (addDiscountButton.getText().toString().equalsIgnoreCase("SAVE")) {
             ((BaseTabActivity) mContext).showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
@@ -223,13 +183,27 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         }
 
         Discount.DiscountData discountData = new Discount().new DiscountData();
+        Discount.DiscountData discountFromServer = new Discount().new DiscountData();
 
-        discountData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        if (addDiscountButton.getText().toString().equalsIgnoreCase("ADD")) {
+            discountData.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+            discountData.add_update = Constants.ADD_OFFLINE;
+        } else {
+            if (selectedDiscounttoEdit != null) {
+                discountData.id = selectedDiscounttoEdit.id;
+                discountData.create_date = selectedDiscounttoEdit.create_date;
+                if (selectedDiscounttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                    discountData.add_update = Constants.UPDATE_OFFLINE;
+                }
+            }
+        }
+
         discountData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
         discountData.discount = value;
         discountData.discount_description = description;
         discountData.discount_code = code;
         discountData.status = "1";
+        discountData.admin_id = adminId;
 
         if (value.equals("0")) {
             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DEFAULT_DISCOUNT_CODE, code).apply();
@@ -251,9 +225,6 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         long discountAdded = billMatrixDaoImpl.addDiscount(discountData);
 
         if (discountAdded != -1) {
-            discountAdapter.addDiscount(discountData);
-            discountsRecyclerView.smoothScrollToPosition(discountAdapter.getItemCount());
-
             /**
              * reset all edit texts
              */
@@ -263,28 +234,32 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
 
             if (addDiscountButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    addDiscounttoServer(discountData);
+                    discountFromServer = ServerUtils.addDiscounttoServer(discountData, adminId, mContext, billMatrixDaoImpl);
                 } else {
                     /**
                      * To show pending sync Icon in database page
                      */
+                    discountFromServer = discountData;
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
                     Utils.showToast("Discount Added successfully", mContext);
                 }
             } else {
                 if (selectedDiscounttoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        updateDiscounttoServer(discountData);
+                        discountFromServer = ServerUtils.updateDiscounttoServer(discountData, mContext, adminId, billMatrixDaoImpl);
                     } else {
                         /**
                          * To show pending sync Icon in database page
                          */
+                        discountFromServer = discountData;
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
                         Utils.showToast("Discount Updated successfully", mContext);
                     }
                 }
             }
 
+            discountAdapter.addDiscount(discountFromServer);
+            discountsRecyclerView.smoothScrollToPosition(discountAdapter.getItemCount());
             addDiscountButton.setText(getString(R.string.add));
             isEditing = false;
             isDiscountAdded = true;
@@ -292,44 +267,6 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         } else {
             Utils.showToast("Discount Code must be unique", mContext);
         }
-    }
-
-    private void updateDiscounttoServer(Discount.DiscountData discountData) {
-        Log.e(TAG, "updateDiscounttoServer: ");
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).updateDiscount(discountData.id, adminId, discountData.discount_code,
-                discountData.discount_description, discountData.discount, "1");
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> vendorMap = response.body();
-                    if (vendorMap.get("status").equalsIgnoreCase("200")) {
-                        if (vendorMap.containsKey("update_discount") && vendorMap.get("update_discount").equalsIgnoreCase("Successfully Updated")) {
-                            Utils.showToast("Discount Updated successfully", mContext);
-                        }
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
     }
 
     public boolean isEditing;
@@ -341,10 +278,15 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Discount Type", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        billMatrixDaoImpl.updateTax("-1", discountAdapter.getItem(position).discount_code);
+                        Discount.DiscountData selectedDiscount = discountAdapter.getItem(position);
+                        if (selectedDiscount.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                            billMatrixDaoImpl.updateDiscount(DBConstants.STATUS, "-1", selectedDiscount.discount_code);
+                        } else {
+                            billMatrixDaoImpl.deleteDiscount(selectedDiscount.discount_code);
+                        }
                         if (Utils.isInternetAvailable(mContext)) {
-                            if (!TextUtils.isEmpty(discountAdapter.getItem(position).id)) {
-                                deleteDiscountfromServer(discountAdapter.getItem(position).id, discountAdapter.getItem(position).discount_code);
+                            if (!TextUtils.isEmpty(selectedDiscount.id)) {
+                                ServerUtils.deleteDiscountfromServer(selectedDiscount, mContext, billMatrixDaoImpl);
                             }
                         } else {
                             /**
@@ -378,40 +320,5 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
             case 3:
                 break;
         }
-    }
-
-    private void deleteDiscountfromServer(String id, final String disc_code) {
-        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteDiscount(id);
-
-        call.enqueue(new Callback<HashMap<String, String>>() {
-
-
-            /**
-             * Successful HTTP response.
-             * @param call server call
-             * @param response server response
-             */
-            @Override
-            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
-                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
-                if (response.body() != null) {
-                    HashMap<String, String> taxStatus = response.body();
-                    if (taxStatus.get("status").equalsIgnoreCase("200")) {
-                        Utils.showToast("Discount Deleted successfully", mContext);
-                        billMatrixDaoImpl.deleteDiscount(disc_code);
-                    }
-                }
-            }
-
-            /**
-             *  Invoked when a network or unexpected exception occurred during the HTTP request.
-             * @param call server call
-             * @param t error
-             */
-            @Override
-            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
-                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-            }
-        });
     }
 }

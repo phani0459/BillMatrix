@@ -21,7 +21,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -33,7 +32,6 @@ import android.widget.TextView;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Discount;
-import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -225,10 +223,10 @@ public class StoreFragment extends Fragment {
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                         if (b) {
                             if (TextUtils.isDigitsOnly(discountData.discount)) {
-                                Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_VALUE, Float.parseFloat(discountData.discount)).apply();
+                                Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, Float.parseFloat(discountData.discount)).apply();
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DISCOUNT_CODE, discountData.discount_code).apply();
                             } else {
-                                Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f).apply();
+                                Utils.getSharedPreferences(mContext).edit().putFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f).apply();
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DISCOUNT_CODE, "").apply();
                             }
                         }

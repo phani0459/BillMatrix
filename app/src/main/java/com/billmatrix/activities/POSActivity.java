@@ -39,6 +39,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,12 +47,14 @@ import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.WorkService;
+import com.billmatrix.adapters.DevicesAdapter;
 import com.billmatrix.adapters.POSInventoryAdapter;
 import com.billmatrix.adapters.POSItemAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
+import com.billmatrix.models.Discount;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
@@ -125,6 +128,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public Button cashCardButton;
     @BindView(R.id.btn_credit)
     public Button creditButton;
+    @BindView(R.id.tv_pos_inven_no_results)
+    public TextView noResultsTextView;
 
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
@@ -146,6 +151,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private MHandler mHandler;
     private ProgressDialog searchingDialog;
     private static final int BLUETOOTH_ENABLE_REQUEST_ID = 1;
+    private Dialog devicesDialog;
+    private DevicesAdapter devicesAdapter;
+    private ListView devicesListView;
+    private Dialog paymentsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,18 +202,27 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         button.setTextColor(getResources().getColor(android.R.color.black));
         tab_bottom_view.setBackgroundColor(getResources().getColor(R.color.tabButtonBG));
 
+        List<Inventory.InventoryData> inventoryDatas = new ArrayList<>();
         posInventoryList.setLayoutManager(new GridLayoutManager(mContext, 2));
-
-        List<Inventory.InventoryData> inventory = billMatrixDaoImpl.getInventory();
-        posInventoryAdapter = new POSInventoryAdapter(inventory, this);
+        posInventoryAdapter = new POSInventoryAdapter(inventoryDatas, this, mContext);
         posInventoryList.setAdapter(posInventoryAdapter);
+
+        inventoryDatas = billMatrixDaoImpl.getInventory();
+
+        if (inventoryDatas != null && inventoryDatas.size() > 0) {
+            for (Inventory.InventoryData inventoryData : inventoryDatas) {
+                if (!inventoryData.status.equalsIgnoreCase("-1")) {
+                    posInventoryAdapter.addInventory(inventoryData);
+                }
+            }
+        }
 
         List<Inventory.InventoryData> itemsInventory = new ArrayList<>();
         posItemsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         posItemAdapter = new POSItemAdapter(itemsInventory, this, mContext);
         posItemsRecyclerView.setAdapter(posItemAdapter);
 
-        discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_VALUE, 0.0f);
+        discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f);
         discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
         selectedtaxes = new ArrayMap<String, Float>();
 
@@ -236,6 +254,26 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             Intent intent = new Intent(mContext, WorkService.class);
             mContext.startService(intent);
         }
+
+        /**
+         * Initiate devices Dialog
+         */
+        devicesDialog = new Dialog(mContext);
+        devicesDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        devicesDialog.setCancelable(false);
+        devicesDialog.setContentView(R.layout.dialog_printer_devices);
+        devicesListView = (ListView) devicesDialog.findViewById(R.id.lv_printers);
+        Button close = (Button) devicesDialog.findViewById(R.id.btn_close_printers_dialog);
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                devicesDialog.dismiss();
+            }
+        });
+
+        devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
+        devicesListView.setAdapter(devicesAdapter);
+
     }
 
     @OnClick(R.id.rl_pos_cust_edit)
@@ -367,13 +405,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         if (customerAdded != -1) {
             if (TextUtils.isEmpty(customerData.id)) {
                 if (Utils.isInternetAvailable(mContext)) {
-                    ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl, false);
+                    ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl);
                 } else {
                     Utils.showToast("Customer Added successfully", mContext);
                 }
             } else {
                 if (Utils.isInternetAvailable(mContext)) {
-                    ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl, false);
+                    ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl);
                 } else {
                     Utils.showToast("Customer Updated successfully", mContext);
                 }
@@ -469,27 +507,27 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         } else {
             return;
         }
-        final Dialog dialog = new Dialog(mContext);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(false);
-        dialog.setContentView(R.layout.dialog_pos_cash_card);
+        paymentsDialog = new Dialog(mContext);
+        paymentsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        paymentsDialog.setCancelable(false);
+        paymentsDialog.setContentView(R.layout.dialog_pos_cash_card);
 
-        TextView title = (TextView) dialog.findViewById(R.id.tv_payments_title);
-        TextView discount = (TextView) dialog.findViewById(R.id.tv_dialog_discount);
-        TextView tax = (TextView) dialog.findViewById(R.id.tv_dialog_tax);
-        final TextView total = (TextView) dialog.findViewById(R.id.tv_dialog_total);
-        final TextView totalPaid = (TextView) dialog.findViewById(R.id.tv_dialog_total_paid);
-        final TextView balance = (TextView) dialog.findViewById(R.id.tv_dialog_balance);
-        final TextView changeTextView = (TextView) dialog.findViewById(R.id.tv_dialog_change);
-        final EditText cashEditText = (EditText) dialog.findViewById(R.id.et_dialog_cash);
-        final EditText cardEditText = (EditText) dialog.findViewById(R.id.et_dialog_card);
-        final LinearLayout cardLayout = (LinearLayout) dialog.findViewById(R.id.ll_dialog_card);
+        TextView title = (TextView) paymentsDialog.findViewById(R.id.tv_payments_title);
+        TextView discount = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_discount);
+        TextView tax = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_tax);
+        final TextView total = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_total);
+        final TextView totalPaid = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_total_paid);
+        final TextView balance = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_balance);
+        final TextView changeTextView = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_change);
+        final EditText cashEditText = (EditText) paymentsDialog.findViewById(R.id.et_dialog_cash);
+        final EditText cardEditText = (EditText) paymentsDialog.findViewById(R.id.et_dialog_card);
+        final LinearLayout cardLayout = (LinearLayout) paymentsDialog.findViewById(R.id.ll_dialog_card);
 
-        Button close = (Button) dialog.findViewById(R.id.btn_close_cash_card_dialog);
-        final Button cashButton = (Button) dialog.findViewById(R.id.btn_dialog_cash);
-        final Button cardButton = (Button) dialog.findViewById(R.id.btn_dialog_card);
-        final Button creditButton = (Button) dialog.findViewById(R.id.btn_dialog_credit);
-        final Button payButton = (Button) dialog.findViewById(R.id.btn_dialog_pay);
+        Button close = (Button) paymentsDialog.findViewById(R.id.btn_close_cash_card_dialog);
+        final Button cashButton = (Button) paymentsDialog.findViewById(R.id.btn_dialog_cash);
+        final Button cardButton = (Button) paymentsDialog.findViewById(R.id.btn_dialog_card);
+        final Button creditButton = (Button) paymentsDialog.findViewById(R.id.btn_dialog_credit);
+        final Button payButton = (Button) paymentsDialog.findViewById(R.id.btn_dialog_pay);
 
         title.setText(getString(R.string.payments) + " - " + username);
 
@@ -658,7 +696,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.dismiss();
+                paymentsDialog.dismiss();
             }
         });
 
@@ -685,7 +723,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             }
         });
 
-        dialog.show();
+        paymentsDialog.show();
     }
 
     @OnClick(R.id.rl_pos_cust_close)
@@ -965,15 +1003,76 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         Log.e(TAG, "searchClosed: ");
     }
 
+    @OnClick(R.id.btn_discountSelected)
+    public void validateDiscount() {
+        boolean isDiscountValidated = false;
+        ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
+        String discountToBeValidated = discountCodeEditText.getText().toString();
+
+        if (discounts != null && discounts.size() > 0) {
+            for (Discount.DiscountData dbDiscountData : discounts) {
+                if (dbDiscountData.discount_code.equals(discountToBeValidated)) {
+                    isDiscountValidated = true;
+                    if (TextUtils.isDigitsOnly(dbDiscountData.discount)) {
+                        discountSelected = Float.parseFloat(dbDiscountData.discount);
+                    } else {
+                        discountSelected = 0.0f;
+                    }
+                }
+            }
+        }
+
+        if (isDiscountValidated) {
+            Utils.showToast("Discount Applied", mContext);
+        } else {
+            Utils.showToast("Enter Valid Discount Code", mContext);
+            discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f);
+            discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
+        }
+        loadFooterValues();
+    }
+
     public void searchItemsClicked(String query) {
         Log.e(TAG, "searchItemsClicked: ");
         if (query.length() > 0) {
             query = query.toLowerCase();
-            //TODO
+            noResultsTextView.setVisibility(View.GONE);
+            boolean noInventory = false;
+            query = query.toLowerCase();
+            posInventoryAdapter.removeAllInventories();
+
+            ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+
+            if (inventories != null && inventories.size() > 0) {
+                for (Inventory.InventoryData inventoryData : inventories) {
+                    if ((!TextUtils.isEmpty(inventoryData.barcode) && inventoryData.barcode.toLowerCase().contains(query)) ||
+                            inventoryData.item_name.toLowerCase().contains(query) ||
+                            inventoryData.item_code.toLowerCase().contains(query)) {
+                        noInventory = true;
+                        posInventoryAdapter.addInventory(inventoryData);
+                    }
+                }
+            }
+
+            if (!noInventory) {
+                noResultsTextView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
     public void searchItemsClosed() {
+        noResultsTextView.setVisibility(View.GONE);
+
+        posInventoryAdapter.removeAllInventories();
+
+        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+
+        if (inventories != null && inventories.size() > 0) {
+            for (Inventory.InventoryData inventoryData : inventories) {
+                posInventoryAdapter.addInventory(inventoryData);
+            }
+        }
+
         Log.e(TAG, "searchItemsClosed: ");
     }
 
@@ -1127,9 +1226,11 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public Float getTaxCalculated(Float total) {
         Float taxCalculated = 0.00f;
         Float totalTax = 0.00f;
-        for (String selectedTaxType : selectedtaxes.keySet()) {
-            if (selectedtaxes.get(selectedTaxType) != 0) {
-                totalTax = totalTax + selectedtaxes.get(selectedTaxType);
+        if (selectedtaxes != null && selectedtaxes.size() > 0) {
+            for (String selectedTaxType : selectedtaxes.keySet()) {
+                if (selectedtaxes.get(selectedTaxType) != 0) {
+                    totalTax = totalTax + selectedtaxes.get(selectedTaxType);
+                }
             }
         }
         if (totalTax != 0) {
@@ -1249,6 +1350,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             }
             customersSpinner.setSelection(0);
 
+            /**
+             * dismiss payments dialog
+             */
+            if (paymentsDialog != null && paymentsDialog.isShowing()) {
+                paymentsDialog.dismiss();
+            }
+
         } else {
             Toast.makeText(this, Global.toast_notconnect, Toast.LENGTH_SHORT).show();
         }
@@ -1300,6 +1408,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         footerTextView = (TextView) view.findViewById(R.id.tv_bill_footer);
 
         LinearLayout billItemsLayout = (LinearLayout) view.findViewById(R.id.ll_bill_items_layout);
+        LinearLayout billTaxesLayout = (LinearLayout) view.findViewById(R.id.ll_bill_taxes);
         int totalItemsCount = 0;
 
         ArrayList<Inventory.InventoryData> previousItems = billMatrixDaoImpl.getPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
@@ -1334,10 +1443,31 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         paymentTypeTextView.setText(paymentType);
         grandTotalTextView.setText(totalValueTextView.getText().toString().replace("/-", ""));
 
+        if (selectedtaxes != null && selectedtaxes.size() > 0) {
+            Float taxableAmount = 0.0f;
+            try {
+                Float subTotal = Float.parseFloat(subTotalTextView.getText().toString().replace(getString(R.string.sub_total) + " ", "").replace("/-", ""));
+                Float discount = Float.parseFloat(savedMoneyTextView.getText().toString());
+                taxableAmount = subTotal - discount;
+            } catch (NumberFormatException e) {
+                taxableAmount = 0.0f;
+            }
+            for (String selectedTaxType : selectedtaxes.keySet()) {
+                View billTaxLayout = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.bill_tax_item, null);
+                TextView taxDescTextView = (TextView) billTaxLayout.findViewById(R.id.tv_bill_tax);
+                TextView taxableAmtTextView = (TextView) billTaxLayout.findViewById(R.id.tv_total_taxable_amt);
+                TextView taxValueTextView = (TextView) billTaxLayout.findViewById(R.id.tv_bill_taxValue);
+
+                taxDescTextView.setText(selectedTaxType + " @ " + selectedtaxes.get(selectedTaxType) + "% on: ");
+                taxableAmtTextView.setText(String.format(Locale.getDefault(), "%.1f", taxableAmount));
+                taxValueTextView.setText("" + ((taxableAmount * selectedtaxes.get(selectedTaxType)) / 100));
+            }
+        }
+
         String footer = Utils.getSharedPreferences(mContext).getString(Constants.PREF_FOOTER_TEXT, null);
 
         if (TextUtils.isEmpty(footer)) {
-            footer = "GET " + Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_VALUE, "0") + "% USING "
+            footer = "GET " + Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f) + "% USING "
                     + Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, "No Discount");
         }
 
@@ -1355,41 +1485,34 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     if (device == null)
                         return;
-                    final String address = device.getAddress();
-                    String deviceName = device.getName();
-                    if (TextUtils.isEmpty(deviceName)) {
-                        deviceName = "BT";
-                    } else if (deviceName.equals(address)) {
-                        deviceName = "BT";
-                    }
 
-                    android.app.AlertDialog devicesDialog = new android.app.AlertDialog.Builder(mContext)
-                            .setTitle("Connect to " + deviceName)
-                            .setMessage("" + address)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    /**
-                                     * dismiss search
-                                     */
-                                    searchingDialog.dismiss();
+                    /**
+                     * dismiss search
+                     */
+                    if (searchingDialog != null && searchingDialog.isShowing())
+                        searchingDialog.dismiss();
 
-                                    connectingProgressDialog.setMessage("Connecting" + " " + address);
-                                    connectingProgressDialog.setIndeterminate(true);
-                                    connectingProgressDialog.setCancelable(false);
-                                    connectingProgressDialog.show();
+                    devicesAdapter.add(device);
+                    devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                            connectingProgressDialog.setMessage("Connecting" + " " + devicesAdapter.getItem(position).getAddress());
+                            connectingProgressDialog.setIndeterminate(true);
+                            connectingProgressDialog.setCancelable(false);
+                            connectingProgressDialog.show();
 
-                                    WorkService.workThread.setDeviceAddress(address);
-                                    WorkService.workThread.setDeviceName(device.getName());
-                                    WorkService.workThread.connectBt(address);
-                                }
-                            }).create();
+                            WorkService.workThread.connectBt(devicesAdapter.getItem(position).getAddress());
+
+                            devicesDialog.dismiss();
+                        }
+                    });
 
                     devicesDialog.show();
+
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                    //TODO: disable progress bar
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                    //TODO: disable progress bar
+                    if (searchingDialog != null && searchingDialog.isShowing())
+                        searchingDialog.dismiss();
                 }
 
             }
@@ -1487,6 +1610,12 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         WorkService.delHandler(mHandler);
         mHandler = null;
         unInitBroadcast();
+        if (searchingDialog != null && searchingDialog.isShowing()) {
+            searchingDialog.dismiss();
+        }
+        if (connectingProgressDialog != null && connectingProgressDialog.isShowing()) {
+            connectingProgressDialog.dismiss();
+        }
     }
 
     private void unInitBroadcast() {

@@ -169,7 +169,7 @@
             android:orientation="vertical"
             android:weightSum="10">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginBottom="4dp"
@@ -184,8 +184,18 @@
                     android:layout_height="match_parent"
                     android:scrollbars="none" />
 
+                <TextView
+                    android:id="@+id/tv_pos_inven_no_results"
+                    style="@style/Base.TextAppearance.AppCompat.Large"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="@string/No_results"
+                    android:textColor="@android:color/black"
+                    android:visibility="gone" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -504,6 +514,7 @@
                             android:textColor="@android:color/black" />
 
                         <Button
+                            android:id="@+id/btn_discountSelected"
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

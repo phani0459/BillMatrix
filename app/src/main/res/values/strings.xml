@@ -13,6 +13,7 @@
     <string name="sno">S.NO.</string>
     <string name="STATUS">STATUS</string>
     <string name="ACTION">ACTION</string>
+    <string name="Select_printer_dialog_title">Select Printer to connect</string>
     <string name="LOCATION">LOCATION</string>
     <string name="No_results">No Results found, Try again</string>
     <string name="storage_permission_rationale">"Storage permissions are needed for uploading Images."</string>

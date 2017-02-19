@@ -26,9 +26,8 @@ class BillMatrixDBHandler extends DBHandler {
     private final static String CREATE_VENDOR_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.VENDORS_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.VENDOR_NAME + " VARCHAR,"
-            + DBConstants.VENDOR_ID + " VARCHAR," + DBConstants.VENDOR_SINCE + " VARCHAR,"
-            + DBConstants.VENDOR_ADDRESS + " VARCHAR," + DBConstants.PHONE + " VARCHAR UNIQUE,"
-            + DBConstants.EMAIL + " VARCHAR," + DBConstants.ID + " VARCHAR," + DBConstants.CREATE_DATE
+            + DBConstants.VENDOR_SINCE + " VARCHAR," + DBConstants.VENDOR_ADDRESS + " VARCHAR," + DBConstants.PHONE + " VARCHAR UNIQUE,"
+            + DBConstants.EMAIL + " VARCHAR," + DBConstants.ID + " VARCHAR UNIQUE," + DBConstants.CREATE_DATE
             + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.LOCATION + " VARCHAR,"
             + DBConstants.STATUS + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR" + ")";
 

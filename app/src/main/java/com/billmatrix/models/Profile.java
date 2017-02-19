@@ -10,6 +10,7 @@ public class Profile implements Serializable {
     public int status;
     public String userdata;
     public ProfileData data;
+    public Store store_data;
 
     public class ProfileData implements Serializable {
         public String id;

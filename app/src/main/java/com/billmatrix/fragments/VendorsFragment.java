@@ -27,8 +27,8 @@ import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.network.ServerData;
-import com.billmatrix.utils.Constants;
 import com.billmatrix.network.ServerUtils;
+import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -37,9 +37,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.

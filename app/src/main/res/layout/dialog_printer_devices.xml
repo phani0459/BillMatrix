@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,8 +7,10 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/heading_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_gravity="center"
         android:padding="8dp">
 
@@ -35,9 +37,53 @@
     <ListView
         android:id="@+id/lv_printers"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/heading_rl"
         android:divider="@color/headerBG"
         android:dividerHeight="1dp"
+        android:scrollbars="none"
         tools:listitem="@android:layout/simple_list_item_2" />
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/footer_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lv_printers"
+        android:layout_gravity="center"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/tv_scanningprinters"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/scanning"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <ProgressBar
+            android:id="@+id/pb_scan_printers"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="6dp"
+            android:layout_toRightOf="@+id/tv_scanningprinters" />
+
+        <Button
+            android:id="@+id/btn_cont_without_printer"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/pay_button"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/cont_wo_printer"
+            android:textColor="@android:color/white" />
+
+    </RelativeLayout>
+</RelativeLayout>

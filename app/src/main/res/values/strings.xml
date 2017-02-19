@@ -19,6 +19,8 @@
     <string name="storage_permission_rationale">"Storage permissions are needed for uploading Images."</string>
     <string name="zero">0.00</string>
     <string name="only_alphaNumeric">0123456789.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM</string>
+    <string name="cont_wo_printer">Continue without Print</string>
+    <string name="scanning">Scanning for other printers</string>
 
     <!-- Login Strings-->
     <string name="login_id">Login ID</string>

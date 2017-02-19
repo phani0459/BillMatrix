@@ -53,7 +53,6 @@ public class DBConstants {
      * Vendors Column Names
      */
     final static String VENDOR_NAME = "Vendor_Name";
-    final static String VENDOR_ID = "vendor_id";
     final static String VENDOR_SINCE = "vendor_since";
     final static String VENDOR_ADDRESS = "vendor_ADD";
 

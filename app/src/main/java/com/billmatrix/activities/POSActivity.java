@@ -224,7 +224,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f);
         discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
-        selectedtaxes = new ArrayMap<String, Float>();
+        selectedtaxes = new ArrayMap<>();
 
         String selectedTaxJSON = Utils.getSharedPreferences(mContext).getString(Constants.PREF_TAX_JSON, "");
         if (!TextUtils.isEmpty(selectedTaxJSON)) {
@@ -267,7 +267,37 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /**
+                 * to remove all the printers previously searched
+                 */
+                devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
+                devicesListView.setAdapter(devicesAdapter);
+
                 devicesDialog.dismiss();
+
+                if (adapter != null && adapter.isDiscovering()) {
+                    adapter.cancelDiscovery();
+                }
+            }
+        });
+
+        Button continueButton = (Button) devicesDialog.findViewById(R.id.btn_cont_without_printer);
+        continueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /**
+                 * to remove all the printers previously searched
+                 */
+                devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
+                devicesListView.setAdapter(devicesAdapter);
+
+                devicesDialog.dismiss();
+
+                if (adapter != null && adapter.isDiscovering()) {
+                    adapter.cancelDiscovery();
+                }
+
+                resetCustomerBill();
             }
         });
 
@@ -710,7 +740,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     return;
                 }
                 if (balanceRemaining <= 0) {
-                    enableBluetooth();
+                    printBillDialog("Want to Print Bill?");
                 } else {
                     if (!isGuestCustomerSelected) {
                         cashButton.setBackgroundResource(R.drawable.button_disable);
@@ -724,6 +754,49 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         });
 
         paymentsDialog.show();
+    }
+
+    public void resetCustomerBill() {
+        /**
+         * Remove customer bill items to close the bill
+         */
+        if (posItemAdapter.getItemCount() > 0) {
+            posItemAdapter.removeAllItems();
+        }
+        billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+        if (isGuestCustomerSelected) {
+            int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
+            if (guestCustInt == guestCustomerCount && guestCustInt != 1) {
+                guestCustomerCount = guestCustomerCount - 1;
+                customerSpinnerAdapter.remove(selectedGuestCustomerName);
+            }
+        }
+        customersSpinner.setSelection(0);
+
+        /**
+         * dismiss payments dialog
+         */
+        if (paymentsDialog != null && paymentsDialog.isShowing()) {
+            paymentsDialog.dismiss();
+        }
+    }
+
+    public void printBillDialog(String title) {
+        AlertDialog devicesDialog = new AlertDialog.Builder(mContext)
+                .setTitle(title)
+                .setPositiveButton("Search Printer", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        enableBluetooth();
+                    }
+                }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        resetCustomerBill();
+                    }
+                }).create();
+
+        devicesDialog.show();
     }
 
     @OnClick(R.id.rl_pos_cust_close)
@@ -750,18 +823,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (posItemAdapter.getItemCount() > 0) {
-                    posItemAdapter.removeAllItems();
-                }
-                billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
-                if (isGuestCustomerSelected) {
-                    int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
-                    if (guestCustInt == guestCustomerCount && guestCustInt != 1) {
-                        guestCustomerCount = guestCustomerCount - 1;
-                        customerSpinnerAdapter.remove(selectedGuestCustomerName);
-                    }
-                }
-                customersSpinner.setSelection(0);
+                resetCustomerBill();
                 dialog.dismiss();
             }
         });
@@ -786,6 +848,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 posItemAdapter.removeAllItems();
+
+                Log.e(TAG, "onItemSelected: " + posItemAdapter.getItemCount());
                 creditButton.setBackgroundResource(R.drawable.button_enable);
                 cashCardButton.setBackgroundResource(R.drawable.button_enable);
                 isPaymentTypeClicked = false;
@@ -949,6 +1013,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
     private void loadPreviousItems(String selecteCustomerName) {
+        Log.e(TAG, "loadPreviousItems: " + posItemAdapter.getItemCount());
         ArrayList<Inventory.InventoryData> previousItems = billMatrixDaoImpl.getPOSItem(selecteCustomerName);
         if (previousItems != null && previousItems.size() > 0) {
             for (Inventory.InventoryData inventoryData : previousItems) {
@@ -1013,9 +1078,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             for (Discount.DiscountData dbDiscountData : discounts) {
                 if (dbDiscountData.discount_code.equals(discountToBeValidated)) {
                     isDiscountValidated = true;
-                    if (TextUtils.isDigitsOnly(dbDiscountData.discount)) {
+                    try {
                         discountSelected = Float.parseFloat(dbDiscountData.discount);
-                    } else {
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
                         discountSelected = 0.0f;
                     }
                 }
@@ -1171,19 +1237,21 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             if (posItemAdapter.inventoryIDs != null && posItemAdapter.inventoryIDs.size() > 0) {
                 if (posItemAdapter.inventoryIDs.contains(selectedInventory.id)) {
                     Inventory.InventoryData inventoryFromAdapter = posItemAdapter.getInventoryonID(selectedInventory.id);
-                    int inventoryQty = Integer.parseInt(inventoryFromAdapter.selectedQTY);
-                    if (TextUtils.isDigitsOnly(selectedInventory.qty)) {
-                        if (Integer.parseInt(selectedInventory.qty) > inventoryQty) {
-                            inventoryQty = inventoryQty + 1;
-                            inventoryFromAdapter.selectedQTY = inventoryQty + "";
-                            posItemAdapter.changeInventory(inventoryFromAdapter);
-                        } else {
-                            Utils.showToast("This item is out of stock", mContext);
+                    if (inventoryFromAdapter != null) {
+                        int inventoryQty = Integer.parseInt(inventoryFromAdapter.selectedQTY);
+                        if (TextUtils.isDigitsOnly(selectedInventory.qty)) {
+                            if (Integer.parseInt(selectedInventory.qty) > inventoryQty) {
+                                inventoryQty = inventoryQty + 1;
+                                inventoryFromAdapter.selectedQTY = inventoryQty + "";
+                                posItemAdapter.changeInventory(inventoryFromAdapter);
+                            } else {
+                                Utils.showToast("This item is out of stock", mContext);
+                            }
                         }
+                        billMatrixDaoImpl.updatePOSItem(inventoryFromAdapter.selectedQTY, inventoryFromAdapter.item_code,
+                                selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+                        loadFooterValues();
                     }
-                    billMatrixDaoImpl.updatePOSItem(inventoryFromAdapter.selectedQTY, inventoryFromAdapter.item_code,
-                            selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
-                    loadFooterValues();
                     return;
                 } else {
                     selectedInventory.selectedQTY = "1";
@@ -1334,47 +1402,11 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             data.putInt(Global.INTPARA3, 3);
             WorkService.workThread.handleCmd(Global.CMD_POS_PRINTPICTURE, data);
 
-            /**
-             * Remove customer bill items to close the bill
-             */
-            if (posItemAdapter.getItemCount() > 0) {
-                posItemAdapter.removeAllItems();
-            }
-            billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
-            if (isGuestCustomerSelected) {
-                int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
-                if (guestCustInt == guestCustomerCount && guestCustInt != 1) {
-                    guestCustomerCount = guestCustomerCount - 1;
-                    customerSpinnerAdapter.remove(selectedGuestCustomerName);
-                }
-            }
-            customersSpinner.setSelection(0);
-
-            /**
-             * dismiss payments dialog
-             */
-            if (paymentsDialog != null && paymentsDialog.isShowing()) {
-                paymentsDialog.dismiss();
-            }
+            resetCustomerBill();
 
         } else {
             Toast.makeText(this, Global.toast_notconnect, Toast.LENGTH_SHORT).show();
         }
-        /**
-         * Clear user bill Items
-         */
-        if (posItemAdapter.getItemCount() > 0) {
-            posItemAdapter.removeAllItems();
-        }
-        billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
-        if (isGuestCustomerSelected) {
-            int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
-            if (guestCustInt == guestCustomerCount && guestCustInt != 1) {
-                guestCustomerCount = guestCustomerCount - 1;
-                customerSpinnerAdapter.remove(selectedGuestCustomerName);
-            }
-        }
-        customersSpinner.setSelection(0);
     }
 
     public TextView storeNameTextView;
@@ -1492,7 +1524,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     if (searchingDialog != null && searchingDialog.isShowing())
                         searchingDialog.dismiss();
 
-                    devicesAdapter.add(device);
+                    devicesAdapter.addDevice(device);
                     devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -1503,6 +1535,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                             WorkService.workThread.connectBt(devicesAdapter.getItem(position).getAddress());
 
+                            devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
+                            devicesListView.setAdapter(devicesAdapter);
                             devicesDialog.dismiss();
                         }
                     });

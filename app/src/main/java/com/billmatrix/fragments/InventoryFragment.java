@@ -249,7 +249,35 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /**
+                 * to remove all the printers previously searched
+                 */
+                devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
+                devicesListView.setAdapter(devicesAdapter);
+
                 devicesDialog.dismiss();
+
+                if (adapter != null && adapter.isDiscovering()) {
+                    adapter.cancelDiscovery();
+                }
+            }
+        });
+
+        Button continueButton = (Button) devicesDialog.findViewById(R.id.btn_cont_without_printer);
+        continueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /**
+                 * to remove all the printers previously searched
+                 */
+                devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
+                devicesListView.setAdapter(devicesAdapter);
+
+                devicesDialog.dismiss();
+
+                if (adapter != null && adapter.isDiscovering()) {
+                    adapter.cancelDiscovery();
+                }
             }
         });
 
@@ -718,6 +746,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
                             WorkService.workThread.connectBt(devicesAdapter.getItem(position).getAddress());
 
+                            devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
+                            devicesListView.setAdapter(devicesAdapter);
                             devicesDialog.dismiss();
                         }
                     });

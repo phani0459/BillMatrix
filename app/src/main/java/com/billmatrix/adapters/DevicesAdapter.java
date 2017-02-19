@@ -31,11 +31,6 @@ public class DevicesAdapter extends ArrayAdapter<BluetoothDevice> {
         notifyDataSetChanged();
     }
 
-    public void removeAllDevices() {
-        devices = new ArrayList<>();
-        notifyDataSetChanged();
-    }
-
     @Nullable
     @Override
     public BluetoothDevice getItem(int position) {

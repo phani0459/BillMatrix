@@ -3,6 +3,7 @@ package com.billmatrix.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,7 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
 
     public Inventory.InventoryData getInventoryonID(String id) {
         for (int i = 0; i < inventories.size(); i++) {
+            Log.e("TAG" + id, "getInventoryonID: " + inventories.get(i).id);
             if (inventories.get(i).id.equals(id)) {
                 return inventories.get(i);
             }
@@ -114,7 +116,7 @@ public class POSItemAdapter extends RecyclerView.Adapter<POSItemAdapter.POSInven
 
         /*final View itemView = (View) holder.priceTextView.getParent();*/
 
-        holder.qtyNumberButton.setNumber(inventoryData.selectedQTY, true);
+        holder.qtyNumberButton.setNumber(inventoryData.selectedQTY, false);
 
         holder.itemCodeTextView.setText(inventoryData.item_code.toUpperCase());
         holder.itemNameTextView.setText(inventoryData.item_name.toUpperCase());

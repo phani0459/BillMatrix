@@ -69,7 +69,7 @@ import static com.billmatrix.database.DBConstants.UPDATE_DATE;
 import static com.billmatrix.database.DBConstants.VENDOR;
 import static com.billmatrix.database.DBConstants.VENDORS_TABLE;
 import static com.billmatrix.database.DBConstants.VENDOR_ADDRESS;
-import static com.billmatrix.database.DBConstants.VENDOR_ID;
+import static com.billmatrix.database.DBConstants.ID;
 import static com.billmatrix.database.DBConstants.VENDOR_NAME;
 import static com.billmatrix.database.DBConstants.VENDOR_SINCE;
 import static com.billmatrix.database.DBConstants.WAREHOUSE;
@@ -274,7 +274,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public long addVendor(Vendor.VendorData vendorData) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(VENDOR_ID, vendorData.id);
+        contentValues.put(ID, vendorData.id);
         contentValues.put(VENDOR_NAME, vendorData.name);
         contentValues.put(VENDOR_SINCE, vendorData.since);
         contentValues.put(VENDOR_ADDRESS, vendorData.address);
@@ -302,7 +302,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
 
     public boolean updateVendor(Vendor.VendorData vendorData) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(VENDOR_ID, vendorData.id);
+        contentValues.put(ID, vendorData.id);
         contentValues.put(VENDOR_NAME, vendorData.name);
         contentValues.put(VENDOR_SINCE, vendorData.since);
         contentValues.put(VENDOR_ADDRESS, vendorData.address);
@@ -351,7 +351,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 do {
                     Vendor.VendorData vendorData = new Vendor().new VendorData();
                     vendorData.id = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(VENDOR_ID)));
+                            .getColumnIndexOrThrow(ID)));
                     vendorData.name = (cursor.getString(cursor
                             .getColumnIndexOrThrow(VENDOR_NAME)));
                     vendorData.email = (cursor.getString(cursor
@@ -511,6 +511,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(QUANTITY, inventoryData.qty);
         contentValues.put(PRICE, inventoryData.price);
         contentValues.put(MY_COST, inventoryData.mycost);
+        contentValues.put(ID, inventoryData.id);
         contentValues.put(DATE, inventoryData.date);
         contentValues.put(WAREHOUSE, inventoryData.warehouse);
         contentValues.put(VENDOR, inventoryData.vendor);
@@ -551,7 +552,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(VENDOR, inventoryData.vendor);
         contentValues.put(BARCODE, (!TextUtils.isEmpty(inventoryData.barcode) ? inventoryData.barcode : null));
         contentValues.put(PHOTO, inventoryData.photo);
-        contentValues.put(ID, inventoryData.id);
         contentValues.put(STATUS, inventoryData.status);
         contentValues.put(ADMIN_ID, inventoryData.admin_id);
         contentValues.put(CREATE_DATE, inventoryData.create_date);

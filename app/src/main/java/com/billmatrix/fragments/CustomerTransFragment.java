@@ -58,7 +58,6 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
 
     private ArrayList<String> customerNames;
     private ArrayList<String> bills;
-    private String adminId;
     private TransactionsAdapter transactionsAdapter;
 
     public CustomerTransFragment() {
@@ -75,7 +74,6 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         List<Customer.CustomerData> customers = new ArrayList<>();
         customerNames = new ArrayList<>();
-        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         customers = billMatrixDaoImpl.getCustomers();
 

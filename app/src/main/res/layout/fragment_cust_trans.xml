@@ -79,6 +79,7 @@
                     android:background="@drawable/edit_text_border"
                     android:minWidth="320dp"
                     android:padding="6dp"
+                    android:singleLine="true"
                     android:textColor="@android:color/black" />
             </LinearLayout>
 

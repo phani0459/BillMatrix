@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
@@ -167,28 +168,24 @@ public class StoreFragment extends Fragment {
     }
 
     public void loadStoreData() {
-        Log.e(TAG, "loadStoreData: " + (!TextUtils.isEmpty(profile.data.mobile_number) ? profile.data.mobile_number : ""));
         if (profile != null) {
             if (profile.data != null) {
                 phoneEditText.setText(!TextUtils.isEmpty(profile.data.mobile_number) ? profile.data.mobile_number : "");
-            }
+                storeNameEditText.setText(!TextUtils.isEmpty(profile.data.store_name) ? profile.data.store_name : "");
+                addressOneEditText.setText(!TextUtils.isEmpty(profile.data.address_one) ? profile.data.address_one : "");
+                addressTwoEditText.setText(!TextUtils.isEmpty(profile.data.address_two) ? profile.data.address_two : "");
+                cityEditText.setText(!TextUtils.isEmpty(profile.data.city_state) ? profile.data.city_state : "");
+                zipCodeEditText.setText(!TextUtils.isEmpty(profile.data.zipcode) ? profile.data.zipcode : "");
+                vatTINEditText.setText(!TextUtils.isEmpty(profile.data.vat_tin) ? profile.data.vat_tin : "");
+                cstNOEditText.setText(!TextUtils.isEmpty(profile.data.cst_no) ? profile.data.cst_no : "");
 
-            if (profile.store_data != null) {
-                storeNameEditText.setText(!TextUtils.isEmpty(profile.store_data.store_name) ? profile.store_data.store_name : "");
-                addressOneEditText.setText(!TextUtils.isEmpty(profile.store_data.address_one) ? profile.store_data.address_one : "");
-                addressTwoEditText.setText(!TextUtils.isEmpty(profile.store_data.address_two) ? profile.store_data.address_two : "");
-                cityEditText.setText(!TextUtils.isEmpty(profile.store_data.city_state) ? profile.store_data.city_state : "");
-                zipCodeEditText.setText(!TextUtils.isEmpty(profile.store_data.zipcode) ? profile.store_data.zipcode : "");
-                vatTINEditText.setText(!TextUtils.isEmpty(profile.store_data.vat_tin) ? profile.store_data.vat_tin : "");
-                cstNOEditText.setText(!TextUtils.isEmpty(profile.store_data.cst_no) ? profile.store_data.cst_no : "");
-
-                headerStoreNameTextView.setText(!TextUtils.isEmpty(profile.store_data.store_name) ? profile.store_data.store_name : "");
-                headerStoreAddOneTextView.setText(!TextUtils.isEmpty(profile.store_data.address_one) ? profile.store_data.address_one : "");
-                headerStoreAddTwoTextView.setText(!TextUtils.isEmpty(profile.store_data.address_two) ? profile.store_data.address_two : "");
-                headerStoreCityTextView.setText(!TextUtils.isEmpty(profile.store_data.city_state) ? profile.store_data.city_state : "");
-                headerStoreZipTextView.setText(!TextUtils.isEmpty(profile.store_data.zipcode) ? profile.store_data.zipcode : "");
-                headerStoreVatTextView.setText(!TextUtils.isEmpty(profile.store_data.vat_tin) ? profile.store_data.vat_tin : "");
-                headerStoreCSTTextView.setText(!TextUtils.isEmpty(profile.store_data.cst_no) ? profile.store_data.cst_no : "");
+                headerStoreNameTextView.setText(!TextUtils.isEmpty(profile.data.store_name) ? profile.data.store_name : "");
+                headerStoreAddOneTextView.setText(!TextUtils.isEmpty(profile.data.address_one) ? profile.data.address_one : "");
+                headerStoreAddTwoTextView.setText(!TextUtils.isEmpty(profile.data.address_two) ? profile.data.address_two : "");
+                headerStoreCityTextView.setText(!TextUtils.isEmpty(profile.data.city_state) ? profile.data.city_state : "");
+                headerStoreZipTextView.setText(!TextUtils.isEmpty(profile.data.zipcode) ? profile.data.zipcode : "");
+                headerStoreVatTextView.setText(!TextUtils.isEmpty(profile.data.vat_tin) ? "VAT TIN : " + profile.data.vat_tin : "");
+                headerStoreCSTTextView.setText(!TextUtils.isEmpty(profile.data.cst_no) ? "CST NO : " + profile.data.cst_no : "");
             }
         }
     }
@@ -461,6 +458,58 @@ public class StoreFragment extends Fragment {
 
         if (logoUri != null) {
             headerLogoDraweeView.setImageURI(logoUri);
+        }
+
+        if (profile != null && profile.data != null) {
+            profile.data.store_name = storeName;
+            profile.data.address_one = addONE;
+            profile.data.address_two = addTWO;
+            profile.data.city_state = cityState;
+            profile.data.zipcode = zipCode;
+            profile.data.vat_tin = vatTIN;
+            profile.data.cst_no = cstNo;
+            profile.data.mobile_number = phone;
+
+            FileUtils.deleteFile(mContext, Constants.PROFILE_FILE_NAME);
+            FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
+
+            if (Utils.isInternetAvailable(mContext)) {
+                Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, addTWO, addONE, zipCode,
+                        cityState, vatTIN, cstNo, storeName);
+
+                call.enqueue(new Callback<CreateJob>() {
+
+                    /**
+                     * Successful HTTP response.
+                     * @param call server call
+                     * @param response server response
+                     */
+                    @Override
+                    public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                        Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                        if (response.body() != null) {
+                            CreateJob employeeStatus = response.body();
+                            if (employeeStatus.status.equalsIgnoreCase("200")) {
+                                if (!TextUtils.isEmpty(employeeStatus.update_employee) && employeeStatus.update_employee.equalsIgnoreCase("Successfully Updated")) {
+                                    Utils.showToast("Store data Updated successfully", mContext);
+                                }
+                            }
+                        }
+                    }
+
+                    /**
+                     *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                     * @param call server call
+                     * @param t error
+                     */
+                    @Override
+                    public void onFailure(Call<CreateJob> call, Throwable t) {
+                        Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                    }
+                });
+            } else {
+                Utils.showToast("Store data Updated successfully", mContext);
+            }
         }
 
     }

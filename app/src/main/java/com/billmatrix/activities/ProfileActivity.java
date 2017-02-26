@@ -154,11 +154,7 @@ public class ProfileActivity extends BaseTabActivity {
         if (profile != null) {
             storeAdminEditText.setText(profile.data.username.toUpperCase());
             locationAdminEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
-            String branch = profile.store_data.branch;
-            if (TextUtils.isEmpty(branch)) {
-                branch = !TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "";
-            }
-            branchAdminEditText.setText(branch);
+            branchAdminEditText.setText(!TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "");
         }
     }
 
@@ -178,14 +174,7 @@ public class ProfileActivity extends BaseTabActivity {
             loginIdmEditText.setText(profile.data.login_id);
             storeAdminEditText.setText(profile.data.username);
             locationAdminEditText.setText(!TextUtils.isEmpty(profile.data.location) ? profile.data.location.toUpperCase() : "");
-            String branch = "";
-            if (profile.store_data != null) {
-                branch = !TextUtils.isEmpty(profile.store_data.branch) ? profile.store_data.branch : "";
-            }
-            if (TextUtils.isEmpty(branch)) {
-                branch = !TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "";
-            }
-            branchAdminEditText.setText(branch);
+            branchAdminEditText.setText(!TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "");
         }
     }
 

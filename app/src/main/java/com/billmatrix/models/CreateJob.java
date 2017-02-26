@@ -1,10 +1,13 @@
 package com.billmatrix.models;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by KANDAGATLAs on 28-01-2017.
  */
 
-public class CreateJob {
+public class CreateJob implements Serializable {
     public String status;
     public String create_customer;
     public String update_customer;
@@ -18,7 +21,7 @@ public class CreateJob {
     public String create_discount;
     public CreatedJob data;
 
-    public class CreatedJob {
+    public class CreatedJob implements Serializable {
         public String discount_code;
         public String discount_description;
         public String discount;

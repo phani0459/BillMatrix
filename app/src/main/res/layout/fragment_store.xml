@@ -281,7 +281,7 @@
                     android:background="@drawable/edit_text_border"
                     android:hint="@string/phone_mobile"
                     android:imeOptions="actionDone"
-                    android:inputType="number"
+                    android:inputType="phone"
                     android:minWidth="296dp"
                     android:padding="6dp"
                     android:singleLine="true"

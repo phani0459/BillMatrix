@@ -73,6 +73,13 @@ class BillMatrixDBHandler extends DBHandler {
             + DBConstants.STATUS + " VARCHAR," + DBConstants.MODE + " VARCHAR," + DBConstants.PURPOSE + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR,"
             + DBConstants.PAYMENT_TYPE + " VARCHAR" + ")";
 
+    private final static String CREATE_CUSTOMER_TRANSACTIONS_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " (" + DBConstants.SNO
+            + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.BILL_NO + " VARCHAR UNIQUE," + DBConstants.ID + " VARCHAR," + DBConstants.INVENTORY_JSON + " VARCHAR,"
+            + DBConstants.CUSTOMER_NAME + " VARCHAR," + DBConstants.DATE + " VARCHAR," + DBConstants.TOTAL_AMOUNT + " VARCHAR,"
+            + DBConstants.AMOUNT_PAID + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.AMOUNT_DUE + " VARCHAR,"
+            + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR," + DBConstants.STATUS + " VARCHAR" + ")";
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_EMP_TABLE);
@@ -83,6 +90,7 @@ class BillMatrixDBHandler extends DBHandler {
         db.execSQL(CREATE_DISCOUNT_TABLE);
         db.execSQL(CREATE_POS_ITEMS_TABLE);
         db.execSQL(CREATE_PAYMENTS_TABLE);
+        db.execSQL(CREATE_CUSTOMER_TRANSACTIONS_TABLE);
     }
 
     @Override

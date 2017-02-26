@@ -64,7 +64,7 @@ public class PayInsAdapter extends RecyclerView.Adapter<PayInsAdapter.PayInsHold
 
     @Override
     public PayInsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.pay_in_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pay_in, parent, false);
 
         return new PayInsHolder(itemView);
     }

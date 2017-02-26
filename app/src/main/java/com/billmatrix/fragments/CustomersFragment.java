@@ -90,7 +90,6 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
         customersRecyclerView.setAdapter(customersAdapter);
 
         customers = billMatrixDaoImpl.getCustomers();
-        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         if (customers != null && customers.size() > 0) {
             for (Customer.CustomerData customerData : customers) {

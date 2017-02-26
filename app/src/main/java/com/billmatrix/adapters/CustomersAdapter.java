@@ -1,6 +1,7 @@
 package com.billmatrix.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +69,7 @@ public class CustomersAdapter extends RecyclerView.Adapter<CustomersAdapter.Cust
 
     @Override
     public CustomerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_customer, parent, false);
 
         return new CustomerHolder(itemView);
     }
@@ -80,11 +81,11 @@ public class CustomersAdapter extends RecyclerView.Adapter<CustomersAdapter.Cust
         holder.snoTextView.setText("" + (position + 1));
         holder.nameTextView.setText(customerData.username);
         holder.contactTextView.setText(customerData.mobile_number);
-        holder.dateTextView.setText(customerData.date != null ? customerData.date.trim() : "");
-        holder.locationTextView.setText(customerData.location != null ? customerData.location.trim(): "");
+        holder.dateTextView.setText(!TextUtils.isEmpty(customerData.date) ? customerData.date.trim() : "");
+        holder.locationTextView.setText(!TextUtils.isEmpty(customerData.location) ? customerData.location.trim() : "");
         holder.statusTextView.setText("IN-ACTIVE");
-        if (customerData.status != null) {
-            holder.statusTextView.setText((customerData.status.equalsIgnoreCase("1") || customerData.status.equalsIgnoreCase("ACTIVE"))? "ACTIVE" : "IN-ACTIVE");
+        if (!TextUtils.isEmpty(customerData.status)) {
+            holder.statusTextView.setText((customerData.status.equalsIgnoreCase("1") || customerData.status.equalsIgnoreCase("ACTIVE")) ? "ACTIVE" : "IN-ACTIVE");
         }
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -40,6 +40,7 @@ public class DBConstants {
     final static String TAX_TABLE = "TABLE_TAX";
     final static String DISCOUNT_TABLE = "TABLE_DISCOUNT";
     final static String PAYMENTS_TABLE = "TABLE_PAYMENTS";
+    final static String CUSTOMER_TRANSACTIONS_TABLE = "TABLE_TRANSACTIONS";
 
     /**
      * Employees Column Names
@@ -105,6 +106,15 @@ public class DBConstants {
     final static String PURPOSE = "purpose_of_payment";
     final static String MODE = "mode_of_payment";
     final static String PAYMENT_TYPE = "payment_type";
+
+    /**
+     * Customer Transactions
+     */
+    final static String BILL_NO = "billNo";
+    final static String INVENTORY_JSON = "inventoryJSON";
+    final static String TOTAL_AMOUNT = "totalAmount";
+    final static String AMOUNT_PAID = "amountPaid";
+    final static String AMOUNT_DUE = "amountDue";
 
     static final String TAG = "BillMatrix_DataBase";
 }

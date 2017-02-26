@@ -11,7 +11,6 @@ public class Store implements Serializable {
     public String admin_id;
     public String cst_no;
     public String vat_tin;
-    public String phone;
     public String zipcode;
     public String city_state;
     public String address_two;
@@ -26,7 +25,7 @@ public class Store implements Serializable {
     public String toString() {
         return "\nid = " + id + "\n admin id=" + admin_id
                 + "\n store_name=" + store_name + "\n cst_no=" + cst_no
-                + "\n vat_tin=" + vat_tin + "\n phone=" + phone
+                + "\n vat_tin=" + vat_tin
                 + "\n zipcode=" + zipcode + "\n city_state=" + city_state
                 + "\n branch =" + branch + "\n address_two=" + address_two
                 + "\n address_one=" + address_one

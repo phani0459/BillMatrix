@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
@@ -56,6 +57,7 @@ import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.Transaction;
 import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
@@ -78,6 +80,7 @@ import butterknife.OnTouch;
 public class POSActivity extends Activity implements OnItemClickListener, POSItemAdapter.OnItemSelected {
 
     private static final String TAG = POSActivity.class.getSimpleName();
+    private static final long PRINTER_DISCOVERY_TIME = 10000;
     @BindView(R.id.sp_pos_customers)
     public Spinner customersSpinner;
     @BindView(R.id.pos_tabs_layout)
@@ -155,6 +158,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private DevicesAdapter devicesAdapter;
     private ListView devicesListView;
     private Dialog paymentsDialog;
+    private TextView totalPaidTextView;
+    private TextView balanceTextView;
+    private CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -297,7 +303,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     adapter.cancelDiscovery();
                 }
 
-                resetCustomerBill();
+                resetCustomerBill(true);
             }
         });
 
@@ -546,8 +552,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         TextView discount = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_discount);
         TextView tax = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_tax);
         final TextView total = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_total);
-        final TextView totalPaid = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_total_paid);
-        final TextView balance = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_balance);
+        totalPaidTextView = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_total_paid);
+        balanceTextView = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_balance);
         final TextView changeTextView = (TextView) paymentsDialog.findViewById(R.id.tv_dialog_change);
         final EditText cashEditText = (EditText) paymentsDialog.findViewById(R.id.et_dialog_cash);
         final EditText cardEditText = (EditText) paymentsDialog.findViewById(R.id.et_dialog_card);
@@ -616,9 +622,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         discount.setText(discountString.replace("/-", ""));
         total.setText(totalString.replace("/-", ""));
         tax.setText(taxString.replace("/-", ""));
-        balance.setText(total.getText().toString());
+        balanceTextView.setText(total.getText().toString());
 
-        totalPaid.setText(getString(R.string.zero));
+        totalPaidTextView.setText(getString(R.string.zero));
         changeTextView.setText(getString(R.string.zero));
 
         final float billTotalValue = Float.parseFloat(total.getText().toString().equalsIgnoreCase("") ? getString(R.string.zero) : total.getText().toString());
@@ -650,20 +656,20 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 float changeValue = (moneyPaidFromCard + moneyPaidFromCash) - billTotalValue;
 
                 /**
-                 * if change is negative it is balance
+                 * if change is negative it is balanceTextView
                  */
                 if (changeValue == 0) {
-                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
-                    balance.setText(getString(R.string.zero));
+                    totalPaidTextView.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
+                    balanceTextView.setText(getString(R.string.zero));
                     changeTextView.setText(getString(R.string.zero));
                 } else if (changeValue < 0) {
-                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", (moneyPaidFromCard + moneyPaidFromCash)));
-                    balance.setText(String.format(Locale.getDefault(), "%.2f", -changeValue));
+                    totalPaidTextView.setText(String.format(Locale.getDefault(), "%.2f", (moneyPaidFromCard + moneyPaidFromCash)));
+                    balanceTextView.setText(String.format(Locale.getDefault(), "%.2f", -changeValue));
                     changeTextView.setText(getString(R.string.zero));
                 } else {
-                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
+                    totalPaidTextView.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
                     changeTextView.setText(String.format(Locale.getDefault(), "%.2f", changeValue));
-                    balance.setText(getString(R.string.zero));
+                    balanceTextView.setText(getString(R.string.zero));
                 }
             }
 
@@ -700,20 +706,20 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 float changeValue = (moneyPaidFromCard + moneyPaidFromCash) - billTotalValue;
 
                 /**
-                 * if change is negative it is balance
+                 * if change is negative it is balanceTextView
                  */
                 if (changeValue == 0) {
-                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
-                    balance.setText(getString(R.string.zero));
+                    totalPaidTextView.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
+                    balanceTextView.setText(getString(R.string.zero));
                     changeTextView.setText(getString(R.string.zero));
                 } else if (changeValue < 0) {
-                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", (moneyPaidFromCard + moneyPaidFromCash)));
-                    balance.setText(String.format(Locale.getDefault(), "%.2f", -changeValue));
+                    totalPaidTextView.setText(String.format(Locale.getDefault(), "%.2f", (moneyPaidFromCard + moneyPaidFromCash)));
+                    balanceTextView.setText(String.format(Locale.getDefault(), "%.2f", -changeValue));
                     changeTextView.setText(getString(R.string.zero));
                 } else {
-                    totalPaid.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
+                    totalPaidTextView.setText(String.format(Locale.getDefault(), "%.2f", billTotalValue));
                     changeTextView.setText(String.format(Locale.getDefault(), "%.2f", changeValue));
-                    balance.setText(getString(R.string.zero));
+                    balanceTextView.setText(getString(R.string.zero));
                 }
             }
 
@@ -733,8 +739,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         payButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                float balanceRemaining = Float.parseFloat(balance.getText().toString().equalsIgnoreCase("") ? "0.00" : balance.getText().toString());
-                float totalPaidMoney = Float.parseFloat(totalPaid.getText().toString());
+                float balanceRemaining = Float.parseFloat(balanceTextView.getText().toString().equalsIgnoreCase("") ? "0.00" : balanceTextView.getText().toString());
+                float totalPaidMoney = Float.parseFloat(totalPaidTextView.getText().toString());
                 if (totalPaidMoney <= 0 && !creditButtonClicked) {
                     Utils.showToast("Please enter cash paid", mContext);
                     return;
@@ -746,6 +752,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                         cashButton.setBackgroundResource(R.drawable.button_disable);
                         creditButton.setBackgroundResource(R.drawable.orange_button);
                         cardButton.setBackgroundResource(R.drawable.button_disable);
+
+                        printBillDialog("Want to Print Bill?");
+
                     } else {
                         Utils.showToast("Add Guest Customer before allowing for credit", mContext);
                     }
@@ -756,7 +765,15 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         paymentsDialog.show();
     }
 
-    public void resetCustomerBill() {
+    public void resetCustomerBill(boolean isTransactionSuccess) {
+
+        /**
+         * save transaction if transaction is successfull
+         */
+        if (isTransactionSuccess) {
+            saveTransaction();
+        }
+
         /**
          * Remove customer bill items to close the bill
          */
@@ -781,10 +798,46 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         }
     }
 
+    private void saveTransaction() {
+        Transaction transaction = new Transaction();
+
+        List<Inventory.InventoryData> itemsPurchased = posItemAdapter.inventories;
+
+        String inventoryJson = Constants.getGson().toJson(itemsPurchased);
+
+        transaction.add_update = Constants.ADD_OFFLINE;
+        transaction.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        transaction.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+
+        transaction.date = Constants.getDateFormat().format(System.currentTimeMillis());
+        transaction.inventoryJson = inventoryJson;
+        transaction.customerName = selectedCustomer != null ? selectedCustomer.username : selectedGuestCustomerName;
+        transaction.amountPaid = totalPaidTextView.getText().toString();
+        transaction.amountDue = balanceTextView.getText().toString().trim();
+        transaction.totalAmount = totalValueTextView.getText().toString().replace("/-", "").trim();
+        transaction.admin_id = adminId;
+        transaction.billNumber = generateBillNumber();
+        transaction.id = transaction.billNumber;
+        transaction.status = "1";
+
+        Log.e(TAG, "saveTransaction: " + transaction.toString());
+
+        billMatrixDaoImpl.addTransaction(transaction);
+    }
+
+    private String generateBillNumber() {
+        String billCounter = (billMatrixDaoImpl.getTransactionsCount(Constants.getDateFormat().format(System.currentTimeMillis())) + 1) + "";
+        String billCounterNumber = billCounter.length() == 1 ? "00" + billCounter : (billCounter.length() == 2 ? "0" + billCounter : billCounter);
+        StringBuilder billNumber = new StringBuilder("");
+        billNumber.append(isGuestCustomerSelected ? "GB" : "B").append(Constants.getBillDateFormat().format(System.currentTimeMillis()))
+                .append(billCounterNumber);
+        return billNumber.toString();
+    }
+
     public void printBillDialog(String title) {
         AlertDialog devicesDialog = new AlertDialog.Builder(mContext)
                 .setTitle(title)
-                .setPositiveButton("Search Printer", new DialogInterface.OnClickListener() {
+                .setPositiveButton(WorkService.workThread.isConnected() ? "YES" : "Search Printer", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         enableBluetooth();
@@ -792,7 +845,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        resetCustomerBill();
+                        resetCustomerBill(true);
                     }
                 }).create();
 
@@ -823,7 +876,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                resetCustomerBill();
+                resetCustomerBill(false);
                 dialog.dismiss();
             }
         });
@@ -848,8 +901,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 posItemAdapter.removeAllItems();
-
-                Log.e(TAG, "onItemSelected: " + posItemAdapter.getItemCount());
                 creditButton.setBackgroundResource(R.drawable.button_enable);
                 cashCardButton.setBackgroundResource(R.drawable.button_enable);
                 isPaymentTypeClicked = false;
@@ -1013,7 +1064,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
     private void loadPreviousItems(String selecteCustomerName) {
-        Log.e(TAG, "loadPreviousItems: " + posItemAdapter.getItemCount());
         ArrayList<Inventory.InventoryData> previousItems = billMatrixDaoImpl.getPOSItem(selecteCustomerName);
         if (previousItems != null && previousItems.size() > 0) {
             for (Inventory.InventoryData inventoryData : previousItems) {
@@ -1070,6 +1120,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     @OnClick(R.id.btn_discountSelected)
     public void validateDiscount() {
+        Utils.hideSoftKeyboard(discountCodeEditText);
         boolean isDiscountValidated = false;
         ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
         String discountToBeValidated = discountCodeEditText.getText().toString();
@@ -1375,8 +1426,33 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             } else {
                 searchingDialog.show();
                 startDiscovery();
+
+                startDiscoveryTimer();
             }
         }
+    }
+
+    public void startDiscoveryTimer() {
+        if (timer != null) {
+            return;
+        }
+        timer = new CountDownTimer(PRINTER_DISCOVERY_TIME, 1000) {
+
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                if (adapter != null && adapter.isDiscovering()) {
+                    adapter.cancelDiscovery();
+                }
+                Utils.showToast("Printer not available", mContext);
+                timer = null;
+            }
+        };
+        timer.start();
     }
 
     private void printBill() {
@@ -1402,7 +1478,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             data.putInt(Global.INTPARA3, 3);
             WorkService.workThread.handleCmd(Global.CMD_POS_PRINTPICTURE, data);
 
-            resetCustomerBill();
+            resetCustomerBill(true);
 
         } else {
             Toast.makeText(this, Global.toast_notconnect, Toast.LENGTH_SHORT).show();
@@ -1446,7 +1522,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         ArrayList<Inventory.InventoryData> previousItems = billMatrixDaoImpl.getPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
         if (previousItems != null && previousItems.size() > 0) {
             for (Inventory.InventoryData inventoryData : previousItems) {
-                View billItemLayout = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.bill_item_layout, null);
+                View billItemLayout = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_bill_layout, null);
                 TextView itemNameTextView = (TextView) billItemLayout.findViewById(R.id.tv_BillItemName);
                 TextView qtyTextView = (TextView) billItemLayout.findViewById(R.id.tv_BillItemQTY);
                 TextView mrpTextView = (TextView) billItemLayout.findViewById(R.id.tv_BillItemMRP);
@@ -1472,6 +1548,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         savedMoneyTextView.setText(discountCalTextView.getText().toString().replace("/-", "").replace(getString(R.string.discount) + ": ", ""));
         billTotalItemTextView.setText(posItemAdapter.getItemCount() + "");
         billTotalQTYTextView.setText(totalItemsCount + "");
+        billNoTextView.setText(generateBillNumber());
         paymentTypeTextView.setText(paymentType);
         grandTotalTextView.setText(totalValueTextView.getText().toString().replace("/-", ""));
 
@@ -1485,7 +1562,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 taxableAmount = 0.0f;
             }
             for (String selectedTaxType : selectedtaxes.keySet()) {
-                View billTaxLayout = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.bill_tax_item, null);
+                View billTaxLayout = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_bill_tax, null);
                 TextView taxDescTextView = (TextView) billTaxLayout.findViewById(R.id.tv_bill_tax);
                 TextView taxableAmtTextView = (TextView) billTaxLayout.findViewById(R.id.tv_total_taxable_amt);
                 TextView taxValueTextView = (TextView) billTaxLayout.findViewById(R.id.tv_bill_taxValue);
@@ -1493,6 +1570,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 taxDescTextView.setText(selectedTaxType + " @ " + selectedtaxes.get(selectedTaxType) + "% on: ");
                 taxableAmtTextView.setText(String.format(Locale.getDefault(), "%.1f", taxableAmount));
                 taxValueTextView.setText("" + ((taxableAmount * selectedtaxes.get(selectedTaxType)) / 100));
+
+                billTaxesLayout.addView(billTaxLayout);
             }
         }
 
@@ -1632,6 +1711,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             if (resultCode == RESULT_OK) {
                 searchingDialog.show();
                 startDiscovery();
+                startDiscoveryTimer();
             } else if (resultCode == RESULT_CANCELED) {
                 Utils.showToast("Switch On Bluetooth to connect Printer and print", mContext);
             }

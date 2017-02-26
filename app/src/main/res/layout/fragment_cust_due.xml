@@ -1,104 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
     android:padding="8dp">
 
     <LinearLayout
+        android:id="@+id/ll_customer_dues_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/adminDetailsBG"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/adminDetailsBG"
             android:gravity="center"
-            android:text="@string/select_customer"
-            android:textColor="@android:color/black" />
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <AutoCompleteTextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/select_customer"
+                android:textColor="@android:color/black" />
+
+            <AutoCompleteTextView
+                android:id="@+id/atv_select_customer_due"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/edit_text_border"
+                android:imeOptions="actionDone"
+                android:minWidth="320dp"
+                android:padding="6dp"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/btn_view_cust_dues"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="12dp"
+                android:background="@drawable/green_button"
+                android:gravity="center"
+                android:text="@string/VIEW"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:id="@+id/atv_select_customer_due"
-            android:imeOptions="actionDone"
-            android:singleLine="true"
-            android:background="@drawable/edit_text_border"
-            android:minWidth="320dp"
-            android:padding="6dp" />
+            android:background="@color/adminDetailsBG"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:weightSum="5">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/bill_no"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/Date"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/total_bill_amt"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/amt_paid"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/total_due"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
     </LinearLayout>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_dues_no_results"
+        style="@style/Base.TextAppearance.AppCompat.Medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/No_results"
+        android:textAllCaps="true"
+        android:textColor="@android:color/black"
+        android:visibility="gone" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/customersDuesList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll_customer_dues_bottom"
+        android:layout_below="@+id/ll_customer_dues_top"
+        android:scrollbars="none" />
+
+    <LinearLayout
+        android:id="@+id/ll_customer_dues_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="8dp"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp"
         android:weightSum="5">
 
         <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/bill_no"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/Date"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/total_bill_amt"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/amt_paid"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:layout_weight="4"
+            android:gravity="right"
             android:text="@string/total_due"
             android:textAllCaps="true"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
-</LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_due_TotalDueAmt"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/zero"
+            android:textAllCaps="true"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>

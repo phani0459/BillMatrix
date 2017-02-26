@@ -87,7 +87,7 @@ public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.VendorHolder> {
 
     @Override
     public VendorHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.tax_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tax, parent, false);
 
         return new VendorHolder(itemView);
     }

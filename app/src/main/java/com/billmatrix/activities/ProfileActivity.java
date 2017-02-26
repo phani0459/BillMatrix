@@ -70,7 +70,7 @@ public class ProfileActivity extends BaseTabActivity {
 
         profileLayout.setVisibility(View.VISIBLE);
 
-        String loginId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        String adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
         String userType = Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_TYPE, null);
 
         /**
@@ -86,8 +86,8 @@ public class ProfileActivity extends BaseTabActivity {
 
         if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
             if (Utils.isInternetAvailable(mContext)) {
-                if (!TextUtils.isEmpty(loginId)) {
-                    getProfilefromServer(loginId);
+                if (!TextUtils.isEmpty(adminId)) {
+                    getProfilefromServer(adminId);
                 }
             }
         } else {
@@ -102,7 +102,6 @@ public class ProfileActivity extends BaseTabActivity {
                 disableProfile();
             }
         }
-
 
         loginIdmEditText.setFilters(Utils.getInputFilter(12));
         passwordEditText.setFilters(Utils.getInputFilter(12));
@@ -155,7 +154,11 @@ public class ProfileActivity extends BaseTabActivity {
         if (profile != null) {
             storeAdminEditText.setText(profile.data.username.toUpperCase());
             locationAdminEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
-            branchAdminEditText.setText(profile.data.branch != null ? profile.data.branch.toUpperCase() : "");
+            String branch = profile.store_data.branch;
+            if (TextUtils.isEmpty(branch)) {
+                branch = !TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "";
+            }
+            branchAdminEditText.setText(branch);
         }
     }
 
@@ -175,7 +178,14 @@ public class ProfileActivity extends BaseTabActivity {
             loginIdmEditText.setText(profile.data.login_id);
             storeAdminEditText.setText(profile.data.username);
             locationAdminEditText.setText(!TextUtils.isEmpty(profile.data.location) ? profile.data.location.toUpperCase() : "");
-            branchAdminEditText.setText(!TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "");
+            String branch = "";
+            if (profile.store_data != null) {
+                branch = !TextUtils.isEmpty(profile.store_data.branch) ? profile.store_data.branch : "";
+            }
+            if (TextUtils.isEmpty(branch)) {
+                branch = !TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "";
+            }
+            branchAdminEditText.setText(branch);
         }
     }
 

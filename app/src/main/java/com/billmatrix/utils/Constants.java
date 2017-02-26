@@ -3,12 +3,14 @@ package com.billmatrix.utils;
 
 import android.support.v4.util.ArrayMap;
 
+import com.billmatrix.models.Inventory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -64,6 +66,7 @@ public class Constants {
     private static Gson gson;
     private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
     private static String dateFormat = "dd-MM-yyyy";
+    private static String billDateFormat = "ddMMyyyy";
     private static String timeFormat = "HH:mm:ss";
 
     /**
@@ -85,7 +88,7 @@ public class Constants {
         return gson;
     }
 
-    private static SimpleDateFormat simpleDateFormat, simpleTimeFormat;
+    private static SimpleDateFormat simpleDateFormat, simpleTimeFormat, simpleBillDateFormat;
     private static SimpleDateFormat simpleDateTimeFormat;
 
     public static SimpleDateFormat getDateTimeFormat() {
@@ -93,6 +96,13 @@ public class Constants {
             simpleDateTimeFormat = new SimpleDateFormat(Constants.dateTimeFormat, Locale.getDefault());
         }
         return simpleDateTimeFormat;
+    }
+
+    public static SimpleDateFormat getBillDateFormat() {
+        if (simpleBillDateFormat == null) {
+            simpleBillDateFormat = new SimpleDateFormat(Constants.billDateFormat, Locale.getDefault());
+        }
+        return simpleBillDateFormat;
     }
 
     public static SimpleDateFormat getDateFormat() {
@@ -113,5 +123,8 @@ public class Constants {
     }.getType();
 
     public static Type floatArrayMapType = new TypeToken<ArrayMap<String, Float>>() {
+    }.getType();
+
+    public static Type inventoryDatasMapType = new TypeToken<ArrayList<Inventory.InventoryData>>() {
     }.getType();
 }

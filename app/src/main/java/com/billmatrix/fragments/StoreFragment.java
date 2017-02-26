@@ -18,6 +18,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,9 @@ import android.widget.TextView;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Discount;
+import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -43,6 +46,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -52,6 +58,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
  */
 public class StoreFragment extends Fragment {
 
+    private static final String TAG = StoreFragment.class.getSimpleName();
     private static int RESULT_UPLOAD_LOGO = 1;
     private static int RESULT_EDIT_LOGO = 2;
     private static final int REQUEST_READ_STORAGE = 14;
@@ -109,6 +116,7 @@ public class StoreFragment extends Fragment {
     public View discountDisableView;
 
     private static StoreFragment storeFragment;
+    private Profile profile;
 
     public static StoreFragment getInstance() {
         if (storeFragment != null) {
@@ -137,9 +145,88 @@ public class StoreFragment extends Fragment {
         noDiscountsTextView.setText("Add Discounts in Discounts Page");
         thankFooterEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
+        String adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+
+        if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(adminId)) {
+                    getProfilefromServer(adminId);
+                }
+            }
+        } else {
+            Log.e(TAG, "Profile is from file");
+            String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
+            profile = Constants.getGson().fromJson(profileString, Profile.class);
+
+            loadStoreData();
+        }
+
         showDiscounts();
 
         return v;
+    }
+
+    public void loadStoreData() {
+        Log.e(TAG, "loadStoreData: " + (!TextUtils.isEmpty(profile.data.mobile_number) ? profile.data.mobile_number : ""));
+        if (profile != null) {
+            if (profile.data != null) {
+                phoneEditText.setText(!TextUtils.isEmpty(profile.data.mobile_number) ? profile.data.mobile_number : "");
+            }
+
+            if (profile.store_data != null) {
+                storeNameEditText.setText(!TextUtils.isEmpty(profile.store_data.store_name) ? profile.store_data.store_name : "");
+                addressOneEditText.setText(!TextUtils.isEmpty(profile.store_data.address_one) ? profile.store_data.address_one : "");
+                addressTwoEditText.setText(!TextUtils.isEmpty(profile.store_data.address_two) ? profile.store_data.address_two : "");
+                cityEditText.setText(!TextUtils.isEmpty(profile.store_data.city_state) ? profile.store_data.city_state : "");
+                zipCodeEditText.setText(!TextUtils.isEmpty(profile.store_data.zipcode) ? profile.store_data.zipcode : "");
+                vatTINEditText.setText(!TextUtils.isEmpty(profile.store_data.vat_tin) ? profile.store_data.vat_tin : "");
+                cstNOEditText.setText(!TextUtils.isEmpty(profile.store_data.cst_no) ? profile.store_data.cst_no : "");
+
+                headerStoreNameTextView.setText(!TextUtils.isEmpty(profile.store_data.store_name) ? profile.store_data.store_name : "");
+                headerStoreAddOneTextView.setText(!TextUtils.isEmpty(profile.store_data.address_one) ? profile.store_data.address_one : "");
+                headerStoreAddTwoTextView.setText(!TextUtils.isEmpty(profile.store_data.address_two) ? profile.store_data.address_two : "");
+                headerStoreCityTextView.setText(!TextUtils.isEmpty(profile.store_data.city_state) ? profile.store_data.city_state : "");
+                headerStoreZipTextView.setText(!TextUtils.isEmpty(profile.store_data.zipcode) ? profile.store_data.zipcode : "");
+                headerStoreVatTextView.setText(!TextUtils.isEmpty(profile.store_data.vat_tin) ? profile.store_data.vat_tin : "");
+                headerStoreCSTTextView.setText(!TextUtils.isEmpty(profile.store_data.cst_no) ? profile.store_data.cst_no : "");
+            }
+        }
+    }
+
+    public void getProfilefromServer(String loginId) {
+        Log.e(TAG, "getProfilefromServer: ");
+        Call<Profile> call = Utils.getBillMatrixAPI(mContext).getProfile(loginId);
+
+        call.enqueue(new Callback<Profile>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<Profile> call, Response<Profile> response) {
+                Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                if (response.body() != null) {
+                    profile = response.body();
+                    if (profile.status == 200 && profile.userdata.equalsIgnoreCase("success")) {
+                        FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
+                        loadStoreData();
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<Profile> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -249,7 +336,9 @@ public class StoreFragment extends Fragment {
         zipCodeEditText.setText(headerStoreZipTextView.getText());
         vatTINEditText.setText(headerStoreVatTextView.getText());
         cstNOEditText.setText(headerStoreCSTTextView.getText());
-//        phoneEditText.setText(header.getText());
+        if (profile != null && profile.data != null) {
+            phoneEditText.setText(!TextUtils.isEmpty(profile.data.mobile_number) ? profile.data.mobile_number : "");
+        }
     }
 
 

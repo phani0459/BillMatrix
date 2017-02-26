@@ -66,7 +66,7 @@ public class PayOutsAdapter extends RecyclerView.Adapter<PayOutsAdapter.PayOutsH
 
     @Override
     public PayOutsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.pay_out_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pay_out, parent, false);
 
         return new PayOutsHolder(itemView);
     }

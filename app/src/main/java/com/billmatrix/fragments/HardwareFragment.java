@@ -4,7 +4,6 @@ package com.billmatrix.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +12,6 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.WorkService;
-import com.billmatrix.network.ServerUtils;
-import com.billmatrix.utils.Global;
-import com.billmatrix.utils.WorkThread;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,7 +53,7 @@ public class HardwareFragment extends Fragment {
 
     public TextView getTextView() {
         LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        TextView textView = (TextView) layoutInflater.inflate(R.layout.hardware_text_item, null);
+        TextView textView = (TextView) layoutInflater.inflate(R.layout.item_hardware_text, null);
         return textView;
     }
 

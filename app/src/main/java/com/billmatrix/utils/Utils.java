@@ -96,14 +96,14 @@ public class Utils {
     }
 
     public static ArrayAdapter<CharSequence> loadSpinner(Spinner spinner, Context mContext, int spinnerArray) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mContext, spinnerArray, R.layout.spinner_text_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mContext, spinnerArray, R.layout.item_spinner_text);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
         return adapter;
     }
 
     public static ArrayAdapter<String> loadSpinner(Spinner spinner, Context mContext, ArrayList<String> spinnerArray) {
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_text_item, spinnerArray);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(mContext, R.layout.item_spinner_text, spinnerArray);
         spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
         return spinnerAdapter;

@@ -13,6 +13,7 @@ import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
 import com.billmatrix.models.Tax;
+import com.billmatrix.models.Transaction;
 import com.billmatrix.models.Vendor;
 
 import java.util.ArrayList;
@@ -21,12 +22,16 @@ import java.util.List;
 import static com.billmatrix.database.DBConstants.ADD_UPDATE;
 import static com.billmatrix.database.DBConstants.ADMIN_ID;
 import static com.billmatrix.database.DBConstants.AMOUNT;
+import static com.billmatrix.database.DBConstants.AMOUNT_DUE;
+import static com.billmatrix.database.DBConstants.AMOUNT_PAID;
 import static com.billmatrix.database.DBConstants.BARCODE;
+import static com.billmatrix.database.DBConstants.BILL_NO;
 import static com.billmatrix.database.DBConstants.BRANCH;
 import static com.billmatrix.database.DBConstants.CREATE_DATE;
 import static com.billmatrix.database.DBConstants.CUSTOMERS_TABLE;
 import static com.billmatrix.database.DBConstants.CUSTOMER_CONTACT;
 import static com.billmatrix.database.DBConstants.CUSTOMER_NAME;
+import static com.billmatrix.database.DBConstants.CUSTOMER_TRANSACTIONS_TABLE;
 import static com.billmatrix.database.DBConstants.DATE;
 import static com.billmatrix.database.DBConstants.DISCOUNT_CODE;
 import static com.billmatrix.database.DBConstants.DISCOUNT_DESC;
@@ -40,6 +45,7 @@ import static com.billmatrix.database.DBConstants.EMPLOYEE_NAME;
 import static com.billmatrix.database.DBConstants.EMPLOYEE_PASSWORD;
 import static com.billmatrix.database.DBConstants.ID;
 import static com.billmatrix.database.DBConstants.IMEI;
+import static com.billmatrix.database.DBConstants.INVENTORY_JSON;
 import static com.billmatrix.database.DBConstants.INVENTORY_TABLE;
 import static com.billmatrix.database.DBConstants.ITEM_CODE;
 import static com.billmatrix.database.DBConstants.ITEM_NAME;
@@ -63,13 +69,13 @@ import static com.billmatrix.database.DBConstants.TAX_DESC;
 import static com.billmatrix.database.DBConstants.TAX_RATE;
 import static com.billmatrix.database.DBConstants.TAX_TABLE;
 import static com.billmatrix.database.DBConstants.TAX_TYPE;
+import static com.billmatrix.database.DBConstants.TOTAL_AMOUNT;
 import static com.billmatrix.database.DBConstants.TYPE;
 import static com.billmatrix.database.DBConstants.UNIT;
 import static com.billmatrix.database.DBConstants.UPDATE_DATE;
 import static com.billmatrix.database.DBConstants.VENDOR;
 import static com.billmatrix.database.DBConstants.VENDORS_TABLE;
 import static com.billmatrix.database.DBConstants.VENDOR_ADDRESS;
-import static com.billmatrix.database.DBConstants.ID;
 import static com.billmatrix.database.DBConstants.VENDOR_NAME;
 import static com.billmatrix.database.DBConstants.VENDOR_SINCE;
 import static com.billmatrix.database.DBConstants.WAREHOUSE;
@@ -282,7 +288,6 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(EMAIL, vendorData.email);
         contentValues.put(ADMIN_ID, vendorData.admin_id);
         contentValues.put(STATUS, vendorData.status);
-        contentValues.put(ADD_UPDATE, vendorData.add_update);
         contentValues.put(CREATE_DATE, vendorData.create_date);
         contentValues.put(UPDATE_DATE, vendorData.update_date);
         contentValues.put(ADD_UPDATE, vendorData.add_update);
@@ -989,7 +994,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     public ArrayList<Payments.PaymentData> getPayments(String paymentType) {
         Cursor cursor = null;
         try {
-            String query = "";
+            String query;
 
             if (TextUtils.isEmpty(paymentType)) {
                 query = "SELECT * FROM " + PAYMENTS_TABLE;
@@ -1034,6 +1039,171 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             }
         } catch (IllegalArgumentException e) {
             Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    /*************************************************
+     * ************* CUSTOMER TRANSACTIONS METHODS*****
+     *************************************************/
+
+    public long addTransaction(Transaction transaction) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ID, transaction.id);
+        contentValues.put(BILL_NO, transaction.billNumber);
+        contentValues.put(INVENTORY_JSON, transaction.inventoryJson);
+        contentValues.put(TOTAL_AMOUNT, transaction.totalAmount);
+        contentValues.put(AMOUNT_PAID, transaction.amountPaid);
+        contentValues.put(CUSTOMER_NAME, transaction.customerName);
+        contentValues.put(DATE, transaction.date);
+        contentValues.put(STATUS, transaction.status);
+        contentValues.put(DBConstants.AMOUNT_DUE, transaction.amountDue);
+        contentValues.put(ADMIN_ID, transaction.admin_id);
+        contentValues.put(CREATE_DATE, transaction.create_date);
+        contentValues.put(UPDATE_DATE, transaction.update_date);
+        contentValues.put(ADD_UPDATE, transaction.add_update);
+
+        return db.insert(CUSTOMER_TRANSACTIONS_TABLE, null, contentValues);
+    }
+
+    public int getTransactionsCount(String todaysDate) {
+        String countQuery = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DATE + " = '" + todaysDate + "'";
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int cnt = cursor.getCount();
+        cursor.close();
+        return cnt;
+    }
+
+    public ArrayList<String> getBillNumbers() {
+        Cursor cursor = null;
+        try {
+            String query;
+            query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE;
+
+            cursor = db.rawQuery(query, null);
+
+            if (cursor.moveToFirst()) {
+                List<String> billNumbers = new ArrayList<>();
+                do {
+                    String billNumber = cursor.getString(cursor
+                            .getColumnIndexOrThrow(BILL_NO));
+                    billNumbers.add(billNumber);
+                } while (cursor.moveToNext());
+
+                return (ArrayList<String>) billNumbers;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    public Transaction getCustomerTransaction(String customerName, String billNumber) {
+        Cursor cursor = null;
+        try {
+            String query;
+
+            if (!TextUtils.isEmpty(customerName)) {
+                query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + CUSTOMER_NAME + " ='" + customerName + "' AND " + BILL_NO + "='" + billNumber + "'";
+            } else {
+                query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + BILL_NO + "='" + billNumber + "'";
+            }
+
+            cursor = db.rawQuery(query, null);
+            if (cursor.moveToFirst()) {
+                Transaction transaction = new Transaction();
+                do {
+                    transaction.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ID));
+                    transaction.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADMIN_ID));
+                    transaction.billNumber = cursor.getString(cursor
+                            .getColumnIndexOrThrow(BILL_NO));
+                    transaction.customerName = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CUSTOMER_NAME));
+                    transaction.date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DATE));
+                    transaction.inventoryJson = cursor.getString(cursor
+                            .getColumnIndexOrThrow(INVENTORY_JSON));
+                    transaction.totalAmount = cursor.getString(cursor
+                            .getColumnIndexOrThrow(TOTAL_AMOUNT));
+                    transaction.amountPaid = cursor.getString(cursor
+                            .getColumnIndexOrThrow(AMOUNT_PAID));
+                    transaction.amountDue = cursor.getString(cursor
+                            .getColumnIndexOrThrow(AMOUNT_DUE));
+                    transaction.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UPDATE_DATE));
+                    transaction.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CREATE_DATE));
+                    transaction.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
+                    transaction.status = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(STATUS)));
+                } while (cursor.moveToNext());
+
+                return transaction;
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<Transaction> getCustomerTransactions(String customerName) {
+        Cursor cursor = null;
+        try {
+            String query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + CUSTOMER_NAME + "='" + customerName + "'";
+
+            cursor = db.rawQuery(query, null);
+            if (cursor.moveToFirst()) {
+                ArrayList<Transaction> transactions = new ArrayList<>();
+                do {
+                    Transaction transaction = new Transaction();
+                    transaction.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ID));
+                    transaction.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADMIN_ID));
+                    transaction.billNumber = cursor.getString(cursor
+                            .getColumnIndexOrThrow(BILL_NO));
+                    transaction.customerName = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CUSTOMER_NAME));
+                    transaction.date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DATE));
+                    transaction.inventoryJson = cursor.getString(cursor
+                            .getColumnIndexOrThrow(INVENTORY_JSON));
+                    transaction.totalAmount = cursor.getString(cursor
+                            .getColumnIndexOrThrow(TOTAL_AMOUNT));
+                    transaction.amountPaid = cursor.getString(cursor
+                            .getColumnIndexOrThrow(AMOUNT_PAID));
+                    transaction.amountDue = cursor.getString(cursor
+                            .getColumnIndexOrThrow(AMOUNT_DUE));
+                    transaction.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UPDATE_DATE));
+                    transaction.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CREATE_DATE));
+                    transaction.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
+                    transaction.status = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(STATUS)));
+                    transactions.add(transaction);
+                } while (cursor.moveToNext());
+
+                return transactions;
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         } finally {
             if (cursor != null) {
                 cursor.close();

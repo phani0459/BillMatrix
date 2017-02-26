@@ -1,153 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
     android:padding="8dp">
 
     <LinearLayout
+        android:id="@+id/ll_trans_top_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/adminDetailsBG"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:weightSum="3">
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:paddingBottom="8dp">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:layout_weight="1.6"
             android:background="@color/adminDetailsBG"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:weightSum="3">
 
-            <TextView
-                style="@style/Base.TextAppearance.AppCompat.Caption"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1.5"
                 android:gravity="center"
-                android:text="@string/select_customer"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal">
 
-            <AutoCompleteTextView
-                android:id="@+id/atv_select_customer"
-                style="@style/Base.TextAppearance.AppCompat.Caption"
-                android:layout_width="wrap_content"
+                <TextView
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/customerName"
+                    android:textColor="@android:color/black" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/atv_select_customer"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/edit_text_border"
+                    android:imeOptions="actionDone"
+                    android:minWidth="320dp"
+                    android:padding="6dp"
+                    android:singleLine="true"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/edit_text_border"
-                android:imeOptions="actionDone"
-                android:minWidth="320dp"
-                android:padding="6dp"
-                android:singleLine="true" />
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1.3"
+                android:background="@color/adminDetailsBG"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/bill_no"
+                    android:textColor="@android:color/black" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/atv_billNumber"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/edit_text_border"
+                    android:minWidth="320dp"
+                    android:padding="6dp"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_view_cust_trans"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_weight="0.2"
+                android:background="@drawable/green_button"
+                android:gravity="center"
+                android:text="@string/VIEW"
+                android:textColor="@android:color/white" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_weight="1.4"
             android:background="@color/adminDetailsBG"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:weightSum="6">
 
             <TextView
                 style="@style/Base.TextAppearance.AppCompat.Caption"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="0.6"
                 android:gravity="center"
-                android:text="@string/select_bill"
+                android:text="@string/sno"
+                android:textAllCaps="true"
                 android:textColor="@android:color/black" />
 
-            <AutoCompleteTextView
+            <TextView
                 style="@style/Base.TextAppearance.AppCompat.Caption"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/edit_text_border"
-                android:minWidth="320dp"
-                android:padding="6dp" />
+                android:layout_marginRight="12dp"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@string/item_name"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="0.8"
+                android:gravity="center"
+                android:text="@string/qty"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="0.8"
+                android:gravity="center"
+                android:text="@string/units"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="0.8"
+                android:gravity="center"
+                android:text="@string/rate"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/total_inr"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_trans_bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:weightSum="6">
+        android:orientation="vertical">
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="0.6"
             android:gravity="center"
-            android:text="@string/sno"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
+            android:orientation="horizontal"
+            android:paddingBottom="6dp"
+            android:weightSum="6">
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:text="@string/item_name"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="5"
+                android:gravity="right"
+                android:text="@string/total_bill_amt"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="0.8"
-            android:gravity="center"
-            android:text="@string/qty"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="0.8"
-            android:gravity="center"
-            android:text="@string/units"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
+            <TextView
+                android:id="@+id/tv_trans_TotalBillAmt"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/zero"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+        </LinearLayout>
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="0.8"
             android:gravity="center"
-            android:text="@string/rate"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
+            android:orientation="horizontal"
+            android:weightSum="6">
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="5"
+                android:gravity="right"
+                android:text="@string/amt_paid"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/tv_trans_TotalPaid"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/zero"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/total_inr"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black" />
+            android:orientation="horizontal"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp"
+            android:weightSum="6">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="5"
+                android:gravity="right"
+                android:text="@string/total_due"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+
+
+            <TextView
+                android:id="@+id/tv_trans_TotalDue"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/zero"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_trans_no_results"
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/No_results"
+        android:textAllCaps="true"
+        android:textColor="@android:color/black"
+        android:visibility="gone" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/customersTransactionsList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll_trans_bottom_layout"
+        android:layout_below="@+id/ll_trans_top_layout"
+        android:scrollbars="none" />
+</RelativeLayout>

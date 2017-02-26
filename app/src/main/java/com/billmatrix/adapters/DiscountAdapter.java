@@ -78,7 +78,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
 
     @Override
     public VendorHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.discount_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_discount, parent, false);
 
         return new VendorHolder(itemView);
     }

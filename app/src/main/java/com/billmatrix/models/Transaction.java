@@ -20,6 +20,7 @@ public class Transaction implements Serializable {
     public String amountDue;
     public String create_date;
     public String update_date;
+    public boolean isZbillChecked;
     /**
      * 0 - if add
      * 1 - if update
@@ -33,6 +34,6 @@ public class Transaction implements Serializable {
                 + "\n billNumber=" + billNumber + "\n inventoryJson=" + inventoryJson + "\n customerName=" + customerName
                 + "\n totalAmount=" + totalAmount + "\n amountPaid=" + amountPaid + "\n date=" + date
                 + "\n status=" + status + "\n create_date=" + create_date
-                + "\n amountDue=" + amountDue + "\n update_date=" + update_date + "\n add_update=" + add_update;
+                + "\n amountDue=" + amountDue + "\n update_date=" + update_date + "\n add_update=" + add_update + "\n isZbillChecked=" + isZbillChecked;
     }
 }

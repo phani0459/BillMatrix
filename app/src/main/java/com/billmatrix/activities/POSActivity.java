@@ -37,6 +37,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -74,6 +76,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 
@@ -87,6 +90,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public LinearLayout tabsLayout;
     @BindView(R.id.rl_pos_cust_close)
     public RelativeLayout customerCloseButton;
+    @BindView(R.id.cb_zbill)
+    public CheckBox zBillCheckBox;
     @BindView(R.id.rl_pos_cust_edit)
     public RelativeLayout customerEditButton;
     @BindView(R.id.posInventoryList)
@@ -144,6 +149,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private String selectedGuestCustomerName;
     private ArrayAdapter<String> customerSpinnerAdapter;
     private boolean isGuestCustomerSelected;
+    private boolean isZBillChecked;
     private String adminId;
     private ArrayMap<String, Float> selectedtaxes;
     private int guestCustomerCount;
@@ -818,6 +824,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         transaction.admin_id = adminId;
         transaction.billNumber = generateBillNumber();
         transaction.id = transaction.billNumber;
+        transaction.isZbillChecked = zBillCheckBox.isChecked();
         transaction.status = "1";
 
         Log.e(TAG, "saveTransaction: " + transaction.toString());
@@ -904,6 +911,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 creditButton.setBackgroundResource(R.drawable.button_enable);
                 cashCardButton.setBackgroundResource(R.drawable.button_enable);
                 isPaymentTypeClicked = false;
+                isZBillChecked = false;
 
                 String selecteCustomerName = (String) adapterView.getAdapter().getItem(i);
                 if (!selecteCustomerName.equalsIgnoreCase("SELECT CUSTOMER") && !selecteCustomerName.contains("GUEST CUSTOMER")) {
@@ -964,6 +972,14 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
             @Override
             public void afterTextChanged(Editable s) {
+            }
+        });
+
+        zBillCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isZBillChecked = b;
+                billMatrixDaoImpl.updatePOSZBill(zBillCheckBox.isChecked(), selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
             }
         });
 
@@ -1066,6 +1082,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private void loadPreviousItems(String selecteCustomerName) {
         ArrayList<Inventory.InventoryData> previousItems = billMatrixDaoImpl.getPOSItem(selecteCustomerName);
         if (previousItems != null && previousItems.size() > 0) {
+            /**
+             * apply discount selected for previous customer
+             */
+            discountSelected = Float.parseFloat(previousItems.get(0).discountValue);
+            discountCodeEditText.setText(previousItems.get(0).discountCode);
+            zBillCheckBox.setChecked(previousItems.get(0).isZbillChecked);
+
             for (Inventory.InventoryData inventoryData : previousItems) {
                 posItemAdapter.addInventory(inventoryData);
             }
@@ -1146,6 +1169,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f);
             discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
         }
+
+        billMatrixDaoImpl.updatePOSDiscount(discountCodeEditText.getText().toString(), discountSelected + "",
+                selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
         loadFooterValues();
     }
 
@@ -1310,8 +1336,16 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             } else {
                 selectedInventory.selectedQTY = "1";
             }
+            /**
+             * Discount code added to customer
+             */
+            selectedInventory.discountCode = discountCodeEditText.getText().toString();
+            selectedInventory.discountValue = discountSelected + "";
+            selectedInventory.isZbillChecked = zBillCheckBox.isChecked();
+
             posItemAdapter.addInventory(selectedInventory);
             billMatrixDaoImpl.addPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName, selectedInventory);
+            billMatrixDaoImpl.updatePOSZBill(zBillCheckBox.isChecked(), selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
             loadFooterValues();
         } else {
             Utils.showToast("Select Customer before adding items to cart", mContext);
@@ -1367,6 +1401,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         totalValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", (subTotal - discount + tax)) + "/-");
         taxValueTextView.setText(" " + String.format(Locale.getDefault(), "%.2f", tax) + "/-");
         totalCartItemsTextView.setText(posItemAdapter.getItemCount() + " " + getString(R.string.ITEMS));
+        zBillCheckBox.setChecked(isZBillChecked);
     }
 
     @Override

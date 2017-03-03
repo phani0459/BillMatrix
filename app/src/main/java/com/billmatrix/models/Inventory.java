@@ -19,7 +19,6 @@ public class Inventory implements Serializable {
         public String item_name;
         public String unit;
         public String qty;
-        public String selectedQTY;
         public String price;
         public String mycost;
         public String date;
@@ -31,6 +30,14 @@ public class Inventory implements Serializable {
         public String create_date;
         public String update_date;
         public String add_update;
+
+        /**
+         * fields required for pos and customer transactions
+         */
         public String customerName;
+        public String selectedQTY;
+        public String discountCode;
+        public String discountValue;
+        public boolean isZbillChecked;
     }
 }

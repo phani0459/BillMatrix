@@ -79,6 +79,7 @@ import static com.billmatrix.database.DBConstants.VENDOR_ADDRESS;
 import static com.billmatrix.database.DBConstants.VENDOR_NAME;
 import static com.billmatrix.database.DBConstants.VENDOR_SINCE;
 import static com.billmatrix.database.DBConstants.WAREHOUSE;
+import static com.billmatrix.database.DBConstants.Z_BILL;
 
 /**
  * Created by KANDAGATLAs on 06-11-2016.
@@ -844,6 +845,9 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(ID, inventoryData.id);
         contentValues.put(STATUS, inventoryData.status);
         contentValues.put(ADMIN_ID, inventoryData.admin_id);
+        contentValues.put(DISCOUNT_VALUE, inventoryData.discountValue);
+        contentValues.put(DISCOUNT_CODE, inventoryData.discountCode);
+        contentValues.put(Z_BILL, inventoryData.isZbillChecked);
         return db.insert(POS_ITEMS_TABLE, null, contentValues);
     }
 
@@ -867,6 +871,18 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         db.execSQL(query);
     }
 
+    public void updatePOSZBill(boolean isZbill, String customerName) {
+        String query = "UPDATE " + POS_ITEMS_TABLE + " SET " + Z_BILL + "='" + isZbill
+                + "' WHERE " + CUSTOMER_NAME + "='" + customerName + "'";
+        db.execSQL(query);
+    }
+
+    public void updatePOSDiscount(String code, String value, String customerName) {
+        String query = "UPDATE " + POS_ITEMS_TABLE + " SET " + DISCOUNT_CODE + "='" + code
+                + "'," + DISCOUNT_VALUE + "='" + value + "'" + " WHERE " + CUSTOMER_NAME + "='" + customerName + "'";
+        db.execSQL(query);
+    }
+
     public ArrayList<Inventory.InventoryData> getPOSItem(String customerName) {
         if (customerName == null) {
             return null;
@@ -880,6 +896,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 List<Inventory.InventoryData> inventories = new ArrayList<>();
                 do {
                     Inventory.InventoryData inventoryData = new Inventory().new InventoryData();
+                    inventoryData.discountCode = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DISCOUNT_CODE)));
+                    inventoryData.isZbillChecked = Boolean.parseBoolean(cursor.getString(cursor
+                            .getColumnIndexOrThrow(Z_BILL)));
+                    inventoryData.discountValue = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DISCOUNT_VALUE)));
                     inventoryData.item_code = (cursor.getString(cursor
                             .getColumnIndexOrThrow(ITEM_CODE)));
                     inventoryData.item_name = (cursor.getString(cursor
@@ -1066,6 +1088,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(CREATE_DATE, transaction.create_date);
         contentValues.put(UPDATE_DATE, transaction.update_date);
         contentValues.put(ADD_UPDATE, transaction.add_update);
+        contentValues.put(Z_BILL, transaction.isZbillChecked);
 
         return db.insert(CUSTOMER_TRANSACTIONS_TABLE, null, contentValues);
     }

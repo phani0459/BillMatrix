@@ -435,6 +435,7 @@
                         android:src="@drawable/transport_icon" />
 
                     <CheckBox
+                        android:id="@+id/cb_zbill"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

@@ -96,7 +96,7 @@ public class DBConstants {
     /**
      * POS Column Names
      */
-    final static String SELECTED_QTY = "discCode";
+    final static String SELECTED_QTY = "selectedQTY";
 
     /**
      * Payments columns
@@ -111,6 +111,7 @@ public class DBConstants {
      * Customer Transactions
      */
     final static String BILL_NO = "billNo";
+    final static String Z_BILL = "Z_Bill";
     final static String INVENTORY_JSON = "inventoryJSON";
     final static String TOTAL_AMOUNT = "totalAmount";
     final static String AMOUNT_PAID = "amountPaid";

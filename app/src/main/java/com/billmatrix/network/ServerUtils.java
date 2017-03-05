@@ -12,6 +12,7 @@ import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
+import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
@@ -921,6 +922,43 @@ public class ServerUtils {
         return discountData;
     }
 
+    public static void deleteTaxfromServer(final Tax.TaxData taxData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteTax(taxData.id);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> taxStatus = response.body();
+                    if (taxStatus.get("status").equalsIgnoreCase("200")) {
+                        if (taxStatus.get("delete_tax").equalsIgnoreCase("success")) {
+                            if (!isSync) Utils.showToast("Tax Deleted successfully", mContext);
+                            billMatrixDaoImpl.deleteTax(taxData.tax_type);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
     public static void deleteDiscountfromServer(final Discount.DiscountData discountData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteDiscount(discountData.id);
 
@@ -955,5 +993,105 @@ public class ServerUtils {
             }
         });
     }
+
+    public static void addTaxtoServer(final Tax.TaxData taxData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, String adminId) {
+        Log.e(TAG, "addTaxtoServer: ");
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addTax(adminId, taxData.tax_type, taxData.tax_description, taxData.tax_rate, "1");
+
+        call.enqueue(new Callback<CreateJob>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    CreateJob taxMap = response.body();
+                    if (taxMap.status.equalsIgnoreCase("200")) {
+                        if (taxMap.create_tax.equalsIgnoreCase("success")) {
+                            if (!isSync) Utils.showToast("Tax Added successfully", mContext);
+
+                            taxData.update_date = taxMap.data.update_date;
+                            taxData.create_date = taxMap.data.create_date;
+                            taxData.add_update = Constants.DATA_FROM_SERVER;
+                            taxData.tax_type = taxMap.data.tax_type;
+                            taxData.tax_description = taxMap.data.tax_description;
+                            taxData.tax_rate = taxMap.data.tax_rate;
+                            taxData.status = taxMap.data.status;
+                            taxData.admin_id = taxMap.data.admin_id;
+                            taxData.admin_id = taxMap.data.id;
+
+                            billMatrixDaoImpl.updateTax(taxData);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<CreateJob> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
+    public static void updateTaxtoServer(final Tax.TaxData taxData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Log.e(TAG, "updateTaxtoServer: ");
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateTax(taxData.id, adminId, taxData.tax_type, taxData.tax_description,
+                taxData.tax_rate, "1");
+
+        call.enqueue(new Callback<CreateJob>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    CreateJob taxMap = response.body();
+                    if (taxMap.status.equalsIgnoreCase("200")) {
+                        if (!TextUtils.isEmpty(taxMap.update_tax) && taxMap.update_tax.equalsIgnoreCase("Successfully Updated")) {
+                            if (!isSync) Utils.showToast("Tax Updated successfully", mContext);
+
+                            taxData.update_date = taxMap.data.update_date;
+                            taxData.create_date = taxMap.data.create_date;
+                            taxData.add_update = Constants.DATA_FROM_SERVER;
+                            taxData.tax_type = taxMap.data.tax_type;
+                            taxData.tax_description = taxMap.data.tax_description;
+                            taxData.tax_rate = taxMap.data.tax_rate;
+                            taxData.status = taxMap.data.status;
+                            taxData.admin_id = taxMap.data.admin_id;
+                            taxData.admin_id = taxMap.data.id;
+
+                            billMatrixDaoImpl.updateTax(taxData);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<CreateJob> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+            }
+        });
+    }
+
 
 }

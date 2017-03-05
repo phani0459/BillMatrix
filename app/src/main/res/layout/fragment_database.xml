@@ -127,7 +127,7 @@
                     style="@style/Base.TextAppearance.AppCompat.Caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/Purchases"
+                    android:text="@string/payments"
                     android:textColor="@android:color/black" />
 
                 <CheckBox

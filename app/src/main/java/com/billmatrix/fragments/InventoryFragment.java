@@ -1,6 +1,7 @@
 package com.billmatrix.fragments;
 
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -12,10 +13,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -37,6 +41,7 @@ import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.WorkService;
+import com.billmatrix.activities.BarcodeScannerActivity;
 import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.DevicesAdapter;
 import com.billmatrix.adapters.InventoryAdapter;
@@ -64,6 +69,7 @@ import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static android.support.v4.content.ContextCompat.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,6 +77,8 @@ import static android.app.Activity.RESULT_OK;
 public class InventoryFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
     private static final String TAG = InventoryFragment.class.getSimpleName();
+    private static final int BARCODE_CAMERA_PERMISSION = 200;
+    private static final int BARCODE_REQUEST_ID = 100;
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
     private InventoryAdapter inventoryAdapter;
@@ -122,6 +130,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
     public Button printBarcodeButton;
     @BindView(R.id.btn_gen_bar_code)
     public Button generateBarCodeButton;
+    @BindView(R.id.btn_scanBarcode)
+    public Button scanBarCodeButton;
 
     private String adminId;
     private Inventory.InventoryData selectedInventorytoEdit;
@@ -285,6 +295,44 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         devicesListView.setAdapter(devicesAdapter);
 
         return v;
+    }
+
+    @OnClick(R.id.btn_scanBarcode)
+    public void checkCameraPermission() {
+        if (checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, BARCODE_CAMERA_PERMISSION);
+        } else {
+            Intent intent = new Intent(mContext, BarcodeScannerActivity.class);
+            startActivityForResult(intent, BARCODE_REQUEST_ID);
+        }
+    }
+
+    @OnClick(R.id.btn_barcode_go)
+    public void barcodeGo() {
+        if (scanBarCodeButton.getText().toString().equalsIgnoreCase(getString(R.string.BAR_CODE))) {
+            Utils.showToast("Scan Barcode to add Item", mContext);
+            return;
+        }
+
+        Utils.showToast("barcode Scanned: " + scanBarCodeButton.getText().toString(), mContext);
+
+        scanBarCodeButton.setText(getString(R.string.BAR_CODE));
+
+        
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case BARCODE_CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(mContext, BarcodeScannerActivity.class);
+                    startActivityForResult(intent, BARCODE_REQUEST_ID);
+                } else {
+                    Utils.showToast("Please grant camera permission to use the QR Scanner", mContext);
+                }
+                return;
+        }
     }
 
     public void onBackPressed() {
@@ -845,6 +893,12 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 startDiscovery();
             } else if (resultCode == RESULT_CANCELED) {
                 Utils.showToast("Switch On Bluetooth to connect Printer and print", mContext);
+            }
+        } else if (requestCode == BARCODE_REQUEST_ID) {
+            if (resultCode == RESULT_OK) {
+                scanBarCodeButton.setText(data.getStringExtra("BARCODE"));
+            } else if (resultCode == RESULT_CANCELED) {
+                Utils.showToast("Unable to scan barcode", mContext);
             }
         }
     }

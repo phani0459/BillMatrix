@@ -18,4 +18,10 @@
         <item name="android:background">@drawable/spinner_bg</item>
     </style>
 
+    <style name="TransparentToolbar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <!-- Support Library compability -->
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+
 </resources>

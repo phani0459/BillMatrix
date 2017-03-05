@@ -10,15 +10,20 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
+import java.sql.Date;
 import java.text.ParseException;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,49 +31,60 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SalesFragment extends Fragment {
+public class VendorReportsFragment extends Fragment {
 
-    @BindView(R.id.sp_sales_select)
-    public Spinner saleSelectSpinner;
-    @BindView(R.id.et_sale_from_date)
+    @BindView(R.id.sp_report_vendor_types)
+    public Spinner vendorTypeSpinner;
+    @BindView(R.id.sp_report_vendors)
+    public Spinner vendorsSpinner;
+    @BindView(R.id.et_report_vendor_from_date)
     public EditText fromDate_EditText;
-    @BindView(R.id.et_sale_to_date)
+    @BindView(R.id.et_report_vendor_to_date)
     public EditText toDate_EditText;
-    @BindView(R.id.sp_sales_item)
-    public Spinner saleItemSpinner;
-    @BindView(R.id.tv_dateHeading)
-    public TextView dateHeadingTextView;
 
     private Context mContext;
-    private boolean isSalesTab;
 
-    public SalesFragment() {
+    public VendorReportsFragment() {
         // Required empty public constructor
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_sales, container, false);
+        View v = inflater.inflate(R.layout.fragment_vendor_reports, container, false);
         ButterKnife.bind(this, v);
 
         mContext = getActivity();
-        isSalesTab = false;
+        boolean isVendorsTab = false;
 
         String selectedTab = getArguments().getString("selectedTab");
 
-        if (selectedTab != null && selectedTab.equalsIgnoreCase("SALES")) {
-            isSalesTab = true;
+        if (selectedTab != null && selectedTab.equalsIgnoreCase("VENDOR")) {
+            isVendorsTab = true;
         }
 
-        if (isSalesTab) {
-            Utils.loadSpinner(saleSelectSpinner, mContext, R.array.sale_by_array);
-            dateHeadingTextView.setText(getString(R.string.SOLD_DATE));
+        BillMatrixDaoImpl billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+
+        if (isVendorsTab) {
+            vendorsSpinner.setVisibility(View.VISIBLE);
+            Utils.loadSpinner(vendorTypeSpinner, mContext, R.array.vendors_by_array);
+
+            ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
+            ArrayList<String> strings = new ArrayList<>();
+            strings.add("SELECT VENDOR");
+
+            if (vendors != null && vendors.size() > 0) {
+                for (Vendor.VendorData vendorData : vendors) {
+                    strings.add(vendorData.name);
+                }
+
+            }
+            Utils.loadSpinner(vendorsSpinner, mContext, strings);
+
         } else {
-            Utils.loadSpinner(saleSelectSpinner, mContext, R.array.purchase_by_array);
-            dateHeadingTextView.setText(getString(R.string.PURCHASE_DATE));
+            vendorsSpinner.setVisibility(View.GONE);
+            Utils.loadSpinner(vendorTypeSpinner, mContext, R.array.items_by_array);
         }
-        Utils.loadSpinner(saleItemSpinner, mContext, R.array.employee_status);
 
         fromDate_EditText.setInputType(InputType.TYPE_NULL);
         toDate_EditText.setInputType(InputType.TYPE_NULL);

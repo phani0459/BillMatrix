@@ -77,6 +77,30 @@ public class Utils {
         return fromDatePickerDialog;
     }
 
+    public static DatePickerDialog dateDialog(Context mContext, final Object fromEditText, long maxDate) {
+        if (fromEditText instanceof EditText) {
+            hideSoftKeyboard((EditText) fromEditText);
+        }
+        Calendar newCalendar = Calendar.getInstance();
+        DatePickerDialog fromDatePickerDialog = new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                if (fromEditText instanceof EditText) {
+                    ((EditText) fromEditText).setText(Constants.getDateFormat().format(newDate.getTime()));
+                } else {
+                    ((Button) fromEditText).setText(Constants.getDateFormat().format(newDate.getTime()));
+                }
+            }
+
+        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+        fromDatePickerDialog.getDatePicker().setMaxDate(maxDate);
+
+        return fromDatePickerDialog;
+    }
+
     public static InputFilter[] getInputFilter(int maxChars) {
         InputFilter[] filter = new InputFilter[]{new InputFilter.LengthFilter(maxChars)};
         return filter;

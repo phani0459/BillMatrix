@@ -40,7 +40,7 @@ public class HardwareFragment extends Fragment {
         mContext = getActivity();
 
         if (WorkService.workThread != null) {
-            if (WorkService.workThread.getDeviceAddress() != null) {
+            if (WorkService.workThread.getDeviceAddress() != null && WorkService.workThread.isConnected()) {
                 noDevicesTextView.setVisibility(View.GONE);
                 TextView textView = getTextView();
                 textView.setText("Connected Printer: " + "\n" + WorkService.workThread.getDeviceName() + ": " + WorkService.workThread.getDeviceAddress());

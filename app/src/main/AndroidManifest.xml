@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".BillMatrixAPP"
@@ -66,6 +67,10 @@
         <activity
             android:name=".BluetoothPrinter"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.BarcodeScannerActivity"
+            android:screenOrientation="landscape" />
 
         <receiver
             android:name=".utils.ConnectivityReceiver"

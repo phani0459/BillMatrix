@@ -17,7 +17,7 @@
         android:weightSum="6">
 
         <Spinner
-            android:id="@+id/sp_sales_select"
+            android:id="@+id/sp_report_vendor_types"
             style="@style/spinner_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             android:textColor="@android:color/black" />
 
         <Spinner
-            android:id="@+id/sp_sales_item"
+            android:id="@+id/sp_report_vendors"
             style="@style/spinner_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
-            android:id="@+id/et_sale_from_date"
+            android:id="@+id/et_report_vendor_from_date"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             android:textColor="@android:color/black" />
 
         <EditText
-            android:id="@+id/et_sale_to_date"
+            android:id="@+id/et_report_vendor_to_date"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:weightSum="5">
+        android:weightSum="6">
 
         <TextView
             style="@style/Base.TextAppearance.AppCompat.Caption"
@@ -130,7 +130,7 @@
             android:layout_marginRight="12dp"
             android:layout_weight="1.5"
             android:gravity="center"
-            android:text="@string/Brand"
+            android:text="@string/VENDOR"
             android:textColor="@android:color/black" />
 
         <TextView
@@ -144,16 +144,24 @@
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/tv_dateHeading"
             style="@style/Base.TextAppearance.AppCompat.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/SOLD_DATE"
+            android:text="@string/PURCHASE_DATE"
             android:textColor="@android:color/black" />
 
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/MY_COST"
+            android:textColor="@android:color/black" />
 
         <TextView
             style="@style/Base.TextAppearance.AppCompat.Caption"

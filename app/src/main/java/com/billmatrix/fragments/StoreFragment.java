@@ -473,6 +473,8 @@ public class StoreFragment extends Fragment {
             FileUtils.deleteFile(mContext, Constants.PROFILE_FILE_NAME);
             FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
 
+            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_HnF_EDITED_OFFLINE, true).apply();
+
             if (Utils.isInternetAvailable(mContext)) {
                 Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, addTWO, addONE, zipCode,
                         cityState, vatTIN, cstNo, storeName);
@@ -492,6 +494,7 @@ public class StoreFragment extends Fragment {
                             if (employeeStatus.status.equalsIgnoreCase("200")) {
                                 if (!TextUtils.isEmpty(employeeStatus.update_employee) && employeeStatus.update_employee.equalsIgnoreCase("Successfully Updated")) {
                                     Utils.showToast("Store data Updated successfully", mContext);
+                                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_HnF_EDITED_OFFLINE, false).apply();
                                 }
                             }
                         }

@@ -19,6 +19,8 @@ public class CreateJob implements Serializable {
     public String update_vendor;
     public String update_discount;
     public String create_discount;
+    public String create_tax;
+    public String update_tax;
     public CreatedJob data;
 
     public class CreatedJob implements Serializable {
@@ -44,8 +46,6 @@ public class CreateJob implements Serializable {
         public String address;
         public String phone;
         public String email;
-        public String id;
-        public String admin_id;
         public String item_code;
         public String item_name;
         public String unit;
@@ -58,6 +58,11 @@ public class CreateJob implements Serializable {
         public String vendor;
         public String barcode;
         public String photo;
+        public String id;
+        public String tax_type;
+        public String tax_description;
+        public String tax_rate;
+        public String admin_id;
         public String status;
         public String create_date;
         public String update_date;

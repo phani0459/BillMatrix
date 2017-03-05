@@ -185,7 +185,7 @@
                     android:src="@drawable/sync_grey" />
 
                 <CheckBox
-                    android:id="@+id/cb_purchases_sync"
+                    android:id="@+id/cb_payments_sync"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -215,6 +215,29 @@
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:text="@string/Sales"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/im_taxes_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
+
+                <CheckBox
+                    android:id="@+id/cb_taxes_sync"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/Taxes"
                     android:textColor="@android:color/black" />
             </LinearLayout>
         </LinearLayout>

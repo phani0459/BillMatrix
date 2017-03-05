@@ -28,7 +28,7 @@ public class SettingsActivity extends BaseTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setPageTitle(String.format("<span>%s Settings </span>", getArrowString()));
-        addTabButtons(5, "STORE", "DATABASE", "TAX", "HARDWARE", "DISCOUNTS");
+        addTabButtons(6, "STORE", "DATABASE", "TAX", "HARDWARE", "DISCOUNTS", "TRANSPORT");
 
         frameLayout.setVisibility(View.VISIBLE);
 
@@ -97,6 +97,12 @@ public class SettingsActivity extends BaseTabActivity {
                 getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, DiscountsFragment.getInstance()).commit();
             } else {
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, DiscountsFragment.getInstance()).commit();
+            }
+        } else if (selectedTab.equalsIgnoreCase("TRANSPORT")) {
+            if (isInit) {
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new HardwareFragment()).commit();
+            } else {
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HardwareFragment()).commit();
             }
         }
 

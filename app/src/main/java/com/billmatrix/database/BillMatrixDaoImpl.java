@@ -662,6 +662,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.insert(TAX_TABLE, null, contentValues);
     }
 
+    public void deleteAllTaxes() {
+        db.delete(TAX_TABLE, null, null);
+    }
+
     public boolean deleteTax(String taxType) {
         return db.delete(TAX_TABLE, TAX_TYPE + "='" + taxType + "'", null) > 0;
     }
@@ -670,6 +674,36 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         ContentValues contentValues = new ContentValues();
         contentValues.put(STATUS, status);
         return db.update(TAX_TABLE, contentValues, TAX_TYPE + "='" + taxType + "'", null) > 0;
+    }
+
+    public boolean updateTax(Tax.TaxData taxData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TAX_TYPE, taxData.tax_type);
+        contentValues.put(TAX_DESC, taxData.tax_description);
+        contentValues.put(TAX_RATE, taxData.tax_rate);
+        contentValues.put(ADMIN_ID, taxData.admin_id);
+        contentValues.put(STATUS, taxData.status);
+        contentValues.put(CREATE_DATE, taxData.create_date);
+        contentValues.put(UPDATE_DATE, taxData.update_date);
+        contentValues.put(ADD_UPDATE, taxData.add_update);
+        if (!isTaxIdEmpty(taxData.tax_type)) {
+            return db.update(TAX_TABLE, contentValues, ID + "='" + taxData.id + "'", null) > 0;
+        } else {
+            contentValues.put(ID, taxData.id);
+            return db.update(TAX_TABLE, contentValues, TAX_TYPE + "='" + taxData.tax_type + "'", null) > 0;
+        }
+    }
+
+    private boolean isTaxIdEmpty(String tax_type) {
+        String query = "SELECT " + ID + " FROM " + TAX_TABLE + " WHERE " + TAX_TYPE + " = '" + tax_type + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String id = cursor.getString(cursor.getColumnIndex(ID));
+            cursor.close();
+            return TextUtils.isEmpty(id);
+        }
+        return true;
     }
 
     public ArrayList<Tax.TaxData> getTax() {

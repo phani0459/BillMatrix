@@ -8,6 +8,7 @@ import com.billmatrix.R;
 import com.billmatrix.fragments.GenExpensesFragment;
 import com.billmatrix.fragments.PayInsFragment;
 import com.billmatrix.fragments.SalesFragment;
+import com.billmatrix.fragments.VendorReportsFragment;
 import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;
@@ -39,30 +40,38 @@ public class ReportsActivity extends BaseTabActivity {
         if (getSupportFragmentManager().getFragments() != null && getSupportFragmentManager().getFragments().size() > 0) {
             isInit = false;
         }
+        Bundle bundle = new Bundle();
+        bundle.putString("selectedTab", selectedTab);
+
+        SalesFragment salesFragment = new SalesFragment();
+        salesFragment.setArguments(bundle);
+
+        VendorReportsFragment vendorReportsFragment = new VendorReportsFragment();
+        vendorReportsFragment.setArguments(bundle);
 
         if (selectedTab.equalsIgnoreCase("SALES")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new SalesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, salesFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new SalesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, salesFragment).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("PURCHASE")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new PayInsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, salesFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PayInsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, salesFragment).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("VENDOR")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, vendorReportsFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, vendorReportsFragment).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("ITEM")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, vendorReportsFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, vendorReportsFragment).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("GENERATE")) {
             if (isInit) {

@@ -131,8 +131,8 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("create_tax")
-    Call<HashMap<String, String>> addTax(@Field("admin_id") String adminId, @Field("tax_type") String tax_type, @Field("tax_description") String tax_description,
-                                         @Field("tax_rate") String tax_rate, @Field("status") String status);
+    Call<CreateJob> addTax(@Field("admin_id") String adminId, @Field("tax_type") String tax_type, @Field("tax_description") String tax_description,
+                           @Field("tax_rate") String tax_rate, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("admin_taxes")
@@ -140,8 +140,8 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("update_tax")
-    Call<HashMap<String, String>> updateTax(@Field("id") String id, @Field("admin_id") String admin_id, @Field("tax_type") String tax_type,
-                                            @Field("tax_description") String tax_description, @Field("tax_rate") String tax_rate, @Field("status") String status);
+    Call<CreateJob> updateTax(@Field("id") String id, @Field("admin_id") String admin_id, @Field("tax_type") String tax_type,
+                              @Field("tax_description") String tax_description, @Field("tax_rate") String tax_rate, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("delete_tax")

@@ -49,15 +49,15 @@
                         android:text="@string/addItem_scan_bar_code"
                         android:textColor="@android:color/black" />
 
-                    <EditText
+                    <Button
+                        android:id="@+id/btn_scanBarcode"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="32dp"
                         android:layout_marginRight="16dp"
                         android:background="@drawable/edit_text_border"
-                        android:enabled="false"
                         android:hint="@string/BAR_CODE"
-                        android:minWidth="200dp"
+                        android:minWidth="176dp"
                         android:padding="8dp"
                         android:singleLine="true"
                         android:textColor="@android:color/black" />
@@ -69,6 +69,7 @@
                         android:layout_gravity="center"
                         android:background="@drawable/green_button"
                         android:gravity="center"
+                        android:id="@+id/btn_barcode_go"
                         android:text="@string/go"
                         android:textColor="@android:color/white" />
                 </LinearLayout>

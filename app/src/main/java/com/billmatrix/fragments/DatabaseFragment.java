@@ -18,15 +18,19 @@ import android.widget.TextView;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnDataFetchListener;
+import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
+import com.billmatrix.models.Profile;
+import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
+import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -42,6 +46,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -76,14 +83,18 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
     public ImageView headerFooterSyncIcon;
     @BindView(R.id.im_generated_report_sync)
     public ImageView generatedReportSyncIcon;
+    @BindView(R.id.im_taxes_sync)
+    public ImageView taxesSyncIcon;
 
     @BindView(R.id.cb_inventory_sync)
     public CheckBox inventorySyncCheckbox;
+    @BindView(R.id.cb_taxes_sync)
+    public CheckBox taxesSyncCheckbox;
     @BindView(R.id.cb_customers_sync)
     public CheckBox customersSyncCheckbox;
     @BindView(R.id.cb_reports_sync)
     public CheckBox reportsSyncCheckbox;
-    @BindView(R.id.cb_purchases_sync)
+    @BindView(R.id.cb_payments_sync)
     public CheckBox purchasesSyncCheckbox;
     @BindView(R.id.cb_sales_sync)
     public CheckBox salesSyncCheckbox;
@@ -112,7 +123,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         if (inventorySyncCheckbox.isChecked() || customersSyncCheckbox.isChecked() ||
                 reportsSyncCheckbox.isChecked() || purchasesSyncCheckbox.isChecked() ||
                 salesSyncCheckbox.isChecked() || employeesSyncCheckbox.isChecked() ||
-                vendorsSyncCheckbox.isChecked() || discountSyncCheckbox.isChecked() ||
+                vendorsSyncCheckbox.isChecked() || discountSyncCheckbox.isChecked() || taxesSyncCheckbox.isChecked() ||
                 headerFooterSyncCheckbox.isChecked() || generatedReportSyncCheckbox.isChecked()) {
             syncButton.setEnabled(true);
             syncButton.setBackgroundResource(R.drawable.green_button);
@@ -155,7 +166,9 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                 checkNextSyncItem();
                 break;
             case 4:
-                //TODO TAX
+                taxesSyncIcon.setImageResource(R.drawable.sync_grey);
+                taxesSyncCheckbox.setChecked(false);
+                checkNextSyncItem();
                 break;
             case 5:
                 discountSyncIcon.setImageResource(R.drawable.sync_grey);
@@ -218,6 +231,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         discountSyncCheckbox.setOnCheckedChangeListener(this);
         headerFooterSyncCheckbox.setOnCheckedChangeListener(this);
         generatedReportSyncCheckbox.setOnCheckedChangeListener(this);
+        taxesSyncCheckbox.setOnCheckedChangeListener(this);
 
         /**
          * If edited offline true, set pending sync icon
@@ -263,6 +277,10 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
             generatedReportSyncIcon.setImageResource(R.drawable.sync_red);
         }
 
+        if (Utils.getSharedPreferences(mContext).getBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, false)) {
+            taxesSyncIcon.setImageResource(R.drawable.sync_red);
+        }
+
         return v;
     }
 
@@ -288,6 +306,8 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
             //TODO sync Reports
         } else if (purchasesSyncCheckbox.isChecked()) {
             syncPayments(ServerUtils.STATUS_DELETING);
+        } else if (taxesSyncCheckbox.isChecked()) {
+            syncTaxes(ServerUtils.STATUS_DELETING);
         } else if (salesSyncCheckbox.isChecked()) {
             //TODO sync sales
         } else if (employeesSyncCheckbox.isChecked()) {
@@ -297,9 +317,62 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         } else if (discountSyncCheckbox.isChecked()) {
             syncDiscounts(ServerUtils.STATUS_DELETING);
         } else if (headerFooterSyncCheckbox.isChecked()) {
-            //TODO sync Header and footer
+            syncHeaderFooter();
         } else if (generatedReportSyncCheckbox.isChecked()) {
             //TODO sync Generated Reports
+        }
+    }
+
+    /***************************************************
+     * ******** Header and Footer SYNC ******************
+     **************************************************/
+    private void syncHeaderFooter() {
+        if (Utils.isInternetAvailable(mContext)) {
+
+            Profile profile;
+            if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
+                return;
+            } else {
+                Log.e(TAG, "Profile is from file");
+                String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
+                profile = Constants.getGson().fromJson(profileString, Profile.class);
+            }
+
+            Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, profile.data.address_two, profile.data.address_one, profile.data.zipcode,
+                    profile.data.city_state, profile.data.vat_tin, profile.data.cst_no, profile.data.store_name);
+
+            call.enqueue(new Callback<CreateJob>() {
+
+                /**
+                 * Successful HTTP response.
+                 * @param call server call
+                 * @param response server response
+                 */
+                @Override
+                public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                    Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                    if (response.body() != null) {
+                        CreateJob employeeStatus = response.body();
+                        if (employeeStatus.status.equalsIgnoreCase("200")) {
+                            if (!TextUtils.isEmpty(employeeStatus.update_employee) && employeeStatus.update_employee.equalsIgnoreCase("Successfully Updated")) {
+                                Utils.showToast("Store data Updated successfully", mContext);
+                                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_HnF_EDITED_OFFLINE, false).apply();
+                                onDataFetch(9);
+                            }
+                        }
+                    }
+                }
+
+                /**
+                 *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                 * @param call server call
+                 * @param t error
+                 */
+                @Override
+                public void onFailure(Call<CreateJob> call, Throwable t) {
+                    Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                }
+            });
         }
     }
 
@@ -1158,6 +1231,147 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
 
                 }
                 Log.e(TAG, "onComplete");
+            }
+        });
+    }
+
+    /*****************************************************
+     * ******** Taxes SYNC ***************************
+     **************************************************/
+
+    private void syncTaxes(int currentStatus) {
+        taxesSyncIcon.setImageResource(R.drawable.sync_green);
+
+        ArrayList<Tax.TaxData> dbTaxes = billMatrixDaoImpl.getTax();
+        ArrayList<Tax.TaxData> deletedTaxes = new ArrayList<>();
+        ArrayList<Tax.TaxData> addedTaxes = new ArrayList<>();
+        ArrayList<Tax.TaxData> updatedTaxes = new ArrayList<>();
+
+        if (dbTaxes != null && dbTaxes.size() > 0) {
+            for (Tax.TaxData taxData : dbTaxes) {
+                if (taxData.status.equalsIgnoreCase("-1")) {
+                    deletedTaxes.add(taxData);
+                }
+
+                if (!TextUtils.isEmpty(taxData.add_update)) {
+                    if (taxData.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                        addedTaxes.add(taxData);
+                    }
+
+                    if (taxData.add_update.equalsIgnoreCase(Constants.UPDATE_OFFLINE)) {
+                        updatedTaxes.add(taxData);
+                    }
+                }
+            }
+        }
+
+        if (deletedTaxes.size() <= 0 && updatedTaxes.size() <= 0 && addedTaxes.size() <= 0) {
+            billMatrixDaoImpl.deleteAllTaxes();
+            serverData.getTaxesFromServer(adminId);
+            return;
+        }
+
+        switch (currentStatus) {
+            case ServerUtils.STATUS_DELETING:
+                if (deletedTaxes.size() > 0) {
+                    Observable<ArrayList<Tax.TaxData>> deletedTaxesObservable = Observable.fromArray(deletedTaxes);
+                    syncTaxeswithServer(deletedTaxesObservable, currentStatus);
+                } else if (addedTaxes.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_ADDING;
+                    Observable<ArrayList<Tax.TaxData>> addedTaxesObservable = Observable.fromArray(addedTaxes);
+                    syncTaxeswithServer(addedTaxesObservable, currentStatus);
+                } else if (updatedTaxes.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Tax.TaxData>> updatedTaxesObservable = Observable.fromArray(updatedTaxes);
+                    syncTaxeswithServer(updatedTaxesObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllTaxes();
+                    serverData.getTaxesFromServer(adminId);
+                }
+                break;
+            case ServerUtils.STATUS_ADDING:
+                if (addedTaxes.size() > 0) {
+                    Observable<ArrayList<Tax.TaxData>> addedTaxesObservable = Observable.fromArray(addedTaxes);
+                    syncTaxeswithServer(addedTaxesObservable, currentStatus);
+                } else if (updatedTaxes.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Tax.TaxData>> updatedTaxesObservable = Observable.fromArray(updatedTaxes);
+                    syncTaxeswithServer(updatedTaxesObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllTaxes();
+                    serverData.getTaxesFromServer(adminId);
+                }
+                break;
+            case ServerUtils.STATUS_UPDATING:
+                if (updatedTaxes.size() > 0) {
+                    Observable<ArrayList<Tax.TaxData>> updatedTaxesObservable = Observable.fromArray(updatedTaxes);
+                    syncTaxeswithServer(updatedTaxesObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllTaxes();
+                    serverData.getTaxesFromServer(adminId);
+                }
+                break;
+        }
+    }
+
+    public void syncTaxeswithServer(Observable<ArrayList<Tax.TaxData>> observableTaxes, final int status) {
+
+        observableTaxes.flatMap(new Function<List<Tax.TaxData>, ObservableSource<Tax.TaxData>>() { // flatMap - to return users one by one
+            @Override
+            public ObservableSource<Tax.TaxData> apply(List<Tax.TaxData> taxesList) throws Exception {
+                return Observable.fromIterable(taxesList); // returning Employees one by one from EmployeesList.
+            }
+        }).flatMap(new Function<Tax.TaxData, ObservableSource<ArrayList<String>>>() {
+            @Override
+            public ObservableSource<ArrayList<String>> apply(Tax.TaxData taxData) throws Exception {
+                // here we get the user one by one
+                // and does correstponding sync in server
+                // for that employee
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        ServerUtils.deleteTaxfromServer(taxData, mContext, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        ServerUtils.addTaxtoServer(taxData, mContext, billMatrixDaoImpl, adminId);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        ServerUtils.updateTaxtoServer(taxData, mContext, adminId, billMatrixDaoImpl);
+                        break;
+
+                }
+                return Observable.fromArray(new ArrayList<String>());
+            }
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ArrayList<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onNext(ArrayList<String> strings) {
+            }
+
+            @Override
+            public void onComplete() {
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        syncTaxes(ServerUtils.STATUS_ADDING);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        syncTaxes(ServerUtils.STATUS_UPDATING);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        billMatrixDaoImpl.deleteAllTaxes();
+                        serverData.getTaxesFromServer(adminId);
+                        break;
+
+                }
+                Log.e(TAG, "Taxes onComplete");
             }
         });
     }

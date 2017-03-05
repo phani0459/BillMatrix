@@ -156,7 +156,7 @@
         <item>OTHER</item>
     </string-array>
 
-    <!-- Sales Strings-->
+    <!-- Reports Strings-->
     <string name="from_date">FROM DATE</string>
     <string name="to_date">TO DATE</string>
     <string name="select_one">SELECT ONE</string>
@@ -164,6 +164,7 @@
     <string name="Print">PRINT</string>
     <string name="QTY">QTY</string>
     <string name="SOLD_DATE">SOLD DATE</string>
+    <string name="PURCHASE_DATE">PURCHASE DATE</string>
     <string name="ITEM_NAME">ITEM NAME</string>
     <string name="Brand">BRAND</string>
     <string-array name="sale_by_array">
@@ -174,6 +175,27 @@
         <item>SALE BY CATEGORY</item>
         <item>SALE PROFIT</item>
         <item>SALE BY DISCOUNT</item>
+    </string-array>
+
+    <string-array name="purchase_by_array">
+        <item>SELECT ONE</item>
+        <item>PURCHASE BY ITEM</item>
+        <item>PURCHASE BY BRAND</item>
+        <item>PURCHASE BY VENDOR</item>
+        <item>PURCHASE BY CATEGORY</item>
+    </string-array>
+
+    <string-array name="vendors_by_array">
+        <item>SELECT ONE</item>
+        <item>Accounts (Unpaid)</item>
+        <item>Vendor Purchases</item>
+    </string-array>
+
+    <string-array name="items_by_array">
+        <item>SELECT ONE</item>
+        <item>Available Stock</item>
+        <item>Bottom selling items</item>
+        <item>Top Selling Items</item>
     </string-array>
 
     <!-- Tax Strings-->
@@ -218,10 +240,11 @@
     <string name="Inventory">Inventory</string>
     <string name="Reports">Reports</string>
     <string name="Customers">Customers</string>
-    <string name="Purchases">Purchases</string>
+    <string name="Purchases">Payments</string>
     <string name="Sales">Sales</string>
     <string name="Vendors">Vendors</string>
     <string name="Discounts">Discounts</string>
+    <string name="Taxes">Taxes</string>
     <string name="Header_n_Footer">Header and Footer</string>
     <string name="generated_report">Generated Report (Custom)</string>
     <string name="sync">SYNC</string>

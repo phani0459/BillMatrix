@@ -299,6 +299,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
     @OnClick(R.id.btn_scanBarcode)
     public void checkCameraPermission() {
+        /**
+         * Reset bottom layout fields
+         */
+        onItemClick(4, 0);
+
         if (checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, BARCODE_CAMERA_PERMISSION);
         } else {
@@ -318,7 +323,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
         scanBarCodeButton.setText(getString(R.string.BAR_CODE));
 
-        
+
     }
 
     @Override
@@ -541,7 +546,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             ((BaseTabActivity) mContext).ifTabCanChange = true;
             isInventoryAdded = true;
         } else {
-            Utils.showToast("Item Code must be unique", mContext);
+            Utils.showToast("Barcode / Item Code must be unique", mContext);
         }
     }
 
@@ -549,6 +554,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                /**
+                 * Reset bottom layout fields
+                 */
+                onItemClick(4, 0);
+
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Inventory", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -575,6 +585,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 break;
             case 2:
                 if (!isEditing) {
+                    /**
+                     * Reset bottom layout fields
+                     */
+                    onItemClick(4, 0);
+
                     isEditing = true;
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
@@ -691,7 +706,14 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
     public void searchClicked(String query) {
         Log.e(TAG, "searchClicked: " + query);
+        /**
+         * Reset bottom layout fields
+         */
+        onItemClick(4, 0);
+
         if (query.length() > 0) {
+            query = query.toLowerCase();
+
             noResultsTextView.setVisibility(View.GONE);
             boolean noInventory = false;
             query = query.toLowerCase();

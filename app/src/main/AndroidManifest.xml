@@ -64,9 +64,6 @@
         <activity
             android:name=".activities.POSActivity"
             android:screenOrientation="landscape" />
-        <activity
-            android:name=".BluetoothPrinter"
-            android:screenOrientation="portrait" />
 
         <activity
             android:name=".activities.BarcodeScannerActivity"

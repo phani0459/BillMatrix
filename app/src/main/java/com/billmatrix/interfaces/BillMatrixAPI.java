@@ -57,7 +57,8 @@ public interface BillMatrixAPI {
     Call<CreateJob> updateStore(@Field("id") String id, @Field("address_two") String address_two,
                                 @Field("address_one") String address_one, @Field("zipcode") String zipcode,
                                 @Field("city_state") String city_state, @Field("vat_tin") String vat_tin,
-                                @Field("cst_no") String cst_no, @Field("store_name") String store_name);
+                                @Field("cst_no") String cst_no, @Field("store_name") String store_name,
+                                @Field("branch") String branch, @Field("location") String location);
 
     @FormUrlEncoded
     @POST("create_employee")

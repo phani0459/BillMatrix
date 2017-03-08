@@ -151,7 +151,7 @@ public class ProfileActivity extends BaseTabActivity {
             loginIdmEditText.setText(employeeData.login_id);
         }
 
-        if (profile != null) {
+        if (!Utils.isProfileEmpty(profile)) {
             storeAdminEditText.setText(profile.data.username.toUpperCase());
             locationAdminEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
             branchAdminEditText.setText(!TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "");
@@ -167,7 +167,7 @@ public class ProfileActivity extends BaseTabActivity {
     }
 
     public void loadProfile() {
-        if (profile != null) {
+        if (!Utils.isProfileEmpty(profile)) {
             passwordEditText.setText(profile.data.password);
             adminNameEditText.setText(profile.data.username);
             mobNumEditText.setText(profile.data.mobile_number);

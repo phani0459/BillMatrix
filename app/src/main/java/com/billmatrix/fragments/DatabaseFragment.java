@@ -339,7 +339,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
             }
 
             Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, profile.data.address_two, profile.data.address_one, profile.data.zipcode,
-                    profile.data.city_state, profile.data.vat_tin, profile.data.cst_no, profile.data.store_name);
+                    profile.data.city_state, profile.data.vat_tin, profile.data.cst_no, profile.data.store_name, profile.data.branch, profile.data.location);
 
             call.enqueue(new Callback<CreateJob>() {
 

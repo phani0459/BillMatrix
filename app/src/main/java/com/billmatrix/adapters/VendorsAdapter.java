@@ -77,12 +77,12 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
     }
 
     @Override
-    public void onBindViewHolder(VendorHolder holder, final int position) {
+    public void onBindViewHolder(final VendorHolder holder, int position) {
         Vendor.VendorData vendorData = vendors.get(position);
 
-        holder.snoTextView.setText("" + (position + 1));
+        holder.snoTextView.setText("" + (holder.getAdapterPosition() + 1));
         holder.nameTextView.setText(vendorData.name);
-        holder.vendorIdTextView.setText("V" + (!TextUtils.isEmpty(vendorData.id) ? vendorData.id : (position + 1)));
+        holder.vendorIdTextView.setText("V" + (!TextUtils.isEmpty(vendorData.id) ? vendorData.id : (holder.getAdapterPosition() + 1)));
         holder.mobileTextView.setText(!TextUtils.isEmpty(vendorData.phone) ? vendorData.phone.trim() : "-");
         holder.addTextView.setText(!TextUtils.isEmpty(vendorData.address) ? vendorData.address.trim() : "-");
         holder.sinceTextView.setText(vendorData.since);
@@ -90,14 +90,14 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.VendorHo
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickListener.onItemClick(1, position);
+                onItemClickListener.onItemClick(1, holder.getAdapterPosition());
             }
         });
 
         holder.editImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickListener.onItemClick(2, position);
+                onItemClickListener.onItemClick(2, holder.getAdapterPosition());
             }
         });
     }

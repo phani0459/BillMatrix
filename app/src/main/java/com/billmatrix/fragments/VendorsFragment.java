@@ -283,6 +283,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
     public void searchClicked(String query) {
         Log.e(TAG, "searchClicked: " + query);
         if (query.length() > 0) {
+            query = query.toLowerCase();
             noResultsTextView.setVisibility(View.GONE);
             vendorsAdapter.removeAllVendors();
 
@@ -291,7 +292,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
 
             if (vendors != null && vendors.size() > 0) {
                 for (Vendor.VendorData vendorData : vendors) {
-                    if (vendorData.name.contains(query) || vendorData.id.contains(query)) {
+                    if (vendorData.name.toLowerCase().contains(query) || ("V" + vendorData.id).toLowerCase().contains(query)) {
                         vendorsAdapter.addVendor(vendorData);
                         noVendors = true;
                     }

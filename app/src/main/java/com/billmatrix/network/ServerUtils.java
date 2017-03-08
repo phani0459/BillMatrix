@@ -1023,7 +1023,7 @@ public class ServerUtils {
                             taxData.tax_rate = taxMap.data.tax_rate;
                             taxData.status = taxMap.data.status;
                             taxData.admin_id = taxMap.data.admin_id;
-                            taxData.admin_id = taxMap.data.id;
+                            taxData.id = taxMap.data.id;
 
                             billMatrixDaoImpl.updateTax(taxData);
                         }
@@ -1073,7 +1073,7 @@ public class ServerUtils {
                             taxData.tax_rate = taxMap.data.tax_rate;
                             taxData.status = taxMap.data.status;
                             taxData.admin_id = taxMap.data.admin_id;
-                            taxData.admin_id = taxMap.data.id;
+                            taxData.id = taxMap.data.id;
 
                             billMatrixDaoImpl.updateTax(taxData);
                         }

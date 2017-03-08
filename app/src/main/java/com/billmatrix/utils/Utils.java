@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.interfaces.BillMatrixAPI;
+import com.billmatrix.models.Profile;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,6 +50,13 @@ public class Utils {
             billMatrixAPI = getRetrofit(mContext).create(BillMatrixAPI.class);
         }
         return billMatrixAPI;
+    }
+
+    public static boolean isProfileEmpty(Profile profile) {
+        if (profile != null && profile.data != null) {
+            return false;
+        }
+        return true;
     }
 
     public static DatePickerDialog dateDialog(Context mContext, final Object fromEditText, boolean onlyPastDates) {

@@ -67,6 +67,12 @@ public class StoreFragment extends Fragment {
     private Uri logoUri;
     private BillMatrixDaoImpl billMatrixDaoImpl;
 
+    @BindView(R.id.et_store_storeAdmin)
+    public EditText storeAdminEditText;
+    @BindView(R.id.et_store_Branch)
+    public EditText branchEditText;
+    @BindView(R.id.et_store_Location)
+    public EditText locationEditText;
     @BindView(R.id.im_upload_logo)
     public SimpleDraweeView logoDraweeView;
     @BindView(R.id.et_storeName)
@@ -145,6 +151,8 @@ public class StoreFragment extends Fragment {
         phoneEditText.setFilters(Utils.getInputFilter(10));
         noDiscountsTextView.setText("Add Discounts in Discounts Page");
         thankFooterEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        branchEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        locationEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
         String adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
@@ -168,26 +176,36 @@ public class StoreFragment extends Fragment {
     }
 
     public void loadStoreData() {
-        if (profile != null) {
-            if (profile.data != null) {
-                phoneEditText.setText(!TextUtils.isEmpty(profile.data.mobile_number) ? profile.data.mobile_number : "");
-                storeNameEditText.setText(!TextUtils.isEmpty(profile.data.store_name) ? profile.data.store_name : "");
-                addressOneEditText.setText(!TextUtils.isEmpty(profile.data.address_one) ? profile.data.address_one : "");
-                addressTwoEditText.setText(!TextUtils.isEmpty(profile.data.address_two) ? profile.data.address_two : "");
-                cityEditText.setText(!TextUtils.isEmpty(profile.data.city_state) ? profile.data.city_state : "");
-                zipCodeEditText.setText(!TextUtils.isEmpty(profile.data.zipcode) ? profile.data.zipcode : "");
-                vatTINEditText.setText(!TextUtils.isEmpty(profile.data.vat_tin) ? profile.data.vat_tin : "");
-                cstNOEditText.setText(!TextUtils.isEmpty(profile.data.cst_no) ? profile.data.cst_no : "");
+        if (!Utils.isProfileEmpty(profile)) {
+            phoneEditText.setText(!TextUtils.isEmpty(profile.data.mobile_number) ? profile.data.mobile_number : "");
+            storeNameEditText.setText(!TextUtils.isEmpty(profile.data.store_name) ? profile.data.store_name : "");
+            addressOneEditText.setText(!TextUtils.isEmpty(profile.data.address_one) ? profile.data.address_one : "");
+            addressTwoEditText.setText(!TextUtils.isEmpty(profile.data.address_two) ? profile.data.address_two : "");
+            cityEditText.setText(!TextUtils.isEmpty(profile.data.city_state) ? profile.data.city_state : "");
+            zipCodeEditText.setText(!TextUtils.isEmpty(profile.data.zipcode) ? profile.data.zipcode : "");
+            vatTINEditText.setText(!TextUtils.isEmpty(profile.data.vat_tin) ? profile.data.vat_tin : "");
+            cstNOEditText.setText(!TextUtils.isEmpty(profile.data.cst_no) ? profile.data.cst_no : "");
 
-                headerStoreNameTextView.setText(!TextUtils.isEmpty(profile.data.store_name) ? profile.data.store_name : "");
-                headerStoreAddOneTextView.setText(!TextUtils.isEmpty(profile.data.address_one) ? profile.data.address_one : "");
-                headerStoreAddTwoTextView.setText(!TextUtils.isEmpty(profile.data.address_two) ? profile.data.address_two : "");
-                headerStoreCityTextView.setText(!TextUtils.isEmpty(profile.data.city_state) ? profile.data.city_state : "");
-                headerStoreZipTextView.setText(!TextUtils.isEmpty(profile.data.zipcode) ? profile.data.zipcode : "");
-                headerStoreVatTextView.setText(!TextUtils.isEmpty(profile.data.vat_tin) ? "VAT TIN : " + profile.data.vat_tin : "");
-                headerStoreCSTTextView.setText(!TextUtils.isEmpty(profile.data.cst_no) ? "CST NO : " + profile.data.cst_no : "");
-            }
+            headerStoreNameTextView.setText(!TextUtils.isEmpty(profile.data.store_name) ? profile.data.store_name : "");
+            headerStoreAddOneTextView.setText(!TextUtils.isEmpty(profile.data.address_one) ? profile.data.address_one : "");
+            headerStoreAddTwoTextView.setText(!TextUtils.isEmpty(profile.data.address_two) ? profile.data.address_two : "");
+            headerStoreCityTextView.setText(!TextUtils.isEmpty(profile.data.city_state) ? profile.data.city_state : "");
+            headerStoreZipTextView.setText(!TextUtils.isEmpty(profile.data.zipcode) ? profile.data.zipcode : "");
+            headerStoreVatTextView.setText(!TextUtils.isEmpty(profile.data.vat_tin) ? "VAT TIN : " + profile.data.vat_tin : "");
+            headerStoreCSTTextView.setText(!TextUtils.isEmpty(profile.data.cst_no) ? "CST NO : " + profile.data.cst_no : "");
+
+            storeAdminEditText.setText(profile.data.username.toUpperCase());
+            locationEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
+            branchEditText.setText(!TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "");
         }
+    }
+
+    @OnClick(R.id.im_btn_edit_store_admin)
+    public void editAdminDetails() {
+        locationEditText.setEnabled(true);
+        branchEditText.setEnabled(true);
+        locationEditText.setBackgroundResource(R.drawable.edit_text_border);
+        branchEditText.setBackgroundResource(R.drawable.edit_text_border);
     }
 
     public void getProfilefromServer(String loginId) {
@@ -326,15 +344,15 @@ public class StoreFragment extends Fragment {
 
     @OnClick(R.id.im_edit_store_details)
     public void editStoreDetails() {
-        storeNameEditText.setText(headerStoreNameTextView.getText());
-        addressOneEditText.setText(headerStoreAddOneTextView.getText());
-        addressTwoEditText.setText(headerStoreAddTwoTextView.getText());
-        cityEditText.setText(headerStoreCityTextView.getText());
-        zipCodeEditText.setText(headerStoreZipTextView.getText());
-        vatTINEditText.setText(headerStoreVatTextView.getText());
-        cstNOEditText.setText(headerStoreCSTTextView.getText());
-        if (profile != null && profile.data != null) {
+        if (!Utils.isProfileEmpty(profile)) {
             phoneEditText.setText(!TextUtils.isEmpty(profile.data.mobile_number) ? profile.data.mobile_number : "");
+            storeNameEditText.setText(!TextUtils.isEmpty(profile.data.store_name) ? profile.data.store_name : "");
+            addressOneEditText.setText(!TextUtils.isEmpty(profile.data.address_one) ? profile.data.address_one : "");
+            addressTwoEditText.setText(!TextUtils.isEmpty(profile.data.address_two) ? profile.data.address_two : "");
+            cityEditText.setText(!TextUtils.isEmpty(profile.data.city_state) ? profile.data.city_state : "");
+            zipCodeEditText.setText(!TextUtils.isEmpty(profile.data.zipcode) ? profile.data.zipcode : "");
+            vatTINEditText.setText(!TextUtils.isEmpty(profile.data.vat_tin) ? profile.data.vat_tin : "");
+            cstNOEditText.setText(!TextUtils.isEmpty(profile.data.cst_no) ? profile.data.cst_no : "");
         }
     }
 
@@ -448,6 +466,26 @@ public class StoreFragment extends Fragment {
             return;
         }*/
 
+        String branch = branchEditText.getText().toString();
+
+        if (TextUtils.isEmpty(branch)) {
+            Utils.showToast("Enter branch Name", mContext);
+            return;
+        }
+
+        branchEditText.setBackgroundResource(android.R.color.transparent);
+        branchEditText.setEnabled(false);
+
+        String location = locationEditText.getText().toString();
+
+        if (TextUtils.isEmpty(location)) {
+            Utils.showToast("Enter location", mContext);
+            return;
+        }
+
+        locationEditText.setBackgroundResource(android.R.color.transparent);
+        locationEditText.setEnabled(false);
+
         headerStoreNameTextView.setText(storeName);
         headerStoreAddOneTextView.setText(addONE);
         headerStoreAddTwoTextView.setText(addTWO);
@@ -460,7 +498,7 @@ public class StoreFragment extends Fragment {
             headerLogoDraweeView.setImageURI(logoUri);
         }
 
-        if (profile != null && profile.data != null) {
+        if (!Utils.isProfileEmpty(profile)) {
             profile.data.store_name = storeName;
             profile.data.address_one = addONE;
             profile.data.address_two = addTWO;
@@ -469,6 +507,8 @@ public class StoreFragment extends Fragment {
             profile.data.vat_tin = vatTIN;
             profile.data.cst_no = cstNo;
             profile.data.mobile_number = phone;
+            profile.data.branch = branch;
+            profile.data.location = location;
 
             FileUtils.deleteFile(mContext, Constants.PROFILE_FILE_NAME);
             FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
@@ -477,7 +517,7 @@ public class StoreFragment extends Fragment {
 
             if (Utils.isInternetAvailable(mContext)) {
                 Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, addTWO, addONE, zipCode,
-                        cityState, vatTIN, cstNo, storeName);
+                        cityState, vatTIN, cstNo, storeName, branch, location);
 
                 call.enqueue(new Callback<CreateJob>() {
 

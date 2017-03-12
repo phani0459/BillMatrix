@@ -1,5 +1,6 @@
 package com.billmatrix.interfaces;
 
+import com.billmatrix.models.CreateEmployee;
 import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
@@ -47,25 +48,25 @@ public interface BillMatrixAPI {
 
     @FormUrlEncoded
     @POST("update_employee")
-    Call<CreateJob> updateEmployee(@Field("id") String id, @Field("username") String empName, @Field("password") String password,
-                                   @Field("mobile_number") String mobileNumber,
-                                   @Field("login_id") String login_id, @Field("imei_number") String imei_number,
-                                   @Field("location") String location, @Field("branch") String branch, @Field("status") String status);
+    Call<CreateEmployee> updateEmployee(@Field("id") String id, @Field("username") String empName, @Field("password") String password,
+                                        @Field("mobile_number") String mobileNumber,
+                                        @Field("login_id") String login_id, @Field("imei_number") String imei_number,
+                                        @Field("location") String location, @Field("branch") String branch, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("update_employee")
-    Call<CreateJob> updateStore(@Field("id") String id, @Field("address_two") String address_two,
-                                @Field("address_one") String address_one, @Field("zipcode") String zipcode,
-                                @Field("city_state") String city_state, @Field("vat_tin") String vat_tin,
-                                @Field("cst_no") String cst_no, @Field("store_name") String store_name,
-                                @Field("branch") String branch, @Field("location") String location);
+    Call<CreateEmployee> updateStore(@Field("id") String id, @Field("address_two") String address_two,
+                                     @Field("address_one") String address_one, @Field("zipcode") String zipcode,
+                                     @Field("city_state") String city_state, @Field("vat_tin") String vat_tin,
+                                     @Field("cst_no") String cst_no, @Field("store_name") String store_name,
+                                     @Field("branch") String branch, @Field("location") String location);
 
     @FormUrlEncoded
     @POST("create_employee")
-    Call<CreateJob> addEmployee(@Field("username") String empName, @Field("password") String password,
-                                @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id,
-                                @Field("login_id") String login_id, @Field("imei_number") String imei_number,
-                                @Field("location") String location, @Field("branch") String branch);
+    Call<CreateEmployee> addEmployee(@Field("username") String empName, @Field("password") String password,
+                                     @Field("mobile_number") String mobileNumber, @Field("admin_id") String admin_id,
+                                     @Field("login_id") String login_id, @Field("imei_number") String imei_number,
+                                     @Field("location") String location, @Field("branch") String branch);
 
     @FormUrlEncoded
     @POST("admin_customers")

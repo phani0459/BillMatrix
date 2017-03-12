@@ -36,11 +36,11 @@ public class DBConstants {
     final static String VENDORS_TABLE = "TABLE_VENDORS";
     final static String CUSTOMERS_TABLE = "TABLE_CUSTOMERS";
     final static String INVENTORY_TABLE = "TABLE_INVENTORY";
-    final static String POS_ITEMS_TABLE = "TABLE_POS_ITEMS";
     final static String TAX_TABLE = "TABLE_TAX";
     final static String DISCOUNT_TABLE = "TABLE_DISCOUNT";
     final static String PAYMENTS_TABLE = "TABLE_PAYMENTS";
-    final static String CUSTOMER_TRANSACTIONS_TABLE = "TABLE_TRANSACTIONS";
+    public final static String POS_ITEMS_TABLE = "TABLE_POS_ITEMS";
+    public final static String CUSTOMER_TRANSACTIONS_TABLE = "TABLE_TRANSACTIONS";
 
     /**
      * Employees Column Names

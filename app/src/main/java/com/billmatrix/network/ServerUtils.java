@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
+import com.billmatrix.models.CreateEmployee;
 import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
@@ -203,11 +204,11 @@ public class ServerUtils {
      *********************************************************************/
 
     public static Employee.EmployeeData updateEmployeetoServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
-        final Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateEmployee(employeeData.id, employeeData.username,
+        final Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateEmployee(employeeData.id, employeeData.username,
                 employeeData.password, employeeData.mobile_number, employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch,
                 employeeData.status);
 
-        call.enqueue(new Callback<CreateJob>() {
+        call.enqueue(new Callback<CreateEmployee>() {
 
 
             /**
@@ -216,29 +217,29 @@ public class ServerUtils {
              * @param response server response
              */
             @Override
-            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+            public void onResponse(Call<CreateEmployee> call, Response<CreateEmployee> response) {
                 Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                 if (response.body() != null) {
-                    CreateJob employeeStatus = response.body();
+                    CreateEmployee employeeStatus = response.body();
                     if (employeeStatus.status.equalsIgnoreCase("200")) {
                         if (!TextUtils.isEmpty(employeeStatus.update_employee) && employeeStatus.update_employee.equalsIgnoreCase("Successfully Updated")) {
                             if (!isSync) Utils.showToast("Employee Updated successfully", mContext);
                             billMatrixDaoImpl.updateEmployee(DBConstants.ADD_UPDATE, Constants.DATA_FROM_SERVER, employeeData.login_id);
                         }
 
-                        employeeData.update_date = employeeStatus.data.update_date;
-                        employeeData.login_id = employeeStatus.data.login_id;
-                        employeeData.username = employeeStatus.data.username;
-                        employeeData.password = employeeStatus.data.password;
-                        employeeData.mobile_number = employeeStatus.data.mobile_number;
-                        employeeData.status = employeeStatus.data.status;
+                        employeeData.update_date = employeeStatus.data.get(0).update_date;
+                        employeeData.login_id = employeeStatus.data.get(0).login_id;
+                        employeeData.username = employeeStatus.data.get(0).username;
+                        employeeData.password = employeeStatus.data.get(0).password;
+                        employeeData.mobile_number = employeeStatus.data.get(0).mobile_number;
+                        employeeData.status = employeeStatus.data.get(0).status;
                         employeeData.imei_number = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, "");
-                        employeeData.type = employeeStatus.data.type;
-                        employeeData.admin_id = employeeStatus.data.admin_id;
-                        employeeData.id = employeeStatus.data.id;
-                        employeeData.create_date = employeeStatus.data.create_date;
-                        employeeData.branch = employeeStatus.data.branch;
-                        employeeData.location = employeeStatus.data.location;
+                        employeeData.type = employeeStatus.data.get(0).type;
+                        employeeData.admin_id = employeeStatus.data.get(0).admin_id;
+                        employeeData.id = employeeStatus.data.get(0).id;
+                        employeeData.create_date = employeeStatus.data.get(0).create_date;
+                        employeeData.branch = employeeStatus.data.get(0).branch;
+                        employeeData.location = employeeStatus.data.get(0).location;
                         employeeData.add_update = Constants.DATA_FROM_SERVER;
 
                         billMatrixDaoImpl.updateEmployee(employeeData);
@@ -253,7 +254,7 @@ public class ServerUtils {
              * @param t error
              */
             @Override
-            public void onFailure(Call<CreateJob> call, Throwable t) {
+            public void onFailure(Call<CreateEmployee> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });
@@ -301,10 +302,10 @@ public class ServerUtils {
     }
 
     public static Employee.EmployeeData addEmployeetoServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, String adminId) {
-        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.username, employeeData.password, employeeData.mobile_number, adminId,
+        Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).addEmployee(employeeData.username, employeeData.password, employeeData.mobile_number, adminId,
                 employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch);
 
-        call.enqueue(new Callback<CreateJob>() {
+        call.enqueue(new Callback<CreateEmployee>() {
 
 
             /**
@@ -313,27 +314,27 @@ public class ServerUtils {
              * @param response server response
              */
             @Override
-            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+            public void onResponse(Call<CreateEmployee> call, Response<CreateEmployee> response) {
                 Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                 if (response.body() != null) {
-                    CreateJob employeeStatus = response.body();
+                    CreateEmployee employeeStatus = response.body();
                     if (employeeStatus.status.equalsIgnoreCase("200")) {
                         if (employeeStatus.create_employee.equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Employee Added successfully", mContext);
 
-                            employeeData.update_date = employeeStatus.data.update_date;
-                            employeeData.login_id = employeeStatus.data.login_id;
-                            employeeData.username = employeeStatus.data.username;
-                            employeeData.password = employeeStatus.data.password;
-                            employeeData.mobile_number = employeeStatus.data.mobile_number;
-                            employeeData.status = employeeStatus.data.status;
+                            employeeData.update_date = employeeStatus.data.get(0).update_date;
+                            employeeData.login_id = employeeStatus.data.get(0).login_id;
+                            employeeData.username = employeeStatus.data.get(0).username;
+                            employeeData.password = employeeStatus.data.get(0).password;
+                            employeeData.mobile_number = employeeStatus.data.get(0).mobile_number;
+                            employeeData.status = employeeStatus.data.get(0).status;
                             employeeData.imei_number = Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, "");
-                            employeeData.type = employeeStatus.data.type;
-                            employeeData.admin_id = employeeStatus.data.admin_id;
-                            employeeData.id = employeeStatus.data.id;
-                            employeeData.create_date = employeeStatus.data.create_date;
-                            employeeData.branch = employeeStatus.data.branch;
-                            employeeData.location = employeeStatus.data.location;
+                            employeeData.type = employeeStatus.data.get(0).type;
+                            employeeData.admin_id = employeeStatus.data.get(0).admin_id;
+                            employeeData.id = employeeStatus.data.get(0).id;
+                            employeeData.create_date = employeeStatus.data.get(0).create_date;
+                            employeeData.branch = employeeStatus.data.get(0).branch;
+                            employeeData.location = employeeStatus.data.get(0).location;
                             employeeData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateEmployee(employeeData);
@@ -352,7 +353,7 @@ public class ServerUtils {
              * @param t error
              */
             @Override
-            public void onFailure(Call<CreateJob> call, Throwable t) {
+            public void onFailure(Call<CreateEmployee> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });

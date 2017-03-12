@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnDataFetchListener;
+import com.billmatrix.models.CreateEmployee;
 import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
@@ -338,10 +339,10 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                 profile = Constants.getGson().fromJson(profileString, Profile.class);
             }
 
-            Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, profile.data.address_two, profile.data.address_one, profile.data.zipcode,
+            Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, profile.data.address_two, profile.data.address_one, profile.data.zipcode,
                     profile.data.city_state, profile.data.vat_tin, profile.data.cst_no, profile.data.store_name, profile.data.branch, profile.data.location);
 
-            call.enqueue(new Callback<CreateJob>() {
+            call.enqueue(new Callback<CreateEmployee>() {
 
                 /**
                  * Successful HTTP response.
@@ -349,10 +350,10 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                  * @param response server response
                  */
                 @Override
-                public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                public void onResponse(Call<CreateEmployee> call, Response<CreateEmployee> response) {
                     Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                     if (response.body() != null) {
-                        CreateJob employeeStatus = response.body();
+                        CreateEmployee employeeStatus = response.body();
                         if (employeeStatus.status.equalsIgnoreCase("200")) {
                             if (!TextUtils.isEmpty(employeeStatus.update_employee) && employeeStatus.update_employee.equalsIgnoreCase("Successfully Updated")) {
                                 Utils.showToast("Store data Updated successfully", mContext);
@@ -369,7 +370,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                  * @param t error
                  */
                 @Override
-                public void onFailure(Call<CreateJob> call, Throwable t) {
+                public void onFailure(Call<CreateEmployee> call, Throwable t) {
                     Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
                 }
             });

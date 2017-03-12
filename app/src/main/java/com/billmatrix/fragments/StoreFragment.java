@@ -32,7 +32,7 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
-import com.billmatrix.models.CreateJob;
+import com.billmatrix.models.CreateEmployee;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
@@ -516,10 +516,10 @@ public class StoreFragment extends Fragment {
             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_HnF_EDITED_OFFLINE, true).apply();
 
             if (Utils.isInternetAvailable(mContext)) {
-                Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, addTWO, addONE, zipCode,
+                Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, addTWO, addONE, zipCode,
                         cityState, vatTIN, cstNo, storeName, branch, location);
 
-                call.enqueue(new Callback<CreateJob>() {
+                call.enqueue(new Callback<CreateEmployee>() {
 
                     /**
                      * Successful HTTP response.
@@ -527,10 +527,10 @@ public class StoreFragment extends Fragment {
                      * @param response server response
                      */
                     @Override
-                    public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                    public void onResponse(Call<CreateEmployee> call, Response<CreateEmployee> response) {
                         Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                         if (response.body() != null) {
-                            CreateJob employeeStatus = response.body();
+                            CreateEmployee employeeStatus = response.body();
                             if (employeeStatus.status.equalsIgnoreCase("200")) {
                                 if (!TextUtils.isEmpty(employeeStatus.update_employee) && employeeStatus.update_employee.equalsIgnoreCase("Successfully Updated")) {
                                     Utils.showToast("Store data Updated successfully", mContext);
@@ -546,7 +546,7 @@ public class StoreFragment extends Fragment {
                      * @param t error
                      */
                     @Override
-                    public void onFailure(Call<CreateJob> call, Throwable t) {
+                    public void onFailure(Call<CreateEmployee> call, Throwable t) {
                         Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
                     }
                 });

@@ -63,6 +63,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.POSActivity"
+            android:configChanges="keyboard|keyboardHidden"
             android:screenOrientation="landscape" />
 
         <activity

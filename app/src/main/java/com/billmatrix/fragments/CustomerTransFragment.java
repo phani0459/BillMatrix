@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -87,7 +90,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
             selectCustomerAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
         }
 
-        bills = billMatrixDaoImpl.getBillNumbers();
+        bills = billMatrixDaoImpl.getBillNumbers(null);
 
         if (bills != null && bills.size() > 0) {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, bills);
@@ -103,10 +106,68 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        /**
+         * if a customer is selected, show only his bills in bill number drop down
+         */
+        selectCustomerAutoCompleteTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (!TextUtils.isEmpty(adapterView.getAdapter().getItem(i).toString())) {
+                    bills = billMatrixDaoImpl.getBillNumbers(adapterView.getAdapter().getItem(i).toString());
+
+                    if (bills != null && bills.size() > 0) {
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, bills);
+                        billNumberAutoCompleteTV.setThreshold(1);//will start working from first character
+                        billNumberAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+                    }
+                }
+            }
+        });
+
+
+        /**
+         * If customer name is deleted, after entering other name, then show all bills again
+         */
+
+        selectCustomerAutoCompleteTV.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() <= 0) {
+                    bills = billMatrixDaoImpl.getBillNumbers(null);
+
+                    if (bills != null && bills.size() > 0) {
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, bills);
+                        billNumberAutoCompleteTV.setThreshold(1);//will start working from first character
+                        billNumberAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+                    }
+                 }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+    }
+
     @OnClick(R.id.btn_view_cust_trans)
     public void viewTransactions() {
 
         Utils.hideSoftKeyboard(selectCustomerAutoCompleteTV);
+
+        totalPaidTextView.setText(getString(R.string.zero));
+        totalDueTextView.setText(getString(R.string.zero));
+        totalBillTextView.setText(getString(R.string.zero));
         transactionsAdapter.removeAllTransactions();
 
         String selectedCustomer = selectCustomerAutoCompleteTV.getText().toString();

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -76,7 +78,6 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 
@@ -316,6 +317,16 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
         devicesListView.setAdapter(devicesAdapter);
 
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.e(TAG, "onConfigurationChanged: " + newConfig.hardKeyboardHidden);
+        if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
+            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).showInputMethodPicker();
+            Toast.makeText(this, "Barcode Scanner detected. Please turn OFF Hardware/Physical keyboard to enable softkeyboard to function.", Toast.LENGTH_LONG).show();
+        }
     }
 
     @OnClick(R.id.rl_pos_cust_edit)
@@ -901,9 +912,93 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     }
 
+    String scannedBarcode = "", finalBarcodeValue = "";
+
+    /**
+     * to listen to the barcode scanner value
+     *
+     * @param e event triggered by scanner
+     * @return
+     */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent e) {
+        char pressedKey = (char) e.getUnicodeChar();
+        scannedBarcode += pressedKey;
+        if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER && e.getAction() != KeyEvent.ACTION_DOWN) {
+            if (noCustomerItemTextView.getVisibility() == View.GONE) {
+                if (TextUtils.isEmpty(finalBarcodeValue)) {
+                    for (String part : removeBarcodeDuplicates(scannedBarcode, 2)) {
+                        finalBarcodeValue = finalBarcodeValue + part.substring(0, 1);
+                    }
+                    scannedBarcode = "";
+                    fetchInventoryByBarcode(finalBarcodeValue);
+                }
+            } else {
+                scannedBarcode = "";
+                finalBarcodeValue = "";
+                Utils.showToast("Select Customer before adding items to cart", mContext);
+            }
+        }
+        return super.dispatchKeyEvent(e);
+    }
+
+    private void fetchInventoryByBarcode(String barcodeValue) {
+        Utils.showToast(barcodeValue, mContext);
+        Inventory.InventoryData barcodeInventoryData;
+        if (posInventoryAdapter != null) {
+            barcodeInventoryData = posInventoryAdapter.getInventoryonByBarcode("333333333333");
+            if (barcodeInventoryData != null) {
+                loadInventoryToTransaction(barcodeInventoryData);
+            }
+        }
+        scannedBarcode = "";
+        this.finalBarcodeValue = "";
+    }
+
+    /**
+     * when we scan barcode from dispatch key event , we are getting each character twice
+     * for eg: 551122223300885566
+     * so we remove duplicates by splitting string into two chars and taking one char from each splitted value
+     *
+     * @param string        barcode with duplicates
+     * @param partitionSize here it is 2
+     * @return splitted strings
+     */
+    private List<String> removeBarcodeDuplicates(String string, int partitionSize) {
+        List<String> parts = new ArrayList<String>();
+        int len = string.length();
+        for (int i = 0; i < len; i += partitionSize) {
+            parts.add(string.substring(i, Math.min(len, i + partitionSize)));
+        }
+        return parts;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        /**
+         * if barcode is scanned, edit text will change focus to next edit text, to remove we again change focus to same edit text
+         */
+        posItemsSearchEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_ENTER) || keyCode == KeyEvent.KEYCODE_TAB) {
+                    // handleInputScan();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (posItemsSearchEditText != null) {
+                                posItemsSearchEditText.requestFocus();
+                            }
+                        }
+                    }, 10); // Remove this Delay Handler IF requestFocus(); works just fine without delay
+                    return true;
+                }
+                return false;
+            }
+        });
+
         customersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -1028,7 +1123,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (event.getRawX() >= (posSearchEditText.getRight() - posSearchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        Log.e(TAG, "onTouch: 0");
                         if (posSearchEditText.getText().toString().length() > 0) {
                             posSearchEditText.setText("");
                             searchClosed();
@@ -1297,56 +1391,60 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         alertDialog.show();
     }
 
+    public void loadInventoryToTransaction(Inventory.InventoryData selectedInventory) {
+        /**
+         * to add next guest customer in customer spinner if selected customer is guest and there are no more guest customers in spinner
+         */
+        if (isGuestCustomerSelected) {
+            int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
+            if (guestCustInt == guestCustomerCount) {
+                guestCustomerCount = guestCustomerCount + 1;
+                customerSpinnerAdapter.insert("GUEST CUSTOMER " + guestCustomerCount, guestCustomerCount);
+            }
+        }
+        if (posItemAdapter.inventoryIDs != null && posItemAdapter.inventoryIDs.size() > 0) {
+            if (posItemAdapter.inventoryIDs.contains(selectedInventory.id)) {
+                Inventory.InventoryData inventoryFromAdapter = posItemAdapter.getInventoryonID(selectedInventory.id);
+                if (inventoryFromAdapter != null) {
+                    int inventoryQty = Integer.parseInt(inventoryFromAdapter.selectedQTY);
+                    if (TextUtils.isDigitsOnly(selectedInventory.qty)) {
+                        if (Integer.parseInt(selectedInventory.qty) > inventoryQty) {
+                            inventoryQty = inventoryQty + 1;
+                            inventoryFromAdapter.selectedQTY = inventoryQty + "";
+                            posItemAdapter.changeInventory(inventoryFromAdapter);
+                        } else {
+                            Utils.showToast("This item is out of stock", mContext);
+                        }
+                    }
+                    billMatrixDaoImpl.updatePOSItem(inventoryFromAdapter.selectedQTY, inventoryFromAdapter.item_code,
+                            selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+                    loadFooterValues();
+                }
+                return;
+            } else {
+                selectedInventory.selectedQTY = "1";
+            }
+        } else {
+            selectedInventory.selectedQTY = "1";
+        }
+        /**
+         * Discount code added to customer
+         */
+        selectedInventory.discountCode = discountCodeEditText.getText().toString();
+        selectedInventory.discountValue = discountSelected + "";
+        selectedInventory.isZbillChecked = zBillCheckBox.isChecked();
+
+        posItemAdapter.addInventory(selectedInventory);
+        billMatrixDaoImpl.addPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName, selectedInventory);
+        billMatrixDaoImpl.updatePOSZBill(zBillCheckBox.isChecked(), selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+        loadFooterValues();
+    }
+
     @Override
     public void onItemClick(int caseInt, int position) {
         Inventory.InventoryData selectedInventory = posInventoryAdapter.getItem(position);
         if (noCustomerItemTextView.getVisibility() == View.GONE) {
-            /**
-             * to add next guest customer in customer spinner if selected customer is guest and there are no more guest customers in spinner
-             */
-            if (isGuestCustomerSelected) {
-                int guestCustInt = TextUtils.isEmpty(selectedGuestCustomerName) ? 1 : Integer.parseInt(selectedGuestCustomerName.replace("GUEST CUSTOMER ", ""));
-                if (guestCustInt == guestCustomerCount) {
-                    guestCustomerCount = guestCustomerCount + 1;
-                    customerSpinnerAdapter.insert("GUEST CUSTOMER " + guestCustomerCount, guestCustomerCount);
-                }
-            }
-            if (posItemAdapter.inventoryIDs != null && posItemAdapter.inventoryIDs.size() > 0) {
-                if (posItemAdapter.inventoryIDs.contains(selectedInventory.id)) {
-                    Inventory.InventoryData inventoryFromAdapter = posItemAdapter.getInventoryonID(selectedInventory.id);
-                    if (inventoryFromAdapter != null) {
-                        int inventoryQty = Integer.parseInt(inventoryFromAdapter.selectedQTY);
-                        if (TextUtils.isDigitsOnly(selectedInventory.qty)) {
-                            if (Integer.parseInt(selectedInventory.qty) > inventoryQty) {
-                                inventoryQty = inventoryQty + 1;
-                                inventoryFromAdapter.selectedQTY = inventoryQty + "";
-                                posItemAdapter.changeInventory(inventoryFromAdapter);
-                            } else {
-                                Utils.showToast("This item is out of stock", mContext);
-                            }
-                        }
-                        billMatrixDaoImpl.updatePOSItem(inventoryFromAdapter.selectedQTY, inventoryFromAdapter.item_code,
-                                selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
-                        loadFooterValues();
-                    }
-                    return;
-                } else {
-                    selectedInventory.selectedQTY = "1";
-                }
-            } else {
-                selectedInventory.selectedQTY = "1";
-            }
-            /**
-             * Discount code added to customer
-             */
-            selectedInventory.discountCode = discountCodeEditText.getText().toString();
-            selectedInventory.discountValue = discountSelected + "";
-            selectedInventory.isZbillChecked = zBillCheckBox.isChecked();
-
-            posItemAdapter.addInventory(selectedInventory);
-            billMatrixDaoImpl.addPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName, selectedInventory);
-            billMatrixDaoImpl.updatePOSZBill(zBillCheckBox.isChecked(), selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
-            loadFooterValues();
+            loadInventoryToTransaction(selectedInventory);
         } else {
             Utils.showToast("Select Customer before adding items to cart", mContext);
         }

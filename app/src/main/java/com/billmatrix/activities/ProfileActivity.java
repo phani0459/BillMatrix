@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.models.CreateEmployee;
 import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
@@ -318,10 +319,10 @@ public class ProfileActivity extends BaseTabActivity {
         FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(newProfile));
 
         if (Utils.isInternetAvailable(mContext)) {
-            Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateEmployee(profile.data.id, adminName, password, mobile,
+            Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateEmployee(profile.data.id, adminName, password, mobile,
                     loginId, profile.data.imei_number, location, branch, profile.data.status);
 
-            call.enqueue(new Callback<CreateJob>() {
+            call.enqueue(new Callback<CreateEmployee>() {
 
                 /**
                  * Successful HTTP response.
@@ -329,10 +330,10 @@ public class ProfileActivity extends BaseTabActivity {
                  * @param response server response
                  */
                 @Override
-                public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                public void onResponse(Call<CreateEmployee> call, Response<CreateEmployee> response) {
                     Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
                     if (response.body() != null) {
-                        CreateJob employeeStatus = response.body();
+                        CreateEmployee employeeStatus = response.body();
                         if (employeeStatus.status.equalsIgnoreCase("200")) {
                             if (!TextUtils.isEmpty(employeeStatus.update_employee) && employeeStatus.update_employee.equalsIgnoreCase("Successfully Updated")) {
                                 Utils.showToast("Profile Updated successfully", mContext);
@@ -347,7 +348,7 @@ public class ProfileActivity extends BaseTabActivity {
                  * @param t error
                  */
                 @Override
-                public void onFailure(Call<CreateJob> call, Throwable t) {
+                public void onFailure(Call<CreateEmployee> call, Throwable t) {
                     Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
                 }
             });

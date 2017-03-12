@@ -27,8 +27,8 @@ import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.network.ServerData;
-import com.billmatrix.utils.Constants;
 import com.billmatrix.network.ServerUtils;
+import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -262,6 +262,13 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                         customerFromServer = customerData;
                         Utils.showToast("Customer Updated successfully", mContext);
                     }
+
+                    /**
+                     * If there are dues for edited customer, and name has been changed, update transactions and pos table
+                     */
+                    billMatrixDaoImpl.updateCustomerName(DBConstants.POS_ITEMS_TABLE, customerName, selectedCusttoEdit.username);
+                    billMatrixDaoImpl.updateCustomerName(DBConstants.CUSTOMER_TRANSACTIONS_TABLE, customerName, selectedCusttoEdit.username);
+
                 }
             }
 
@@ -273,7 +280,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
             isCustomerAdded = true;
             ((BaseTabActivity) mContext).ifTabCanChange = true;
         } else {
-            Utils.showToast("Customer Mobile Number must be unique", mContext);
+            Utils.showToast("Customer Name / Mobile Number must be unique", mContext);
         }
     }
 
@@ -285,6 +292,15 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Customer.CustomerData selectedCustomer = customersAdapter.getItem(position);
+
+                        /**
+                         * If there are any dues for the customer, customer cannot be deleted
+                         */
+                        if (billMatrixDaoImpl.getCustomerTotalDue(selectedCustomer.username) != 0.0f) {
+                            Utils.showToast(selectedCustomer.username + " can not be deleted.\nThere are dues for this customer", mContext);
+                            return;
+                        }
+
                         if (selectedCustomer.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
                             billMatrixDaoImpl.updateCustomer(DBConstants.STATUS, "-1", selectedCustomer.mobile_number);
                         } else {

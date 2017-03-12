@@ -917,6 +917,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         db.execSQL(query);
     }
 
+    public boolean updateCustomerName(String tabelName, String customerName, String previousCustomerName) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CUSTOMER_NAME, customerName);
+        return db.update(tabelName, contentValues, CUSTOMER_NAME + "='" + previousCustomerName + "'", null) > 0;
+    }
+
     public ArrayList<Inventory.InventoryData> getPOSItem(String customerName) {
         if (customerName == null) {
             return null;
@@ -1117,7 +1123,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(CUSTOMER_NAME, transaction.customerName);
         contentValues.put(DATE, transaction.date);
         contentValues.put(STATUS, transaction.status);
-        contentValues.put(DBConstants.AMOUNT_DUE, transaction.amountDue);
+        contentValues.put(DBConstants.AMOUNT_DUE, (!TextUtils.isEmpty(transaction.amountDue) ? transaction.amountDue : "0.0"));
         contentValues.put(ADMIN_ID, transaction.admin_id);
         contentValues.put(CREATE_DATE, transaction.create_date);
         contentValues.put(UPDATE_DATE, transaction.update_date);
@@ -1135,11 +1141,40 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return cnt;
     }
 
-    public ArrayList<String> getBillNumbers() {
+    public float getCustomerTotalDue(String customerName) {
+        Cursor cursor = null;
+        try {
+            String dueQuery = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + CUSTOMER_NAME + " = '" + customerName + "'";
+            cursor = db.rawQuery(dueQuery, null);
+            if (cursor.moveToFirst()) {
+                float customerDue = 0.0f;
+                do {
+                    String due = cursor.getString(cursor.getColumnIndexOrThrow(AMOUNT_DUE));
+                    customerDue = customerDue + Float.parseFloat(due);
+                } while (cursor.moveToNext());
+
+                return customerDue;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return 0;
+    }
+
+    public ArrayList<String> getBillNumbers(String customerName) {
         Cursor cursor = null;
         try {
             String query;
-            query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE;
+
+            if (TextUtils.isEmpty(customerName)) {
+                query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE;
+            } else {
+                query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + CUSTOMER_NAME + " = '" + customerName + "'";
+            }
 
             cursor = db.rawQuery(query, null);
 

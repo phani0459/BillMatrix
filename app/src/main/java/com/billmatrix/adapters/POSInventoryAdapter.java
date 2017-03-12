@@ -2,6 +2,7 @@ package com.billmatrix.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,17 @@ public class POSInventoryAdapter extends RecyclerView.Adapter<POSInventoryAdapte
     public POSInventoryAdapter(List<Inventory.InventoryData> inventories, OnItemClickListener onClickListener, Context mContext) {
         this.inventories = inventories;
         this.onItemClickListener = onClickListener;
+    }
+
+    public Inventory.InventoryData getInventoryonByBarcode(String barcode) {
+        if (inventories != null && inventories.size() > 0) {
+            for (int i = 0; i < inventories.size(); i++) {
+                if (!TextUtils.isEmpty(inventories.get(i).barcode) && inventories.get(i).barcode.equals(barcode)) {
+                    return inventories.get(i);
+                }
+            }
+        }
+        return null;
     }
 
     public void removeAllInventories() {

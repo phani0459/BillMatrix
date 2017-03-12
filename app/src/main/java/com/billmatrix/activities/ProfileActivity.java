@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.billmatrix.R;
 import com.billmatrix.models.CreateEmployee;
-import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
 import com.billmatrix.utils.Constants;
@@ -295,28 +294,20 @@ public class ProfileActivity extends BaseTabActivity {
         locationAdminEditText.setBackgroundResource(android.R.color.transparent);
         locationAdminEditText.setEnabled(false);
 
-        Profile newProfile = new Profile();
-        newProfile.status = 200;
-        newProfile.userdata = "success";
+        profile.status = 200;
+        profile.userdata = "success";
 
-        Profile.ProfileData newData = new Profile().new ProfileData();
-        newData.id = profile.data.id;
-        newData.admin_id = profile.data.id;
-        newData.username = adminName;
-        newData.login_id = loginId;
-        newData.mobile_number = mobile;
-        newData.password = password;
-        newData.imei_number = profile.data.imei_number;
-        newData.type = "admin";
-        newData.branch = branch;
-        newData.location = location;
-        newData.status = profile.data.status;
-        newData.create_date = profile.data.create_date;
-        newData.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+        profile.data.admin_id = profile.data.id;
+        profile.data.username = adminName;
+        profile.data.login_id = loginId;
+        profile.data.mobile_number = mobile;
+        profile.data.password = password;
+        profile.data.branch = branch;
+        profile.data.location = location;
+        profile.data.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
 
-        newProfile.data = newData;
         FileUtils.deleteFile(mContext, Constants.PROFILE_FILE_NAME);
-        FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(newProfile));
+        FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
 
         if (Utils.isInternetAvailable(mContext)) {
             Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateEmployee(profile.data.id, adminName, password, mobile,

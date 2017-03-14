@@ -60,6 +60,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.SettingsActivity"
+            android:configChanges="keyboard|keyboardHidden"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.POSActivity"
@@ -75,6 +76,13 @@
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".utils.ScannerConnectedReceiver">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </receiver>
 

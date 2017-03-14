@@ -12,14 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.activities.PaymentsActivity;
 import com.billmatrix.adapters.DuesAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
+import com.billmatrix.models.Payments;
 import com.billmatrix.models.Transaction;
+import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
@@ -46,6 +50,11 @@ public class CustomerWiseDueFragment extends Fragment implements OnItemClickList
     public TextView noReusltsTextView;
     @BindView(R.id.tv_due_TotalDueAmt)
     public TextView dueAmountTextView;
+    @BindView(R.id.ll_dues_custDetails)
+    public LinearLayout custDetailsLayout;
+    @BindView(R.id.tv_dues_customerName)
+    public TextView custNameTextView;
+
     private ArrayList<String> customerNames;
     private DuesAdapter duesAdapter;
 
@@ -108,13 +117,44 @@ public class CustomerWiseDueFragment extends Fragment implements OnItemClickList
         }
 
         ArrayList<Transaction> transactions = billMatrixDaoImpl.getCustomerTransactions(selectedCustomer);
+        ArrayList<Payments.PaymentData> paymentsfromDB = billMatrixDaoImpl.getCustomerPayments(PaymentsActivity.PAYIN, selectedCustomer);
+
+        custDetailsLayout.setVisibility(View.VISIBLE);
+
+        custNameTextView.setText(selectedCustomer);
 
         if (transactions != null && transactions.size() > 0) {
             noReusltsTextView.setVisibility(View.GONE);
             for (Transaction transaction : transactions) {
                 duesAdapter.addTransaction(transaction);
             }
-        } else {
+        }
+
+        if (paymentsfromDB != null && paymentsfromDB.size() > 0) {
+            for (Payments.PaymentData paymentData : paymentsfromDB) {
+                Transaction transaction = new Transaction();
+
+                transaction.add_update = Constants.ADD_OFFLINE;
+                transaction.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+                transaction.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
+
+                transaction.date = paymentData.date_of_payment;
+                transaction.inventoryJson = "";
+                transaction.customerName = paymentData.payee_name;
+                transaction.amountPaid = paymentData.amount;
+                transaction.amountDue = getString(R.string.zero);
+                transaction.totalAmount = getString(R.string.zero);
+                transaction.admin_id = paymentData.admin_id;
+                transaction.billNumber = generatePayInBillNumber(paymentData.id, paymentData.date_of_payment);
+                transaction.id = transaction.billNumber;
+                transaction.isZbillChecked = false;
+                transaction.status = "1";
+
+                duesAdapter.addTransaction(transaction);
+            }
+        }
+
+        if (duesAdapter.getItemCount() <= 0) {
             noReusltsTextView.setVisibility(View.VISIBLE);
         }
 
@@ -123,19 +163,31 @@ public class CustomerWiseDueFragment extends Fragment implements OnItemClickList
         dueAmountTextView.setText(calculateTotalDue());
     }
 
+    public String generatePayInBillNumber(String payInID, String dateOFPay) {
+        String payBillNumber = payInID;
+
+        if (!TextUtils.isEmpty(payInID)) {
+            payBillNumber = "PAY" + dateOFPay.replace("-", "") + payInID;
+        }
+
+        return payBillNumber;
+    }
+
     private String calculateTotalDue() {
-        float totalDueAmt = 0.0f;
+        float totalBillAmt = 0.0f;
+        float totalAmtPaid = 0.0f;
         if (duesAdapter != null && duesAdapter.transactions != null && duesAdapter.transactions.size() > 0) {
             for (Transaction transaction : duesAdapter.transactions) {
                 try {
-                    totalDueAmt = totalDueAmt + Float.parseFloat(transaction.amountDue);
+                    totalBillAmt = totalBillAmt + Float.parseFloat(transaction.totalAmount);
+                    totalAmtPaid = totalAmtPaid + Float.parseFloat(transaction.amountPaid);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        return String.format(Locale.getDefault(), "%.2f", totalDueAmt);
+        return String.format(Locale.getDefault(), "%.2f", (totalBillAmt - totalAmtPaid));
     }
 
     @Override

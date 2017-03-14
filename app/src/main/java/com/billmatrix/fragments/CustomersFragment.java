@@ -265,9 +265,14 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
 
                     /**
                      * If there are dues for edited customer, and name has been changed, update transactions and pos table
+                     * and if there are payins of customer, change customer name
                      */
-                    billMatrixDaoImpl.updateCustomerName(DBConstants.POS_ITEMS_TABLE, customerName, selectedCusttoEdit.username);
-                    billMatrixDaoImpl.updateCustomerName(DBConstants.CUSTOMER_TRANSACTIONS_TABLE, customerName, selectedCusttoEdit.username);
+                    billMatrixDaoImpl.updateCustomerName(DBConstants.POS_ITEMS_TABLE, DBConstants.CUSTOMER_NAME, customerName, selectedCusttoEdit.username);
+                    billMatrixDaoImpl.updateCustomerName(DBConstants.CUSTOMER_TRANSACTIONS_TABLE, DBConstants.CUSTOMER_NAME, customerName, selectedCusttoEdit.username);
+
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                    billMatrixDaoImpl.updatePaymentOffline(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, selectedCusttoEdit.username);
+                    billMatrixDaoImpl.updateCustomerName(DBConstants.PAYMENTS_TABLE, DBConstants.PAYEE_NAME, customerName, selectedCusttoEdit.username);
 
                 }
             }

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.billmatrix.R;
@@ -52,12 +53,21 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
     public RecyclerView transactionsRecyclerView;
     @BindView(R.id.tv_trans_TotalPaid)
     public TextView totalPaidTextView;
+    @BindView(R.id.tv_trans_customerName)
+    public TextView custNameTextView;
+    @BindView(R.id.tv_trans_billDate)
+    public TextView billDateTextView;
+    @BindView(R.id.tv_trans_billNumber)
+    public TextView billNumberTextView;
     @BindView(R.id.tv_trans_TotalBillAmt)
     public TextView totalBillTextView;
     @BindView(R.id.tv_trans_TotalDue)
     public TextView totalDueTextView;
     @BindView(R.id.tv_trans_no_results)
     public TextView noTransTextView;
+    @BindView(R.id.ll_trans_custDetails)
+    public LinearLayout custDetailsLayout;
+
 
     private ArrayList<String> customerNames;
     private ArrayList<String> bills;
@@ -149,7 +159,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
                         billNumberAutoCompleteTV.setThreshold(1);//will start working from first character
                         billNumberAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
                     }
-                 }
+                }
             }
 
             @Override
@@ -208,6 +218,11 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
                 inventoryDatas = Constants.getGson().fromJson(dbTransaction.inventoryJson, Constants.inventoryDatasMapType);
             }
 
+            custDetailsLayout.setVisibility(View.VISIBLE);
+
+            custNameTextView.setText(dbTransaction.customerName);
+            billNumberTextView.setText(dbTransaction.billNumber);
+            billDateTextView.setText(dbTransaction.date);
             totalPaidTextView.setText(dbTransaction.amountPaid);
             totalDueTextView.setText(dbTransaction.amountDue);
             totalBillTextView.setText(dbTransaction.totalAmount);

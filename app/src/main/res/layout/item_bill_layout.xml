@@ -16,7 +16,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="2.5"
-            android:gravity="left"
+            android:gravity="left|center"
+            android:lines="2"
             android:text="Item Name"
             android:textColor="@android:color/black" />
 
@@ -28,6 +29,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
+            android:lines="2"
             android:text="QTY"
             android:textColor="@android:color/black" />
 
@@ -39,6 +41,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
+            android:lines="2"
             android:text="MRP"
             android:textColor="@android:color/black"
             android:visibility="gone" />
@@ -51,6 +54,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
+            android:lines="2"
             android:text="PRICE"
             android:textColor="@android:color/black" />
 
@@ -62,6 +66,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
+            android:lines="2"
             android:text="TOTAL"
             android:textColor="@android:color/black" />
 

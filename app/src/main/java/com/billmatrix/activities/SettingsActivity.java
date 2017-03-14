@@ -7,7 +7,6 @@ import android.widget.FrameLayout;
 import com.billmatrix.R;
 import com.billmatrix.fragments.DatabaseFragment;
 import com.billmatrix.fragments.DiscountsFragment;
-import com.billmatrix.fragments.GenExpensesFragment;
 import com.billmatrix.fragments.HardwareFragment;
 import com.billmatrix.fragments.StoreFragment;
 import com.billmatrix.fragments.TaxFragment;
@@ -23,6 +22,7 @@ public class SettingsActivity extends BaseTabActivity {
 
     @BindView(R.id.frameLayout)
     public FrameLayout frameLayout;
+    private HardwareFragment hardwareFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,8 @@ public class SettingsActivity extends BaseTabActivity {
     @Override
     public void tabChanged(String selectedTab, boolean isInit) {
         Utils.hideSoftKeyboard(searchView);
+
+        hardwareFragment = null;
 
         if (TaxFragment.getInstance() != null) {
             if (TaxFragment.getInstance().isEditing) {
@@ -87,10 +89,11 @@ public class SettingsActivity extends BaseTabActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, TaxFragment.getInstance()).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("HARDWARE")) {
+            hardwareFragment = new HardwareFragment();
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new HardwareFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, hardwareFragment).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HardwareFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, hardwareFragment).commit();
             }
         } else if (selectedTab.equalsIgnoreCase("DISCOUNTS")) {
             if (isInit) {

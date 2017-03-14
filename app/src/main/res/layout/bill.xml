@@ -113,7 +113,7 @@
             android:weightSum="2">
 
             <TextView
-                android:id="@+id/tv_BillNo"
+                android:id="@+id/tv_CSTNo"
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -141,6 +141,18 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tv_BillNo"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textAllCaps="true"
+            android:textColor="@android:color/black" />
+
+        <TextView
             android:id="@+id/tv_userName"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
@@ -148,6 +160,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="2dp"
             android:gravity="center"
+            android:maxLines="2"
             android:text="@string/app_name"
             android:textAllCaps="true"
             android:textColor="@android:color/black" />
@@ -171,7 +184,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="2.5"
-                android:gravity="left"
+                android:gravity="left|center"
+                android:lines="2"
                 android:text="Item Name"
                 android:textColor="@android:color/black" />
 
@@ -182,6 +196,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:lines="2"
                 android:text="QTY"
                 android:textColor="@android:color/black" />
 
@@ -192,6 +207,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:lines="2"
                 android:text="MRP"
                 android:textColor="@android:color/black"
                 android:visibility="gone" />
@@ -203,6 +219,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:lines="2"
                 android:text="PRICE"
                 android:textColor="@android:color/black" />
 
@@ -213,6 +230,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:lines="2"
                 android:text="TOTAL"
                 android:textColor="@android:color/black" />
 
@@ -250,7 +268,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="2dp"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:gravity="left"
                 android:text="Grand Total"
                 android:textColor="@android:color/black"
@@ -263,7 +281,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="2dp"
-                android:layout_weight="1"
+                android:layout_weight="1.2"
                 android:gravity="right"
                 android:text="@string/app_name"
                 android:textColor="@android:color/black"
@@ -375,8 +393,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="4.5"
-                android:gravity="left"
+                android:layout_weight="4"
+                android:gravity="left|center"
+                android:maxLines="2"
                 android:text="YOU HAVE SAVED Rs."
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
@@ -387,7 +406,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1.5"
+                android:layout_weight="2"
                 android:gravity="center"
                 android:text="QTY"
                 android:textColor="@android:color/black"

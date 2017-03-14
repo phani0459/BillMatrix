@@ -160,7 +160,7 @@
             android:layout_weight="1"
             android:background="@drawable/edit_text_border"
             android:gravity="center"
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:padding="6dp"
             android:textColor="@android:color/black" />
 

@@ -40,6 +40,7 @@ public class Constants {
     public static final String PREF_DEFAULT_DISCOUNT_CODE = "discCode";
     public static final String PREF_IS_DISCOUNT_FOOTER_SELECTED = "footerType";
     public static final String PREF_FOOTER_TEXT = "footerText";
+    public static final String PREF_BOOL_IS_BARCODE_SCANNER_ATTACHED = "isScannerAttached";
 
     /**
      * Edited Offline

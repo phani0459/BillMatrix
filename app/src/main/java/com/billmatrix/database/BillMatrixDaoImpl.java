@@ -917,10 +917,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         db.execSQL(query);
     }
 
-    public boolean updateCustomerName(String tabelName, String customerName, String previousCustomerName) {
+    public boolean updateCustomerName(String tabelName, String columnName, String customerName, String previousCustomerName) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(CUSTOMER_NAME, customerName);
-        return db.update(tabelName, contentValues, CUSTOMER_NAME + "='" + previousCustomerName + "'", null) > 0;
+        contentValues.put(columnName, customerName);
+        return db.update(tabelName, contentValues, columnName + "='" + previousCustomerName + "'", null) > 0;
     }
 
     public ArrayList<Inventory.InventoryData> getPOSItem(String customerName) {
@@ -1023,6 +1023,12 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(PAYMENTS_TABLE, contentValues, ID + "='" + _id + "'", null) > 0;
     }
 
+    public boolean updatePaymentOffline(String columnName, String status, String payeeName) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(columnName, status);
+        return db.update(PAYMENTS_TABLE, contentValues, PAYEE_NAME + "='" + payeeName + "'", null) > 0;
+    }
+
     public boolean updatePayment(Payments.PaymentData paymentData, String previousID) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PAYEE_NAME, paymentData.payee_name);
@@ -1051,6 +1057,62 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         int cnt = cursor.getCount();
         cursor.close();
         return cnt;
+    }
+
+    public ArrayList<Payments.PaymentData> getCustomerPayments(String paymentType, String customerName) {
+        Cursor cursor = null;
+        try {
+            String query;
+
+            if (TextUtils.isEmpty(paymentType)) {
+                query = "SELECT * FROM " + PAYMENTS_TABLE;
+            } else {
+                query = "SELECT * FROM " + PAYMENTS_TABLE + " WHERE " + PAYMENT_TYPE + " = '" + paymentType + "' AND " + PAYEE_NAME + " = '" + customerName + "'";
+            }
+
+            cursor = db.rawQuery(query, null);
+
+            if (cursor.moveToFirst()) {
+                List<Payments.PaymentData> payments = new ArrayList<>();
+                do {
+                    Payments.PaymentData paymentData = new Payments().new PaymentData();
+                    paymentData.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ID));
+                    paymentData.payee_name = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PAYEE_NAME));
+                    paymentData.date_of_payment = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DATE));
+                    paymentData.amount = cursor.getString(cursor
+                            .getColumnIndexOrThrow(AMOUNT));
+                    paymentData.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADMIN_ID));
+                    paymentData.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UPDATE_DATE));
+                    paymentData.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CREATE_DATE));
+                    paymentData.status = cursor.getString(cursor
+                            .getColumnIndexOrThrow(STATUS));
+                    paymentData.purpose_of_payment = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PURPOSE));
+                    paymentData.mode_of_payment = cursor.getString(cursor
+                            .getColumnIndexOrThrow(MODE));
+                    paymentData.payment_type = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PAYMENT_TYPE));
+                    paymentData.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
+                    payments.add(paymentData);
+                } while (cursor.moveToNext());
+
+                return (ArrayList<Payments.PaymentData>) payments;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
     }
 
     public ArrayList<Payments.PaymentData> getPayments(String paymentType) {

@@ -14,6 +14,8 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.hardware.usb.UsbAccessory;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -61,6 +63,7 @@ import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.Profile;
 import com.billmatrix.models.Transaction;
 import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
@@ -168,6 +171,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private TextView totalPaidTextView;
     private TextView balanceTextView;
     private CountDownTimer timer;
+    private Profile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +188,15 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         connectingProgressDialog = Utils.getProgressDialog(mContext, "");
 
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+
+        /**
+         * Fetch profile to set printer headers
+         */
+        if (FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
+            Log.e(TAG, "Profile is from file");
+            String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
+            profile = Constants.getGson().fromJson(profileString, Profile.class);
+        }
 
         ArrayList<String> customerNames = new ArrayList<>();
 
@@ -322,7 +335,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.e(TAG, "onConfigurationChanged: " + newConfig.hardKeyboardHidden);
         if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
             ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).showInputMethodPicker();
             Toast.makeText(this, "Barcode Scanner detected. Please turn OFF Hardware/Physical keyboard to enable softkeyboard to function.", Toast.LENGTH_LONG).show();
@@ -460,20 +472,33 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 if (Utils.isInternetAvailable(mContext)) {
                     ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl);
                 } else {
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
                     Utils.showToast("Customer Added successfully", mContext);
                 }
             } else {
                 if (Utils.isInternetAvailable(mContext)) {
                     ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl);
                 } else {
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
                     Utils.showToast("Customer Updated successfully", mContext);
                 }
             }
 
             /**
+             * If there are dues for edited customer, and name has been changed, update transactions and pos table
+             * and if there are payins of customer, change customer name
+             */
+            billMatrixDaoImpl.updateCustomerName(DBConstants.POS_ITEMS_TABLE, DBConstants.CUSTOMER_NAME, customerData.username, previousCustomerName);
+            billMatrixDaoImpl.updateCustomerName(DBConstants.CUSTOMER_TRANSACTIONS_TABLE, DBConstants.CUSTOMER_NAME, customerData.username, previousCustomerName);
+
+            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+            billMatrixDaoImpl.updatePaymentOffline(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, previousCustomerName);
+            billMatrixDaoImpl.updateCustomerName(DBConstants.PAYMENTS_TABLE, DBConstants.PAYEE_NAME, customerData.username, previousCustomerName);
+
+            /**
              * If Customer Name is updated, remove previous name and add new Name to spinner
              */
-            if (TextUtils.isEmpty(previousCustomerName)) {
+            if (!TextUtils.isEmpty(previousCustomerName)) {
                 customerSpinnerAdapter.remove(previousCustomerName.toUpperCase());
                 customerSpinnerAdapter.add(customerData.username.toUpperCase());
             }
@@ -912,7 +937,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     }
 
-    String scannedBarcode = "", finalBarcodeValue = "";
+    String scannedBarcode = "";
 
     /**
      * to listen to the barcode scanner value
@@ -922,21 +947,18 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
      */
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
-        char pressedKey = (char) e.getUnicodeChar();
-        scannedBarcode += pressedKey;
-        if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER && e.getAction() != KeyEvent.ACTION_DOWN) {
-            if (noCustomerItemTextView.getVisibility() == View.GONE) {
-                if (TextUtils.isEmpty(finalBarcodeValue)) {
-                    for (String part : removeBarcodeDuplicates(scannedBarcode, 2)) {
-                        finalBarcodeValue = finalBarcodeValue + part.substring(0, 1);
+        if (e.getAction() != KeyEvent.ACTION_DOWN) {
+            char pressedKey = (char) e.getUnicodeChar();
+            scannedBarcode += pressedKey;
+            if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                if (noCustomerItemTextView.getVisibility() == View.GONE) {
+                    if (!TextUtils.isEmpty(scannedBarcode)) {
+                        fetchInventoryByBarcode(scannedBarcode);
                     }
+                } else {
                     scannedBarcode = "";
-                    fetchInventoryByBarcode(finalBarcodeValue);
+                    Utils.showToast("Select Customer before adding items to cart", mContext);
                 }
-            } else {
-                scannedBarcode = "";
-                finalBarcodeValue = "";
-                Utils.showToast("Select Customer before adding items to cart", mContext);
             }
         }
         return super.dispatchKeyEvent(e);
@@ -952,25 +974,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             }
         }
         scannedBarcode = "";
-        this.finalBarcodeValue = "";
-    }
-
-    /**
-     * when we scan barcode from dispatch key event , we are getting each character twice
-     * for eg: 551122223300885566
-     * so we remove duplicates by splitting string into two chars and taking one char from each splitted value
-     *
-     * @param string        barcode with duplicates
-     * @param partitionSize here it is 2
-     * @return splitted strings
-     */
-    private List<String> removeBarcodeDuplicates(String string, int partitionSize) {
-        List<String> parts = new ArrayList<String>();
-        int len = string.length();
-        for (int i = 0; i < len; i += partitionSize) {
-            parts.add(string.substring(i, Math.min(len, i + partitionSize)));
-        }
-        return parts;
     }
 
     @Override
@@ -1628,7 +1631,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     public TextView userNameTextView;
     public TextView billNoTextView;
     public TextView grandTotalTextView;
-    public TextView billTotalItemTextView, footerTextView;
+    public TextView billTotalItemTextView, footerTextView, cstNoTextView;
     public TextView billTotalQTYTextView, paymentTypeTextView, savedMoneyTextView;
 
     private void setBill(View view) {
@@ -1639,6 +1642,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         tinTextView = (TextView) view.findViewById(R.id.tv_TIN);
         dateTextView = (TextView) view.findViewById(R.id.tv_date);
         billNoTextView = (TextView) view.findViewById(R.id.tv_BillNo);
+        cstNoTextView = (TextView) view.findViewById(R.id.tv_CSTNo);
         timeTextView = (TextView) view.findViewById(R.id.tv_time);
         userNameTextView = (TextView) view.findViewById(R.id.tv_userName);
         grandTotalTextView = (TextView) view.findViewById(R.id.tv_grandtotal_value);
@@ -1647,6 +1651,15 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         paymentTypeTextView = (TextView) view.findViewById(R.id.tv_paymentType);
         savedMoneyTextView = (TextView) view.findViewById(R.id.tv_savedMoney);
         footerTextView = (TextView) view.findViewById(R.id.tv_bill_footer);
+
+        if (profile != null && profile.data != null) {
+            storeNameTextView.setText(profile.data.store_name);
+            addOneTextView.setText(profile.data.address_one);
+            addTwoTextView.setText(profile.data.address_two);
+            phoneTextView.setText(profile.data.mobile_number);
+            tinTextView.setText(!TextUtils.isEmpty(profile.data.vat_tin) ? "TIN: " + profile.data.vat_tin : "");
+            cstNoTextView.setText(!TextUtils.isEmpty(profile.data.cst_no) ? "CST: " + profile.data.cst_no : "");
+        }
 
         LinearLayout billItemsLayout = (LinearLayout) view.findViewById(R.id.ll_bill_items_layout);
         LinearLayout billTaxesLayout = (LinearLayout) view.findViewById(R.id.ll_bill_taxes);
@@ -1681,7 +1694,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         savedMoneyTextView.setText(discountCalTextView.getText().toString().replace("/-", "").replace(getString(R.string.discount) + ": ", ""));
         billTotalItemTextView.setText(posItemAdapter.getItemCount() + "");
         billTotalQTYTextView.setText(totalItemsCount + "");
-        billNoTextView.setText(generateBillNumber());
+        billNoTextView.setText("Bill No.: " + generateBillNumber());
         paymentTypeTextView.setText(paymentType);
         grandTotalTextView.setText(totalValueTextView.getText().toString().replace("/-", ""));
 
@@ -1702,7 +1715,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                 taxDescTextView.setText(selectedTaxType + " @ " + selectedtaxes.get(selectedTaxType) + "% on: ");
                 taxableAmtTextView.setText(String.format(Locale.getDefault(), "%.1f", taxableAmount));
-                taxValueTextView.setText("" + ((taxableAmount * selectedtaxes.get(selectedTaxType)) / 100));
+                taxValueTextView.setText(String.format(Locale.getDefault(), "%.1f", ((taxableAmount * selectedtaxes.get(selectedTaxType)) / 100)));
 
                 billTaxesLayout.addView(billTaxLayout);
             }
@@ -1736,6 +1749,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     if (searchingDialog != null && searchingDialog.isShowing())
                         searchingDialog.dismiss();
 
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+
                     devicesAdapter.addDevice(device);
                     devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -1746,6 +1763,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                             connectingProgressDialog.show();
 
                             WorkService.workThread.connectBt(devicesAdapter.getItem(position).getAddress());
+                            WorkService.workThread.setDeviceAddress(devicesAdapter.getItem(position).getAddress());
+                            WorkService.workThread.setDeviceName(devicesAdapter.getItem(position).getName());
 
                             devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
                             devicesListView.setAdapter(devicesAdapter);

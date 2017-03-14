@@ -86,14 +86,4 @@ public class DuesAdapter extends RecyclerView.Adapter<DuesAdapter.TransactionHol
         return transactions.size();
     }
 
-    public float getTotal(String qty, String price) {
-        float total = 0.0f;
-
-        try {
-            total = Float.parseFloat(qty) * Float.parseFloat(price);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return total;
-    }
 }

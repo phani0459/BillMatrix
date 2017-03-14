@@ -815,6 +815,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                             connectingProgressDialog.show();
 
                             WorkService.workThread.connectBt(devicesAdapter.getItem(position).getAddress());
+                            WorkService.workThread.setDeviceAddress(devicesAdapter.getItem(position).getAddress());
+                            WorkService.workThread.setDeviceName(devicesAdapter.getItem(position).getName());
 
                             devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
                             devicesListView.setAdapter(devicesAdapter);

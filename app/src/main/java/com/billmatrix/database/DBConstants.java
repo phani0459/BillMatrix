@@ -38,7 +38,7 @@ public class DBConstants {
     final static String INVENTORY_TABLE = "TABLE_INVENTORY";
     final static String TAX_TABLE = "TABLE_TAX";
     final static String DISCOUNT_TABLE = "TABLE_DISCOUNT";
-    final static String PAYMENTS_TABLE = "TABLE_PAYMENTS";
+    public final static String PAYMENTS_TABLE = "TABLE_PAYMENTS";
     public final static String POS_ITEMS_TABLE = "TABLE_POS_ITEMS";
     public final static String CUSTOMER_TRANSACTIONS_TABLE = "TABLE_TRANSACTIONS";
 
@@ -60,7 +60,7 @@ public class DBConstants {
     /**
      * Customer Column Names
      */
-    final static String CUSTOMER_NAME = "Customer_Name";
+    public final static String CUSTOMER_NAME = "Customer_Name";
     public final static String CUSTOMER_CONTACT = "customer_contact";
 
     /**
@@ -101,7 +101,7 @@ public class DBConstants {
     /**
      * Payments columns
      */
-    final static String PAYEE_NAME = "payee_name";
+    public final static String PAYEE_NAME = "payee_name";
     final static String AMOUNT = "amount";
     final static String PURPOSE = "purpose_of_payment";
     final static String MODE = "mode_of_payment";

@@ -177,13 +177,13 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                 checkNextSyncItem();
                 break;
             case 6:
-                reportsSyncIcon.setImageResource(R.drawable.sync_grey);
-                reportsSyncCheckbox.setChecked(false);
+                purchasesSyncCheckbox.setChecked(false);
+                purchasesSyncIcon.setImageResource(R.drawable.sync_grey);
                 checkNextSyncItem();
                 break;
             case 7:
-                purchasesSyncCheckbox.setChecked(false);
-                purchasesSyncIcon.setImageResource(R.drawable.sync_grey);
+                reportsSyncIcon.setImageResource(R.drawable.sync_grey);
+                reportsSyncCheckbox.setChecked(false);
                 checkNextSyncItem();
                 break;
             case 8:

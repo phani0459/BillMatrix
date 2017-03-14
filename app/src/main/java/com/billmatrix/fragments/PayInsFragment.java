@@ -36,6 +36,7 @@ import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -228,7 +229,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
         paymentData.date_of_payment = date;
         paymentData.purpose_of_payment = "";
         paymentData.mode_of_payment = "";
-        paymentData.amount = amount;
+        paymentData.amount = String.format(Locale.getDefault(), "%.2f", Float.parseFloat(amount));
         paymentData.status = "1";
         paymentData.admin_id = adminId;
         paymentData.payment_type = PaymentsActivity.PAYIN;

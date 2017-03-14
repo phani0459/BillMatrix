@@ -13,14 +13,14 @@ public class Payments implements Serializable {
     public ArrayList<PaymentData> data;
 
     public class PaymentData implements Serializable {
+        public String status;
         public String id;
+        public String admin_id;
         public String payee_name;
         public String date_of_payment;
         public String amount;
-        public String admin_id;
         public String create_date;
         public String update_date;
-        public String status;
         public String purpose_of_payment;
         public String mode_of_payment;
         public String payment_type;

@@ -507,6 +507,9 @@ public class WorkThread extends Thread {
                     if (result) {
                         Pos.POS_S_SetBarcode(strBarcode, nOrgx, nType, nWidthX,
                                 nHeight, nHriFontType, nHriFontPosition);
+                        for (int i = 0; i < 2; i++) {
+                            Pos.POS_FeedLine();
+                        }
                         smsg.arg1 = 1;
                     } else {
                         smsg.arg1 = 0;

@@ -4,6 +4,7 @@ package com.billmatrix.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -75,11 +76,11 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_discounts, container, false);
         ButterKnife.bind(this, v);
+
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
@@ -117,6 +118,23 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         return v;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            selectedDiscounttoEdit = (Discount.DiscountData) savedInstanceState.getSerializable("EDIT_DISC");
+            if (selectedDiscounttoEdit != null) {
+                Log.e(TAG, "onCreateView: " + selectedDiscounttoEdit.discount_code);
+                isEditing = false;
+                onItemClick(2, -1);
+
+                discountDescEditText.setText(selectedDiscounttoEdit.discount_description);
+                discountCodeEditText.setText(selectedDiscounttoEdit.discount_code);
+                discountValueEditText.setText(selectedDiscounttoEdit.discount);
+            }
+        }
+    }
+
     private void getDiscountsFromServer(String adminId) {
         Log.e(TAG, "getDiscountsFromServer: ");
         ServerData serverData = new ServerData();
@@ -141,8 +159,17 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedDiscounttoEdit != null) {
+            Log.e(TAG, "onSaveInstanceState: ");
+            outState.putSerializable("EDIT_DISC", selectedDiscounttoEdit);
+        }
+    }
+
     public void onBackPressed() {
-        if (addDiscountButton.getText().toString().equalsIgnoreCase("SAVE")) {
+        if (addDiscountButton.getText().toString().equalsIgnoreCase("SAVE") || isEditing) {
             ((BaseTabActivity) mContext).showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -163,21 +190,21 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
 
         String description = discountDescEditText.getText().toString();
 
-        if (TextUtils.isEmpty(description)) {
+        if (TextUtils.isEmpty(description.trim())) {
             Utils.showToast("Enter Discount Description", mContext);
             return;
         }
 
         String code = discountCodeEditText.getText().toString();
 
-        if (TextUtils.isEmpty(code)) {
+        if (TextUtils.isEmpty(code.trim())) {
             Utils.showToast("Enter Discount Code", mContext);
             return;
         }
 
         String value = discountValueEditText.getText().toString();
 
-        if (TextUtils.isEmpty(value)) {
+        if (TextUtils.isEmpty(value.trim())) {
             Utils.showToast("Enter Discount Value", mContext);
             return;
         }
@@ -307,14 +334,20 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
                     addDiscountButton.setText(getString(R.string.save));
-                    selectedDiscounttoEdit = discountAdapter.getItem(position);
+                    if (position != -1) {
+                        selectedDiscounttoEdit = discountAdapter.getItem(position);
+                    }
 
-                    discountDescEditText.setText(selectedDiscounttoEdit.discount_description);
-                    discountCodeEditText.setText(selectedDiscounttoEdit.discount_code);
-                    discountValueEditText.setText(selectedDiscounttoEdit.discount);
+                    if (selectedDiscounttoEdit != null) {
+                        discountDescEditText.setText(selectedDiscounttoEdit.discount_description);
+                        discountCodeEditText.setText(selectedDiscounttoEdit.discount_code);
+                        discountValueEditText.setText(selectedDiscounttoEdit.discount);
+                    }
 
-                    billMatrixDaoImpl.deleteDiscount(discountAdapter.getItem(position).discount_code);
-                    discountAdapter.deleteDiscount(position);
+                    if (position != -1) {
+                        billMatrixDaoImpl.deleteDiscount(discountAdapter.getItem(position).discount_code);
+                        discountAdapter.deleteDiscount(position);
+                    }
                 } else {
                     Utils.showToast("Save present editing discount before editing other discount", mContext);
                 }

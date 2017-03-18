@@ -25,6 +25,7 @@ import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
+import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
@@ -82,6 +83,15 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         mContext = getActivity();
 
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+
+        if (savedInstanceState != null) {
+            selectedVendortoEdit = (Vendor.VendorData) savedInstanceState.getSerializable("EDIT_VENDOR");
+            if (selectedVendortoEdit != null) {
+                Log.e(TAG, "onCreateView: " + selectedVendortoEdit.name);
+                isEditing = false;
+                onItemClick(2, -1);
+            }
+        }
 
         vendorsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
@@ -164,6 +174,15 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedVendortoEdit != null) {
+            Log.e(TAG, "onSaveInstanceState: ");
+            outState.putSerializable("EDIT_VENDOR", selectedVendortoEdit);
+        }
+    }
+
     private boolean isVendroAdded;
 
     @OnClick(R.id.btn_addVendor)
@@ -179,17 +198,17 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         String vendorMob = vendorPhone_EditText.getText().toString();
         String vendorSince = vendorSince_EditText.getText().toString();
 
-        if (TextUtils.isEmpty(vendorName)) {
+        if (TextUtils.isEmpty(vendorName.trim())) {
             Utils.showToast("Enter Vendor Name", mContext);
             return;
         }
 
-        if (TextUtils.isEmpty(vendorAdd)) {
+        if (TextUtils.isEmpty(vendorAdd.trim())) {
             Utils.showToast("Enter Vendor Address", mContext);
             return;
         }
 
-        if (TextUtils.isEmpty(vendorMob)) {
+        if (TextUtils.isEmpty(vendorMob.trim())) {
             Utils.showToast("Enter Vendor Mobile Number", mContext);
             return;
         }
@@ -199,12 +218,12 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
             return;
         }
 
-        if (TextUtils.isEmpty(vendorSince)) {
+        if (TextUtils.isEmpty(vendorSince.trim())) {
             Utils.showToast("Enter Vendor Since", mContext);
             return;
         }
 
-        if (!TextUtils.isEmpty(vendorEmail) && !Utils.isEmailValid(vendorEmail)) {
+        if (!TextUtils.isEmpty(vendorEmail.trim()) && !Utils.isEmailValid(vendorEmail)) {
             Utils.showToast("Enter Valid Vendor Email", mContext);
             return;
         }
@@ -355,14 +374,21 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
                     addVendorButton.setText(getString(R.string.save));
-                    selectedVendortoEdit = vendorsAdapter.getItem(position);
-                    vendorName_EditText.setText(selectedVendortoEdit.name);
-                    vendorSince_EditText.setText(selectedVendortoEdit.since);
-                    vendorAdd_EditText.setText(selectedVendortoEdit.address);
-                    vendorPhone_EditText.setText(selectedVendortoEdit.phone);
-                    vendorEmail_EditText.setText(selectedVendortoEdit.email);
-                    billMatrixDaoImpl.deleteVendor(vendorsAdapter.getItem(position).phone);
-                    vendorsAdapter.deleteVendor(position);
+                    if (position != -1) {
+                        selectedVendortoEdit = vendorsAdapter.getItem(position);
+                    }
+                    if (selectedVendortoEdit != null) {
+                        vendorName_EditText.setText(selectedVendortoEdit.name);
+                        vendorSince_EditText.setText(selectedVendortoEdit.since);
+                        vendorAdd_EditText.setText(selectedVendortoEdit.address);
+                        vendorPhone_EditText.setText(selectedVendortoEdit.phone);
+                        vendorEmail_EditText.setText(selectedVendortoEdit.email);
+                    }
+
+                    if (position != -1) {
+                        billMatrixDaoImpl.deleteVendor(vendorsAdapter.getItem(position).phone);
+                        vendorsAdapter.deleteVendor(position);
+                    }
                 } else {
                     Utils.showToast("Save present editing Vendor before editing other vendor", mContext);
                 }

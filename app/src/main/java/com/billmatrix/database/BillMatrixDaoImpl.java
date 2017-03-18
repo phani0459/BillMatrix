@@ -584,6 +584,63 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return true;
     }
 
+    public Inventory.InventoryData getInventoryonByBarcode(String barCode) {
+        Cursor cursor = null;
+        try {
+            String query = "SELECT " + "*" + " FROM " + INVENTORY_TABLE + " WHERE " + BARCODE + " = '" + barCode + "'";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor.moveToFirst()) {
+                Inventory.InventoryData inventoryData = new Inventory().new InventoryData();
+                do {
+                    inventoryData.item_code = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ITEM_CODE));
+                    inventoryData.item_name = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ITEM_NAME));
+                    inventoryData.unit = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UNIT));
+                    inventoryData.qty = cursor.getString(cursor
+                            .getColumnIndexOrThrow(QUANTITY));
+                    inventoryData.price = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PRICE));
+                    inventoryData.mycost = cursor.getString(cursor
+                            .getColumnIndexOrThrow(MY_COST));
+                    inventoryData.date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DATE));
+                    inventoryData.warehouse = cursor.getString(cursor
+                            .getColumnIndexOrThrow(WAREHOUSE));
+                    inventoryData.vendor = cursor.getString(cursor
+                            .getColumnIndexOrThrow(VENDOR));
+                    inventoryData.barcode = cursor.getString(cursor
+                            .getColumnIndexOrThrow(BARCODE));
+                    inventoryData.photo = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PHOTO));
+                    inventoryData.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ID));
+                    inventoryData.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADMIN_ID));
+                    inventoryData.status = cursor.getString(cursor
+                            .getColumnIndexOrThrow(STATUS));
+                    inventoryData.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CREATE_DATE));
+                    inventoryData.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UPDATE_DATE));
+                    inventoryData.add_update = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE));
+                } while (cursor.moveToNext());
+
+                return (Inventory.InventoryData) inventoryData;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Inventory.InventoryData> getInventory() {
         Cursor cursor = null;
         try {
@@ -1380,4 +1437,5 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     public void endTransaction() {
         db.endTransaction();
     }
+
 }

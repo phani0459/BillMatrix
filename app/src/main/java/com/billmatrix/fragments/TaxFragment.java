@@ -31,15 +31,11 @@ import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -94,6 +90,15 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
 
+        if (savedInstanceState != null) {
+            selectedTaxtoEdit = (Tax.TaxData) savedInstanceState.getSerializable("EDIT_TAX");
+            if (selectedTaxtoEdit != null) {
+                Log.e(TAG, "onCreateView: " + selectedTaxtoEdit.tax_type);
+                isEditing = false;
+                onItemClick(2, -1);
+            }
+        }
+
         taxSpinnerAdapter = Utils.loadSpinner(taxTypeSpinner, mContext, R.array.tax_type_array);
 
         taxTypeRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -132,6 +137,15 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
         serverData.setContext(mContext);
         serverData.setOnDataFetchListener(this);
         serverData.getTaxesFromServer(adminId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedTaxtoEdit != null) {
+            Log.e(TAG, "onSaveInstanceState: ");
+            outState.putSerializable("EDIT_TAX", selectedTaxtoEdit);
+        }
     }
 
     @Override
@@ -178,20 +192,20 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
         String desc = taxDescEditText.getText().toString();
         String rate = taxRateEditText.getText().toString();
 
-        if (TextUtils.isEmpty(taxType) || taxType.equalsIgnoreCase("select one")) {
+        if (TextUtils.isEmpty(taxType.trim()) || taxType.equalsIgnoreCase("select one")) {
             Utils.showToast("Select Tax Type", mContext);
             return;
         }
 
         if (taxType.equalsIgnoreCase("Other")) {
             taxType = otherTaxEditText.getText().toString();
-            if (TextUtils.isEmpty(taxType)) {
+            if (TextUtils.isEmpty(taxType.trim())) {
                 Utils.showToast("Enter Tax Type", mContext);
                 return;
             }
         }
 
-        if (TextUtils.isEmpty(rate)) {
+        if (TextUtils.isEmpty(rate.trim())) {
             Utils.showToast("Enter Tax rate", mContext);
             return;
         }
@@ -308,31 +322,40 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
                     addTaxButton.setText(getString(R.string.save));
-                    selectedTaxtoEdit = taxAdapter.getItem(position);
 
-                    try {
-                        taxTypeSpinner.setSelection(4);
-                        otherTaxEditText.setVisibility(View.VISIBLE);
-                        otherTaxEditText.setText(selectedTaxtoEdit.tax_type);
-
-                        String[] taxTypeArray = getResources().getStringArray(R.array.tax_type_array);
-                        for (String aTaxTypeString : taxTypeArray) {
-                            if (aTaxTypeString.equalsIgnoreCase(selectedTaxtoEdit.tax_type)) {
-                                int taxTypeSelectedPosition = taxSpinnerAdapter.getPosition(selectedTaxtoEdit.tax_type);
-                                taxTypeSpinner.setSelection(taxTypeSelectedPosition);
-                                otherTaxEditText.setVisibility(View.GONE);
-                                break;
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        taxTypeSpinner.setSelection(0);
+                    if (position != -1) {
+                        selectedTaxtoEdit = taxAdapter.getItem(position);
                     }
-                    taxDescEditText.setText(selectedTaxtoEdit.tax_description);
-                    taxRateEditText.setText(selectedTaxtoEdit.tax_rate);
 
-                    billMatrixDaoImpl.deleteTax(taxAdapter.getItem(position).tax_type);
-                    taxAdapter.deleteTax(position, true);
+                    if (selectedTaxtoEdit != null) {
+                        Log.e(TAG, "onItemClick: " + selectedTaxtoEdit.tax_type);
+                        try {
+                            taxTypeSpinner.setSelection(4);
+                            otherTaxEditText.setVisibility(View.VISIBLE);
+                            otherTaxEditText.setText(selectedTaxtoEdit.tax_type);
+
+                            String[] taxTypeArray = getResources().getStringArray(R.array.tax_type_array);
+                            for (String aTaxTypeString : taxTypeArray) {
+                                if (aTaxTypeString.equalsIgnoreCase(selectedTaxtoEdit.tax_type)) {
+                                    int taxTypeSelectedPosition = taxSpinnerAdapter.getPosition(selectedTaxtoEdit.tax_type);
+                                    taxTypeSpinner.setSelection(taxTypeSelectedPosition);
+                                    otherTaxEditText.setVisibility(View.GONE);
+                                    break;
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            taxTypeSpinner.setSelection(0);
+                        }
+                        taxDescEditText.setText(selectedTaxtoEdit.tax_description);
+                        taxRateEditText.setText(selectedTaxtoEdit.tax_rate);
+                        Log.e(TAG, "onItemClick: " + selectedTaxtoEdit.tax_description);
+                    }
+
+                    if (position != -1) {
+                        billMatrixDaoImpl.deleteTax(taxAdapter.getItem(position).tax_type);
+                        taxAdapter.deleteTax(position, true);
+                    }
                 } else {
                     Utils.showToast("Save present editing tax before editing other tax", mContext);
                 }

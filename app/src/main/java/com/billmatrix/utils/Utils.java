@@ -115,7 +115,7 @@ public class Utils {
     }
 
     public static boolean isPhoneValid(String phoneNumber) {
-        if (!TextUtils.isEmpty(phoneNumber)) {
+        if (!TextUtils.isEmpty(phoneNumber.trim())) {
             if (phoneNumber.matches("[0-9]+")) {
                 return phoneNumber.length() >= 10;
             }

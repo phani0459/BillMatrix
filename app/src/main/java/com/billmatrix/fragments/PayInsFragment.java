@@ -29,6 +29,7 @@ import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Payments;
+import com.billmatrix.models.Tax;
 import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
@@ -63,7 +64,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
     private BillMatrixDaoImpl billMatrixDaoImpl;
     public PayInsAdapter payInsAdapter;
     private String adminId;
-    private boolean isEditing;
+    public boolean isEditing;
     private boolean isPaymentAdded;
     private Payments.PaymentData selectedPaymenttoEdit;
     private ArrayList<String> customerNames;
@@ -82,6 +83,15 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         List<Customer.CustomerData> customers = new ArrayList<>();
         customerNames = new ArrayList<>();
+
+        if (savedInstanceState != null) {
+            selectedPaymenttoEdit = (Payments.PaymentData) savedInstanceState.getSerializable("EDIT_PAY");
+            if (selectedPaymenttoEdit != null) {
+                Log.e(TAG, "onCreateView: " + selectedPaymenttoEdit.date_of_payment);
+                isEditing = false;
+                onItemClick(2, -1);
+            }
+        }
 
         customers = billMatrixDaoImpl.getCustomers();
 
@@ -178,6 +188,15 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedPaymenttoEdit != null) {
+            Log.e(TAG, "onSaveInstanceState: ");
+            outState.putSerializable("EDIT_PAY", selectedPaymenttoEdit);
+        }
+    }
+
     @OnClick(R.id.btn_addPayIn)
     public void addPayIn() {
         Utils.hideSoftKeyboard(amountEditText);
@@ -188,7 +207,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
         String date = dateEditText.getText().toString();
         String amount = amountEditText.getText().toString();
 
-        if (TextUtils.isEmpty(customerName)) {
+        if (TextUtils.isEmpty(customerName.trim())) {
             Utils.showToast("Enter Customer Name", mContext);
             return;
         }
@@ -200,12 +219,12 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
             }
         }
 
-        if (TextUtils.isEmpty(date)) {
+        if (TextUtils.isEmpty(date.trim())) {
             Utils.showToast("Enter Date", mContext);
             return;
         }
 
-        if (TextUtils.isEmpty(amount)) {
+        if (TextUtils.isEmpty(amount.trim())) {
             Utils.showToast("Enter Amount", mContext);
             return;
         }
@@ -312,14 +331,20 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
                     addPaymentBtn.setText(getString(R.string.save));
-                    selectedPaymenttoEdit = payInsAdapter.getItem(position);
+                    if (position != -1) {
+                        selectedPaymenttoEdit = payInsAdapter.getItem(position);
+                    }
 
-                    customerNameAutoCompleteTextView.setText(selectedPaymenttoEdit.payee_name);
-                    dateEditText.setText(selectedPaymenttoEdit.date_of_payment);
-                    amountEditText.setText(selectedPaymenttoEdit.amount);
+                    if (selectedPaymenttoEdit != null) {
+                        customerNameAutoCompleteTextView.setText(selectedPaymenttoEdit.payee_name);
+                        dateEditText.setText(selectedPaymenttoEdit.date_of_payment);
+                        amountEditText.setText(selectedPaymenttoEdit.amount);
+                    }
 
-                    billMatrixDaoImpl.deletePayment(DBConstants.ID, payInsAdapter.getItem(position).id);
-                    payInsAdapter.deletePayIn(position);
+                    if (position != -1) {
+                        billMatrixDaoImpl.deletePayment(DBConstants.ID, payInsAdapter.getItem(position).id);
+                        payInsAdapter.deletePayIn(position);
+                    }
                 } else {
                     Utils.showToast("Save present editing Payment before editing other payment", mContext);
                 }

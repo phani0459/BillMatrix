@@ -12,7 +12,7 @@ public class Vendor implements Serializable {
     public String Vendordata;
     public ArrayList<VendorData> data;
 
-    public class VendorData {
+    public class VendorData implements Serializable{
         public String id;
         public String name;
         public String since;

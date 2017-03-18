@@ -16,12 +16,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.DrawableClickListener;
-import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
@@ -48,6 +46,7 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
 
     Context mContext;
     BillMatrixDaoImpl billMatrixDaoImpl;
+    private boolean isRestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +55,13 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
 
         ButterKnife.bind(this);
         Fresco.initialize(getApplicationContext());
+
+        isRestore = false;
+
+        if (savedInstanceState != null) {
+            isRestore = savedInstanceState.getBoolean("IS_RESTORE", false);
+            selectedTab = savedInstanceState.getString("TAB");
+        }
 
         mContext = this;
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
@@ -85,6 +91,13 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("IS_RESTORE", true);
+        outState.putString("TAB", selectedTab);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         ConnectivityReceiver.connectivityReceiverListener = null;
@@ -104,17 +117,32 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
 
                 button.setText(names[i]);
 
-                if (i != 0) {
-                    button.getBackground().setLevel(1);
-                    button.setTextColor(getResources().getColor(android.R.color.white));
-                    tab_bottom_view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                if (!isRestore) {
+                    if (i != 0) {
+                        button.getBackground().setLevel(1);
+                        button.setTextColor(getResources().getColor(android.R.color.white));
+                        tab_bottom_view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                    } else {
+                        button.getBackground().setLevel(0);
+                        button.setTextColor(getResources().getColor(android.R.color.black));
+                        selectedTab = button.getText().toString();
+                        tabChanged(button.getText().toString(), true);
+                        tab_bottom_view.setBackgroundColor(getResources().getColor(R.color.tabButtonBG));
+                    }
                 } else {
-                    button.getBackground().setLevel(0);
-                    button.setTextColor(getResources().getColor(android.R.color.black));
-                    selectedTab = button.getText().toString();
-                    tabChanged(button.getText().toString(), true);
-                    tab_bottom_view.setBackgroundColor(getResources().getColor(R.color.tabButtonBG));
+                    if (selectedTab.equalsIgnoreCase(button.getText().toString())) {
+                        button.getBackground().setLevel(0);
+                        button.setTextColor(getResources().getColor(android.R.color.black));
+                        selectedTab = button.getText().toString();
+                        tabChanged(button.getText().toString(), true);
+                        tab_bottom_view.setBackgroundColor(getResources().getColor(R.color.tabButtonBG));
+                    } else {
+                        button.getBackground().setLevel(1);
+                        button.setTextColor(getResources().getColor(android.R.color.white));
+                        tab_bottom_view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                    }
                 }
+
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -137,7 +165,7 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
                                 Button tabBtmView = (Button) parent.findViewById(R.id.tab_bottom_view);
                                 tabBtmView.setBackgroundColor(getResources().getColor(R.color.tabButtonBG));
                             }
-                            tabChanged(((Button) v).getText().toString(), false);
+                            tabChanged(selectedTab, false);
                         }
                     }
                 });

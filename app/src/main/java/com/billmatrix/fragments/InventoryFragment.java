@@ -2,7 +2,6 @@ package com.billmatrix.fragments;
 
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -19,7 +18,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -69,7 +67,7 @@ import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static android.support.v4.content.ContextCompat.*;
+import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -166,6 +164,15 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED) + "\n" + "XXXXXXXX");
         barCodeEditText.setFilters(Utils.getInputFilter(12));
 
+        if (savedInstanceState != null) {
+            selectedInventorytoEdit = (Inventory.InventoryData) savedInstanceState.getSerializable("EDIT_INVENTORY");
+            if (selectedInventorytoEdit != null) {
+                Log.e(TAG, "onCreateView: " + selectedInventorytoEdit.item_code);
+                isEditing = false;
+                onItemClick(2, -1);
+            }
+        }
+
         dateEditText.setInputType(InputType.TYPE_NULL);
         final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true);
 
@@ -221,9 +228,18 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         inventoryDatas = billMatrixDaoImpl.getInventory();
 
         if (inventoryDatas != null && inventoryDatas.size() > 0) {
-            for (Inventory.InventoryData inventoryData : inventoryDatas) {
-                if (!inventoryData.status.equalsIgnoreCase("-1")) {
-                    inventoryAdapter.addInventory(inventoryData);
+            if (inventoryDatas.size() > Constants.DEFAULT_INVENTORY_SHOW_SIZE) {
+                for (int i = 0; i < Constants.DEFAULT_INVENTORY_SHOW_SIZE; i++) {
+                    Inventory.InventoryData inventoryData = inventoryDatas.get(i);
+                    if (!inventoryData.status.equalsIgnoreCase("-1")) {
+                        inventoryAdapter.addInventory(inventoryData);
+                    }
+                }
+            } else {
+                for (Inventory.InventoryData inventoryData : inventoryDatas) {
+                    if (!inventoryData.status.equalsIgnoreCase("-1")) {
+                        inventoryAdapter.addInventory(inventoryData);
+                    }
                 }
             }
         } else {
@@ -312,6 +328,15 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedInventorytoEdit != null) {
+            Log.e(TAG, "onSaveInstanceState: ");
+            outState.putSerializable("EDIT_INVENTORY", selectedInventorytoEdit);
+        }
+    }
+
     @OnClick(R.id.btn_barcode_go)
     public void barcodeGo() {
         if (scanBarCodeButton.getText().toString().equalsIgnoreCase(getString(R.string.BAR_CODE))) {
@@ -380,6 +405,18 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         }
     }
 
+    public void fetchInventoryByBarcode(String barcodeValue) {
+        Utils.showToast(barcodeValue, mContext);
+        Inventory.InventoryData barcodeInventoryData;
+        barcodeInventoryData = billMatrixDaoImpl.getInventoryonByBarcode("365214");
+        if (barcodeInventoryData != null && !inventoryAdapter.containsInventory(barcodeInventoryData.barcode)) {
+            inventoryAdapter.addInventory(barcodeInventoryData);
+            inventoryRecyclerView.smoothScrollToPosition(inventoryAdapter.getItemCount());
+        } else {
+            Utils.showToast("Inventory already added", mContext);
+        }
+    }
+
     private boolean isInventoryAdded;
 
     @OnClick(R.id.btnAddInventory)
@@ -391,28 +428,28 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         Inventory.InventoryData inventoryFromServer = new Inventory().new InventoryData();
         String itemCode = itemCodeEditText.getText().toString();
 
-        if (TextUtils.isEmpty(itemCode)) {
+        if (TextUtils.isEmpty(itemCode.trim())) {
             Utils.showToast("Enter Item Code", mContext);
             return;
         }
 
         String itemName = itemNameeEditText.getText().toString();
 
-        if (TextUtils.isEmpty(itemName)) {
+        if (TextUtils.isEmpty(itemName.trim())) {
             Utils.showToast("Enter Item Name", mContext);
             return;
         }
 
         String unit = unitSpinner.getSelectedItem().toString();
 
-        if (TextUtils.isEmpty(unit)) {
+        if (TextUtils.isEmpty(unit.trim())) {
             Utils.showToast("Select Unit", mContext);
             return;
         }
 
         if (unit.equalsIgnoreCase("Other")) {
             unit = customUnitEditText.getText().toString();
-            if (TextUtils.isEmpty(unit)) {
+            if (TextUtils.isEmpty(unit.trim())) {
                 Utils.showToast("Enter Custom Unit", mContext);
                 return;
             }
@@ -420,28 +457,28 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
         String qty = qtyEditText.getText().toString();
 
-        if (TextUtils.isEmpty(qty)) {
+        if (TextUtils.isEmpty(qty.trim())) {
             Utils.showToast("Enter Quantity", mContext);
             return;
         }
 
         String price = priceEditText.getText().toString();
 
-        if (TextUtils.isEmpty(price)) {
+        if (TextUtils.isEmpty(price.trim())) {
             Utils.showToast("Enter Price", mContext);
             return;
         }
 
         String myCost = myCostEditText.getText().toString();
 
-        if (TextUtils.isEmpty(myCost)) {
+        if (TextUtils.isEmpty(myCost.trim())) {
             Utils.showToast("Enter Cost", mContext);
             return;
         }
 
         String date = dateEditText.getText().toString();
 
-        if (TextUtils.isEmpty(date)) {
+        if (TextUtils.isEmpty(date.trim())) {
             Utils.showToast("Select Date", mContext);
             return;
         }
@@ -450,14 +487,14 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
         String vendor = vendorSpinner.getSelectedItem().toString();
 
-        if (TextUtils.isEmpty(vendor) || vendor.equalsIgnoreCase("select vendor")) {
+        if (TextUtils.isEmpty(vendor.trim()) || vendor.equalsIgnoreCase("select vendor")) {
             Utils.showToast("Select Vendor", mContext);
             return;
         }
 
         String barcode = barCodeEditText.getText().toString();
 
-        if (!TextUtils.isEmpty(barcode)) {
+        if (!TextUtils.isEmpty(barcode.trim())) {
             if (barcode.length() < 10) {
                 Utils.showToast("Enter valid Barcode", mContext);
                 return;
@@ -594,36 +631,42 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
                     addInventoryButton.setText(getString(R.string.save));
-                    selectedInventorytoEdit = inventoryAdapter.getItem(position);
-
-                    itemCodeEditText.setText(selectedInventorytoEdit.item_code);
-                    itemNameeEditText.setText(selectedInventorytoEdit.item_name);
-                    qtyEditText.setText(selectedInventorytoEdit.qty);
-                    priceEditText.setText(selectedInventorytoEdit.price);
-                    myCostEditText.setText(selectedInventorytoEdit.mycost);
-                    dateEditText.setText(selectedInventorytoEdit.date);
-                    wareHouseEditText.setText(selectedInventorytoEdit.warehouse);
-                    barCodeEditText.setText(selectedInventorytoEdit.barcode);
-                    photoEditText.setText(selectedInventorytoEdit.photo);
-                    try {
-                        int vendorSelectedPosition = vendorSpinnerAdapter.getPosition(selectedInventorytoEdit.vendor);
-                        vendorSpinner.setSelection(vendorSelectedPosition);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        vendorSpinner.setSelection(0);
+                    if (position != -1) {
+                        selectedInventorytoEdit = inventoryAdapter.getItem(position);
                     }
 
-                    int unitSelection = getUnitSelection(selectedInventorytoEdit.unit);
-                    unitSpinner.setSelection(unitSelection);
-                    if (unitSelection == 7) {
-                        customUnitEditText.setVisibility(View.VISIBLE);
-                        customUnitEditText.setText(selectedInventorytoEdit.unit);
-                    } else {
-                        customUnitEditText.setVisibility(View.GONE);
+                    if (selectedInventorytoEdit != null) {
+                        itemCodeEditText.setText(selectedInventorytoEdit.item_code);
+                        itemNameeEditText.setText(selectedInventorytoEdit.item_name);
+                        qtyEditText.setText(selectedInventorytoEdit.qty);
+                        priceEditText.setText(selectedInventorytoEdit.price);
+                        myCostEditText.setText(selectedInventorytoEdit.mycost);
+                        dateEditText.setText(selectedInventorytoEdit.date);
+                        wareHouseEditText.setText(selectedInventorytoEdit.warehouse);
+                        barCodeEditText.setText(selectedInventorytoEdit.barcode);
+                        photoEditText.setText(selectedInventorytoEdit.photo);
+                        try {
+                            int vendorSelectedPosition = vendorSpinnerAdapter.getPosition(selectedInventorytoEdit.vendor);
+                            vendorSpinner.setSelection(vendorSelectedPosition);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            vendorSpinner.setSelection(0);
+                        }
+
+                        int unitSelection = getUnitSelection(selectedInventorytoEdit.unit);
+                        unitSpinner.setSelection(unitSelection);
+                        if (unitSelection == 7) {
+                            customUnitEditText.setVisibility(View.VISIBLE);
+                            customUnitEditText.setText(selectedInventorytoEdit.unit);
+                        } else {
+                            customUnitEditText.setVisibility(View.GONE);
+                        }
                     }
 
-                    billMatrixDaoImpl.deleteInventory(inventoryAdapter.getItem(position).item_code);
-                    inventoryAdapter.deleteInventory(position);
+                    if (position != -1) {
+                        billMatrixDaoImpl.deleteInventory(inventoryAdapter.getItem(position).item_code);
+                        inventoryAdapter.deleteInventory(position);
+                     }
                 } else {
                     Utils.showToast("Save present editing inventory before editing other inventory", mContext);
                 }

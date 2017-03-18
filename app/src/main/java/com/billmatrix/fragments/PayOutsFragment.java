@@ -67,7 +67,7 @@ public class PayOutsFragment extends Fragment implements OnItemClickListener, On
     private BillMatrixDaoImpl billMatrixDaoImpl;
     public PayOutsAdapter payOutsAdapter;
     private String adminId;
-    private boolean isEditing;
+    public boolean isEditing;
     private boolean isPaymentAdded;
     private Payments.PaymentData selectedPaymenttoEdit;
     private ArrayAdapter<String> vendorSpinnerAdapter;
@@ -84,8 +84,16 @@ public class PayOutsFragment extends Fragment implements OnItemClickListener, On
         ButterKnife.bind(this, v);
 
         mContext = getActivity();
-
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+
+        if (savedInstanceState != null) {
+            selectedPaymenttoEdit = (Payments.PaymentData) savedInstanceState.getSerializable("EDIT_PAY");
+            if (selectedPaymenttoEdit != null) {
+                Log.e(TAG, "onCreateView: " + selectedPaymenttoEdit.date_of_payment);
+                isEditing = false;
+                onItemClick(2, -1);
+            }
+        }
 
         ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
         ArrayList<String> strings = new ArrayList<>();
@@ -189,6 +197,15 @@ public class PayOutsFragment extends Fragment implements OnItemClickListener, On
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedPaymenttoEdit != null) {
+            Log.e(TAG, "onSaveInstanceState: ");
+            outState.putSerializable("EDIT_PAY", selectedPaymenttoEdit);
+        }
+    }
+
     @OnClick(R.id.btn_addPayout)
     public void addPayout() {
         Utils.hideSoftKeyboard(amountEditText);
@@ -211,7 +228,7 @@ public class PayOutsFragment extends Fragment implements OnItemClickListener, On
         }
         String amount = amountEditText.getText().toString();
 
-        if (TextUtils.isEmpty(amount)) {
+        if (TextUtils.isEmpty(amount.trim())) {
             Utils.showToast("Enter Amount", mContext);
             return;
         }
@@ -344,37 +361,44 @@ public class PayOutsFragment extends Fragment implements OnItemClickListener, On
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
                     addPaymentButton.setText(getString(R.string.save));
-                    selectedPaymenttoEdit = payOutsAdapter.getItem(position);
 
-                    try {
-                        int vendorSelectedPosition = vendorSpinnerAdapter.getPosition(selectedPaymenttoEdit.payee_name);
-                        vendorSpinner.setSelection(vendorSelectedPosition);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        vendorSpinner.setSelection(0);
+                    if (position != -1) {
+                        selectedPaymenttoEdit = payOutsAdapter.getItem(position);
                     }
 
-
-                    try {
-                        int modeSelectedPosition = modeSpinnerAdapter.getPosition(selectedPaymenttoEdit.mode_of_payment);
-                        modePaymentSpinner.setSelection(modeSelectedPosition);
-                        otherPaymentEditText.setVisibility(View.GONE);
-
-                        if (modeSelectedPosition == -1) {
-                            modePaymentSpinner.setSelection(3);
-                            otherPaymentEditText.setText(selectedPaymenttoEdit.mode_of_payment);
-                            otherPaymentEditText.setVisibility(View.VISIBLE);
+                    if (selectedPaymenttoEdit != null) {
+                        try {
+                            int vendorSelectedPosition = vendorSpinnerAdapter.getPosition(selectedPaymenttoEdit.payee_name);
+                            vendorSpinner.setSelection(vendorSelectedPosition);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            vendorSpinner.setSelection(0);
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        modePaymentSpinner.setSelection(0);
+
+
+                        try {
+                            int modeSelectedPosition = modeSpinnerAdapter.getPosition(selectedPaymenttoEdit.mode_of_payment);
+                            modePaymentSpinner.setSelection(modeSelectedPosition);
+                            otherPaymentEditText.setVisibility(View.GONE);
+
+                            if (modeSelectedPosition == -1) {
+                                modePaymentSpinner.setSelection(3);
+                                otherPaymentEditText.setText(selectedPaymenttoEdit.mode_of_payment);
+                                otherPaymentEditText.setVisibility(View.VISIBLE);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            modePaymentSpinner.setSelection(0);
+                        }
+
+                        dateEditText.setText(selectedPaymenttoEdit.date_of_payment);
+                        amountEditText.setText(selectedPaymenttoEdit.amount);
                     }
 
-                    dateEditText.setText(selectedPaymenttoEdit.date_of_payment);
-                    amountEditText.setText(selectedPaymenttoEdit.amount);
-
-                    billMatrixDaoImpl.deletePayment(DBConstants.ID, payOutsAdapter.getItem(position).id);
-                    payOutsAdapter.deletePayOut(position);
+                    if (position != -1) {
+                        billMatrixDaoImpl.deletePayment(DBConstants.ID, payOutsAdapter.getItem(position).id);
+                        payOutsAdapter.deletePayOut(position);
+                    }
                 } else {
                     Utils.showToast("Save present editing Payment before editing other payment", mContext);
                 }

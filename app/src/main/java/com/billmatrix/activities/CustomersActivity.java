@@ -1,6 +1,7 @@
 package com.billmatrix.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -20,22 +21,34 @@ public class CustomersActivity extends BaseTabActivity {
 
     @BindView(R.id.frameLayout)
     public FrameLayout frameLayout;
-    private CustomersFragment customersFragment;
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setPageTitle("<span>" + getArrowString() + " Customers </span>");
+
         addTabButtons(3, "Customers", "Customer wise Due", "Customer Transactions");
+
+        if (savedInstanceState != null) {
+            currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "Current_Fragment");
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, currentFragment).commit();
+        }
 
         frameLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, "Current_Fragment", currentFragment);
+    }
+
+    @Override
     public void onBackPressed() {
-        if (customersFragment != null && selectedTab.equalsIgnoreCase("Customers")) {
-            customersFragment.onBackPressed();
+        if (currentFragment != null && selectedTab.equalsIgnoreCase("Customers")) {
+            ((CustomersFragment) currentFragment).onBackPressed();
         } else {
             super.onBackPressed();
         }
@@ -45,37 +58,30 @@ public class CustomersActivity extends BaseTabActivity {
     public void tabChanged(String selectedTab, boolean isInit) {
         isInit = true;
 
-        if (customersFragment != null) {
-            if (customersFragment.isEditing) {
+        if (currentFragment != null && selectedTab.equalsIgnoreCase("Customers") && currentFragment instanceof CustomersFragment ) {
+            if (((CustomersFragment) currentFragment).isEditing) {
                 Utils.showToast("Save the changes made before going to other tab", mContext);
                 return;
             }
         }
 
-        customersFragment = new CustomersFragment();
 
         if (getSupportFragmentManager().getFragments() != null && getSupportFragmentManager().getFragments().size() > 0) {
             isInit = false;
         }
 
         if (selectedTab.equalsIgnoreCase("Customers")) {
-            if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, customersFragment).commit();
-            } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, customersFragment).commit();
-            }
+            currentFragment = new CustomersFragment();
         } else if (selectedTab.equalsIgnoreCase("Customer wise Due")) {
-            if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new CustomerWiseDueFragment()).commit();
-            } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new CustomerWiseDueFragment()).commit();
-            }
+            currentFragment = new CustomerWiseDueFragment();
         } else {
-            if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new CustomerTransFragment()).commit();
-            } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new CustomerTransFragment()).commit();
-            }
+            currentFragment = new CustomerTransFragment();
+        }
+
+        if (isInit) {
+            getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, currentFragment).commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, currentFragment).commit();
         }
     }
 }

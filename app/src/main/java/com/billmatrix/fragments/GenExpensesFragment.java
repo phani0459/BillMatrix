@@ -62,7 +62,7 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
     public GenExpensesAdapter expensesAdapter;
     private String adminId;
     private boolean isPaymentAdded;
-    private boolean isEditing;
+    public boolean isEditing;
     private Payments.PaymentData selectedPaymenttoEdit;
 
     public GenExpensesFragment() {
@@ -78,6 +78,15 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+
+        if (savedInstanceState != null) {
+            selectedPaymenttoEdit = (Payments.PaymentData) savedInstanceState.getSerializable("EDIT_PAY");
+            if (selectedPaymenttoEdit != null) {
+                Log.e(TAG, "onCreateView: " + selectedPaymenttoEdit.date_of_payment);
+                isEditing = false;
+                onItemClick(2, -1);
+            }
+        }
 
         dateEditText.setInputType(InputType.TYPE_NULL);
 
@@ -144,6 +153,15 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedPaymenttoEdit != null) {
+            Log.e(TAG, "onSaveInstanceState: ");
+            outState.putSerializable("EDIT_PAY", selectedPaymenttoEdit);
+        }
+    }
+
     @OnClick(R.id.btn_addGenExpense)
     public void addExpense() {
         Utils.hideSoftKeyboard(amountEditText);
@@ -152,14 +170,14 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
         Payments.PaymentData paymentFromServer = new Payments().new PaymentData();
         String expenseName = expenseNameEditText.getText().toString();
 
-        if (TextUtils.isEmpty(expenseName)) {
+        if (TextUtils.isEmpty(expenseName.trim())) {
             Utils.showToast("Enter Expense Name", mContext);
             return;
         }
 
         String purpose = purposeEditText.getText().toString();
 
-        if (TextUtils.isEmpty(purpose)) {
+        if (TextUtils.isEmpty(purpose.trim())) {
             Utils.showToast("Enter Expense Purpose", mContext);
             return;
         }
@@ -173,7 +191,7 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
 
         String amount = amountEditText.getText().toString();
 
-        if (TextUtils.isEmpty(amount)) {
+        if (TextUtils.isEmpty(amount.trim())) {
             Utils.showToast("Enter Expense Amount", mContext);
             return;
         }
@@ -297,15 +315,21 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
                     addPaymentButton.setText(getString(R.string.save));
-                    selectedPaymenttoEdit = expensesAdapter.getItem(position);
+                    if (position != -1) {
+                        selectedPaymenttoEdit = expensesAdapter.getItem(position);
+                    }
 
-                    expenseNameEditText.setText(selectedPaymenttoEdit.payee_name);
-                    purposeEditText.setText(selectedPaymenttoEdit.purpose_of_payment);
-                    dateEditText.setText(selectedPaymenttoEdit.date_of_payment);
-                    amountEditText.setText(selectedPaymenttoEdit.amount);
+                    if (selectedPaymenttoEdit != null) {
+                        expenseNameEditText.setText(selectedPaymenttoEdit.payee_name);
+                        purposeEditText.setText(selectedPaymenttoEdit.purpose_of_payment);
+                        dateEditText.setText(selectedPaymenttoEdit.date_of_payment);
+                        amountEditText.setText(selectedPaymenttoEdit.amount);
+                    }
 
-                    billMatrixDaoImpl.deletePayment(DBConstants.ID, expensesAdapter.getItem(position).id);
-                    expensesAdapter.deleteGenExpense(position);
+                    if (position != -1) {
+                        billMatrixDaoImpl.deletePayment(DBConstants.ID, expensesAdapter.getItem(position).id);
+                        expensesAdapter.deleteGenExpense(position);
+                    }
                 } else {
                     Utils.showToast("Save present editing Payment before editing other payment", mContext);
                 }

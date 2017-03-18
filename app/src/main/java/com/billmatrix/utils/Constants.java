@@ -80,6 +80,9 @@ public class Constants {
     public static String DATA_FROM_SERVER = "-1";
 
 
+    public static int DEFAULT_INVENTORY_SHOW_SIZE = 2;
+
+
     public static Gson getGson() {
         if (gson == null) {
             gson = new GsonBuilder()

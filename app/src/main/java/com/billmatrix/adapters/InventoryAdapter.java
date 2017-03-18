@@ -2,6 +2,7 @@ package com.billmatrix.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.fragments.InventoryFragment;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +23,10 @@ import butterknife.ButterKnife;
 
 public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.VendorHolder> {
 
+    private final Context mContext;
     private List<Inventory.InventoryData> inventoryDatas;
     OnItemClickListener onItemClickListener;
+    InventoryFragment inventoryFragment;
     private View lastChecked = null;
     private int lastCheckedPos = -1;
 
@@ -71,14 +76,27 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         notifyDataSetChanged();
     }
 
-    public InventoryAdapter(List<Inventory.InventoryData> inventoryDatas, OnItemClickListener onClickListener, Context mContext) {
+    public InventoryAdapter(List<Inventory.InventoryData> inventoryDatas, InventoryFragment inventoryFragment, Context mContext) {
         this.inventoryDatas = inventoryDatas;
-        this.onItemClickListener = onClickListener;
+        this.onItemClickListener = (OnItemClickListener) inventoryFragment;
+        this.inventoryFragment = inventoryFragment;
+        this.mContext = mContext;
     }
 
     public void removeAllInventories() {
         inventoryDatas = new ArrayList<>();
         notifyDataSetChanged();
+    }
+
+    public boolean containsInventory(String barcode) {
+        if (inventoryDatas != null && inventoryDatas.size() > 0) {
+            for (Inventory.InventoryData inventoryData : inventoryDatas) {
+                if (!TextUtils.isEmpty(inventoryData.barcode) && inventoryData.barcode.equalsIgnoreCase(barcode)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -132,22 +150,26 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lastCheckedPos != position) {
+                if (!inventoryFragment.isEditing) {
+                    if (lastCheckedPos != position) {
 
-                    if (lastChecked != null) {
-                        lastChecked.setSelected(false);
+                        if (lastChecked != null) {
+                            lastChecked.setSelected(false);
+                        }
+
+                        v.setSelected(true);
+                        lastCheckedPos = position;
+                        lastChecked = v;
+                        onItemClickListener.onItemClick(3, position);
+                    } else {
+                        if (lastChecked != null) {
+                            lastCheckedPos = -1;
+                            lastChecked.setSelected(false);
+                            onItemClickListener.onItemClick(4, position);
+                        }
                     }
-
-                    v.setSelected(true);
-                    lastCheckedPos = position;
-                    lastChecked = v;
-                    onItemClickListener.onItemClick(3, position);
                 } else {
-                    if (lastChecked != null) {
-                        lastCheckedPos = -1;
-                        lastChecked.setSelected(false);
-                        onItemClickListener.onItemClick(4, position);
-                    }
+                    Utils.showToast("Please edit selected inventory before selecting other inventory", mContext);
                 }
             }
         });

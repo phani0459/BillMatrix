@@ -80,6 +80,15 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        if (savedInstanceState != null) {
+            selectedCusttoEdit = (Customer.CustomerData) savedInstanceState.getSerializable("EDIT_CUSTOMER");
+            if (selectedCusttoEdit != null) {
+                Log.e(TAG, "onCreateView: " + selectedCusttoEdit.username);
+                isEditing = false;
+                onItemClick(2, -1);
+            }
+        }
+
         List<Customer.CustomerData> customers = new ArrayList<>();
         ServerUtils.setIsSync(false);
 
@@ -119,6 +128,15 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
         });
 
         return v;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedCusttoEdit != null) {
+            Log.e(TAG, "onSaveInstanceState: ");
+            outState.putSerializable("EDIT_CUSTOMER", selectedCusttoEdit);
+        }
     }
 
     public void onBackPressed() {
@@ -176,12 +194,12 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
         String customerLocation = customerLocationEditText.getText().toString();
         String customerStatus = custStatusSpinner.getSelectedItem().toString();
 
-        if (TextUtils.isEmpty(customerName)) {
+        if (TextUtils.isEmpty(customerName.trim())) {
             Utils.showToast("Enter Customer Name", mContext);
             return;
         }
 
-        if (TextUtils.isEmpty(customerContact)) {
+        if (TextUtils.isEmpty(customerContact.trim())) {
             Utils.showToast("Enter Customer Mobile Number", mContext);
             return;
         }
@@ -191,17 +209,17 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
             return;
         }
 
-        if (TextUtils.isEmpty(customerDate)) {
+        if (TextUtils.isEmpty(customerDate.trim())) {
             Utils.showToast("Select Customer Date", mContext);
             return;
         }
 
-        if (TextUtils.isEmpty(customerLocation)) {
+        if (TextUtils.isEmpty(customerLocation.trim())) {
             Utils.showToast("Enter Customer Location", mContext);
             return;
         }
 
-        if (TextUtils.isEmpty(customerStatus)) {
+        if (TextUtils.isEmpty(customerStatus.trim())) {
             Utils.showToast("Select Customer Status", mContext);
             return;
         }
@@ -332,18 +350,27 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
 
                     addCustomerBtn.setText(getString(R.string.save));
-                    selectedCusttoEdit = customersAdapter.getItem(position);
-                    customerNameEditText.setText(selectedCusttoEdit.username);
-                    customerDate_EditText.setText(selectedCusttoEdit.date);
-                    customerLocationEditText.setText(selectedCusttoEdit.location);
-                    customerContactEditText.setText(selectedCusttoEdit.mobile_number);
-                    if (selectedCusttoEdit.status.equalsIgnoreCase("ACTIVE") || selectedCusttoEdit.status.equalsIgnoreCase("1")) {
-                        custStatusSpinner.setSelection(0);
-                    } else {
-                        custStatusSpinner.setSelection(1);
+
+                    if (position != -1) {
+                        selectedCusttoEdit = customersAdapter.getItem(position);
                     }
-                    billMatrixDaoImpl.deleteCustomer(DBConstants.CUSTOMER_CONTACT, customersAdapter.getItem(position).mobile_number);
-                    customersAdapter.deleteCustomer(position);
+
+                    if (selectedCusttoEdit != null) {
+                        customerNameEditText.setText(selectedCusttoEdit.username);
+                        customerDate_EditText.setText(selectedCusttoEdit.date);
+                        customerLocationEditText.setText(selectedCusttoEdit.location);
+                        customerContactEditText.setText(selectedCusttoEdit.mobile_number);
+                        if (selectedCusttoEdit.status.equalsIgnoreCase("ACTIVE") || selectedCusttoEdit.status.equalsIgnoreCase("1")) {
+                            custStatusSpinner.setSelection(0);
+                        } else {
+                            custStatusSpinner.setSelection(1);
+                        }
+                    }
+
+                    if (position != -1) {
+                        billMatrixDaoImpl.deleteCustomer(DBConstants.CUSTOMER_CONTACT, customersAdapter.getItem(position).mobile_number);
+                        customersAdapter.deleteCustomer(position);
+                    }
                 } else {
                     Utils.showToast("Save present editing customer before editing other customer", mContext);
                 }

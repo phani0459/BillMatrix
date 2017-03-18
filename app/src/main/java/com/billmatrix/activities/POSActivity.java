@@ -1438,6 +1438,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         selectedInventory.isZbillChecked = zBillCheckBox.isChecked();
 
         posItemAdapter.addInventory(selectedInventory);
+        posItemsRecyclerView.smoothScrollToPosition(posItemAdapter.getItemCount());
         billMatrixDaoImpl.addPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName, selectedInventory);
         billMatrixDaoImpl.updatePOSZBill(zBillCheckBox.isChecked(), selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
         loadFooterValues();

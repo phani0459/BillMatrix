@@ -72,6 +72,14 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         mContext = this;
 
         setPageTitle(String.format("<span>%s Employees </span>", getArrowString()));
+        if (savedInstanceState != null) {
+            selectedEmptoEdit = (Employee.EmployeeData) savedInstanceState.getSerializable("EDIT_EMP");
+            if (selectedEmptoEdit != null) {
+                isEditing = false;
+                onItemClick(2, -1);
+            }
+        }
+
         addTabButtons(1, "Employees");
 
         Utils.loadSpinner(empStatusSpinner, mContext, R.array.employee_status);
@@ -96,6 +104,12 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             storeAdminEditText.setText("ADMIN");
         }
 
+        if (!isEditing) {
+            addEmpButton.setText(getString(R.string.add));
+        } else {
+            addEmpButton.setText(getString(R.string.save));
+        }
+
         employeesAdapter = new EmployeesAdapter(employees, mContext);
         employeesRecyclerView.setAdapter(employeesAdapter);
 
@@ -115,6 +129,14 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     getEmployeesFromServer(adminId);
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isEditing && selectedEmptoEdit != null) {
+            outState.putSerializable("EDIT_EMP", selectedEmptoEdit);
         }
     }
 
@@ -157,12 +179,12 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         String empMob = empMobile_EditText.getText().toString();
         String empStatus = empStatusSpinner.getSelectedItem().toString();
 
-        if (TextUtils.isEmpty(empName)) {
+        if (TextUtils.isEmpty(empName.trim())) {
             Utils.showToast("Enter Employee Name", mContext);
             return;
         }
 
-        if (TextUtils.isEmpty(empId)) {
+        if (TextUtils.isEmpty(empId.trim())) {
             Utils.showToast("Enter Employee Id", mContext);
             return;
         }
@@ -177,7 +199,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             return;
         }
 
-        if (TextUtils.isEmpty(empPwd)) {
+        if (TextUtils.isEmpty(empPwd.trim())) {
             Utils.showToast("Enter Employee Password", mContext);
             return;
         }
@@ -282,7 +304,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
     @Override
     public void onBackPressed() {
-        if (addEmpButton.getText().toString().equalsIgnoreCase("SAVE")) {
+        if (addEmpButton.getText().toString().equalsIgnoreCase("SAVE") || isEditing) {
             showAlertDialog("Save and Exit?", "Do you want to save the changes made", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -331,18 +353,27 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 if (!isEditing) {
                     isEditing = true;
                     addEmpButton.setText(getString(R.string.save));
-                    selectedEmptoEdit = employeesAdapter.getItem(position);
-                    empName_EditText.setText(selectedEmptoEdit.username);
-                    empLoginId_EditText.setText(selectedEmptoEdit.login_id);
-                    empPwd_EditText.setText(selectedEmptoEdit.password);
-                    empMobile_EditText.setText(selectedEmptoEdit.mobile_number);
-                    if (selectedEmptoEdit.status.equalsIgnoreCase("ACTIVE") || selectedEmptoEdit.status.equalsIgnoreCase("1")) {
-                        empStatusSpinner.setSelection(0);
-                    } else {
-                        empStatusSpinner.setSelection(1);
+
+                    if (position != -1) {
+                        selectedEmptoEdit = employeesAdapter.getItem(position);
                     }
-                    billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).login_id);
-                    employeesAdapter.deleteEmployee(position);
+
+                    if (selectedEmptoEdit != null) {
+                        empName_EditText.setText(selectedEmptoEdit.username);
+                        empLoginId_EditText.setText(selectedEmptoEdit.login_id);
+                        empPwd_EditText.setText(selectedEmptoEdit.password);
+                        empMobile_EditText.setText(selectedEmptoEdit.mobile_number);
+                        if (selectedEmptoEdit.status.equalsIgnoreCase("ACTIVE") || selectedEmptoEdit.status.equalsIgnoreCase("1")) {
+                            empStatusSpinner.setSelection(0);
+                        } else {
+                            empStatusSpinner.setSelection(1);
+                        }
+                    }
+
+                    if (position != -1) {
+                        billMatrixDaoImpl.deleteEmployee(employeesAdapter.getItem(position).login_id);
+                        employeesAdapter.deleteEmployee(position);
+                    }
                 } else {
                     Utils.showToast("Save present editing employee before editing other employee", mContext);
                 }

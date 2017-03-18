@@ -1,7 +1,9 @@
 package com.billmatrix.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -25,15 +27,20 @@ public class InventoryActivity extends BaseTabActivity {
 
     @BindView(R.id.frameLayout)
     public FrameLayout frameLayout;
-    InventoryFragment inventoryFragment;
-    VendorsFragment vendorsFragment;
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setPageTitle(String.format("<span>%s Inventory </span>", getArrowString()));
+
         addTabButtons(2, "INVENTORY", "Vendors");
+
+        if (savedInstanceState != null) {
+            currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "Current_Fragment");
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, currentFragment).commit();
+        }
 
         frameLayout.setVisibility(View.VISIBLE);
 
@@ -66,17 +73,17 @@ public class InventoryActivity extends BaseTabActivity {
                 final int DRAWABLE_RIGHT = 2;
                 final int DRAWABLE_BOTTOM = 3;
 
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if(event.getRawX() >= (searchView.getRight() - searchView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (event.getRawX() >= (searchView.getRight() - searchView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         if (searchView.getText().toString().length() > 0) {
                             searchView.setText("");
                             if (selectedTab.equalsIgnoreCase("Vendors")) {
-                                if (vendorsFragment != null) {
-                                    vendorsFragment.searchClosed();
+                                if (currentFragment != null && currentFragment instanceof VendorsFragment) {
+                                    ((VendorsFragment) currentFragment).searchClosed();
                                 }
                             } else {
-                                if (inventoryFragment != null) {
-                                    inventoryFragment.searchClosed();
+                                if (currentFragment != null && currentFragment instanceof InventoryFragment) {
+                                    ((InventoryFragment) currentFragment).searchClosed();
                                 }
                             }
                         }
@@ -94,12 +101,12 @@ public class InventoryActivity extends BaseTabActivity {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     Utils.hideSoftKeyboard(searchView);
                     if (selectedTab.equalsIgnoreCase("Vendors")) {
-                        if (vendorsFragment != null) {
-                            vendorsFragment.searchClicked(searchView.getText().toString());
+                        if (currentFragment != null && currentFragment instanceof VendorsFragment) {
+                            ((VendorsFragment) currentFragment).searchClicked(searchView.getText().toString());
                         }
                     } else {
-                        if (inventoryFragment != null) {
-                            inventoryFragment.searchClicked(searchView.getText().toString());
+                        if (currentFragment != null && currentFragment instanceof InventoryFragment) {
+                            ((InventoryFragment) currentFragment).searchClicked(searchView.getText().toString());
                         }
                     }
                     return true;
@@ -110,11 +117,42 @@ public class InventoryActivity extends BaseTabActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, "Current_Fragment", currentFragment);
+    }
+
+    String scannedBarcode = "";
+
+    /**
+     * to listen to the barcode scanner value
+     *
+     * @param e event triggered by scanner
+     * @return
+     */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent e) {
+        if (currentFragment != null && selectedTab.equalsIgnoreCase("INVENTORY")) {
+            if (e.getAction() != KeyEvent.ACTION_DOWN) {
+                char pressedKey = (char) e.getUnicodeChar();
+                scannedBarcode += pressedKey;
+                if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    if (!TextUtils.isEmpty(scannedBarcode)) {
+                        ((InventoryFragment) currentFragment).fetchInventoryByBarcode(scannedBarcode);
+                        scannedBarcode = "";
+                    }
+                }
+            }
+        }
+        return super.dispatchKeyEvent(e);
+    }
+
+    @Override
     public void onBackPressed() {
-        if (inventoryFragment != null && selectedTab.equalsIgnoreCase("INVENTORY")) {
-            inventoryFragment.onBackPressed();
-        } else if (vendorsFragment != null && selectedTab.equalsIgnoreCase("Vendors")) {
-            vendorsFragment.onBackPressed();
+        if (currentFragment != null && selectedTab.equalsIgnoreCase("INVENTORY") && currentFragment instanceof InventoryFragment) {
+            ((InventoryFragment) currentFragment).onBackPressed();
+        } else if (currentFragment != null && selectedTab.equalsIgnoreCase("Vendors") && currentFragment instanceof VendorsFragment) {
+            ((VendorsFragment) currentFragment).onBackPressed();
         } else {
             super.onBackPressed();
         }
@@ -125,22 +163,19 @@ public class InventoryActivity extends BaseTabActivity {
         searchView.setText("");
         Utils.hideSoftKeyboard(searchView);
 
-        if (inventoryFragment != null) {
-            if (inventoryFragment.isEditing) {
+        if (currentFragment != null && currentFragment instanceof InventoryFragment) {
+            if (((InventoryFragment) currentFragment).isEditing) {
                 Utils.showToast("Save the changes made before going to other tab", mContext);
                 return;
             }
         }
 
-        if (vendorsFragment != null) {
-            if (vendorsFragment.isEditing) {
+        if (currentFragment != null && currentFragment instanceof VendorsFragment) {
+            if (((VendorsFragment) currentFragment).isEditing) {
                 Utils.showToast("Save the changes made before going to other tab", mContext);
                 return;
             }
         }
-
-        inventoryFragment = new InventoryFragment();
-        vendorsFragment = new VendorsFragment();
 
         isInit = true;
         if (getSupportFragmentManager().getFragments() != null && getSupportFragmentManager().getFragments().size() > 0) {
@@ -148,21 +183,20 @@ public class InventoryActivity extends BaseTabActivity {
         }
 
         if (selectedTab.equalsIgnoreCase("INVENTORY")) {
-            if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, inventoryFragment).commit();
-            } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, inventoryFragment).commit();
-            }
+            currentFragment = new InventoryFragment();
             searchTextView.setText(getString(R.string.inventory_search_text));
             searchView.setHint(getString(R.string.inventory_search_hint));
         } else {
-            if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, vendorsFragment).commit();
-            } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, vendorsFragment).commit();
-            }
+            currentFragment = new VendorsFragment();
             searchTextView.setText(getString(R.string.vendor_search_text));
             searchView.setHint(getString(R.string.vendor_search_hint));
         }
+
+        if (isInit) {
+            getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, currentFragment).commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, currentFragment).commit();
+        }
+
     }
 }

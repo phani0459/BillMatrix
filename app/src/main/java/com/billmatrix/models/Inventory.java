@@ -12,7 +12,7 @@ public class Inventory implements Serializable {
     public String InventoryData;
     public ArrayList<Inventory.InventoryData> data;
 
-    public class InventoryData {
+    public class InventoryData implements Serializable{
         public String id;
         public String admin_id;
         public String item_code;

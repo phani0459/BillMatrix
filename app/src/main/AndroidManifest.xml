@@ -29,7 +29,7 @@
         android:theme="@style/AppTheme"
         tools:node="replace">
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".SampleActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

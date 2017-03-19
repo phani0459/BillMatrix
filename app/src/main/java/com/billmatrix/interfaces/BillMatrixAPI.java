@@ -13,10 +13,15 @@ import com.billmatrix.models.Vendor;
 
 import java.util.HashMap;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 /**
  * Created by KANDAGATLAs on 28-10-2016.
@@ -24,13 +29,13 @@ import retrofit2.http.POST;
 
 public interface BillMatrixAPI {
 
-    String BASE_URL = "http://mkrinfotech.com/billmatrix/";
+//    String BASE_URL = "http://mkrinfotech.com/billmatrix/";
 
-   /* public static final String BASE_URL = "http://www.vizagnext.com/attendance/index.php/api/doctor/";
+    public static final String BASE_URL = "http://www.vizagnext.com/mrs/index.php/api/doctor/";
 
     @Multipart
     @POST("prescriptions")
-    Call<String> uploadImage(@Query("doctoremail") String doctoremail, @Query("patientemail") String patientemail, @Part MultipartBody.Part file);*/
+    Call<String> uploadImage(@Part("doctoremail") RequestBody doctoremail, @Part("patientemail") RequestBody patientemail, @Part MultipartBody.Part file);
 
     @FormUrlEncoded
     @POST("login")

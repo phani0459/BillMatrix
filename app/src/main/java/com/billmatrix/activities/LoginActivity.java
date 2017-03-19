@@ -350,7 +350,7 @@ public class LoginActivity extends AppCompatActivity {
             Utils.showToast("Cannot get IMEI Number", mContext);
             return false;
         }
-        imeiNumber = "8234123";
+//        imeiNumber = "8234123";
 
         return true;
     }

@@ -22,6 +22,7 @@
     <application
         android:name=".BillMatrixAPP"
         android:allowBackup="true"
+        android:configChanges="keyboard|keyboardHidden"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -66,7 +67,6 @@
             android:name=".activities.POSActivity"
             android:configChanges="keyboard|keyboardHidden"
             android:screenOrientation="landscape" />
-
         <activity
             android:name=".activities.BarcodeScannerActivity"
             android:screenOrientation="landscape" />
@@ -78,7 +78,6 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".utils.ScannerConnectedReceiver">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />

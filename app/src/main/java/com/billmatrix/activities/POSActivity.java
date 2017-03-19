@@ -154,6 +154,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private ArrayAdapter<String> customerSpinnerAdapter;
     private boolean isGuestCustomerSelected;
     private boolean isZBillChecked;
+    private boolean isAdmin;
     private String adminId;
     private ArrayMap<String, Float> selectedtaxes;
     private int guestCustomerCount;
@@ -188,6 +189,15 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         connectingProgressDialog = Utils.getProgressDialog(mContext, "");
 
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+        String userType = Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_TYPE, null);
+
+        isAdmin = false;
+
+        if (!TextUtils.isEmpty(userType)) {
+            if (userType.equalsIgnoreCase("admin")) {
+                isAdmin = false;
+            }
+        }
 
         /**
          * Fetch profile to set printer headers
@@ -337,12 +347,18 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         super.onConfigurationChanged(newConfig);
         if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
             ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).showInputMethodPicker();
-            Toast.makeText(this, "Barcode Scanner detected. Please turn OFF Hardware/Physical keyboard to enable softkeyboard to function.", Toast.LENGTH_LONG).show();
+            Utils.showToast("Barcode Scanner detected. Please turn OFF Hardware/Physical keyboard to enable softkeyboard to function.", mContext);
         }
     }
 
     @OnClick(R.id.rl_pos_cust_edit)
     public void showCustomerDetailsDialog() {
+
+        if (!isAdmin) {
+            Utils.showToast("Employee cannot add / edit customer", mContext);
+            return;
+        }
+
         final Dialog dialog = new Dialog(mContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_pos_customer_details);

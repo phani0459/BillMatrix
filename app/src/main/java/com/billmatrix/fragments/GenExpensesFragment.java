@@ -204,7 +204,11 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
             if (selectedPaymenttoEdit != null) {
                 paymentData.id = selectedPaymenttoEdit.id;
                 paymentData.create_date = selectedPaymenttoEdit.create_date;
-                if (selectedPaymenttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                paymentData.add_update = selectedPaymenttoEdit.add_update;
+
+                if (TextUtils.isEmpty(selectedPaymenttoEdit.add_update)) {
+                    paymentData.add_update = Constants.ADD_OFFLINE;
+                } else if (selectedPaymenttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
                     paymentData.add_update = Constants.UPDATE_OFFLINE;
                 }
             }

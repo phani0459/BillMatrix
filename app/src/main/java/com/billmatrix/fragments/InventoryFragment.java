@@ -13,7 +13,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
@@ -32,6 +35,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -53,13 +57,20 @@ import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.lvrenyang.pos.Cmd;
 import com.lvrenyang.utils.DataUtils;
 
 import org.zirco.myprinter.Global;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -143,6 +154,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
     private Dialog devicesDialog;
     private DevicesAdapter devicesAdapter;
     private ListView devicesListView;
+    private CountDownTimer timer;
 
     public InventoryFragment() {
         // Required empty public constructor
@@ -167,7 +179,6 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         if (savedInstanceState != null) {
             selectedInventorytoEdit = (Inventory.InventoryData) savedInstanceState.getSerializable("EDIT_INVENTORY");
             if (selectedInventorytoEdit != null) {
-                Log.e(TAG, "onCreateView: " + selectedInventorytoEdit.item_code);
                 isEditing = false;
                 onItemClick(2, -1);
             }
@@ -332,7 +343,6 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (isEditing && selectedInventorytoEdit != null) {
-            Log.e(TAG, "onSaveInstanceState: ");
             outState.putSerializable("EDIT_INVENTORY", selectedInventorytoEdit);
         }
     }
@@ -510,7 +520,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             if (selectedInventorytoEdit != null) {
                 inventoryData.id = selectedInventorytoEdit.id;
                 inventoryData.create_date = selectedInventorytoEdit.create_date;
-                if (selectedInventorytoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                inventoryData.add_update = selectedInventorytoEdit.add_update;
+
+                if (TextUtils.isEmpty(selectedInventorytoEdit.add_update)) {
+                    inventoryData.add_update = Constants.ADD_OFFLINE;
+                } else if (selectedInventorytoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
                     inventoryData.add_update = Constants.UPDATE_OFFLINE;
                 }
             }
@@ -530,6 +544,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         inventoryData.barcode = barcode;
         inventoryData.photo = photo;
         inventoryData.status = "1";
+
+        Log.e(TAG, "addInventory: " + inventoryData.add_update );
 
         long inventoryAdded = billMatrixDaoImpl.addInventory(inventoryData);
 
@@ -594,7 +610,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 /**
                  * Reset bottom layout fields
                  */
-                onItemClick(4, 0);
+                resetBottomLayout();
 
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Inventory", new DialogInterface.OnClickListener() {
                     @Override
@@ -625,7 +641,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                     /**
                      * Reset bottom layout fields
                      */
-                    onItemClick(4, 0);
+                    resetBottomLayout();
 
                     isEditing = true;
                     ((BaseTabActivity) mContext).ifTabCanChange = false;
@@ -666,7 +682,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                     if (position != -1) {
                         billMatrixDaoImpl.deleteInventory(inventoryAdapter.getItem(position).item_code);
                         inventoryAdapter.deleteInventory(position);
-                     }
+                    }
                 } else {
                     Utils.showToast("Save present editing inventory before editing other inventory", mContext);
                 }
@@ -695,20 +711,24 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 noOfCodesEditText.setText("1");
                 break;
             case 4:
-                selectedInventorytoEdit = null;
-                generateItemCode.setText("");
-                generateItemName.setText("");
-                printItemCode.setText("");
-                noOfCodesEditText.setText("");
-                printItemName.setText("");
-                generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED) + "\n" + "XXXXXXXX");
-
-                generateBarCodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
-                generateBarCodeButton.setEnabled(false);
-                printBarcodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
-                printBarcodeButton.setEnabled(false);
+                resetBottomLayout();
                 break;
         }
+    }
+
+    public void resetBottomLayout() {
+        selectedInventorytoEdit = null;
+        generateItemCode.setText("");
+        generateItemName.setText("");
+        printItemCode.setText("");
+        noOfCodesEditText.setText("");
+        printItemName.setText("");
+        generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED) + "\n" + "XXXXXXXX");
+
+        generateBarCodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+        generateBarCodeButton.setEnabled(false);
+        printBarcodeButton.setBackgroundResource(R.drawable.edit_text_disabled_border);
+        printBarcodeButton.setEnabled(false);
     }
 
     private int getUnitSelection(String unit) {
@@ -785,7 +805,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
      * Printer Code
      */
     public void printBarcode() {
-        if (WorkService.workThread != null && WorkService.workThread.isConnected()) {
+        /*if (WorkService.workThread != null && WorkService.workThread.isConnected()) {
             Log.e(TAG, "printBarcode: " + selectedInventorytoEdit.barcode);
             Bundle data = new Bundle();
             data.putString(Global.STRPARA1, selectedInventorytoEdit.barcode);
@@ -798,7 +818,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             WorkService.workThread.handleCmd(Global.CMD_POS_SETBARCODE, data);
         } else {
             Utils.showToast(Global.toast_notconnect, mContext);
-        }
+        }*/
+        printBarcodeImage(selectedInventorytoEdit);
     }
 
     /**
@@ -826,8 +847,32 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             } else {
                 searchingDialog.show();
                 startDiscovery();
+                startDiscoveryTimer();
             }
         }
+    }
+
+    public void startDiscoveryTimer() {
+        if (timer != null) {
+            return;
+        }
+        timer = new CountDownTimer(Constants.PRINTER_DISCOVERY_TIME, 1000) {
+
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                if (adapter != null && adapter.isDiscovering()) {
+                    adapter.cancelDiscovery();
+                }
+                Utils.showToast("Printer not available", mContext);
+                timer = null;
+            }
+        };
+        timer.start();
     }
 
     private void initBroadcast() {
@@ -848,6 +893,10 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                     if (searchingDialog != null && searchingDialog.isShowing())
                         searchingDialog.dismiss();
 
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+
                     devicesAdapter.add(device);
                     devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -856,10 +905,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                             connectingProgressDialog.setIndeterminate(true);
                             connectingProgressDialog.setCancelable(false);
                             connectingProgressDialog.show();
+                            adapter.cancelDiscovery();
 
                             WorkService.workThread.connectBt(devicesAdapter.getItem(position).getAddress());
-                            WorkService.workThread.setDeviceAddress(devicesAdapter.getItem(position).getAddress());
-                            WorkService.workThread.setDeviceName(devicesAdapter.getItem(position).getName());
+                            /*WorkService.workThread.setDeviceAddress(devicesAdapter.getItem(position).getAddress());
+                            WorkService.workThread.setDeviceName(devicesAdapter.getItem(position).getName());*/
 
                             devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
                             devicesListView.setAdapter(devicesAdapter);
@@ -958,6 +1008,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             if (resultCode == RESULT_OK) {
                 searchingDialog.show();
                 startDiscovery();
+                startDiscoveryTimer();
             } else if (resultCode == RESULT_CANCELED) {
                 Utils.showToast("Switch On Bluetooth to connect Printer and print", mContext);
             }
@@ -968,6 +1019,106 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 Utils.showToast("Unable to scan barcode", mContext);
             }
         }
+    }
+
+    private void printBarcodeImage(Inventory.InventoryData inventoryData) {
+        View view = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.barcode, null);
+
+        TextView storeNameTextView = (TextView) view.findViewById(R.id.tv_barcode_storeName);
+        TextView itemNameTextView = (TextView) view.findViewById(R.id.tv_barcode_itemName);
+        TextView valueTextView = (TextView) view.findViewById(R.id.tv_barcode_value);
+        TextView priceTextView = (TextView) view.findViewById(R.id.tv_barcode_price);
+        ImageView barcodeImageView = (ImageView) view.findViewById(R.id.im_barcode);
+
+        priceTextView.setText("Item Price: " + "Rs." + inventoryData.price + "/-");
+        valueTextView.setText(inventoryData.barcode);
+        itemNameTextView.setText(inventoryData.item_name);
+
+        try {
+            Bitmap bitmap = encodeAsBitmap(inventoryData.barcode, BarcodeFormat.UPC_A, 360, 64);
+            barcodeImageView.setImageBitmap(bitmap);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        Bitmap mBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(mBitmap);
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        view.draw(canvas);
+
+        int nPaperWidth = 384;
+
+        if (WorkService.workThread.isConnected()) {
+            Bundle data = new Bundle();
+            data.putParcelable(Global.PARCE1, mBitmap);
+            data.putInt(Global.INTPARA1, nPaperWidth);
+            data.putInt(Global.INTPARA2, 0);
+            data.putInt(Global.INTPARA3, 3);
+            WorkService.workThread.handleCmd(Global.CMD_POS_PRINTPICTURE, data);
+        } else {
+            Utils.showToast(Global.toast_notconnect, mContext);
+        }
+
+    }
+
+    /**************************************************************
+     * getting from com.google.zxing.client.android.encode.QRCodeEncoder
+     * <p>
+     * See the sites below
+     * http://code.google.com/p/zxing/
+     * http://code.google.com/p/zxing/source/browse/trunk/android/src/com/google/zxing/client/android/encode/EncodeActivity.java
+     * http://code.google.com/p/zxing/source/browse/trunk/android/src/com/google/zxing/client/android/encode/QRCodeEncoder.java
+     */
+
+    private static final int WHITE = 0xFFFFFFFF;
+    private static final int BLACK = 0xFF000000;
+
+    Bitmap encodeAsBitmap(String contents, BarcodeFormat format, int img_width, int img_height) throws WriterException {
+        String contentsToEncode = contents;
+        if (contentsToEncode == null) {
+            return null;
+        }
+        Map<EncodeHintType, Object> hints = null;
+        String encoding = guessAppropriateEncoding(contentsToEncode);
+        if (encoding != null) {
+            hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+            hints.put(EncodeHintType.CHARACTER_SET, encoding);
+        }
+        MultiFormatWriter writer = new MultiFormatWriter();
+        BitMatrix result;
+        try {
+            result = writer.encode(contentsToEncode, format, img_width, img_height, hints);
+        } catch (IllegalArgumentException iae) {
+            // Unsupported format
+            return null;
+        }
+
+        int width = result.getWidth();
+        int height = result.getHeight();
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++) {
+            int offset = y * width;
+            for (int x = 0; x < width; x++) {
+                pixels[offset + x] = result.get(x, y) ? BLACK : WHITE;
+            }
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height,
+                Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return bitmap;
+    }
+
+    private static String guessAppropriateEncoding(CharSequence contents) {
+        // Very crude at the moment
+        for (int i = 0; i < contents.length(); i++) {
+            if (contents.charAt(i) > 0xFF) {
+                return "UTF-8";
+            }
+        }
+        return null;
     }
 
     @Override

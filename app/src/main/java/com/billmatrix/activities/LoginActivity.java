@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
@@ -23,6 +25,7 @@ import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.Employee;
 import com.billmatrix.models.Profile;
+import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
@@ -98,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
+
     }
 
     @OnClick(R.id.btn_login)
@@ -350,7 +354,7 @@ public class LoginActivity extends AppCompatActivity {
             Utils.showToast("Cannot get IMEI Number", mContext);
             return false;
         }
-//        imeiNumber = "8234123";
+        imeiNumber = "8234123";
 
         return true;
     }

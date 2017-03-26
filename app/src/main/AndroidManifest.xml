@@ -29,7 +29,7 @@
         android:theme="@style/AppTheme"
         tools:node="replace">
         <activity
-            android:name=".SampleActivity"
+            android:name=".activities.LoginActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,7 +52,7 @@
         <activity
             android:name=".activities.InventoryActivity"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateHidden|adjustNothing" />
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".activities.PaymentsActivity"
             android:screenOrientation="landscape" />

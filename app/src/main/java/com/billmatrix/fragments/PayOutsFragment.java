@@ -251,7 +251,11 @@ public class PayOutsFragment extends Fragment implements OnItemClickListener, On
             if (selectedPaymenttoEdit != null) {
                 payOutData.id = selectedPaymenttoEdit.id;
                 payOutData.create_date = selectedPaymenttoEdit.create_date;
-                if (selectedPaymenttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                payOutData.add_update = selectedPaymenttoEdit.add_update;
+
+                if (TextUtils.isEmpty(selectedPaymenttoEdit.add_update)) {
+                    payOutData.add_update = Constants.ADD_OFFLINE;
+                } else if (selectedPaymenttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
                     payOutData.add_update = Constants.UPDATE_OFFLINE;
                 }
             }

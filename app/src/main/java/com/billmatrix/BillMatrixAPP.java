@@ -2,9 +2,12 @@ package com.billmatrix;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
 import android.view.inputmethod.InputMethodManager;
 
+import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Utils;
 
 public class BillMatrixAPP extends Application {
@@ -16,6 +19,7 @@ public class BillMatrixAPP extends Application {
         super.onCreate();
 
         mInstance = this;
+
     }
 
     @Override

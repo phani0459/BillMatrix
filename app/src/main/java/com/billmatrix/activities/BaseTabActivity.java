@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.DrawableClickListener;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
@@ -75,6 +76,8 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
                 return false;
             }
         });
+
+        ServerUtils.setIsSync(false);
     }
 
     @OnClick(R.id.im_billmatrix_logo)

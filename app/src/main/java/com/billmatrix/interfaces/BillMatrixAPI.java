@@ -29,13 +29,7 @@ import retrofit2.http.Query;
 
 public interface BillMatrixAPI {
 
-//    String BASE_URL = "http://mkrinfotech.com/billmatrix/";
-
-    public static final String BASE_URL = "http://www.vizagnext.com/mrs/index.php/api/doctor/";
-
-    @Multipart
-    @POST("prescriptions")
-    Call<String> uploadImage(@Part("doctoremail") RequestBody doctoremail, @Part("patientemail") RequestBody patientemail, @Part MultipartBody.Part file);
+    String BASE_URL = "http://mkrinfotech.com/billmatrix/";
 
     @FormUrlEncoded
     @POST("login")

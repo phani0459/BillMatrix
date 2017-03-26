@@ -42,7 +42,7 @@ class BillMatrixDBHandler extends DBHandler {
             + DBConstants.INVENTORY_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.ITEM_CODE + " VARCHAR UNIQUE," + DBConstants.ITEM_NAME + " VARCHAR," + DBConstants.UNIT + " VARCHAR,"
             + DBConstants.QUANTITY + " VARCHAR," + DBConstants.PRICE + " VARCHAR," + DBConstants.MY_COST + " VARCHAR,"
-            + DBConstants.DATE + " VARCHAR," + DBConstants.WAREHOUSE + " VARCHAR," + DBConstants.VENDOR + " VARCHAR,"
+            + DBConstants.DATE + " VARCHAR," + DBConstants.WAREHOUSE + " VARCHAR," + DBConstants.VENDOR_NAME + " VARCHAR,"
             + DBConstants.BARCODE + " VARCHAR UNIQUE NULL," + DBConstants.PHOTO + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.ID + " VARCHAR,"
             + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR" + ")";
 
@@ -50,7 +50,7 @@ class BillMatrixDBHandler extends DBHandler {
             + DBConstants.POS_ITEMS_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.ITEM_CODE + " VARCHAR," + DBConstants.ITEM_NAME + " VARCHAR," + DBConstants.UNIT + " VARCHAR,"
             + DBConstants.QUANTITY + " VARCHAR," + DBConstants.PRICE + " VARCHAR," + DBConstants.MY_COST + " VARCHAR,"
-            + DBConstants.DATE + " VARCHAR," + DBConstants.WAREHOUSE + " VARCHAR," + DBConstants.VENDOR + " VARCHAR,"
+            + DBConstants.DATE + " VARCHAR," + DBConstants.WAREHOUSE + " VARCHAR," + DBConstants.VENDOR_NAME + " VARCHAR,"
             + DBConstants.BARCODE + " VARCHAR," + DBConstants.PHOTO + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.ID + " VARCHAR,"
             + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.CUSTOMER_NAME + " VARCHAR," + DBConstants.SELECTED_QTY + " VARCHAR," + DBConstants.DISCOUNT_CODE
             + " VARCHAR," + DBConstants.DISCOUNT_VALUE + " VARCHAR," + DBConstants.Z_BILL + " VARCHAR" + ")";

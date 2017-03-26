@@ -219,6 +219,8 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
             if (selectedDiscounttoEdit != null) {
                 discountData.id = selectedDiscounttoEdit.id;
                 discountData.create_date = selectedDiscounttoEdit.create_date;
+                discountData.add_update = selectedDiscounttoEdit.add_update;
+
                 if (TextUtils.isEmpty(selectedDiscounttoEdit.add_update)) {
                     discountData.add_update = Constants.ADD_OFFLINE;
                 } else if (selectedDiscounttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {

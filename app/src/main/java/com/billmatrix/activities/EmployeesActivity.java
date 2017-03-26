@@ -226,7 +226,11 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             if (selectedEmptoEdit != null) {
                 employeeData.id = selectedEmptoEdit.id;
                 employeeData.create_date = selectedEmptoEdit.create_date;
-                if (selectedEmptoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                employeeData.add_update = selectedEmptoEdit.add_update;
+
+                if (TextUtils.isEmpty(selectedEmptoEdit.add_update)) {
+                    employeeData.add_update = Constants.ADD_OFFLINE;
+                } else if (selectedEmptoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
                     employeeData.add_update = Constants.UPDATE_OFFLINE;
                 }
             }

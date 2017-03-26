@@ -105,14 +105,14 @@ public class SampleActivity extends AppCompatActivity {
                 RequestBody body1 = RequestBody.create(MediaType.parse("text/plain"), "revanth1@gmail.com");
                 RequestBody body2 = RequestBody.create(MediaType.parse("text/plain"), "revanth@gmail.com");
 
-                Call<String> call = Utils.getBillMatrixAPI(this).uploadImage(body1, body2, body);
+                /*Call<String> call = Utils.getBillMatrixAPI(this).uploadImage(body1, body2, body);
                 call.enqueue(new Callback<String>() {
 
-                    /**
+                    *//**
                      * Successful HTTP response.
                      * @param call server call
                      * @param response server response
-                     */
+                     *//*
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
                         Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
@@ -123,16 +123,16 @@ public class SampleActivity extends AppCompatActivity {
 
                     }
 
-                    /**
+                    *//**
                      *  Invoked when a network or unexpected exception occurred during the HTTP request.
                      * @param call server call
                      * @param t error
-                     */
+                     *//*
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
                         Log.e("TAG", "FAILURE RESPONSE" + t.getMessage());
                     }
-                });
+                });*/
             } catch (Exception e) {
                 e.printStackTrace();
             }

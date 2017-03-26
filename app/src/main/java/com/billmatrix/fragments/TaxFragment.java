@@ -217,7 +217,11 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
             if (selectedTaxtoEdit != null) {
                 taxData.id = selectedTaxtoEdit.id;
                 taxData.create_date = selectedTaxtoEdit.create_date;
-                if (selectedTaxtoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                taxData.add_update = selectedTaxtoEdit.add_update;
+
+                if (TextUtils.isEmpty(selectedTaxtoEdit.add_update)) {
+                    taxData.add_update = Constants.ADD_OFFLINE;
+                } else if (selectedTaxtoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
                     taxData.add_update = Constants.UPDATE_OFFLINE;
                 }
             }

@@ -25,7 +25,6 @@ import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
-import com.billmatrix.models.Tax;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
@@ -87,7 +86,6 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         if (savedInstanceState != null) {
             selectedVendortoEdit = (Vendor.VendorData) savedInstanceState.getSerializable("EDIT_VENDOR");
             if (selectedVendortoEdit != null) {
-                Log.e(TAG, "onCreateView: " + selectedVendortoEdit.name);
                 isEditing = false;
                 onItemClick(2, -1);
             }
@@ -178,7 +176,6 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (isEditing && selectedVendortoEdit != null) {
-            Log.e(TAG, "onSaveInstanceState: ");
             outState.putSerializable("EDIT_VENDOR", selectedVendortoEdit);
         }
     }
@@ -235,7 +232,11 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
             if (selectedVendortoEdit != null) {
                 vendorData.id = selectedVendortoEdit.id;
                 vendorData.create_date = selectedVendortoEdit.create_date;
-                if (selectedVendortoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                vendorData.add_update = selectedVendortoEdit.add_update;
+
+                if (TextUtils.isEmpty(selectedVendortoEdit.add_update)) {
+                    vendorData.add_update = Constants.ADD_OFFLINE;
+                } else if (selectedVendortoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
                     vendorData.add_update = Constants.UPDATE_OFFLINE;
                 }
             }
@@ -249,6 +250,8 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         vendorData.since = vendorSince;
         vendorData.admin_id = adminId;
         vendorData.status = "1";
+
+        Log.e(TAG, "vendorData: " + vendorData.add_update);
 
         long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
 
@@ -285,9 +288,14 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
                         vendorFromServer = vendorData;
                         Utils.showToast("Vendor Updated successfully", mContext);
                     }
+
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+                    billMatrixDaoImpl.updateInventoryOffline(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, !TextUtils.isEmpty(selectedVendortoEdit.id) ? selectedVendortoEdit.id : selectedVendortoEdit.name);
+                    billMatrixDaoImpl.updateVendorName(DBConstants.INVENTORY_TABLE, DBConstants.VENDOR_NAME, vendorFromServer.name, selectedVendortoEdit.name);
                 }
             }
 
+            Log.e(TAG, "vendorFromServer: " + vendorFromServer.add_update );
             vendorsAdapter.addVendor(vendorFromServer);
             vendorsRecyclerView.smoothScrollToPosition(vendorsAdapter.getItemCount());
             isEditing = false;

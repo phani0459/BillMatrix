@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.fragments.InventoryFragment;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Inventory;
@@ -24,6 +25,7 @@ import butterknife.ButterKnife;
 public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.VendorHolder> {
 
     private final Context mContext;
+    private final BillMatrixDaoImpl billMatrixDaoImpl;
     private List<Inventory.InventoryData> inventoryDatas;
     OnItemClickListener onItemClickListener;
     InventoryFragment inventoryFragment;
@@ -81,6 +83,7 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         this.onItemClickListener = (OnItemClickListener) inventoryFragment;
         this.inventoryFragment = inventoryFragment;
         this.mContext = mContext;
+        billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
     }
 
     public void removeAllInventories() {
@@ -121,7 +124,7 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         holder.myCostTextView.setText(inventoryData.mycost);
         holder.dateTextView.setText(inventoryData.date);
         holder.wareHouseTextView.setText(inventoryData.warehouse);
-        holder.vendorTextView.setText(inventoryData.vendor);
+        holder.vendorTextView.setText(billMatrixDaoImpl.getVendorName(inventoryData.vendor));
         holder.barCodeTextView.setText(inventoryData.barcode);
         holder.photoTextView.setText(inventoryData.photo);
 

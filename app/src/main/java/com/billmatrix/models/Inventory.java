@@ -12,7 +12,7 @@ public class Inventory implements Serializable {
     public String InventoryData;
     public ArrayList<Inventory.InventoryData> data;
 
-    public class InventoryData implements Serializable{
+    public class InventoryData implements Serializable {
         public String id;
         public String admin_id;
         public String item_code;
@@ -39,5 +39,22 @@ public class Inventory implements Serializable {
         public String discountCode;
         public String discountValue;
         public boolean isZbillChecked;
+
+
+        @Override
+        public String toString() {
+            return "\nid = " + id + "\n admin id=" + admin_id
+                    + "\n item_code=" + item_code + "\n item_name=" + item_name
+                    + "\n unit=" + unit + "\n qty=" + qty
+                    + "\n price=" + price + "\n mycost=" + mycost
+                    + "\n date =" + date + "\n warehouse=" + warehouse
+                    + "\n status=" + status + "\n create_date=" + create_date
+                    + "\n vendor=" + vendor + "\n barcode=" + barcode
+                    + "\n update_date=" + update_date + "\n add_update=" + add_update
+                    + "\n photo=" + photo + "\n customerName=" + customerName
+                    + "\n selectedQTY=" + selectedQTY + "\n discountCode=" + discountCode
+                    + "\n discountValue=" + discountValue + "\n isZbillChecked=" + isZbillChecked;
+
+        }
     }
 }

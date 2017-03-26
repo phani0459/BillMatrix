@@ -231,7 +231,11 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
             if (selectedCusttoEdit != null) {
                 customerData.id = selectedCusttoEdit.id;
                 customerData.create_date = selectedCusttoEdit.create_date;
-                if (selectedCusttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                customerData.add_update = selectedCusttoEdit.add_update;
+
+                if (TextUtils.isEmpty(selectedCusttoEdit.add_update)) {
+                    customerData.add_update = Constants.ADD_OFFLINE;
+                } else if (selectedCusttoEdit.add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
                     customerData.add_update = Constants.UPDATE_OFFLINE;
                 }
             }

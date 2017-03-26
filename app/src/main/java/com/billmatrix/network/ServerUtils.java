@@ -279,7 +279,6 @@ public class ServerUtils {
                 if (response.body() != null) {
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        Log.e("employeeStatus.", "" + employeeStatus.get("status"));
                         if (employeeStatus.get("delete_employee").equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Employee Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteEmployee(employeeData.login_id);
@@ -361,7 +360,7 @@ public class ServerUtils {
     }
 
     public static Vendor.VendorData addVendortoServer(final Vendor.VendorData vendorData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
-        Log.e(TAG, "addVendortoServer: " + vendorData.toString());
+        Log.e(TAG, "addVendortoServer: ");
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addVendor(vendorData.name, vendorData.email, vendorData.phone,
                 vendorData.since, vendorData.address, vendorData.status, adminId);
 
@@ -510,10 +509,10 @@ public class ServerUtils {
      ****************************************************************/
 
     public static Inventory.InventoryData updateInventorytoServer(final Inventory.InventoryData inventoryData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
-        Log.e(TAG, "updateCustomertoServer: ");
+        Log.e(TAG, "updateInventorytoServer: ");
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateInventory(inventoryData.id, inventoryData.item_code, inventoryData.item_name,
                 inventoryData.unit, inventoryData.qty, inventoryData.price, inventoryData.mycost, inventoryData.date, inventoryData.warehouse,
-                inventoryData.vendor, inventoryData.barcode, inventoryData.photo, inventoryData.status);
+                billMatrixDaoImpl.getVendorId(inventoryData.vendor), TextUtils.isEmpty(inventoryData.barcode) ? "" : inventoryData.barcode, inventoryData.photo, inventoryData.status);
 
         call.enqueue(new Callback<CreateJob>() {
 
@@ -608,9 +607,12 @@ public class ServerUtils {
 
     public static Inventory.InventoryData addInventorytoServer(final Inventory.InventoryData inventoryData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
         Log.e(TAG, "addInventorytoServer: ");
+        /**
+         * Change vendor Name to ID
+         */
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addInventory(adminId, inventoryData.item_code, inventoryData.item_name,
-                inventoryData.unit, inventoryData.qty, inventoryData.price, inventoryData.mycost, inventoryData.date, inventoryData.warehouse, inventoryData.vendor,
-                inventoryData.barcode, inventoryData.photo, "1");
+                inventoryData.unit, inventoryData.qty, inventoryData.price, inventoryData.mycost, inventoryData.date, inventoryData.warehouse, billMatrixDaoImpl.getVendorId(inventoryData.vendor),
+                TextUtils.isEmpty(inventoryData.barcode) ? "" : inventoryData.barcode, inventoryData.photo, "1");
 
         call.enqueue(new Callback<CreateJob>() {
 

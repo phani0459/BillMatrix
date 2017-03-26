@@ -35,7 +35,7 @@ public class DBConstants {
     final static String EMPLOYEES_TABLE = "TABLE_EMPLOYEES";
     final static String VENDORS_TABLE = "TABLE_VENDORS";
     final static String CUSTOMERS_TABLE = "TABLE_CUSTOMERS";
-    final static String INVENTORY_TABLE = "TABLE_INVENTORY";
+    public final static String INVENTORY_TABLE = "TABLE_INVENTORY";
     final static String TAX_TABLE = "TABLE_TAX";
     final static String DISCOUNT_TABLE = "TABLE_DISCOUNT";
     public final static String PAYMENTS_TABLE = "TABLE_PAYMENTS";
@@ -53,7 +53,7 @@ public class DBConstants {
     /**
      * Vendors Column Names
      */
-    final static String VENDOR_NAME = "Vendor_Name";
+    public final static String VENDOR_NAME = "Vendor_Name";
     final static String VENDOR_SINCE = "vendor_since";
     final static String VENDOR_ADDRESS = "vendor_ADD";
 
@@ -73,7 +73,6 @@ public class DBConstants {
     final static String PRICE = "price";
     final static String MY_COST = "myCost";
     final static String WAREHOUSE = "warehouse";
-    final static String VENDOR = "vendor";
     final static String BARCODE = "barCode";
     final static String PHOTO = "photo";
 

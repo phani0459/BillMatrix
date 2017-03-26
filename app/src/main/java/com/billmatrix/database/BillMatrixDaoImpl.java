@@ -15,6 +15,7 @@ import com.billmatrix.models.Payments;
 import com.billmatrix.models.Tax;
 import com.billmatrix.models.Transaction;
 import com.billmatrix.models.Vendor;
+import com.billmatrix.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +74,6 @@ import static com.billmatrix.database.DBConstants.TOTAL_AMOUNT;
 import static com.billmatrix.database.DBConstants.TYPE;
 import static com.billmatrix.database.DBConstants.UNIT;
 import static com.billmatrix.database.DBConstants.UPDATE_DATE;
-import static com.billmatrix.database.DBConstants.VENDOR;
 import static com.billmatrix.database.DBConstants.VENDORS_TABLE;
 import static com.billmatrix.database.DBConstants.VENDOR_ADDRESS;
 import static com.billmatrix.database.DBConstants.VENDOR_NAME;
@@ -520,7 +520,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(ID, inventoryData.id);
         contentValues.put(DATE, inventoryData.date);
         contentValues.put(WAREHOUSE, inventoryData.warehouse);
-        contentValues.put(VENDOR, inventoryData.vendor);
+        contentValues.put(VENDOR_NAME, inventoryData.vendor);
         contentValues.put(BARCODE, (!TextUtils.isEmpty(inventoryData.barcode) ? inventoryData.barcode : null));
         contentValues.put(PHOTO, inventoryData.photo);
         contentValues.put(STATUS, inventoryData.status);
@@ -555,7 +555,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(MY_COST, inventoryData.mycost);
         contentValues.put(DATE, inventoryData.date);
         contentValues.put(WAREHOUSE, inventoryData.warehouse);
-        contentValues.put(VENDOR, inventoryData.vendor);
+        contentValues.put(VENDOR_NAME, inventoryData.vendor);
         contentValues.put(BARCODE, (!TextUtils.isEmpty(inventoryData.barcode) ? inventoryData.barcode : null));
         contentValues.put(PHOTO, inventoryData.photo);
         contentValues.put(STATUS, inventoryData.status);
@@ -584,6 +584,33 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return true;
     }
 
+    public boolean updateVendorName(String tabelName, String columnName, String vendorName, String previousVendorName) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(columnName, vendorName);
+        return db.update(tabelName, contentValues, columnName + "='" + previousVendorName + "'", null) > 0;
+    }
+
+    public boolean updateInventoryOffline(String columnName, String status, String vendorid) {
+        /**
+         * In Inventory Table vendor name is saved as vendor ID
+         */
+        String add_update = status;
+        String query = "SELECT " + ADD_UPDATE + " FROM " + INVENTORY_TABLE + " WHERE " + VENDOR_NAME + " = '" + vendorid + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            add_update = cursor.getString(cursor.getColumnIndex(ADD_UPDATE));
+            cursor.close();
+            if (!add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                add_update = Constants.ADD_OFFLINE;
+            }
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(columnName, add_update);
+        return db.update(INVENTORY_TABLE, contentValues, VENDOR_NAME + "='" + vendorid + "'", null) > 0;
+    }
+
     public Inventory.InventoryData getInventoryonByBarcode(String barCode) {
         Cursor cursor = null;
         try {
@@ -610,7 +637,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     inventoryData.warehouse = cursor.getString(cursor
                             .getColumnIndexOrThrow(WAREHOUSE));
                     inventoryData.vendor = cursor.getString(cursor
-                            .getColumnIndexOrThrow(VENDOR));
+                            .getColumnIndexOrThrow(VENDOR_NAME));
                     inventoryData.barcode = cursor.getString(cursor
                             .getColumnIndexOrThrow(BARCODE));
                     inventoryData.photo = cursor.getString(cursor
@@ -669,7 +696,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     inventoryData.warehouse = cursor.getString(cursor
                             .getColumnIndexOrThrow(WAREHOUSE));
                     inventoryData.vendor = cursor.getString(cursor
-                            .getColumnIndexOrThrow(VENDOR));
+                            .getColumnIndexOrThrow(VENDOR_NAME));
                     inventoryData.barcode = cursor.getString(cursor
                             .getColumnIndexOrThrow(BARCODE));
                     inventoryData.photo = cursor.getString(cursor
@@ -699,6 +726,38 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             }
         }
         return null;
+    }
+
+    public String getVendorId(String vendor) {
+        String query = "SELECT " + ID + " FROM " + VENDORS_TABLE + " WHERE " + VENDOR_NAME + " = '" + vendor + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String id = cursor.getString(cursor.getColumnIndex(ID));
+            cursor.close();
+            return id;
+        }
+        return "";
+    }
+
+    public String getVendorName(String _id) {
+        if (TextUtils.isEmpty(_id)) {
+            return "";
+        }
+
+        if (!TextUtils.isDigitsOnly(_id)) {
+            return _id;
+        }
+
+        String query = "SELECT " + VENDOR_NAME + " FROM " + VENDORS_TABLE + " WHERE " + ID + " = '" + _id + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String name = cursor.getString(cursor.getColumnIndex(VENDOR_NAME));
+            cursor.close();
+            return name;
+        }
+        return "";
     }
 
     /*************************************************
@@ -930,7 +989,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(MY_COST, inventoryData.mycost);
         contentValues.put(DATE, inventoryData.date);
         contentValues.put(WAREHOUSE, inventoryData.warehouse);
-        contentValues.put(VENDOR, inventoryData.vendor);
+        contentValues.put(VENDOR_NAME, inventoryData.vendor);
         contentValues.put(BARCODE, inventoryData.barcode);
         contentValues.put(PHOTO, inventoryData.photo);
         contentValues.put(ID, inventoryData.id);
@@ -1018,7 +1077,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                     inventoryData.warehouse = (cursor.getString(cursor
                             .getColumnIndexOrThrow(WAREHOUSE)));
                     inventoryData.vendor = (cursor.getString(cursor
-                            .getColumnIndexOrThrow(VENDOR)));
+                            .getColumnIndexOrThrow(VENDOR_NAME)));
                     inventoryData.barcode = (cursor.getString(cursor
                             .getColumnIndexOrThrow(BARCODE)));
                     inventoryData.photo = (cursor.getString(cursor
@@ -1081,8 +1140,20 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     }
 
     public boolean updatePaymentOffline(String columnName, String status, String payeeName) {
+        String add_update = status;
+        String query = "SELECT " + ADD_UPDATE + " FROM " + PAYMENTS_TABLE + " WHERE " + PAYEE_NAME + " = '" + payeeName + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            add_update = cursor.getString(cursor.getColumnIndex(ADD_UPDATE));
+            cursor.close();
+            if (!add_update.equalsIgnoreCase(Constants.DATA_FROM_SERVER)) {
+                add_update = Constants.ADD_OFFLINE;
+            }
+        }
+
         ContentValues contentValues = new ContentValues();
-        contentValues.put(columnName, status);
+        contentValues.put(columnName, add_update);
         return db.update(PAYMENTS_TABLE, contentValues, PAYEE_NAME + "='" + payeeName + "'", null) > 0;
     }
 

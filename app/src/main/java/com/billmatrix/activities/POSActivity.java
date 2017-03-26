@@ -14,8 +14,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.hardware.usb.UsbAccessory;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -66,6 +64,7 @@ import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Transaction;
 import com.billmatrix.network.ServerUtils;
+import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
@@ -84,10 +83,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 
-public class POSActivity extends Activity implements OnItemClickListener, POSItemAdapter.OnItemSelected {
+public class POSActivity extends Activity implements OnItemClickListener, POSItemAdapter.OnItemSelected, ConnectivityReceiver.ConnectivityReceiverListener {
 
     private static final String TAG = POSActivity.class.getSimpleName();
-    private static final long PRINTER_DISCOVERY_TIME = 10000;
     @BindView(R.id.sp_pos_customers)
     public Spinner customersSpinner;
     @BindView(R.id.pos_tabs_layout)
@@ -996,6 +994,8 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     protected void onResume() {
         super.onResume();
 
+        ConnectivityReceiver.connectivityReceiverListener = this;
+
         /**
          * if barcode is scanned, edit text will change focus to next edit text, to remove we again change focus to same edit text
          */
@@ -1589,7 +1589,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         if (timer != null) {
             return;
         }
-        timer = new CountDownTimer(PRINTER_DISCOVERY_TIME, 1000) {
+        timer = new CountDownTimer(Constants.PRINTER_DISCOVERY_TIME, 1000) {
 
             @Override
             public void onTick(long l) {
@@ -1634,7 +1634,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             resetCustomerBill(true);
 
         } else {
-            Toast.makeText(this, Global.toast_notconnect, Toast.LENGTH_SHORT).show();
+            Utils.showToast(Global.toast_notconnect, mContext);
         }
     }
 
@@ -1778,6 +1778,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                             connectingProgressDialog.setIndeterminate(true);
                             connectingProgressDialog.setCancelable(false);
                             connectingProgressDialog.show();
+                            adapter.cancelDiscovery();
 
                             WorkService.workThread.connectBt(devicesAdapter.getItem(position).getAddress());
                             WorkService.workThread.setDeviceAddress(devicesAdapter.getItem(position).getAddress());
@@ -1805,6 +1806,19 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected) {
+            showAlertDialog("You are Connected to Internet", "Do you want to sync with Server", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     class MHandler extends Handler {
@@ -1890,6 +1904,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ConnectivityReceiver.connectivityReceiverListener = null;
         WorkService.delHandler(mHandler);
         mHandler = null;
         unInitBroadcast();

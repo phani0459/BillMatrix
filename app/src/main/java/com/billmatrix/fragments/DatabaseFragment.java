@@ -299,9 +299,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
     }
 
     public void checkNextSyncItem() {
-        if (inventorySyncCheckbox.isChecked()) {
-            syncInventory(ServerUtils.STATUS_DELETING);
-        } else if (customersSyncCheckbox.isChecked()) {
+        if (customersSyncCheckbox.isChecked()) {
             syncCustomers(ServerUtils.STATUS_DELETING);
         } else if (reportsSyncCheckbox.isChecked()) {
             //TODO sync Reports
@@ -319,6 +317,8 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
             syncDiscounts(ServerUtils.STATUS_DELETING);
         } else if (headerFooterSyncCheckbox.isChecked()) {
             syncHeaderFooter();
+        } else if (inventorySyncCheckbox.isChecked()) {
+            syncInventory(ServerUtils.STATUS_DELETING);
         } else if (generatedReportSyncCheckbox.isChecked()) {
             //TODO sync Generated Reports
         }
@@ -568,7 +568,6 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                     Observable<ArrayList<Customer.CustomerData>> updatedCustomersObservable = Observable.fromArray(updatedCustomers);
                     syncCustomerswithServer(updatedCustomersObservable, currentStatus);
                 } else {
-                    Log.e(TAG, "get all customers: ");
                     billMatrixDaoImpl.deleteAllCustomers();
                     serverData.getCustomersFromServer(adminId);
                 }
@@ -582,7 +581,6 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                     Observable<ArrayList<Customer.CustomerData>> updatedCustomersObservable = Observable.fromArray(updatedCustomers);
                     syncCustomerswithServer(updatedCustomersObservable, currentStatus);
                 } else {
-                    Log.e(TAG, "get all customers: ");
                     billMatrixDaoImpl.deleteAllCustomers();
                     serverData.getCustomersFromServer(adminId);
                 }
@@ -592,7 +590,6 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                     Observable<ArrayList<Customer.CustomerData>> updatedCustomersObservable = Observable.fromArray(updatedCustomers);
                     syncCustomerswithServer(updatedCustomersObservable, currentStatus);
                 } else {
-                    Log.e(TAG, "get all customers: ");
                     billMatrixDaoImpl.deleteAllCustomers();
                     serverData.getCustomersFromServer(adminId);
                 }
@@ -653,7 +650,6 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                         syncCustomers(ServerUtils.STATUS_UPDATING);
                         break;
                     case ServerUtils.STATUS_UPDATING:
-                        Log.e(TAG, "get all customers: ");
                         billMatrixDaoImpl.deleteAllCustomers();
                         serverData.getCustomersFromServer(adminId);
                         break;

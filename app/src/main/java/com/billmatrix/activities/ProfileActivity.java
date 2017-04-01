@@ -143,17 +143,19 @@ public class ProfileActivity extends BaseTabActivity {
 
     private void loadEmployeeProfile() {
         final String empId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_EMP_LOGIN_ID, null);
+        Log.e(TAG, "loadEmployeeProfile: "  + empId );
         Employee.EmployeeData employeeData = billMatrixDaoImpl.getParticularEmployee(empId);
         if (employeeData != null) {
-            passwordEditText.setText(employeeData.password);
+            Log.e(TAG, "loadEmployeeProfile: " + employeeData.toString());
             adminNameEditText.setText(employeeData.username);
-            mobNumEditText.setText(employeeData.mobile_number);
             loginIdmEditText.setText(employeeData.login_id);
+            passwordEditText.setText(employeeData.password);
+            mobNumEditText.setText(employeeData.mobile_number);
         }
 
         if (!Utils.isProfileEmpty(profile)) {
-            storeAdminEditText.setText(profile.data.username.toUpperCase());
-            locationAdminEditText.setText(profile.data.location != null ? profile.data.location.toUpperCase() : "");
+            storeAdminEditText.setText(!TextUtils.isEmpty(profile.data.contact_person) ? profile.data.contact_person.toUpperCase() : "");
+            locationAdminEditText.setText(!TextUtils.isEmpty(profile.data.location) ? profile.data.location.toUpperCase() : "");
             branchAdminEditText.setText(!TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "");
         }
     }
@@ -168,11 +170,11 @@ public class ProfileActivity extends BaseTabActivity {
 
     public void loadProfile() {
         if (!Utils.isProfileEmpty(profile)) {
-            passwordEditText.setText(profile.data.password);
-            adminNameEditText.setText(profile.data.username);
-            mobNumEditText.setText(profile.data.mobile_number);
+            adminNameEditText.setText(profile.data.contact_person);
             loginIdmEditText.setText(profile.data.login_id);
-            storeAdminEditText.setText(profile.data.username);
+            passwordEditText.setText(profile.data.password);
+            mobNumEditText.setText(profile.data.mobile_number);
+            storeAdminEditText.setText(profile.data.contact_person);
             locationAdminEditText.setText(!TextUtils.isEmpty(profile.data.location) ? profile.data.location.toUpperCase() : "");
             branchAdminEditText.setText(!TextUtils.isEmpty(profile.data.branch) ? profile.data.branch.toUpperCase() : "");
         }
@@ -298,20 +300,22 @@ public class ProfileActivity extends BaseTabActivity {
         profile.userdata = "success";
 
         profile.data.admin_id = profile.data.id;
-        profile.data.username = adminName;
-        profile.data.login_id = loginId;
+        profile.data.contact_person = adminName;
+        profile.data.username = loginId;
         profile.data.mobile_number = mobile;
         profile.data.password = password;
         profile.data.branch = branch;
         profile.data.location = location;
         profile.data.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
 
+        Log.e(TAG, "saveProfile: " + profile.toString());
+
         FileUtils.deleteFile(mContext, Constants.PROFILE_FILE_NAME);
         FileUtils.writeToFile(mContext, Constants.PROFILE_FILE_NAME, Constants.getGson().toJson(profile));
 
         if (Utils.isInternetAvailable(mContext)) {
-            Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateEmployee(profile.data.id, adminName, password, mobile,
-                    loginId, profile.data.imei_number, location, branch, profile.data.status);
+            Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateEmployee(profile.data.id, loginId, password, mobile,
+                    loginId, profile.data.imei_number, location, branch, profile.data.status, profile.data.contact_person);
 
             call.enqueue(new Callback<CreateEmployee>() {
 

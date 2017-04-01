@@ -56,7 +56,8 @@ public interface BillMatrixAPI {
     Call<CreateEmployee> updateEmployee(@Field("id") String id, @Field("username") String empName, @Field("password") String password,
                                         @Field("mobile_number") String mobileNumber,
                                         @Field("login_id") String login_id, @Field("imei_number") String imei_number,
-                                        @Field("location") String location, @Field("branch") String branch, @Field("status") String status);
+                                        @Field("location") String location, @Field("branch") String branch, @Field("status") String status,
+                                        @Field("contact_person") String contact_person);
 
     @FormUrlEncoded
     @POST("update_employee")

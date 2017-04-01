@@ -31,6 +31,7 @@ public class Profile implements Serializable {
         public String city_state;
         public String address_one;
         public String address_two;
+        public String contact_person;
         public String store_name;
 
         @Override
@@ -44,7 +45,8 @@ public class Profile implements Serializable {
                     + "\n store_name=" + store_name + "\n cst_no=" + cst_no + "\n vat_tin=" + vat_tin
                     + "\n zipcode=" + zipcode + "\n city_state=" + city_state
                     + "\n branch =" + branch + "\n address_two=" + address_two
-                    + "\n address_one=" + address_one;
+                    + "\n address_one=" + address_one
+                    + "\n contact_person=" + contact_person;
         }
     }
 }

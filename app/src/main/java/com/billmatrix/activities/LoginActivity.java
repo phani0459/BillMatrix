@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
             passwordEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_PASSWORD, ""));
         }
 
-        copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
+        copyrightTextView.setText(getString(R.string.copyright, 2016));
 
     }
 
@@ -161,11 +161,26 @@ public class LoginActivity extends AppCompatActivity {
                     ArrayList<Employee.EmployeeData> employees = billMatrixDaoImpl.getEmployees();
                     if (employees != null && employees.size() > 0) {
                         for (Employee.EmployeeData employeeData : employees) {
-                            if (userName.equalsIgnoreCase(employeeData.login_id) && password.equalsIgnoreCase(employeeData.password) && imeiNumber.equalsIgnoreCase(employeeData.imei_number)) {
+                            if (userName.equalsIgnoreCase(employeeData.login_id) && password.equalsIgnoreCase(employeeData.password)) {
                                 isEmployee = true;
                                 loggedInEmployee = employeeData;
                                 break;
                             }
+                        }
+
+                        if (!imeiNumber.equalsIgnoreCase(loggedInEmployee.imei_number)) {
+                            showAlertDialog("Incorrect Licence Key", "You don't have access to this store", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Utils.showToast("Check with Shop Admin", mContext);
+                                }
+                            });
+
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+
+                            return;
                         }
 
                         if (progressDialog != null && progressDialog.isShowing()) {
@@ -354,7 +369,7 @@ public class LoginActivity extends AppCompatActivity {
             Utils.showToast("Cannot get IMEI Number", mContext);
             return false;
         }
-        imeiNumber = "8234123";
+//        imeiNumber = "8234123";
 
         return true;
     }

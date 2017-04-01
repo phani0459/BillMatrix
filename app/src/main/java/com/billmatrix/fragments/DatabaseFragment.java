@@ -19,7 +19,6 @@ import com.billmatrix.R;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.models.CreateEmployee;
-import com.billmatrix.models.CreateJob;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Employee;
@@ -114,6 +113,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
     public Button syncButton;
 
     private ServerData serverData;
+    private Profile profile;
 
     public DatabaseFragment() {
         // Required empty public constructor
@@ -213,6 +213,10 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
+
+        Log.e(TAG, "Profile is from file");
+        String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
+        profile = Constants.getGson().fromJson(profileString, Profile.class);
 
         serverData = new ServerData();
         serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
@@ -330,13 +334,12 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
     private void syncHeaderFooter() {
         if (Utils.isInternetAvailable(mContext)) {
 
-            Profile profile;
             if (!FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
                 return;
-            } else {
-                Log.e(TAG, "Profile is from file");
-                String profileString = FileUtils.readFromFile(Constants.PROFILE_FILE_NAME, mContext);
-                profile = Constants.getGson().fromJson(profileString, Profile.class);
+            }
+
+            if (profile == null) {
+                return;
             }
 
             Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateStore(profile.data.id, profile.data.address_two, profile.data.address_one, profile.data.zipcode,
@@ -477,7 +480,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                         ServerUtils.addEmployeetoServer(emp, mContext, billMatrixDaoImpl, adminId);
                         break;
                     case ServerUtils.STATUS_UPDATING:
-                        ServerUtils.updateEmployeetoServer(emp, mContext, billMatrixDaoImpl);
+                        ServerUtils.updateEmployeetoServer(emp, mContext, billMatrixDaoImpl, profile.data.contact_person);
                         break;
 
                 }

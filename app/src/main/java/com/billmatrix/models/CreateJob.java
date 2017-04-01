@@ -23,6 +23,14 @@ public class CreateJob implements Serializable {
     public String update_tax;
     public CreatedJob data;
 
+    @Override
+    public String toString() {
+        return "\nstatus = " + status + "\n create_customer=" + create_customer
+                + "\n update_customer=" + update_customer + "\n update_employee=" + update_employee
+                + "\n create_employee=" + create_employee + "\n create_tax=" + create_tax + "\n update_tax=" + update_tax
+                + "\n create_discount=" + create_discount + "\n update_discount=" + update_discount;
+    }
+
     public class CreatedJob implements Serializable {
         public String discount_code;
         public String discount_description;
@@ -67,5 +75,13 @@ public class CreateJob implements Serializable {
         public String create_date;
         public String update_date;
         public String add_update;
+
+        @Override
+        public String toString() {
+            return "\nid = " + id + "\n admin id=" + admin_id
+                    + "\n tax_type=" + tax_type + "\n tax_description=" + tax_description
+                    + "\n tax_rate=" + tax_rate + "\n status=" + status + "\n create_date=" + create_date
+                    + "\n update_date=" + update_date + "\n add_update=" + add_update;
+        }
     }
 }

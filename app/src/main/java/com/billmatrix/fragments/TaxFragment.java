@@ -89,6 +89,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        ServerUtils.setIsSync(false);
 
         if (savedInstanceState != null) {
             selectedTaxtoEdit = (Tax.TaxData) savedInstanceState.getSerializable("EDIT_TAX");

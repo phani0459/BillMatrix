@@ -35,6 +35,7 @@ import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.models.CreateEmployee;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Profile;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.FileUtils;
 import com.billmatrix.utils.Utils;
@@ -146,6 +147,7 @@ public class StoreFragment extends Fragment {
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        ServerUtils.setIsSync(false);
 
         zipCodeEditText.setFilters(Utils.getInputFilter(6));
         phoneEditText.setFilters(Utils.getInputFilter(10));

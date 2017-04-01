@@ -153,6 +153,9 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     }
 
     public boolean deleteEmployee(String loginID) {
+        if (loginID.contains("'")) {
+            loginID = loginID.replace("'", "''");
+        }
         return db.delete(EMPLOYEES_TABLE, EMPLOYEE_LOGINID + "='" + loginID + "'", null) > 0;
     }
 
@@ -170,8 +173,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         Cursor cursor = null;
         try {
             String query = "SELECT * FROM " + EMPLOYEES_TABLE
-                    + " WHERE " + EMPLOYEE_LOGINID
-                    + " = '" + empLoginId + "'";
+                    + " WHERE LOWER(" + EMPLOYEE_LOGINID
+                    + ") = LOWER('" + empLoginId + "')";
 
             cursor = db.rawQuery(query, null);
 
@@ -793,6 +796,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     }
 
     public boolean updateTax(Tax.TaxData taxData) {
+        Log.e(TAG, "updateTax: " + taxData.toString() );
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(TAX_TYPE, taxData.tax_type);
         contentValues.put(TAX_DESC, taxData.tax_description);

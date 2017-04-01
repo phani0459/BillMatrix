@@ -73,7 +73,7 @@ public class ServerUtils {
                 if (response.body() != null) {
                     CreateJob customerStatus = response.body();
                     if (customerStatus.status.equalsIgnoreCase("200")) {
-                        if (customerStatus.create_customer.equalsIgnoreCase("success")) {
+                        if (!TextUtils.isEmpty(customerStatus.create_customer) && customerStatus.create_customer.equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Customer Added successfully", mContext);
 
                             customerData.id = customerStatus.data.id;
@@ -179,7 +179,7 @@ public class ServerUtils {
                 if (response.body() != null) {
                     HashMap<String, String> customerStatus = response.body();
                     if (customerStatus.get("status").equalsIgnoreCase("200")) {
-                        if (customerStatus.get("delete_customer").equalsIgnoreCase("success")) {
+                        if (customerStatus.containsKey("delete_customer") && customerStatus.get("delete_customer").equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Customer Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteCustomer(DBConstants.ID, customer.id);
                         }
@@ -203,10 +203,10 @@ public class ServerUtils {
      * ************************** EMPLOYEES ******************************
      *********************************************************************/
 
-    public static Employee.EmployeeData updateEmployeetoServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+    public static Employee.EmployeeData updateEmployeetoServer(final Employee.EmployeeData employeeData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl, String contactPerson) {
         final Call<CreateEmployee> call = Utils.getBillMatrixAPI(mContext).updateEmployee(employeeData.id, employeeData.username,
                 employeeData.password, employeeData.mobile_number, employeeData.login_id, employeeData.imei_number, employeeData.location, employeeData.branch,
-                employeeData.status);
+                employeeData.status, contactPerson);
 
         call.enqueue(new Callback<CreateEmployee>() {
 
@@ -279,7 +279,7 @@ public class ServerUtils {
                 if (response.body() != null) {
                     HashMap<String, String> employeeStatus = response.body();
                     if (employeeStatus.get("status").equalsIgnoreCase("200")) {
-                        if (employeeStatus.get("delete_employee").equalsIgnoreCase("success")) {
+                        if (employeeStatus.containsKey("delete_employee") && employeeStatus.get("delete_employee").equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Employee Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteEmployee(employeeData.login_id);
 
@@ -318,7 +318,7 @@ public class ServerUtils {
                 if (response.body() != null) {
                     CreateEmployee employeeStatus = response.body();
                     if (employeeStatus.status.equalsIgnoreCase("200")) {
-                        if (employeeStatus.create_employee.equalsIgnoreCase("success")) {
+                        if (!TextUtils.isEmpty(employeeStatus.create_employee) && employeeStatus.create_employee.equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Employee Added successfully", mContext);
 
                             employeeData.update_date = employeeStatus.data.get(0).update_date;
@@ -378,7 +378,7 @@ public class ServerUtils {
                 if (response.body() != null) {
                     CreateJob vendorStatus = response.body();
                     if (vendorStatus.status.equalsIgnoreCase("200")) {
-                        if (vendorStatus.create_vendor.equalsIgnoreCase("success")) {
+                        if (!TextUtils.isEmpty(vendorStatus.create_vendor) && vendorStatus.create_vendor.equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Vendor Added successfully", mContext);
 
                             vendorData.id = vendorStatus.data.id;
@@ -629,27 +629,44 @@ public class ServerUtils {
                     CreateJob inventoryStatus = response.body();
                     if (inventoryStatus.status.equalsIgnoreCase("200")) {
                         if (!isSync) Utils.showToast("Inventory Added successfully", mContext);
+
+                        inventoryData.admin_id = inventoryStatus.data.admin_id;
+                        inventoryData.id = inventoryStatus.data.id;
+                        inventoryData.item_code = inventoryStatus.data.item_code;
+                        inventoryData.item_name = inventoryStatus.data.item_name;
+                        inventoryData.unit = inventoryStatus.data.unit;
+                        inventoryData.qty = inventoryStatus.data.qty;
+                        inventoryData.price = inventoryStatus.data.price;
+                        inventoryData.mycost = inventoryStatus.data.mycost;
+                        inventoryData.date = inventoryStatus.data.date;
+                        inventoryData.warehouse = inventoryStatus.data.warehouse;
+                        inventoryData.vendor = inventoryStatus.data.vendor;
+                        inventoryData.barcode = inventoryStatus.data.barcode;
+                        inventoryData.photo = inventoryStatus.data.photo;
+                        inventoryData.status = inventoryStatus.data.status;
+                        inventoryData.create_date = inventoryStatus.data.create_date;
+                        inventoryData.update_date = inventoryStatus.data.update_date;
+                        inventoryData.add_update = Constants.DATA_FROM_SERVER;
+
+                        billMatrixDaoImpl.updateInventory(inventoryData);
+
+                    } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+                        if (!isSync) {
+                            Utils.showToast("There was a problem adding inventory to server", mContext);
+                        }
                     }
-
-                    inventoryData.admin_id = inventoryStatus.data.admin_id;
-                    inventoryData.id = inventoryStatus.data.id;
-                    inventoryData.item_code = inventoryStatus.data.item_code;
-                    inventoryData.item_name = inventoryStatus.data.item_name;
-                    inventoryData.unit = inventoryStatus.data.unit;
-                    inventoryData.qty = inventoryStatus.data.qty;
-                    inventoryData.price = inventoryStatus.data.price;
-                    inventoryData.mycost = inventoryStatus.data.mycost;
-                    inventoryData.date = inventoryStatus.data.date;
-                    inventoryData.warehouse = inventoryStatus.data.warehouse;
-                    inventoryData.vendor = inventoryStatus.data.vendor;
-                    inventoryData.barcode = inventoryStatus.data.barcode;
-                    inventoryData.photo = inventoryStatus.data.photo;
-                    inventoryData.status = inventoryStatus.data.status;
-                    inventoryData.create_date = inventoryStatus.data.create_date;
-                    inventoryData.update_date = inventoryStatus.data.update_date;
-                    inventoryData.add_update = Constants.DATA_FROM_SERVER;
-
-                    billMatrixDaoImpl.updateInventory(inventoryData);
+                } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+                    if (!isSync) {
+                        Utils.showToast("There was a problem adding inventory to server", mContext);
+                    }
                 }
             }
 
@@ -661,6 +678,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding inventory to server", mContext);
+                }
             }
         });
         return inventoryData;
@@ -728,23 +752,47 @@ public class ServerUtils {
                     if (paymentStatus.status.equalsIgnoreCase("200")) {
                         if (!TextUtils.isEmpty(paymentStatus.create_payment) && paymentStatus.create_payment.equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Payment Added successfully", mContext);
+                            paymentData.admin_id = paymentStatus.data.admin_id;
+                            paymentData.id = paymentStatus.data.id;
+                            paymentData.payee_name = paymentStatus.data.payee_name;
+                            paymentData.mode_of_payment = !TextUtils.isEmpty(paymentStatus.data.mode_of_payment) ? paymentStatus.data.mode_of_payment : "";
+                            paymentData.date_of_payment = paymentStatus.data.date_of_payment;
+                            paymentData.amount = paymentStatus.data.amount;
+                            paymentData.purpose_of_payment = !TextUtils.isEmpty(paymentStatus.data.purpose_of_payment) ? paymentStatus.data.purpose_of_payment : "";
+                            paymentData.payment_type = paymentStatus.data.payment_type;
+                            paymentData.status = paymentStatus.data.status;
+                            paymentData.create_date = paymentStatus.data.create_date;
+                            paymentData.update_date = paymentStatus.data.update_date;
+                            paymentData.add_update = Constants.DATA_FROM_SERVER;
+
+                            billMatrixDaoImpl.updatePayment(paymentData, previousID);
+
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast("There was a problem adding payment to server", mContext);
+                            }
+                        }
+                    } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                        if (!isSync) {
+                            Utils.showToast("There was a problem adding payment to server", mContext);
                         }
                     }
-
-                    paymentData.admin_id = paymentStatus.data.admin_id;
-                    paymentData.id = paymentStatus.data.id;
-                    paymentData.payee_name = paymentStatus.data.payee_name;
-                    paymentData.mode_of_payment = !TextUtils.isEmpty(paymentStatus.data.mode_of_payment) ? paymentStatus.data.mode_of_payment : "";
-                    paymentData.date_of_payment = paymentStatus.data.date_of_payment;
-                    paymentData.amount = paymentStatus.data.amount;
-                    paymentData.purpose_of_payment = !TextUtils.isEmpty(paymentStatus.data.purpose_of_payment) ? paymentStatus.data.purpose_of_payment : "";
-                    paymentData.payment_type = paymentStatus.data.payment_type;
-                    paymentData.status = paymentStatus.data.status;
-                    paymentData.create_date = paymentStatus.data.create_date;
-                    paymentData.update_date = paymentStatus.data.update_date;
-                    paymentData.add_update = Constants.DATA_FROM_SERVER;
-
-                    billMatrixDaoImpl.updatePayment(paymentData, previousID);
+                } else {
+                    /**
+                     * To show pending sync Icon in database page
+                     */
+                    Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                    if (!isSync) {
+                        Utils.showToast("There was a problem adding payment to server", mContext);
+                    }
                 }
             }
 
@@ -783,23 +831,39 @@ public class ServerUtils {
                     if (paymentStatus.status.equalsIgnoreCase("200")) {
                         if (!TextUtils.isEmpty(paymentStatus.update_payment) && paymentStatus.update_payment.equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Payment Updated successfully", mContext);
+
+                            paymentData.admin_id = paymentStatus.data.admin_id;
+                            paymentData.id = paymentStatus.data.id;
+                            paymentData.payee_name = paymentStatus.data.payee_name;
+                            paymentData.mode_of_payment = !TextUtils.isEmpty(paymentStatus.data.mode_of_payment) ? paymentStatus.data.mode_of_payment : "";
+                            paymentData.date_of_payment = paymentStatus.data.date_of_payment;
+                            paymentData.amount = paymentStatus.data.amount;
+                            paymentData.purpose_of_payment = !TextUtils.isEmpty(paymentStatus.data.purpose_of_payment) ? paymentStatus.data.purpose_of_payment : "";
+                            paymentData.payment_type = paymentStatus.data.payment_type;
+                            paymentData.status = paymentStatus.data.status;
+                            paymentData.create_date = paymentStatus.data.create_date;
+                            paymentData.update_date = paymentStatus.data.update_date;
+                            paymentData.add_update = Constants.DATA_FROM_SERVER;
+
+                            billMatrixDaoImpl.updatePayment(paymentData, previousID);
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast("There was a problem adding payment to server", mContext);
+                            }
+                        }
+                    } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                        if (!isSync) {
+                            Utils.showToast("There was a problem adding payment to server", mContext);
                         }
                     }
-
-                    paymentData.admin_id = paymentStatus.data.admin_id;
-                    paymentData.id = paymentStatus.data.id;
-                    paymentData.payee_name = paymentStatus.data.payee_name;
-                    paymentData.mode_of_payment = !TextUtils.isEmpty(paymentStatus.data.mode_of_payment) ? paymentStatus.data.mode_of_payment : "";
-                    paymentData.date_of_payment = paymentStatus.data.date_of_payment;
-                    paymentData.amount = paymentStatus.data.amount;
-                    paymentData.purpose_of_payment = !TextUtils.isEmpty(paymentStatus.data.purpose_of_payment) ? paymentStatus.data.purpose_of_payment : "";
-                    paymentData.payment_type = paymentStatus.data.payment_type;
-                    paymentData.status = paymentStatus.data.status;
-                    paymentData.create_date = paymentStatus.data.create_date;
-                    paymentData.update_date = paymentStatus.data.update_date;
-                    paymentData.add_update = Constants.DATA_FROM_SERVER;
-
-                    billMatrixDaoImpl.updatePayment(paymentData, previousID);
                 }
             }
 
@@ -811,6 +875,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding payment to server", mContext);
+                }
             }
         });
 
@@ -854,6 +925,22 @@ public class ServerUtils {
                             discountData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateDiscount(discountData);
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast("There was a problem adding discount to server", mContext);
+                            }
+                        }
+                    } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
+                        if (!isSync) {
+                            Utils.showToast("There was a problem adding discount to server", mContext);
                         }
                     }
                 }
@@ -867,6 +954,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding discount to server", mContext);
+                }
             }
         });
 
@@ -906,6 +1000,22 @@ public class ServerUtils {
                             discountData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateDiscount(discountData);
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast("There was a problem adding discount to server", mContext);
+                            }
+                        }
+                    } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
+                        if (!isSync) {
+                            Utils.showToast("There was a problem adding discount to server", mContext);
                         }
                     }
                 }
@@ -919,6 +1029,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding discount to server", mContext);
+                }
             }
         });
 
@@ -942,7 +1059,7 @@ public class ServerUtils {
                 if (response.body() != null) {
                     HashMap<String, String> taxStatus = response.body();
                     if (taxStatus.get("status").equalsIgnoreCase("200")) {
-                        if (taxStatus.get("delete_tax").equalsIgnoreCase("success")) {
+                        if (taxStatus.containsKey("delete_tax") && taxStatus.get("delete_tax").equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Tax Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteTax(taxData.tax_type);
                         }
@@ -1015,7 +1132,10 @@ public class ServerUtils {
                 if (response.body() != null) {
                     CreateJob taxMap = response.body();
                     if (taxMap.status.equalsIgnoreCase("200")) {
-                        if (taxMap.create_tax.equalsIgnoreCase("success")) {
+                        Log.e(TAG, "onResponse: " + taxMap.create_tax);
+                        Log.e(TAG, "onResponse: " + taxMap.toString());
+
+                        if (!TextUtils.isEmpty(taxMap.create_tax) && taxMap.create_tax.equalsIgnoreCase("success")) {
                             if (!isSync) Utils.showToast("Tax Added successfully", mContext);
 
                             taxData.update_date = taxMap.data.update_date;
@@ -1029,6 +1149,22 @@ public class ServerUtils {
                             taxData.id = taxMap.data.id;
 
                             billMatrixDaoImpl.updateTax(taxData);
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast("There was a problem adding tax to server", mContext);
+                            }
+                        }
+                    } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
+                        if (!isSync) {
+                            Utils.showToast("There was a problem adding tax to server", mContext);
                         }
                     }
                 }
@@ -1042,6 +1178,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding tax to server", mContext);
+                }
             }
         });
     }
@@ -1079,6 +1222,22 @@ public class ServerUtils {
                             taxData.id = taxMap.data.id;
 
                             billMatrixDaoImpl.updateTax(taxData);
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast("There was a problem updating tax to server", mContext);
+                            }
+                        }
+                    } else {
+                        /**
+                         * To show pending sync Icon in database page
+                         */
+                        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
+                        if (!isSync) {
+                            Utils.showToast("There was a problem updating tax to server", mContext);
                         }
                     }
                 }
@@ -1092,6 +1251,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding tax to server", mContext);
+                }
             }
         });
     }

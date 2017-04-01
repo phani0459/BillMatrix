@@ -22,5 +22,13 @@ public class Tax implements Serializable {
         public String create_date;
         public String update_date;
         public String add_update;
+
+        @Override
+        public String toString() {
+            return "\nid = " + id + "\n admin id=" + admin_id
+                    + "\n tax_type=" + tax_type + "\n tax_description=" + tax_description
+                    + "\n tax_rate=" + tax_rate + "\n status=" + status + "\n create_date=" + create_date
+                    + "\n update_date=" + update_date + "\n add_update=" + add_update;
+        }
     }
 }

@@ -26,6 +26,7 @@ public class Employee implements Serializable {
         public String status;
         public String create_date;
         public String update_date;
+        public String contact_person;
         /**
          * 0 - if add
          * 1 - if update
@@ -41,7 +42,7 @@ public class Employee implements Serializable {
                     + "\n imei_number=" + imei_number + "\n type=" + type
                     + "\n branch =" + branch + "\n location=" + location
                     + "\n status=" + status + "\n create_date=" + create_date
-                    + "\n update_date=" + update_date + "\n add_update=" + add_update;
+                    + "\n update_date=" + update_date + "\n add_update=" + add_update + "\n contact_person=" + contact_person;
         }
 
 

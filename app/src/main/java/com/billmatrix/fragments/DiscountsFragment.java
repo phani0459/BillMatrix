@@ -84,6 +84,7 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        ServerUtils.setIsSync(false);
 
         discountsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         Discount.DiscountData defaultDiscount = new Discount().new DiscountData();

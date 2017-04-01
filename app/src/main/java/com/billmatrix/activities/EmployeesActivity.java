@@ -275,7 +275,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
             } else {
                 if (selectedEmptoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-                        employeeFromServer = ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl);
+                        employeeFromServer = ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, profilefromFile.data.contact_person);
                     } else {
                         /**
                          * To show pending sync Icon in database page

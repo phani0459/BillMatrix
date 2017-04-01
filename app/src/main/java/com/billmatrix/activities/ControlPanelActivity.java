@@ -98,7 +98,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         serverData.setPaymentType(null);
         serverData.setContext(mContext);
 
-        copyrightTextView.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
+        copyrightTextView.setText(getString(R.string.copyright, 2016));
 
         String userType = Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_TYPE, null);
         String adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);

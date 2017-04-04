@@ -14,6 +14,7 @@ import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
 import com.billmatrix.models.Tax;
 import com.billmatrix.models.Transaction;
+import com.billmatrix.models.Transport;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 
@@ -71,6 +72,8 @@ import static com.billmatrix.database.DBConstants.TAX_RATE;
 import static com.billmatrix.database.DBConstants.TAX_TABLE;
 import static com.billmatrix.database.DBConstants.TAX_TYPE;
 import static com.billmatrix.database.DBConstants.TOTAL_AMOUNT;
+import static com.billmatrix.database.DBConstants.TRANSPORT_NAME;
+import static com.billmatrix.database.DBConstants.TRANSPORT_TABLE;
 import static com.billmatrix.database.DBConstants.TYPE;
 import static com.billmatrix.database.DBConstants.UNIT;
 import static com.billmatrix.database.DBConstants.UPDATE_DATE;
@@ -796,7 +799,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     }
 
     public boolean updateTax(Tax.TaxData taxData) {
-        Log.e(TAG, "updateTax: " + taxData.toString() );
+        Log.e(TAG, "updateTax: " + taxData.toString());
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(TAX_TYPE, taxData.tax_type);
@@ -1368,7 +1371,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
             if (TextUtils.isEmpty(customerName)) {
                 query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE;
             } else {
-                query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + CUSTOMER_NAME + " = '" + customerName + "'";
+                query = "SELECT * FROM " + CUSTOMER_TRANSACTIONS_TABLE + " WHERE LOWER(" + CUSTOMER_NAME + ") = LOWER('" + customerName + "')";
             }
 
             cursor = db.rawQuery(query, null);
@@ -1488,6 +1491,78 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                 } while (cursor.moveToNext());
 
                 return transactions;
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    /*************************************************
+     * ************* TRANSPORT TRANSACTIONS METHODS*****
+     *************************************************/
+
+    public long addTransport(Transport.TransportData transportData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ID, transportData.id);
+        contentValues.put(TRANSPORT_NAME, transportData.transportName);
+        contentValues.put(PHONE, transportData.phone);
+        contentValues.put(LOCATION, transportData.location);
+        contentValues.put(STATUS, transportData.status);
+        contentValues.put(CREATE_DATE, transportData.create_date);
+        contentValues.put(UPDATE_DATE, transportData.update_date);
+        contentValues.put(ADD_UPDATE, transportData.add_update);
+        contentValues.put(ADMIN_ID, transportData.admin_id);
+
+        return db.insert(TRANSPORT_TABLE, null, contentValues);
+    }
+
+    public boolean deleteTransport(String columnName, String string) {
+        return db.delete(TRANSPORT_TABLE, columnName + "='" + string + "'", null) > 0;
+    }
+
+    public boolean updateTransport(String columnName, String status, String phone) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(columnName, status);
+        return db.update(TRANSPORT_TABLE, contentValues, PHONE + "='" + phone + "'", null) > 0;
+    }
+
+    public ArrayList<Transport.TransportData> getTransports() {
+        Cursor cursor = null;
+        try {
+            String query = "SELECT * FROM " + TRANSPORT_TABLE;
+
+            cursor = db.rawQuery(query, null);
+            if (cursor.moveToFirst()) {
+                ArrayList<Transport.TransportData> transportDatas = new ArrayList<>();
+                do {
+                    Transport.TransportData transportData = new Transport().new TransportData();
+                    transportData.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ID));
+                    transportData.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADMIN_ID));
+                    transportData.transportName = cursor.getString(cursor
+                            .getColumnIndexOrThrow(TRANSPORT_NAME));
+                    transportData.phone = cursor.getString(cursor
+                            .getColumnIndexOrThrow(PHONE));
+                    transportData.location = cursor.getString(cursor
+                            .getColumnIndexOrThrow(LOCATION));
+                    transportData.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UPDATE_DATE));
+                    transportData.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CREATE_DATE));
+                    transportData.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
+                    transportData.status = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(STATUS)));
+                    transportDatas.add(transportData);
+                } while (cursor.moveToNext());
+
+                return transportDatas;
             }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

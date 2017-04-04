@@ -93,7 +93,7 @@ public class VendorReportsFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, fromDate_EditText, true);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, fromDate_EditText, true, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();

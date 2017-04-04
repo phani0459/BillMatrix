@@ -228,6 +228,10 @@
     <string name="bill_footer">BILL FOOTER</string>
     <string name="thanku_visit_again">THANK YOU \n VISIT AGAIN</string>
 
+    <!-- Transport strings -->
+    <string name="add_to_bill">ADD TO A BLL</string>
+    <string name="transport_name">Transport Name</string>
+
     <!-- Database Strings-->
     <string name="last_sync_date">LAST SYNCHRONIZED DATE : </string>
     <string name="sync_note">NOTE : SALES SYNCHRONIZATION IS UPTO MAXIMUM 3 MONTHS OLDER DATA</string>
@@ -270,6 +274,10 @@
     <string name="select_pos_customer">SELECT CUSTOMER</string>
     <string name="add_guest_as_customer">ADD GUEST AS CUSTOMER</string>
     <string name="add_new_customer">ADD NEW CUSTOMER</string>
+    <string name="transport_details">TRANSPORT DETAILS</string>
+    <string name="transport_service_name">Transport Service Name</string>
+    <string name="consign_no">LR / Consignment No</string>
+    <string name="dispatch_date">Dispatch Date</string>
     <string name="customer_name">Customer Name</string>
     <string name="YES">YES</string>
     <string name="Payments">Payments</string>
@@ -288,6 +296,9 @@
     <!-- Hardware Strings-->
     <string name="below_components_detected">BELOW HARDWARE COMPONENTS ARE DETECTED</string>
     <string name="place_holder_for_connected_devices">PLACE HOLDER FOR MANAGING CONNECTED HARDWARE</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

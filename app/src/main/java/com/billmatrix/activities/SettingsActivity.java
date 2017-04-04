@@ -12,6 +12,7 @@ import com.billmatrix.fragments.DiscountsFragment;
 import com.billmatrix.fragments.HardwareFragment;
 import com.billmatrix.fragments.StoreFragment;
 import com.billmatrix.fragments.TaxFragment;
+import com.billmatrix.fragments.TransportFragment;
 import com.billmatrix.models.Tax;
 import com.billmatrix.utils.Utils;
 
@@ -98,7 +99,7 @@ public class SettingsActivity extends BaseTabActivity {
         } else if (selectedTab.equalsIgnoreCase("DISCOUNTS")) {
             currentFragment = DiscountsFragment.getInstance();
         } else if (selectedTab.equalsIgnoreCase("TRANSPORT")) {
-            currentFragment = new HardwareFragment();
+            currentFragment = new TransportFragment();
         }
 
         if (isInit) {

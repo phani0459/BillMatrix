@@ -59,7 +59,7 @@ public class Utils {
         return true;
     }
 
-    public static DatePickerDialog dateDialog(Context mContext, final Object fromEditText, boolean onlyPastDates) {
+    public static DatePickerDialog dateDialog(Context mContext, final Object fromEditText, boolean onlyPastDates, boolean onlyFutureDates) {
         if (fromEditText instanceof EditText) {
             hideSoftKeyboard((EditText) fromEditText);
         }
@@ -80,6 +80,8 @@ public class Utils {
 
         if (onlyPastDates) {
             fromDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        } else if (onlyFutureDates) {
+            fromDatePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         }
 
         return fromDatePickerDialog;

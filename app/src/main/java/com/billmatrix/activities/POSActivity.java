@@ -349,6 +349,59 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         }
     }
 
+    /*
+    Show transport diaolog
+     */
+    @OnClick(R.id.im_pos_transport)
+    public void showTransportDialog(View v) {
+        final Dialog dialog = new Dialog(mContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_pos_transport);
+        dialog.setCancelable(false);
+
+        final EditText dispatchDate = (EditText) dialog.findViewById(R.id.et_pos_dispatch_date);
+        final TextView customerName = (TextView) dialog.findViewById(R.id.tv_pos_transport_cust_name);
+        Button saveTransportButton = (Button) dialog.findViewById(R.id.btn_save_transport);
+        Button close = (Button) dialog.findViewById(R.id.btn_close_transport_dialog);
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        saveTransportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dispatchDate.setInputType(InputType.TYPE_NULL);
+        final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dispatchDate, false, true);
+
+        dispatchDate.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!datePickerDialog.isShowing()) {
+                    Utils.hideSoftKeyboard(dispatchDate);
+                    datePickerDialog.show();
+                }
+                return false;
+            }
+        });
+
+        if (selectedCustomer != null) {
+            customerName.setText(selectedCustomer.username);
+        } else {
+            Utils.showToast("Select Customer", mContext);
+            return;
+        }
+
+        dialog.show();
+    }
+
     @OnClick(R.id.rl_pos_cust_edit)
     public void showCustomerDetailsDialog() {
 
@@ -375,7 +428,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         Button close = (Button) dialog.findViewById(R.id.btn_close_cust_details_dialog);
 
         customerDate.setInputType(InputType.TYPE_NULL);
-        final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate, true);
+        final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate, true, false);
 
         customerDate.setOnTouchListener(new View.OnTouchListener() {
             @Override

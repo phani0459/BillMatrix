@@ -427,6 +427,7 @@
                     android:weightSum="6">
 
                     <ImageView
+                        android:id="@+id/im_pos_transport"
                         android:layout_width="0dp"
                         android:layout_height="32dp"
                         android:layout_marginRight="8dp"

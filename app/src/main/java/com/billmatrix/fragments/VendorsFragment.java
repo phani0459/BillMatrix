@@ -105,7 +105,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, vendorSince_EditText, true);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, vendorSince_EditText, true, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -250,8 +250,6 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         vendorData.since = vendorSince;
         vendorData.admin_id = adminId;
         vendorData.status = "1";
-
-        Log.e(TAG, "vendorData: " + vendorData.add_update);
 
         long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
 

@@ -23,6 +23,13 @@ class BillMatrixDBHandler extends DBHandler {
             + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR,"
             + DBConstants.ID + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR" + ")";
 
+    private final static String CREATE_TRANSPORT_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + DBConstants.TRANSPORT_TABLE + " (" + DBConstants.SNO
+            + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.TRANSPORT_NAME + " VARCHAR,"
+            + DBConstants.PHONE + " VARCHAR UNIQUE COLLATE NOCASE," + DBConstants.LOCATION + " VARCHAR," + DBConstants.ID + " VARCHAR,"
+            + DBConstants.ADD_UPDATE + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR,"
+            + DBConstants.CREATE_DATE + " VARCHAR" + ")";
+
     private final static String CREATE_VENDOR_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.VENDORS_TABLE + " (" + DBConstants.SNO
             + " INTEGER PRIMARY KEY AUTOINCREMENT," + DBConstants.VENDOR_NAME + " VARCHAR UNIQUE COLLATE NOCASE,"
@@ -93,6 +100,7 @@ class BillMatrixDBHandler extends DBHandler {
         db.execSQL(CREATE_POS_ITEMS_TABLE);
         db.execSQL(CREATE_PAYMENTS_TABLE);
         db.execSQL(CREATE_CUSTOMER_TRANSACTIONS_TABLE);
+        db.execSQL(CREATE_TRANSPORT_TABLE);
     }
 
     @Override

@@ -83,7 +83,6 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
         if (savedInstanceState != null) {
             selectedCusttoEdit = (Customer.CustomerData) savedInstanceState.getSerializable("EDIT_CUSTOMER");
             if (selectedCusttoEdit != null) {
-                Log.e(TAG, "onCreateView: " + selectedCusttoEdit.username);
                 isEditing = false;
                 onItemClick(2, -1);
             }
@@ -120,7 +119,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     Utils.hideSoftKeyboard(customerNameEditText);
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate_EditText, true);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, customerDate_EditText, true, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -315,6 +314,10 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                if (isEditing) {
+                    Utils.showToast("Save present editing customer before deleting other customer", mContext);
+                    return;
+                }
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Customer", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

@@ -94,7 +94,7 @@ public class GenExpensesFragment extends Fragment implements OnItemClickListener
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();

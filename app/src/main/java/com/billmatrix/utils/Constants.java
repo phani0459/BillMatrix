@@ -57,6 +57,7 @@ public class Constants {
     public static final String PREF_HnF_EDITED_OFFLINE = "HnFOffline";
     public static final String PREF_GEN_REPORT_EDITED_OFFLINE = "GenRepOffline";
     public static final String PREF_TAXES_EDITED_OFFLINE = "TaxesOffline";
+    public static final String PREF_TRANSPORT_EDITED_OFFLINE = "TransportOffline";
 
 
     /**

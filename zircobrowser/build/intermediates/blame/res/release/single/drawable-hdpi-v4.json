@@ -176,12 +176,12 @@
         "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\drawable-hdpi\\gd_quick_action_arrow_up.png"
     },
     {
-        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\drawable-hdpi-v4\\ic_btn_open_tab.png",
-        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\drawable-hdpi\\ic_btn_open_tab.png"
-    },
-    {
         "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\drawable-hdpi-v4\\btn_bottom_disabled.9.png",
         "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\drawable-hdpi\\btn_bottom_disabled.9.png"
+    },
+    {
+        "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\drawable-hdpi-v4\\ic_btn_open_tab.png",
+        "source": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\src\\main\\res\\drawable-hdpi\\ic_btn_open_tab.png"
     },
     {
         "merged": "D:\\AndroidStudioProjects\\BillMatrix\\zircobrowser\\build\\intermediates\\res\\merged\\release\\drawable-hdpi-v4\\default_video_poster.png",

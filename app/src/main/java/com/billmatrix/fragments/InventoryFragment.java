@@ -185,7 +185,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         }
 
         dateEditText.setInputType(InputType.TYPE_NULL);
-        final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true);
+        final DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true, false);
 
         dateEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override

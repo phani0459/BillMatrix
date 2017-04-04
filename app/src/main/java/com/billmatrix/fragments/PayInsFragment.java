@@ -113,7 +113,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true);
+                    DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, dateEditText, true, false);
                     datePickerDialog.show();
                 }
                 v.clearFocus();

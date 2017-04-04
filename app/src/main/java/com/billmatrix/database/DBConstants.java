@@ -40,6 +40,7 @@ public class DBConstants {
     final static String DISCOUNT_TABLE = "TABLE_DISCOUNT";
     public final static String PAYMENTS_TABLE = "TABLE_PAYMENTS";
     public final static String POS_ITEMS_TABLE = "TABLE_POS_ITEMS";
+    public final static String TRANSPORT_TABLE = "TABLE_TRANSPORT";
     public final static String CUSTOMER_TRANSACTIONS_TABLE = "TABLE_TRANSACTIONS";
 
     /**
@@ -115,6 +116,11 @@ public class DBConstants {
     final static String TOTAL_AMOUNT = "totalAmount";
     final static String AMOUNT_PAID = "amountPaid";
     final static String AMOUNT_DUE = "amountDue";
+
+    /**
+     * TRansport columns
+     */
+    public final static String TRANSPORT_NAME = "payee_name";
 
     static final String TAG = "BillMatrix_DataBase";
 }

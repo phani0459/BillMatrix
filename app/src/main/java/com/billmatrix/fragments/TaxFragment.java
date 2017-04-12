@@ -302,6 +302,10 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                if (isEditing) {
+                    Utils.showToast("Save present editing Tax before deleting other Tax", mContext);
+                    return;
+                }
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Tax Type", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

@@ -137,7 +137,7 @@ public class ServerData {
     }
 
     public void getCustomersFromServer(final String adminId) {
-        ArrayList<Customer.CustomerData> customersfromDB = billMatrixDaoImpl.getCustomers();
+        ArrayList<Customer.CustomerData> customersfromDB = billMatrixDaoImpl.getCustomers(adminId);
         if (customersfromDB != null && customersfromDB.size() > 0) {
             getVendorsFromServer(adminId);
         } else {

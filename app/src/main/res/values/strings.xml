@@ -231,6 +231,7 @@
     <!-- Transport strings -->
     <string name="add_to_bill">ADD TO A BLL</string>
     <string name="transport_name">Transport Name</string>
+    <string name="transport">TRANSPORT</string>
 
     <!-- Database Strings-->
     <string name="last_sync_date">LAST SYNCHRONIZED DATE : </string>

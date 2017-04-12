@@ -711,7 +711,7 @@ public class ServerUtils {
                     HashMap<String, String> paymentStatus = response.body();
                     if (paymentStatus.get("status").equalsIgnoreCase("200")) {
                         if (paymentStatus.containsKey("delete_payment") && paymentStatus.get("delete_payment").equalsIgnoreCase("success")) {
-                            if (!isSync) Utils.showToast("Customer Deleted successfully", mContext);
+                            if (!isSync) Utils.showToast("Payment Deleted successfully", mContext);
                             billMatrixDaoImpl.deletePayment(DBConstants.ID, paymentData.id);
                         }
                     }

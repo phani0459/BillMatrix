@@ -85,11 +85,15 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
     public ImageView generatedReportSyncIcon;
     @BindView(R.id.im_taxes_sync)
     public ImageView taxesSyncIcon;
+    @BindView(R.id.im_transport_sync)
+    public ImageView transportSyncIcon;
 
     @BindView(R.id.cb_inventory_sync)
     public CheckBox inventorySyncCheckbox;
     @BindView(R.id.cb_taxes_sync)
     public CheckBox taxesSyncCheckbox;
+    @BindView(R.id.cb_transport_sync)
+    public CheckBox trasnsportSyncCheckbox;
     @BindView(R.id.cb_customers_sync)
     public CheckBox customersSyncCheckbox;
     @BindView(R.id.cb_reports_sync)
@@ -123,7 +127,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (inventorySyncCheckbox.isChecked() || customersSyncCheckbox.isChecked() ||
                 reportsSyncCheckbox.isChecked() || purchasesSyncCheckbox.isChecked() ||
-                salesSyncCheckbox.isChecked() || employeesSyncCheckbox.isChecked() ||
+                salesSyncCheckbox.isChecked() || employeesSyncCheckbox.isChecked() || trasnsportSyncCheckbox.isChecked() ||
                 vendorsSyncCheckbox.isChecked() || discountSyncCheckbox.isChecked() || taxesSyncCheckbox.isChecked() ||
                 headerFooterSyncCheckbox.isChecked() || generatedReportSyncCheckbox.isChecked()) {
             syncButton.setEnabled(true);
@@ -201,6 +205,11 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                 generatedReportSyncIcon.setImageResource(R.drawable.sync_grey);
                 checkNextSyncItem();
                 break;
+            case 11:
+                trasnsportSyncCheckbox.setChecked(false);
+                transportSyncIcon.setImageResource(R.drawable.sync_grey);
+                checkNextSyncItem();
+                break;
         }
     }
 
@@ -237,6 +246,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         headerFooterSyncCheckbox.setOnCheckedChangeListener(this);
         generatedReportSyncCheckbox.setOnCheckedChangeListener(this);
         taxesSyncCheckbox.setOnCheckedChangeListener(this);
+        trasnsportSyncCheckbox.setOnCheckedChangeListener(this);
 
         /**
          * If edited offline true, set pending sync icon
@@ -286,6 +296,10 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
             taxesSyncIcon.setImageResource(R.drawable.sync_red);
         }
 
+        if (Utils.getSharedPreferences(mContext).getBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, false)) {
+            transportSyncIcon.setImageResource(R.drawable.sync_red);
+        }
+
         return v;
     }
 
@@ -325,6 +339,8 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
             syncInventory(ServerUtils.STATUS_DELETING);
         } else if (generatedReportSyncCheckbox.isChecked()) {
             //TODO sync Generated Reports
+        } else if (trasnsportSyncCheckbox.isChecked()) {
+            //TODO sync Trasnports
         }
     }
 
@@ -528,7 +544,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
     private void syncCustomers(int currentStatus) {
         customersSyncIcon.setImageResource(R.drawable.sync_green);
 
-        ArrayList<Customer.CustomerData> dbCustomers = billMatrixDaoImpl.getCustomers();
+        ArrayList<Customer.CustomerData> dbCustomers = billMatrixDaoImpl.getCustomers(adminId);
         ArrayList<Customer.CustomerData> deletedCustomers = new ArrayList<>();
         ArrayList<Customer.CustomerData> addedCustomers = new ArrayList<>();
         ArrayList<Customer.CustomerData> updatedCustomers = new ArrayList<>();

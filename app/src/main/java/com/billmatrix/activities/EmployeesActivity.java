@@ -329,6 +329,10 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                if (isEditing) {
+                    Utils.showToast("Save present editing employee before deleting other employee", mContext);
+                    return;
+                }
                 showAlertDialog("Are you sure?", "You want to delete employee", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

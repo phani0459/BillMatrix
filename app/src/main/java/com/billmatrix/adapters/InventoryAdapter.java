@@ -28,7 +28,7 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
     private final BillMatrixDaoImpl billMatrixDaoImpl;
     private List<Inventory.InventoryData> inventoryDatas;
     OnItemClickListener onItemClickListener;
-    InventoryFragment inventoryFragment;
+    private InventoryFragment inventoryFragment;
     private View lastChecked = null;
     private int lastCheckedPos = -1;
 

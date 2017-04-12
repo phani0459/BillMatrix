@@ -350,6 +350,11 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                if (isEditing) {
+                    Utils.showToast("Save present editing Vendor before deleting other Vendor", mContext);
+                    return;
+                }
+
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Vendor", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

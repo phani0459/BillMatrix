@@ -95,7 +95,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener {
 
         contactEditText.setFilters(Utils.getInputFilter(10));
 
-        ArrayList<Customer.CustomerData> dbCustomers = billMatrixDaoImpl.getCustomers();
+        ArrayList<Customer.CustomerData> dbCustomers = billMatrixDaoImpl.getCustomers(adminId);
 
         if (dbCustomers != null && dbCustomers.size() > 0) {
             for (Customer.CustomerData customer : dbCustomers) {

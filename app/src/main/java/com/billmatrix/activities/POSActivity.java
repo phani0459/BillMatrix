@@ -63,6 +63,7 @@ import com.billmatrix.models.Discount;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Transaction;
+import com.billmatrix.models.Transport;
 import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.ConnectivityReceiver;
 import com.billmatrix.utils.Constants;
@@ -211,7 +212,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         customerNames.add("SELECT CUSTOMER");
         customerNames.add("GUEST CUSTOMER " + guestCustomerCount);
 
-        dbCustomers = billMatrixDaoImpl.getCustomers();
+        dbCustomers = billMatrixDaoImpl.getCustomers(adminId);
 
         if (dbCustomers != null && dbCustomers.size() > 0) {
             for (Customer.CustomerData customer : dbCustomers) {
@@ -354,6 +355,18 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
      */
     @OnClick(R.id.im_pos_transport)
     public void showTransportDialog(View v) {
+
+        ArrayList<Transport.TransportData> transportDatas = billMatrixDaoImpl.getTransports();
+        ArrayList<String> transports = new ArrayList<>();
+
+        if (transportDatas != null && transportDatas.size() > 0) {
+            for (Transport.TransportData transportData : transportDatas) {
+                if (!transportData.status.equalsIgnoreCase("-1")) {
+                    transports.add(transportData.transportName);
+                }
+            }
+        }
+
         final Dialog dialog = new Dialog(mContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_pos_transport);
@@ -361,8 +374,16 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         final EditText dispatchDate = (EditText) dialog.findViewById(R.id.et_pos_dispatch_date);
         final TextView customerName = (TextView) dialog.findViewById(R.id.tv_pos_transport_cust_name);
+        final Spinner transportsSpinner = (Spinner) dialog.findViewById(R.id.sp_transport_service_name);
         Button saveTransportButton = (Button) dialog.findViewById(R.id.btn_save_transport);
         Button close = (Button) dialog.findViewById(R.id.btn_close_transport_dialog);
+
+        if (transports.size() > 0) {
+            Utils.loadSpinner(transportsSpinner, mContext, transports);
+        } else {
+            Utils.showToast("Please add Transport in Settings Page", mContext);
+            return;
+        }
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override

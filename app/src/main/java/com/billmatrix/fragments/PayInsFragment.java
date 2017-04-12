@@ -83,17 +83,17 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         List<Customer.CustomerData> customers = new ArrayList<>();
         customerNames = new ArrayList<>();
+        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         if (savedInstanceState != null) {
             selectedPaymenttoEdit = (Payments.PaymentData) savedInstanceState.getSerializable("EDIT_PAY");
             if (selectedPaymenttoEdit != null) {
-                Log.e(TAG, "onCreateView: " + selectedPaymenttoEdit.date_of_payment);
                 isEditing = false;
                 onItemClick(2, -1);
             }
         }
 
-        customers = billMatrixDaoImpl.getCustomers();
+        customers = billMatrixDaoImpl.getCustomers(adminId);
 
         if (customers != null && customers.size() > 0) {
             for (Customer.CustomerData customer : customers) {
@@ -127,7 +127,6 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
         payInsAdapter = new PayInsAdapter(paymentsfromDB, this);
         payInsRecyclerView.setAdapter(payInsAdapter);
 
-        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
         paymentsfromDB = billMatrixDaoImpl.getPayments(PaymentsActivity.PAYIN);
 
         if (paymentsfromDB != null && paymentsfromDB.size() > 0) {
@@ -305,6 +304,10 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                if (isEditing) {
+                    Utils.showToast("Save present editing Payment before deleting other Payment", mContext);
+                    return;
+                }
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete this Payment?", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

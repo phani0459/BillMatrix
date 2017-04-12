@@ -335,6 +335,10 @@ public class PayOutsFragment extends Fragment implements OnItemClickListener, On
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                if (isEditing) {
+                    Utils.showToast("Save present editing Payment before deleting other Payment", mContext);
+                    return;
+                }
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Pay out?", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

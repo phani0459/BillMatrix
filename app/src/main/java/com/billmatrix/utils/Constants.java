@@ -81,7 +81,7 @@ public class Constants {
     public static String DATA_FROM_SERVER = "-1";
 
 
-    public static int DEFAULT_INVENTORY_SHOW_SIZE = 10;
+    public static int DEFAULT_INVENTORY_SHOW_SIZE = 1000;
     public static final long PRINTER_DISCOVERY_TIME = 10000;
 
 

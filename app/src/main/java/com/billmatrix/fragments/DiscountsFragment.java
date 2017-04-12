@@ -307,6 +307,10 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                if (isEditing) {
+                    Utils.showToast("Save present editing Discount before deleting other Discount", mContext);
+                    return;
+                }
                 ((BaseTabActivity) mContext).showAlertDialog("Are you sure?", "You want to delete Discount Type", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

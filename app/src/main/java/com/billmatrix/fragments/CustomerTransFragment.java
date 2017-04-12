@@ -72,6 +72,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
     private ArrayList<String> customerNames;
     private ArrayList<String> bills;
     private TransactionsAdapter transactionsAdapter;
+    private String adminId;
 
     public CustomerTransFragment() {
         // Required empty public constructor
@@ -85,10 +86,11 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
         List<Customer.CustomerData> customers = new ArrayList<>();
         customerNames = new ArrayList<>();
 
-        customers = billMatrixDaoImpl.getCustomers();
+        customers = billMatrixDaoImpl.getCustomers(adminId);
 
         if (customers != null && customers.size() > 0) {
             for (Customer.CustomerData customer : customers) {

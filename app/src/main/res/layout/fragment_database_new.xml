@@ -364,6 +364,30 @@
                     android:text="@string/generated_report"
                     android:textColor="@android:color/black" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/im_transport_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/sync_grey" />
+
+                <CheckBox
+                    android:id="@+id/cb_transport_sync"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/transport"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 

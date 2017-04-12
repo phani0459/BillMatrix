@@ -465,12 +465,19 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(CUSTOMERS_TABLE, contentValues, CUSTOMER_CONTACT + "='" + customerMobile + "'", null) > 0;
     }
 
-    public ArrayList<Customer.CustomerData> getCustomers() {
+    public ArrayList<Customer.CustomerData> getCustomers(String adminID) {
         Cursor cursor = null;
         try {
-            cursor = db.query(CUSTOMERS_TABLE, null,
-                    SNO + "<>?", new String[]{""},
-                    null, null, null);
+
+            if (TextUtils.isEmpty(adminID)) {
+                cursor = db.query(CUSTOMERS_TABLE, null,
+                        SNO + "<>?", new String[]{""},
+                        null, null, null);
+            } else {
+                cursor = db.query(CUSTOMERS_TABLE, null,
+                        ADMIN_ID + " = ?", new String[]{adminID},
+                        null, null, null);
+            }
 
             if (cursor.moveToFirst()) {
                 List<Customer.CustomerData> customers = new ArrayList<>();

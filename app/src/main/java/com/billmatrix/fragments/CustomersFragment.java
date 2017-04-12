@@ -77,6 +77,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
         mContext = getActivity();
 
         Utils.loadSpinner(custStatusSpinner, mContext, R.array.employee_status);
+        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
         mContext = getActivity();
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
@@ -97,7 +98,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
         customersAdapter = new CustomersAdapter(customers, this);
         customersRecyclerView.setAdapter(customersAdapter);
 
-        customers = billMatrixDaoImpl.getCustomers();
+        customers = billMatrixDaoImpl.getCustomers(adminId);
 
         if (customers != null && customers.size() > 0) {
             for (Customer.CustomerData customerData : customers) {
@@ -167,7 +168,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
 
     @Override
     public void onDataFetch(int dataFetched) {
-        ArrayList<Customer.CustomerData> customers = billMatrixDaoImpl.getCustomers();
+        ArrayList<Customer.CustomerData> customers = billMatrixDaoImpl.getCustomers(adminId);
 
         if (customers != null && customers.size() > 0) {
             for (Customer.CustomerData customerData : customers) {

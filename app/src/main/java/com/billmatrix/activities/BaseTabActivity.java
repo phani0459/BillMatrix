@@ -200,9 +200,11 @@ public abstract class BaseTabActivity extends AppCompatActivity implements Conne
     @OnTouch(R.id.tv_settings)
     public boolean settings(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            Intent intent = new Intent(mContext, SettingsActivity.class);
-            startActivity(intent);
-            finish();
+            if (!mContext.toString().contains("SettingsActivity")) {
+                Intent intent = new Intent(mContext, SettingsActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
         return false;
     }

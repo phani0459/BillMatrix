@@ -57,6 +57,7 @@ public class CustomerWiseDueFragment extends Fragment implements OnItemClickList
 
     private ArrayList<String> customerNames;
     private DuesAdapter duesAdapter;
+    private String adminId;
 
 
     public CustomerWiseDueFragment() {
@@ -73,8 +74,9 @@ public class CustomerWiseDueFragment extends Fragment implements OnItemClickList
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
         List<Customer.CustomerData> customers = new ArrayList<>();
         customerNames = new ArrayList<>();
+        adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
 
-        customers = billMatrixDaoImpl.getCustomers();
+        customers = billMatrixDaoImpl.getCustomers(adminId);
 
         if (customers != null && customers.size() > 0) {
             for (Customer.CustomerData customer : customers) {

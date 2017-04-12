@@ -174,7 +174,6 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
         Utils.loadSpinner(unitSpinner, mContext, R.array.units_array);
         generatedBarCodeTextView.setText(getString(R.string.BAR_CODE_GENERATED) + "\n" + "XXXXXXXX");
-        barCodeEditText.setFilters(Utils.getInputFilter(12));
 
         if (savedInstanceState != null) {
             selectedInventorytoEdit = (Inventory.InventoryData) savedInstanceState.getSerializable("EDIT_INVENTORY");
@@ -349,12 +348,20 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
     @OnClick(R.id.btn_barcode_go)
     public void barcodeGo() {
+
+        if (isEditing) {
+            Utils.showToast("Save present editing Inventory before scanning other Inventory", mContext);
+            return;
+        }
+
         if (scanBarCodeButton.getText().toString().equalsIgnoreCase(getString(R.string.BAR_CODE))) {
             Utils.showToast("Scan Barcode to add Item", mContext);
             return;
         }
 
-        Utils.showToast("barcode Scanned: " + scanBarCodeButton.getText().toString(), mContext);
+        barCodeEditText.setText(scanBarCodeButton.getText().toString());
+
+        Utils.showToast("Add all Item Details to save Inventory", mContext);
 
         scanBarCodeButton.setText(getString(R.string.BAR_CODE));
 
@@ -505,7 +512,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         String barcode = barCodeEditText.getText().toString();
 
         if (!TextUtils.isEmpty(barcode.trim())) {
-            if (barcode.length() < 10) {
+            if (barcode.length() < 13) {
                 Utils.showToast("Enter valid Barcode", mContext);
                 return;
             }
@@ -607,6 +614,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
     public void onItemClick(int caseInt, final int position) {
         switch (caseInt) {
             case 1:
+                if (isEditing) {
+                    Utils.showToast("Save present editing Inventory before deleting other Inventory", mContext);
+                    return;
+                }
+
                 /**
                  * Reset bottom layout fields
                  */

@@ -62,7 +62,6 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.lvrenyang.pos.Cmd;
 import com.lvrenyang.utils.DataUtils;
 
 import org.zirco.myprinter.Global;
@@ -208,7 +207,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
         if (vendors != null && vendors.size() > 0) {
             for (Vendor.VendorData vendorData : vendors) {
-                strings.add(vendorData.name);
+                strings.add(vendorData.name.toUpperCase());
             }
 
         }
@@ -552,8 +551,6 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         inventoryData.photo = photo;
         inventoryData.status = "1";
 
-        Log.e(TAG, "addInventory: " + inventoryData.add_update );
-
         long inventoryAdded = billMatrixDaoImpl.addInventory(inventoryData);
 
         if (inventoryAdded != -1) {
@@ -572,6 +569,8 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             vendorSpinner.setSelection(0);
             barCodeEditText.setText("");
             photoEditText.setText("");
+
+            Log.e(TAG, "addInventory: "  + inventoryData.toString() );
 
             if (addInventoryButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
@@ -674,7 +673,11 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                         barCodeEditText.setText(selectedInventorytoEdit.barcode);
                         photoEditText.setText(selectedInventorytoEdit.photo);
                         try {
-                            int vendorSelectedPosition = vendorSpinnerAdapter.getPosition(selectedInventorytoEdit.vendor);
+                            String vendorName = selectedInventorytoEdit.vendor;
+                            if (TextUtils.isDigitsOnly(selectedInventorytoEdit.vendor)) {
+                                vendorName = billMatrixDaoImpl.getVendorName(selectedInventorytoEdit.vendor);
+                            }
+                            int vendorSelectedPosition = vendorSpinnerAdapter.getPosition(vendorName.toUpperCase());
                             vendorSpinner.setSelection(vendorSelectedPosition);
                         } catch (Exception e) {
                             e.printStackTrace();

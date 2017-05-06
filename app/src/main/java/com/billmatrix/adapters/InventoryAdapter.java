@@ -3,6 +3,7 @@ package com.billmatrix.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,9 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
     private InventoryFragment inventoryFragment;
     private View lastChecked = null;
     private int lastCheckedPos = -1;
+
+    // Start with first item selected
+    private int focusedItem = -1;
 
     public class VendorHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_item_inven_sno)
@@ -62,10 +66,73 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         @BindView(R.id.im_item_Inven_del)
         ImageView deleteImageView;
 
-        public VendorHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
+        public VendorHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+
+            // Handle item click and set the selection
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!inventoryFragment.isEditing) {
+                        // Redraw the old selection and the new
+                        if (focusedItem != getLayoutPosition()) {
+                            notifyItemChanged(focusedItem);
+                            onItemClickListener.onItemClick(4, focusedItem);
+
+                            focusedItem = getLayoutPosition();
+                            notifyItemChanged(focusedItem);
+                            onItemClickListener.onItemClick(3, focusedItem);
+                        } else {
+                            focusedItem = -1;
+                            notifyItemChanged(getLayoutPosition());
+                            onItemClickListener.onItemClick(4, getLayoutPosition());
+                        }
+                    } else {
+                        Utils.showToast("Please edit selected inventory before selecting other inventory", mContext);
+                    }
+                }
+            });
         }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+
+        // Handle key up and key down and attempt to move selection
+        recyclerView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+
+                // Return false if scrolled to the bounds and allow focus to move off the list
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                        return tryMoveSelection(lm, 1);
+                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                        return tryMoveSelection(lm, -1);
+                    }
+                }
+
+                return false;
+            }
+        });
+    }
+
+    private boolean tryMoveSelection(RecyclerView.LayoutManager lm, int direction) {
+        int tryFocusItem = focusedItem + direction;
+
+        // If still within valid bounds, move the selection, notify to redraw, and scroll
+        if (tryFocusItem >= 0 && tryFocusItem < getItemCount()) {
+            notifyItemChanged(focusedItem);
+            focusedItem = tryFocusItem;
+            notifyItemChanged(focusedItem);
+            lm.scrollToPosition(focusedItem);
+            return true;
+        }
+
+        return false;
     }
 
     public void deleteInventory(int position) {
@@ -110,10 +177,11 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
     }
 
     @Override
-    public void onBindViewHolder(VendorHolder holder, final int position) {
+    public void onBindViewHolder(final VendorHolder holder, int position) {
         Inventory.InventoryData inventoryData = inventoryDatas.get(position);
 
-        final View itemView = (View) holder.snoTextView.getParent();
+        // Set selected state; use a state list drawable to style the view
+        holder.itemView.setSelected(focusedItem == position);
 
         holder.snoTextView.setText("" + (position + 1));
         holder.itemCodeTextView.setText(inventoryData.item_code);
@@ -131,49 +199,18 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Vend
         holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lastChecked != null) {
-                    lastCheckedPos = -1;
-                    lastChecked.setSelected(false);
-                }
-                onItemClickListener.onItemClick(1, position);
+                focusedItem = -1;
+                holder.itemView.setSelected(false);
+                onItemClickListener.onItemClick(1, holder.getAdapterPosition());
             }
         });
 
         holder.editImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lastChecked != null) {
-                    lastCheckedPos = -1;
-                    lastChecked.setSelected(false);
-                }
-                onItemClickListener.onItemClick(2, position);
-            }
-        });
-
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!inventoryFragment.isEditing) {
-                    if (lastCheckedPos != position) {
-
-                        if (lastChecked != null) {
-                            lastChecked.setSelected(false);
-                        }
-
-                        v.setSelected(true);
-                        lastCheckedPos = position;
-                        lastChecked = v;
-                        onItemClickListener.onItemClick(3, position);
-                    } else {
-                        if (lastChecked != null) {
-                            lastCheckedPos = -1;
-                            lastChecked.setSelected(false);
-                            onItemClickListener.onItemClick(4, position);
-                        }
-                    }
-                } else {
-                    Utils.showToast("Please edit selected inventory before selecting other inventory", mContext);
-                }
+                focusedItem = -1;
+                holder.itemView.setSelected(false);
+                onItemClickListener.onItemClick(2, holder.getAdapterPosition());
             }
         });
     }

@@ -90,8 +90,13 @@ public class ServerUtils {
                             billMatrixDaoImpl.updateCustomer(customerData);
 
                         } else {
-                            if (!isSync)
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
                                 Utils.showToast(customerStatus.create_customer + "", mContext);
+                            }
                         }
                     }
                 }
@@ -105,6 +110,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding Customer to server", mContext);
+                }
             }
         });
 
@@ -144,6 +156,14 @@ public class ServerUtils {
                             customerData.add_update = Constants.DATA_FROM_SERVER;
 
                             billMatrixDaoImpl.updateCustomer(customerData);
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast("There was a problem updating Customer to server", mContext);
+                            }
                         }
                     }
                 }
@@ -157,6 +177,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem updating Customer to server", mContext);
+                }
             }
         });
         return customerData;
@@ -256,6 +283,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateEmployee> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem updating Employee to server", mContext);
+                }
             }
         });
 
@@ -354,6 +388,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateEmployee> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding Employee to server", mContext);
+                }
             }
         });
         return employeeData;
@@ -409,6 +450,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding Vendor to server", mContext);
+                }
             }
         });
 
@@ -464,6 +512,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem updating Vendor to server", mContext);
+                }
             }
         });
         return vendorData;
@@ -561,6 +616,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem updating Inventory to server", mContext);
+                }
             }
         });
 
@@ -601,6 +663,13 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem deleting Inventory in server", mContext);
+                }
             }
         });
     }

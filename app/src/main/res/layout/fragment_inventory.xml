@@ -57,19 +57,20 @@
                         android:layout_marginRight="16dp"
                         android:background="@drawable/edit_text_border"
                         android:hint="@string/BAR_CODE"
+                        android:maxWidth="176dp"
                         android:minWidth="176dp"
                         android:padding="8dp"
                         android:singleLine="true"
                         android:textColor="@android:color/black" />
 
                     <Button
+                        android:id="@+id/btn_barcode_go"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
                         android:layout_gravity="center"
                         android:background="@drawable/green_button"
                         android:gravity="center"
-                        android:id="@+id/btn_barcode_go"
                         android:text="@string/go"
                         android:textColor="@android:color/white" />
                 </LinearLayout>
@@ -239,6 +240,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="12dp"
                             android:gravity="center"
+                            android:maxWidth="48dp"
                             android:minWidth="48dp"
                             android:padding="6dp"
                             android:textColor="@android:color/black" />
@@ -252,10 +254,10 @@
                             android:background="@drawable/edit_text_border"
                             android:gravity="center"
                             android:imeOptions="actionNext"
+                            android:maxWidth="104dp"
                             android:minWidth="104dp"
                             android:nextFocusRight="@+id/et_inven_item_name"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <EditText
@@ -267,9 +269,9 @@
                             android:background="@drawable/edit_text_border"
                             android:gravity="center"
                             android:imeOptions="actionDone"
+                            android:maxWidth="148dp"
                             android:minWidth="148dp"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <LinearLayout
@@ -278,6 +280,7 @@
                             android:layout_gravity="center"
                             android:layout_marginRight="12dp"
                             android:gravity="center"
+                            android:maxWidth="104dp"
                             android:minWidth="104dp"
                             android:orientation="vertical">
 
@@ -312,10 +315,10 @@
                             android:gravity="center"
                             android:imeOptions="actionNext"
                             android:inputType="number"
+                            android:maxWidth="48dp"
                             android:minWidth="48dp"
                             android:nextFocusRight="@+id/et_inven_price"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <EditText
@@ -328,10 +331,10 @@
                             android:gravity="center"
                             android:imeOptions="actionNext"
                             android:inputType="number"
+                            android:maxWidth="104dp"
                             android:minWidth="104dp"
                             android:nextFocusRight="@+id/et_inven_my_cost"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <EditText
@@ -344,9 +347,9 @@
                             android:gravity="center"
                             android:imeOptions="actionDone"
                             android:inputType="number"
+                            android:maxWidth="104dp"
                             android:minWidth="104dp"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <EditText
@@ -358,10 +361,10 @@
                             android:background="@drawable/edit_text_border"
                             android:gravity="center"
                             android:imeOptions="actionNext"
+                            android:maxWidth="104dp"
                             android:minWidth="104dp"
                             android:nextFocusRight="@+id/et_inven_ware_house"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <EditText
@@ -373,9 +376,9 @@
                             android:background="@drawable/edit_text_border"
                             android:gravity="center"
                             android:imeOptions="actionDone"
+                            android:maxWidth="120dp"
                             android:minWidth="120dp"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <Spinner
@@ -384,9 +387,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="12dp"
+                            android:maxWidth="156dp"
                             android:minWidth="156dp"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <EditText
@@ -399,10 +402,10 @@
                             android:gravity="center"
                             android:imeOptions="actionNext"
                             android:inputType="number"
+                            android:maxWidth="148dp"
                             android:minWidth="148dp"
                             android:nextFocusRight="@+id/et_inven_photo"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <EditText
@@ -414,9 +417,9 @@
                             android:background="@drawable/edit_text_border"
                             android:gravity="center"
                             android:imeOptions="actionDone"
+                            android:maxWidth="104dp"
                             android:minWidth="104dp"
                             android:padding="6dp"
-                            android:singleLine="true"
                             android:textColor="@android:color/black" />
 
                         <LinearLayout
@@ -425,6 +428,7 @@
                             android:layout_gravity="center"
                             android:layout_marginRight="12dp"
                             android:gravity="center"
+                            android:maxWidth="104dp"
                             android:minWidth="104dp"
                             android:orientation="horizontal">
 

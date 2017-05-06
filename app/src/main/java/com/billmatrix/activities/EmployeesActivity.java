@@ -88,8 +88,8 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
         employeesRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         empMobile_EditText.setFilters(Utils.getInputFilter(10));
-        empLoginId_EditText.setFilters(Utils.getInputFilter(12));
-        empPwd_EditText.setFilters(Utils.getInputFilter(12));
+        empLoginId_EditText.setFilters(Utils.getInputFilter(15));
+        empPwd_EditText.setFilters(Utils.getInputFilter(15));
         ServerUtils.setIsSync(false);
 
         List<Employee.EmployeeData> employees = new ArrayList<>();

@@ -6,6 +6,7 @@ import android.widget.FrameLayout;
 
 import com.billmatrix.R;
 import com.billmatrix.fragments.GenExpensesFragment;
+import com.billmatrix.fragments.GenerateReportFragment;
 import com.billmatrix.fragments.PayInsFragment;
 import com.billmatrix.fragments.SalesFragment;
 import com.billmatrix.fragments.VendorReportsFragment;
@@ -75,9 +76,9 @@ public class ReportsActivity extends BaseTabActivity {
             }
         } else if (selectedTab.equalsIgnoreCase("GENERATE")) {
             if (isInit) {
-                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new GenerateReportFragment()).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new GenExpensesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new GenerateReportFragment()).commit();
             }
         }
 

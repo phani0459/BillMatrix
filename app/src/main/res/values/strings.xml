@@ -163,26 +163,27 @@
     <string name="VIEW">VIEW</string>
     <string name="Print">PRINT</string>
     <string name="QTY">QTY</string>
+    <string name="DISCOUNT">DISCOUNT %</string>
     <string name="SOLD_DATE">SOLD DATE</string>
     <string name="PURCHASE_DATE">PURCHASE DATE</string>
+    <string name="COST">COST</string>
     <string name="ITEM_NAME">ITEM NAME</string>
     <string name="Brand">BRAND</string>
+    <string name="report_name">NAME OF THE REPORT</string>
+    <string name="sale_note">NOTE: MAXIMUM 2 MONTHS OLD REPORTS ONLY AVAILABLE ON DEVICE, REST IS AVAILABLE ON CLOUD</string>
     <string-array name="sale_by_array">
         <item>SELECT ONE</item>
         <item>SALE TOTAL</item>
-        <item>SALE BY BRAND</item>
+        <item>SALE BY ITEM</item>
         <item>SALE BY VENDOR</item>
-        <item>SALE BY CATEGORY</item>
         <item>SALE PROFIT</item>
         <item>SALE BY DISCOUNT</item>
     </string-array>
 
     <string-array name="purchase_by_array">
         <item>SELECT ONE</item>
-        <item>PURCHASE BY ITEM</item>
-        <item>PURCHASE BY BRAND</item>
+        <item>PURCHASE TOTAL</item>
         <item>PURCHASE BY VENDOR</item>
-        <item>PURCHASE BY CATEGORY</item>
     </string-array>
 
     <string-array name="vendors_by_array">
@@ -232,6 +233,7 @@
     <string name="add_to_bill">ADD TO A BLL</string>
     <string name="transport_name">Transport Name</string>
     <string name="transport">TRANSPORT</string>
+    <string name="db_transport">Transport</string>
 
     <!-- Database Strings-->
     <string name="last_sync_date">LAST SYNCHRONIZED DATE : </string>
@@ -297,9 +299,5 @@
     <!-- Hardware Strings-->
     <string name="below_components_detected">BELOW HARDWARE COMPONENTS ARE DETECTED</string>
     <string name="place_holder_for_connected_devices">PLACE HOLDER FOR MANAGING CONNECTED HARDWARE</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
 
 </resources>

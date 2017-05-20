@@ -356,7 +356,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     @OnClick(R.id.im_pos_transport)
     public void showTransportDialog(View v) {
 
-        ArrayList<Transport.TransportData> transportDatas = billMatrixDaoImpl.getTransports();
+        ArrayList<Transport.TransportData> transportDatas = billMatrixDaoImpl.getTransports(adminId);
         ArrayList<String> transports = new ArrayList<>();
 
         if (transportDatas != null && transportDatas.size() > 0) {

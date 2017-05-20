@@ -13,6 +13,7 @@ import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
 import com.billmatrix.models.Tax;
+import com.billmatrix.models.Transport;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
@@ -72,19 +73,25 @@ public class ServerData {
 
     /**
      * Sequence to fetch data from server
-     * Employees
-     * Customers
-     * Vendors
-     * Inventory
-     * Tax
-     * Discounts
-     * Payments
+     * Employees - 0
+     * Customers - 1
+     * Vendors - 2
+     * Inventory - 3
+     * Tax - 4
+     * Discounts - 5
+     * Payments - 6
+     * Transports - 11
      */
 
     public void getEmployeesFromServer(final String adminId) {
         ArrayList<Employee.EmployeeData> employeesfromDB = billMatrixDaoImpl.getEmployees();
         if (employeesfromDB != null && employeesfromDB.size() > 0) {
-            getCustomersFromServer(adminId);
+            if (isFromLogin()) getCustomersFromServer(adminId);
+            else {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
@@ -139,7 +146,12 @@ public class ServerData {
     public void getCustomersFromServer(final String adminId) {
         ArrayList<Customer.CustomerData> customersfromDB = billMatrixDaoImpl.getCustomers(adminId);
         if (customersfromDB != null && customersfromDB.size() > 0) {
-            getVendorsFromServer(adminId);
+            if (isFromLogin()) getVendorsFromServer(adminId);
+            else {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
@@ -195,7 +207,12 @@ public class ServerData {
     public void getVendorsFromServer(final String adminId) {
         ArrayList<Vendor.VendorData> vendors = billMatrixDaoImpl.getVendors();
         if (vendors != null && vendors.size() > 0) {
-            getInventoryFromServer(adminId);
+            if (isFromLogin()) getInventoryFromServer(adminId);
+            else {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
@@ -253,7 +270,12 @@ public class ServerData {
     public void getInventoryFromServer(final String adminId) {
         ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
         if (inventories != null && inventories.size() > 0) {
-            getTaxesFromServer(adminId);
+            if (isFromLogin()) getTaxesFromServer(adminId);
+            else {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
@@ -309,7 +331,12 @@ public class ServerData {
     public void getTaxesFromServer(final String adminId) {
         ArrayList<Tax.TaxData> taxes = billMatrixDaoImpl.getTax();
         if (taxes != null && taxes.size() > 0) {
-            getDiscountsFromServer(adminId);
+            if (isFromLogin()) getDiscountsFromServer(adminId);
+            else {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 Log.e(TAG, "getTaxesFromServer: ");
@@ -364,8 +391,11 @@ public class ServerData {
     public void getDiscountsFromServer(final String adminId) {
         ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
         if (discounts != null && discounts.size() > 0) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
+            if (isFromLogin()) getPaymentsFromServer(adminId);
+            else {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
             }
         } else {
             if (Utils.isInternetAvailable(mContext)) {
@@ -421,9 +451,7 @@ public class ServerData {
     public void getPaymentsFromServer(final String adminId) {
         ArrayList<Payments.PaymentData> payments = billMatrixDaoImpl.getPayments(paymentType);
         if (payments != null && payments.size() > 0) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            getTransportsFromServer(adminId);
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 Log.e(TAG, "getPaymentsFromServer: ");
@@ -453,9 +481,7 @@ public class ServerData {
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, false).apply();
                         }
 
-                        if (progressDialog != null && progressDialog.isShowing()) {
-                            progressDialog.dismiss();
-                        }
+                        if (isFromLogin()) getTransportsFromServer(adminId);
                         if (onDataFetchListener != null) onDataFetchListener.onDataFetch(6);
 
                     }
@@ -473,6 +499,66 @@ public class ServerData {
                         }
                     }
                 });
+            }
+        }
+    }
+
+    public void getTransportsFromServer(final String adminId) {
+        ArrayList<Transport.TransportData> transportsfromDB = billMatrixDaoImpl.getTransports(adminId);
+        if (transportsfromDB != null && transportsfromDB.size() > 0) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        } else {
+            if (Utils.isInternetAvailable(mContext)) {
+                if (!TextUtils.isEmpty(adminId)) {
+                    Log.e(TAG, "getCustomersFromServer: ");
+                    Call<Transport> call = Utils.getBillMatrixAPI(mContext).getAdminTransports(adminId);
+
+                    call.enqueue(new Callback<Transport>() {
+
+                        /**
+                         * Successful HTTP response.
+                         * @param call server call
+                         * @param response server response
+                         */
+                        @Override
+                        public void onResponse(Call<Transport> call, Response<Transport> response) {
+                            Log.e("SUCCEESS RESPONSE RAW", response.raw() + "");
+                            if (response.body() != null) {
+                                Transport transport = response.body();
+                                if (transport.status == 200 && transport.Transportdata.equalsIgnoreCase("success")) {
+                                    for (Transport.TransportData transportData : transport.data) {
+                                        transportData.add_update = Constants.DATA_FROM_SERVER;
+                                        billMatrixDaoImpl.addTransport(transportData);
+                                    }
+                                }
+                                /**
+                                 * To remove pending sync Icon in database page
+                                 */
+                                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, false).apply();
+                            }
+
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                            if (onDataFetchListener != null) onDataFetchListener.onDataFetch(11);
+                        }
+
+                        /**
+                         *  Invoked when a network or unexpected exception occurred during the HTTP request.
+                         * @param call server call
+                         * @param t error
+                         */
+                        @Override
+                        public void onFailure(Call<Transport> call, Throwable t) {
+                            Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
+                }
             }
         }
     }

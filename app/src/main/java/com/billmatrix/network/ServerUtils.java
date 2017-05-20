@@ -14,6 +14,7 @@ import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
 import com.billmatrix.models.Tax;
+import com.billmatrix.models.Transport;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
@@ -1327,6 +1328,186 @@ public class ServerUtils {
                 if (!isSync) {
                     Utils.showToast("There was a problem adding tax to server", mContext);
                 }
+            }
+        });
+    }
+
+    /*********************************************************************
+     ***************************  TRANSPORTS  *****************************
+     *********************************************************************/
+    /**
+     * Add Customer to Server
+     *
+     * @param transportData Transport data to be added to server
+     * @param mContext      Context
+     * @param adminId       admin ID
+     */
+    public static Transport.TransportData addTransporttoServer(final Transport.TransportData transportData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Log.e(TAG, "addTransporttoServer: ");
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addTransport(adminId, transportData.transportName, transportData.phone, transportData.location,
+                transportData.status);
+
+        call.enqueue(new Callback<CreateJob>() {
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    CreateJob transportStatus = response.body();
+                    if (transportStatus.status.equalsIgnoreCase("200")) {
+                        if (!TextUtils.isEmpty(transportStatus.create_transport) && transportStatus.create_transport.equalsIgnoreCase("success")) {
+                            if (!isSync) Utils.showToast("Transport Added successfully", mContext);
+
+                            transportData.id = transportStatus.data.id;
+                            transportData.transportName = transportStatus.data.transportName;
+                            transportData.phone = transportStatus.data.phone;
+                            transportData.location = transportStatus.data.location;
+                            transportData.status = transportStatus.data.status;
+                            transportData.admin_id = transportStatus.data.admin_id;
+                            transportData.create_date = transportStatus.data.create_date;
+                            transportData.update_date = transportStatus.data.update_date;
+                            transportData.add_update = Constants.DATA_FROM_SERVER;
+
+                            billMatrixDaoImpl.updateTransport(transportData);
+
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast(transportStatus.create_transport + "", mContext);
+                            }
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<CreateJob> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding Transport to server", mContext);
+                }
+            }
+        });
+
+        return transportData;
+    }
+
+    public static Transport.TransportData updateTransporttoServer(final Transport.TransportData transportData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Log.e(TAG, "updateTransporttoServer: ");
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).updateTransport(transportData.id, transportData.admin_id, transportData.transportName, transportData.phone,
+                transportData.location, transportData.status);
+
+        call.enqueue(new Callback<CreateJob>() {
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    CreateJob customerStatus = response.body();
+                    if (customerStatus.status.equalsIgnoreCase("200")) {
+                        if (!TextUtils.isEmpty(customerStatus.update_transport) && customerStatus.update_transport.equalsIgnoreCase("Successfully Updated")) {
+                            if (!isSync)
+                                Utils.showToast("Trasnport Updated successfully", mContext);
+
+                            transportData.id = customerStatus.data.id;
+                            transportData.transportName = customerStatus.data.transportName;
+                            transportData.phone = customerStatus.data.phone;
+                            transportData.location = customerStatus.data.location;
+                            transportData.status = customerStatus.data.status;
+                            transportData.admin_id = customerStatus.data.admin_id;
+                            transportData.create_date = customerStatus.data.create_date;
+                            transportData.update_date = customerStatus.data.update_date;
+                            transportData.add_update = Constants.DATA_FROM_SERVER;
+
+                            billMatrixDaoImpl.updateTransport(transportData);
+                        } else {
+                            /**
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast("There was a problem updating Transport to server", mContext);
+                            }
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<CreateJob> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /**
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem updating Transport to server", mContext);
+                }
+            }
+        });
+        return transportData;
+    }
+
+    public static void deleteTransportfromServer(final Transport.TransportData transportData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).deleteTransport(transportData.id);
+
+        call.enqueue(new Callback<HashMap<String, String>>() {
+
+
+            /**
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<HashMap<String, String>> call, Response<HashMap<String, String>> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    HashMap<String, String> customerStatus = response.body();
+                    if (customerStatus.get("status").equalsIgnoreCase("200")) {
+                        if (customerStatus.containsKey("delete_transport") && customerStatus.get("delete_transport").equalsIgnoreCase("success")) {
+                            if (!isSync) Utils.showToast("Transport Deleted successfully", mContext);
+                            billMatrixDaoImpl.deleteTransport(DBConstants.ID, transportData.id);
+                        }
+                    }
+                }
+            }
+
+            /**
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });
     }

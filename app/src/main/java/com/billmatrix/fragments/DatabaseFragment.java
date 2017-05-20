@@ -26,6 +26,7 @@ import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Tax;
+import com.billmatrix.models.Transport;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
@@ -146,6 +147,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
      * Inventory - 3
      * Tax - 4
      * Discounts - 5
+     * Transport - 11
      */
     @Override
     public void onDataFetch(int dataFetched) {
@@ -340,7 +342,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         } else if (generatedReportSyncCheckbox.isChecked()) {
             //TODO sync Generated Reports
         } else if (trasnsportSyncCheckbox.isChecked()) {
-            //TODO sync Trasnports
+            syncTransport(ServerUtils.STATUS_DELETING);
         }
     }
 
@@ -1250,6 +1252,148 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
             }
         });
     }
+
+    /*****************************************************
+     * ******** Transport SYNC ***************************
+     **************************************************/
+
+    private void syncTransport(int currentStatus) {
+        transportSyncIcon.setImageResource(R.drawable.sync_green);
+
+        ArrayList<Transport.TransportData> dbTransports = billMatrixDaoImpl.getTransports(adminId);
+        ArrayList<Transport.TransportData> deletedTransports = new ArrayList<>();
+        ArrayList<Transport.TransportData> addedTransports = new ArrayList<>();
+        ArrayList<Transport.TransportData> updatedTransports = new ArrayList<>();
+
+        if (dbTransports != null && dbTransports.size() > 0) {
+            for (Transport.TransportData transportData : dbTransports) {
+                if (transportData.status.equalsIgnoreCase("-1")) {
+                    deletedTransports.add(transportData);
+                }
+
+                if (!TextUtils.isEmpty(transportData.add_update)) {
+                    if (transportData.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                        addedTransports.add(transportData);
+                    }
+
+                    if (transportData.add_update.equalsIgnoreCase(Constants.UPDATE_OFFLINE)) {
+                        updatedTransports.add(transportData);
+                    }
+                }
+            }
+        }
+
+        if (deletedTransports.size() <= 0 && updatedTransports.size() <= 0 && addedTransports.size() <= 0) {
+            billMatrixDaoImpl.deleteAllTransports();
+            serverData.getTransportsFromServer(adminId);
+            return;
+        }
+
+        switch (currentStatus) {
+            case ServerUtils.STATUS_DELETING:
+                if (deletedTransports.size() > 0) {
+                    Observable<ArrayList<Transport.TransportData>> deletedTransportsObservable = Observable.fromArray(deletedTransports);
+                    syncTransportwithServer(deletedTransportsObservable, currentStatus);
+                } else if (addedTransports.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_ADDING;
+                    Observable<ArrayList<Transport.TransportData>> addedTransportsObservable = Observable.fromArray(addedTransports);
+                    syncTransportwithServer(addedTransportsObservable, currentStatus);
+                } else if (updatedTransports.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Transport.TransportData>> updatedTransObservable = Observable.fromArray(updatedTransports);
+                    syncTransportwithServer(updatedTransObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllTransports();
+                    serverData.getTransportsFromServer(adminId);
+                }
+                break;
+            case ServerUtils.STATUS_ADDING:
+                if (addedTransports.size() > 0) {
+                    Observable<ArrayList<Transport.TransportData>> addedTransportsObservable = Observable.fromArray(addedTransports);
+                    syncTransportwithServer(addedTransportsObservable, currentStatus);
+                } else if (updatedTransports.size() > 0) {
+                    currentStatus = ServerUtils.STATUS_UPDATING;
+                    Observable<ArrayList<Transport.TransportData>> updatedTransObservable = Observable.fromArray(updatedTransports);
+                    syncTransportwithServer(updatedTransObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllTransports();
+                    serverData.getTransportsFromServer(adminId);
+                }
+                break;
+            case ServerUtils.STATUS_UPDATING:
+                if (updatedTransports.size() > 0) {
+                    Observable<ArrayList<Transport.TransportData>> updatedTransObservable = Observable.fromArray(updatedTransports);
+                    syncTransportwithServer(updatedTransObservable, currentStatus);
+                } else {
+                    billMatrixDaoImpl.deleteAllTransports();
+                    serverData.getTransportsFromServer(adminId);
+                }
+                break;
+        }
+    }
+
+    public void syncTransportwithServer(Observable<ArrayList<Transport.TransportData>> observableTaxes, final int status) {
+
+        observableTaxes.flatMap(new Function<List<Transport.TransportData>, ObservableSource<Transport.TransportData>>() { // flatMap - to return users one by one
+            @Override
+            public ObservableSource<Transport.TransportData> apply(List<Transport.TransportData> transportDatas) throws Exception {
+                return Observable.fromIterable(transportDatas); // returning Employees one by one from EmployeesList.
+            }
+        }).flatMap(new Function<Transport.TransportData, ObservableSource<ArrayList<String>>>() {
+            @Override
+            public ObservableSource<ArrayList<String>> apply(Transport.TransportData transportData) throws Exception {
+                // here we get the user one by one
+                // and does correstponding sync in server
+                // for that employee
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        ServerUtils.deleteTransportfromServer(transportData, mContext, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        ServerUtils.addTransporttoServer(transportData, mContext, adminId, billMatrixDaoImpl);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        ServerUtils.updateTransporttoServer(transportData, mContext, billMatrixDaoImpl);
+                        break;
+
+                }
+                return Observable.fromArray(new ArrayList<String>());
+            }
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ArrayList<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onNext(ArrayList<String> strings) {
+            }
+
+            @Override
+            public void onComplete() {
+                switch (status) {
+                    case ServerUtils.STATUS_DELETING:
+                        syncTransport(ServerUtils.STATUS_ADDING);
+                        break;
+                    case ServerUtils.STATUS_ADDING:
+                        syncTransport(ServerUtils.STATUS_UPDATING);
+                        break;
+                    case ServerUtils.STATUS_UPDATING:
+                        billMatrixDaoImpl.deleteAllTransports();
+                        serverData.getTransportsFromServer(adminId);
+                        break;
+
+                }
+                Log.e(TAG, "Transport onComplete");
+            }
+        });
+    }
+
 
     /*****************************************************
      * ******** Taxes SYNC ***************************

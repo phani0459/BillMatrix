@@ -10,15 +10,24 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.database.BillMatrixDaoImpl;
+import com.billmatrix.models.Customer;
+import com.billmatrix.models.Discount;
+import com.billmatrix.models.Inventory;
+import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,9 +47,18 @@ public class SalesFragment extends Fragment {
     public Spinner saleItemSpinner;
     @BindView(R.id.tv_dateHeading)
     public TextView dateHeadingTextView;
+    @BindView(R.id.disble_spinner)
+    public View spinnerDisableView;
+    @BindView(R.id.atv_sales_item)
+    public AutoCompleteTextView salesItemACTextView;
 
     private Context mContext;
     private boolean isSalesTab;
+    private BillMatrixDaoImpl billMatrixDaoImpl;
+    private ArrayList<String> spinnerTwo_Strings;
+    private ArrayList<Vendor.VendorData> vendors;
+    private ArrayList<Discount.DiscountData> discounts;
+    private ArrayList<Inventory.InventoryData> inventory;
 
     public SalesFragment() {
         // Required empty public constructor
@@ -54,6 +72,10 @@ public class SalesFragment extends Fragment {
 
         mContext = getActivity();
         isSalesTab = false;
+        billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
+        spinnerTwo_Strings = new ArrayList<>();
+        spinnerTwo_Strings.add("SELECT ONE");
+        Utils.loadSpinner(saleItemSpinner, mContext, spinnerTwo_Strings);
 
         String selectedTab = getArguments().getString("selectedTab");
 
@@ -66,9 +88,9 @@ public class SalesFragment extends Fragment {
             dateHeadingTextView.setText(getString(R.string.SOLD_DATE));
         } else {
             Utils.loadSpinner(saleSelectSpinner, mContext, R.array.purchase_by_array);
+            loadVendors();
             dateHeadingTextView.setText(getString(R.string.PURCHASE_DATE));
         }
-        Utils.loadSpinner(saleItemSpinner, mContext, R.array.employee_status);
 
         fromDate_EditText.setInputType(InputType.TYPE_NULL);
         toDate_EditText.setInputType(InputType.TYPE_NULL);
@@ -107,4 +129,109 @@ public class SalesFragment extends Fragment {
         return v;
     }
 
+    public void loadVendors() {
+        spinnerTwo_Strings = new ArrayList<>();
+        spinnerTwo_Strings.add("SELECT ONE");
+
+        if (vendors != null && vendors.size() > 0) {
+            for (Vendor.VendorData vendorData : vendors) {
+                spinnerTwo_Strings.add(vendorData.name.toUpperCase());
+            }
+        } else {
+            vendors = billMatrixDaoImpl.getVendors();
+            if (vendors != null && vendors.size() > 0) {
+                for (Vendor.VendorData vendorData : vendors) {
+                    spinnerTwo_Strings.add(vendorData.name.toUpperCase());
+                }
+            }
+        }
+
+        Utils.loadSpinner(saleItemSpinner, mContext, spinnerTwo_Strings);
+    }
+
+    public void loadDiscounts() {
+        spinnerTwo_Strings = new ArrayList<>();
+        spinnerTwo_Strings.add("SELECT ONE");
+
+        if (discounts != null && discounts.size() > 0) {
+            for (Discount.DiscountData discountData : discounts) {
+                spinnerTwo_Strings.add(discountData.discount_code.toUpperCase());
+            }
+        } else {
+            discounts = billMatrixDaoImpl.getDiscount();
+            if (discounts != null && discounts.size() > 0) {
+                for (Discount.DiscountData discountData : discounts) {
+                    spinnerTwo_Strings.add(discountData.discount_code.toUpperCase());
+                }
+            }
+        }
+
+        Utils.loadSpinner(saleItemSpinner, mContext, spinnerTwo_Strings);
+    }
+
+    public void loadInventory() {
+        spinnerTwo_Strings = new ArrayList<>();
+        spinnerTwo_Strings.add("SELECT ONE");
+
+        if (inventory != null && inventory.size() > 0) {
+            for (Inventory.InventoryData inventoryData : inventory) {
+                spinnerTwo_Strings.add(inventoryData.item_name.toUpperCase());
+            }
+        } else {
+            inventory = billMatrixDaoImpl.getInventory();
+            if (inventory != null && inventory.size() > 0) {
+                for (Inventory.InventoryData inventoryData : inventory) {
+                    spinnerTwo_Strings.add(inventoryData.item_name.toUpperCase());
+                }
+            }
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, spinnerTwo_Strings);
+        salesItemACTextView.setThreshold(1);//will start working from first character
+        salesItemACTextView.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        saleSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                saleItemSpinner.setSelection(0);
+                String selectedString = adapterView.getSelectedItem().toString();
+                if (!isSalesTab) {
+                    saleItemSpinner.setEnabled(true);
+                    saleItemSpinner.setVisibility(View.VISIBLE);
+                    spinnerDisableView.setVisibility(View.GONE);
+                    salesItemACTextView.setVisibility(View.GONE);
+                    if (selectedString.equalsIgnoreCase("PURCHASE TOTAL") || selectedString.equalsIgnoreCase("SELECT ONE")) {
+                        saleItemSpinner.setEnabled(false);
+                        spinnerDisableView.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    saleItemSpinner.setEnabled(true);
+                    saleItemSpinner.setVisibility(View.VISIBLE);
+                    spinnerDisableView.setVisibility(View.GONE);
+                    salesItemACTextView.setVisibility(View.GONE);
+                    if (selectedString.equalsIgnoreCase("SALE BY VENDOR")) {
+                        loadVendors();
+                    } else if (selectedString.equalsIgnoreCase("SALE BY DISCOUNT")) {
+                        loadDiscounts();
+                    } else if (selectedString.equalsIgnoreCase("SALE PROFIT") || selectedString.equalsIgnoreCase("SALE TOTAL") || selectedString.equalsIgnoreCase("SELECT ONE")) {
+                        saleItemSpinner.setEnabled(false);
+                        spinnerDisableView.setVisibility(View.VISIBLE);
+                    } else if (selectedString.equalsIgnoreCase("SALE BY ITEM")) {
+                        saleItemSpinner.setVisibility(View.INVISIBLE);
+                        salesItemACTextView.setVisibility(View.VISIBLE);
+                        loadInventory();
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
 }

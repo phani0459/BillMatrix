@@ -384,7 +384,7 @@
                     android:layout_height="wrap_content"
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
-                    android:text="@string/transport"
+                    android:text="@string/db_transport"
                     android:textColor="@android:color/black" />
             </LinearLayout>
 

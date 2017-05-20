@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,11 @@ import com.billmatrix.activities.BaseTabActivity;
 import com.billmatrix.adapters.TransportAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
+import com.billmatrix.interfaces.OnDataFetchListener;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Transport;
+import com.billmatrix.network.ServerData;
 import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
@@ -39,9 +42,10 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TransportFragment extends Fragment implements OnItemClickListener {
+public class TransportFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
 
 
+    private static final String TAG = TransportFragment.class.getSimpleName();
     private Context mContext;
     private BillMatrixDaoImpl billMatrixDaoImpl;
 
@@ -117,7 +121,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener {
         transportAdapter = new TransportAdapter(transportDatas, this);
         transportsRecyclerView.setAdapter(transportAdapter);
 
-        transportDatas = billMatrixDaoImpl.getTransports();
+        transportDatas = billMatrixDaoImpl.getTransports(adminId);
 
         if (transportDatas != null && transportDatas.size() > 0) {
             for (Transport.TransportData transportData : transportDatas) {
@@ -129,7 +133,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener {
         } else {
             if (Utils.isInternetAvailable(mContext)) {
                 if (!TextUtils.isEmpty(adminId)) {
-//                    getCustomersFromServer(adminId);
+                    getTransportsFromServer(adminId);
                 }
             }
         }
@@ -137,6 +141,17 @@ public class TransportFragment extends Fragment implements OnItemClickListener {
         transportsSpinnerAdapter = Utils.loadSpinner(transportSpinner, mContext, transports);
 
         return v;
+    }
+
+    private void getTransportsFromServer(String adminId) {
+        Log.e(TAG, "getTransportsFromServer: ");
+        ServerData serverData = new ServerData();
+        serverData.setBillMatrixDaoImpl(billMatrixDaoImpl);
+        serverData.setFromLogin(false);
+        serverData.setProgressDialog(null);
+        serverData.setContext(mContext);
+        serverData.setOnDataFetchListener(this);
+        serverData.getTransportsFromServer(adminId);
     }
 
     @OnClick(R.id.btn_addTransport)
@@ -204,8 +219,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener {
 
             if (addTranportButton.getText().toString().equalsIgnoreCase("ADD")) {
                 if (Utils.isInternetAvailable(mContext)) {
-//                    transportFromServer = ServerUtils.addCustomertoServer(transportData, mContext, adminId, billMatrixDaoImpl);
-                    transportFromServer = transportData;
+                    transportFromServer = ServerUtils.addTransporttoServer(transportData, mContext, adminId, billMatrixDaoImpl);
                 } else {
                     /**
                      * To show pending sync Icon in database page
@@ -217,8 +231,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener {
             } else {
                 if (selectedTransporttoEdit != null) {
                     if (Utils.isInternetAvailable(mContext)) {
-//                        transportFromServer = ServerUtils.updateCustomertoServer(transportData, mContext, billMatrixDaoImpl);
-                        transportFromServer = transportData;
+                        transportFromServer = ServerUtils.updateTransporttoServer(transportData, mContext, billMatrixDaoImpl);
                     } else {
                         /**
                          * To show pending sync Icon in database page
@@ -293,7 +306,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener {
                         }
                         if (Utils.isInternetAvailable(mContext)) {
                             if (!TextUtils.isEmpty(selectedTransport.id)) {
-//                                ServerUtils.deleteCustomerfromServer(selectedTransport, mContext, billMatrixDaoImpl);
+                                ServerUtils.deleteTransportfromServer(selectedTransport, mContext, billMatrixDaoImpl);
                             }
                         } else {
                             /**
@@ -331,6 +344,19 @@ public class TransportFragment extends Fragment implements OnItemClickListener {
                     Utils.showToast("Save present editing Transport before editing other Transport", mContext);
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onDataFetch(int dataFetched) {
+        ArrayList<Transport.TransportData> transports = billMatrixDaoImpl.getTransports(adminId);
+
+        if (transports != null && transports.size() > 0) {
+            for (Transport.TransportData transportData : transports) {
+                if (!transportData.status.equalsIgnoreCase("-1")) {
+                    transportAdapter.addTransport(transportData);
+                }
+            }
         }
     }
 }

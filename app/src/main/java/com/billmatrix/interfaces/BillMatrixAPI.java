@@ -9,6 +9,7 @@ import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Tax;
+import com.billmatrix.models.Transport;
 import com.billmatrix.models.Vendor;
 
 import java.util.HashMap;
@@ -192,5 +193,23 @@ public interface BillMatrixAPI {
     @FormUrlEncoded
     @POST("admin_payments")
     Call<Payments> getAdminPayments(@Field("admin_id") String adminId, @Field("payment_type") String payment_type);
+
+    @FormUrlEncoded
+    @POST("create_transport")
+    Call<CreateJob> addTransport(@Field("admin_id") String adminId, @Field("transportName") String transportName, @Field("phone") String phone,
+                                               @Field("location") String location, @Field("status") String status);
+
+    @FormUrlEncoded
+    @POST("update_transport")
+    Call<CreateJob> updateTransport(@Field("id") String id, @Field("admin_id") String adminId, @Field("transportName") String transportName,
+                                                  @Field("phone") String phone, @Field("location") String location, @Field("status") String status);
+
+    @FormUrlEncoded
+    @POST("delete_transport")
+    Call<HashMap<String, String>> deleteTransport(@Field("id") String id);
+
+    @FormUrlEncoded
+    @POST("admin_transports")
+    Call<Transport> getAdminTransports(@Field("admin_id") String adminId);
 
 }

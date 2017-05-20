@@ -1538,12 +1538,54 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(TRANSPORT_TABLE, contentValues, PHONE + "='" + phone + "'", null) > 0;
     }
 
-    public ArrayList<Transport.TransportData> getTransports() {
+    private boolean isTransportIdEmpty(String phone) {
+        String query = "SELECT " + ID + " FROM " + TRANSPORT_TABLE + " WHERE " + PHONE + " = '" + phone + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String id = cursor.getString(cursor.getColumnIndex(ID));
+            cursor.close();
+            return TextUtils.isEmpty(id);
+        }
+        return true;
+    }
+
+    public void deleteAllTransports() {
+        db.delete(TRANSPORT_TABLE, null, null);
+    }
+
+    public boolean updateTransport(Transport.TransportData transportData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TRANSPORT_NAME, transportData.transportName);
+        contentValues.put(PHONE, transportData.phone);
+        contentValues.put(LOCATION, transportData.location);
+        contentValues.put(STATUS, transportData.status);
+        contentValues.put(ADMIN_ID, transportData.admin_id);
+        contentValues.put(ADD_UPDATE, transportData.add_update);
+        contentValues.put(CREATE_DATE, transportData.create_date);
+        contentValues.put(UPDATE_DATE, transportData.update_date);
+        if (!isCustomerIdEmpty(transportData.phone)) {
+            return db.update(TRANSPORT_TABLE, contentValues, ID + "='" + transportData.id + "'", null) > 0;
+        } else {
+            contentValues.put(ID, transportData.id);
+            return db.update(TRANSPORT_TABLE, contentValues, PHONE + "='" + transportData.phone + "'", null) > 0;
+        }
+    }
+
+    public ArrayList<Transport.TransportData> getTransports(String adminId) {
         Cursor cursor = null;
         try {
-            String query = "SELECT * FROM " + TRANSPORT_TABLE;
 
-            cursor = db.rawQuery(query, null);
+            if (TextUtils.isEmpty(adminId)) {
+                cursor = db.query(TRANSPORT_TABLE, null,
+                        SNO + "<>?", new String[]{""},
+                        null, null, null);
+            } else {
+                cursor = db.query(TRANSPORT_TABLE, null,
+                        ADMIN_ID + " = ?", new String[]{adminId},
+                        null, null, null);
+            }
+
             if (cursor.moveToFirst()) {
                 ArrayList<Transport.TransportData> transportDatas = new ArrayList<>();
                 do {

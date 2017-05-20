@@ -9,8 +9,10 @@ import java.util.ArrayList;
 
 public class CreateJob implements Serializable {
     public String status;
-    public String create_customer;
     public String update_customer;
+    public String create_customer;
+    public String create_transport;
+    public String update_transport;
     public String update_employee;
     public String create_employee;
     public String create_vendor;
@@ -48,11 +50,9 @@ public class CreateJob implements Serializable {
         public String imei_number;
         public String type;
         public String branch;
-        public String location;
         public String name;
         public String since;
         public String address;
-        public String phone;
         public String email;
         public String item_code;
         public String item_name;
@@ -66,10 +66,13 @@ public class CreateJob implements Serializable {
         public String vendor;
         public String barcode;
         public String photo;
-        public String id;
         public String tax_type;
         public String tax_description;
         public String tax_rate;
+        public String id;
+        public String transportName;
+        public String phone;
+        public String location;
         public String admin_id;
         public String status;
         public String create_date;
@@ -81,7 +84,8 @@ public class CreateJob implements Serializable {
             return "\nid = " + id + "\n admin id=" + admin_id
                     + "\n tax_type=" + tax_type + "\n tax_description=" + tax_description
                     + "\n tax_rate=" + tax_rate + "\n status=" + status + "\n create_date=" + create_date
-                    + "\n update_date=" + update_date + "\n add_update=" + add_update;
+                    + "\n update_date=" + update_date + "\n add_update=" + add_update
+                    + "\n transportName=" + transportName;
         }
     }
 }

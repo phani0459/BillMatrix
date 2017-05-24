@@ -1563,22 +1563,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             dbInventory.qty = "" + presentQty;
             billMatrixDaoImpl.updateInventory(DBConstants.QUANTITY, "" + presentQty, dbInventory.item_code);
 
-            /*
-             * If inventory is added offline and internet is available, add inventory to server
-             * or else
-             * update to server
-             */
-            if (Utils.isInternetAvailable(mContext)) {
-                if (dbInventory.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
-                    ServerUtils.addInventorytoServer(inventoryData, mContext, adminId, billMatrixDaoImpl);
-                } else {
-                    ServerUtils.updateInventorytoServer(dbInventory, mContext, billMatrixDaoImpl);
-                }
-            } else {
-                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
-                if (!dbInventory.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
-                    billMatrixDaoImpl.updateInventory(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, dbInventory.item_code);
-                }
+            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+            if (!dbInventory.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                billMatrixDaoImpl.updateInventory(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, dbInventory.item_code);
             }
 
         }

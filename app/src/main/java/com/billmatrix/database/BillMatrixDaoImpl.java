@@ -84,7 +84,7 @@ import static com.billmatrix.database.DBConstants.VENDOR_SINCE;
 import static com.billmatrix.database.DBConstants.WAREHOUSE;
 import static com.billmatrix.database.DBConstants.Z_BILL;
 
-/**
+/*
  * Created by KANDAGATLAs on 06-11-2016.
  */
 
@@ -97,7 +97,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         db = dbHandler.getWriteDB();
     }
 
-    /*************************************************
+    /************************************************
      * ********* EMPLOYEE METHODS ********************
      *************************************************/
 
@@ -281,7 +281,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    /*************************************************
+    /************************************************
      * *************VENDOR METHODS********************
      *************************************************/
 
@@ -401,7 +401,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    /*************************************************
+    /************************************************
      * *************CUSTOMER METHODS********************
      *************************************************/
 
@@ -518,7 +518,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    /*************************************************
+    /************************************************
      * ********* INVENTORY METHODS ********************
      *************************************************/
 
@@ -604,7 +604,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
     }
 
     public boolean updateInventoryOffline(String columnName, String status, String vendorid) {
-        /**
+        /*
          * In Inventory Table vendor name is saved as vendor ID
          */
         String add_update = status;
@@ -624,10 +624,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(INVENTORY_TABLE, contentValues, VENDOR_NAME + "='" + vendorid + "'", null) > 0;
     }
 
-    public Inventory.InventoryData getInventoryonByBarcode(String barCode) {
+    public Inventory.InventoryData getInventoryonByBarcode(String columnName, String barCode) {
         Cursor cursor = null;
         try {
-            String query = "SELECT " + "*" + " FROM " + INVENTORY_TABLE + " WHERE " + BARCODE + " = '" + barCode + "'";
+            String query = "SELECT " + "*" + " FROM " + INVENTORY_TABLE + " WHERE " + columnName + " = '" + barCode + "'";
             cursor = db.rawQuery(query, null);
 
             if (cursor.moveToFirst()) {
@@ -773,7 +773,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return "";
     }
 
-    /*************************************************
+    /************************************************
      * ********* TAX METHODS ********************
      *************************************************/
 
@@ -881,7 +881,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    /*************************************************
+    /************************************************
      * ********* DISCOUNT METHODS ********************
      *************************************************/
 
@@ -988,7 +988,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    /*************************************************
+    /************************************************
      * ********* POS ITEMS METHODS ********************
      *************************************************/
 
@@ -1120,7 +1120,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    /*************************************************
+    /************************************************
      * ********* PURCHASES METHODS ********************
      *************************************************/
     public long addPayment(Payments.PaymentData paymentData) {
@@ -1314,7 +1314,7 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    /*************************************************
+    /************************************************
      * ************* CUSTOMER TRANSACTIONS METHODS*****
      *************************************************/
 
@@ -1509,7 +1509,56 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    /*************************************************
+    public ArrayList<Transaction> getTransactions(String query) {
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(query, null);
+            if (cursor.moveToFirst()) {
+                ArrayList<Transaction> transactions = new ArrayList<>();
+                do {
+                    Transaction transaction = new Transaction();
+                    transaction.id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ID));
+                    transaction.admin_id = cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADMIN_ID));
+                    transaction.billNumber = cursor.getString(cursor
+                            .getColumnIndexOrThrow(BILL_NO));
+                    transaction.customerName = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CUSTOMER_NAME));
+                    transaction.date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(DATE));
+                    transaction.inventoryJson = cursor.getString(cursor
+                            .getColumnIndexOrThrow(INVENTORY_JSON));
+                    transaction.totalAmount = cursor.getString(cursor
+                            .getColumnIndexOrThrow(TOTAL_AMOUNT));
+                    transaction.amountPaid = cursor.getString(cursor
+                            .getColumnIndexOrThrow(AMOUNT_PAID));
+                    transaction.amountDue = cursor.getString(cursor
+                            .getColumnIndexOrThrow(AMOUNT_DUE));
+                    transaction.update_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(UPDATE_DATE));
+                    transaction.create_date = cursor.getString(cursor
+                            .getColumnIndexOrThrow(CREATE_DATE));
+                    transaction.add_update = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(ADD_UPDATE)));
+                    transaction.status = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(STATUS)));
+                    transactions.add(transaction);
+                } while (cursor.moveToNext());
+
+                return transactions;
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    /************************************************
      * ************* TRANSPORT TRANSACTIONS METHODS*****
      *************************************************/
 

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:weightSum="5">
+
+    <TextView
+        android:id="@+id/tv_sale_rep_item_sno"
+        style="@style/Base.TextAppearance.AppCompat.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="@string/sno"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tv_sale_rep_item_date"
+        style="@style/Base.TextAppearance.AppCompat.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:layout_weight="0.8"
+        android:gravity="center"
+        android:text="@string/DATE"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tv_sale_rep_item_h3"
+        style="@style/Base.TextAppearance.AppCompat.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:layout_weight="1.4"
+        android:gravity="center"
+        android:text="@string/ITEM_NAME"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tv_sale_rep_item_h4"
+        style="@style/Base.TextAppearance.AppCompat.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/VENDOR"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tv_sale_rep_item_h5"
+        style="@style/Base.TextAppearance.AppCompat.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:layout_weight="0.8"
+        android:gravity="center"
+        android:text="@string/amount"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tv_sale_rep_item_h6"
+        style="@style/Base.TextAppearance.AppCompat.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="@string/QTY"
+        android:textColor="@android:color/black" />
+</LinearLayout>

@@ -164,10 +164,13 @@
     <string name="Print">PRINT</string>
     <string name="QTY">QTY</string>
     <string name="DISCOUNT">DISCOUNT %</string>
-    <string name="SOLD_DATE">SOLD DATE</string>
-    <string name="PURCHASE_DATE">PURCHASE DATE</string>
+    <string name="DISCOUNT_CODE">CODE</string>
     <string name="COST">COST</string>
     <string name="ITEM_NAME">ITEM NAME</string>
+    <string name="TOTAL_DISCOUNTED_BILL_AMT">TOTAL DISCOUNTED BILL AMT</string>
+    <string name="TOTAL_SALES">TOTAL SALES</string>
+    <string name="TOTAL_PROFIT">TOTAL PROFIT</string>
+    <string name="TOTAL_DISC">TOTAL DISCOUNT</string>
     <string name="Brand">BRAND</string>
     <string name="report_name">NAME OF THE REPORT</string>
     <string name="sale_note">NOTE: MAXIMUM 2 MONTHS OLD REPORTS ONLY AVAILABLE ON DEVICE, REST IS AVAILABLE ON CLOUD</string>

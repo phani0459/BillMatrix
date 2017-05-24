@@ -115,7 +115,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.Vendor
             lastChecked = holder.snoRadioButton;
         }
 
-        /**
+        /*
          * to show previously selected discount as selected
          */
         String selectedDiscountCode = Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, "");

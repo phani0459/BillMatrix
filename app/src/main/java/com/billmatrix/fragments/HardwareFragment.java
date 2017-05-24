@@ -24,7 +24,7 @@ import com.billmatrix.utils.Utils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class HardwareFragment extends Fragment {

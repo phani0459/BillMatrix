@@ -43,7 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class PayInsFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
@@ -258,7 +258,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
 
         billMatrixDaoImpl.addPayment(paymentData);
 
-        /**
+        /*
          * reset all edit texts
          */
         customerNameAutoCompleteTextView.setText("");
@@ -269,7 +269,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
             if (Utils.isInternetAvailable(mContext)) {
                 paymentFromServer = ServerUtils.addPaymenttoServer(paymentData, mContext, adminId, billMatrixDaoImpl);
             } else {
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
@@ -281,7 +281,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
                 if (Utils.isInternetAvailable(mContext)) {
                     paymentFromServer = ServerUtils.updatePaymenttoServer(paymentData, mContext, billMatrixDaoImpl);
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     paymentFromServer = paymentData;
@@ -322,7 +322,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
                                 ServerUtils.deletePaymentfromServer(selectedPayment, mContext, billMatrixDaoImpl);
                             }
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();

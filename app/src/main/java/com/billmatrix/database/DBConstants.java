@@ -1,6 +1,6 @@
 package com.billmatrix.database;
 
-/**
+/*
  * Created by KANDAGATLAs on 06-11-2016.
  */
 
@@ -9,7 +9,7 @@ public class DBConstants {
     static final String DB_NAME = "BillMatrix.db";
     static final int DB_VERSION = 1;
 
-    /**
+    /*
      * Common Column Names
      */
     final static String SNO = "SNo";
@@ -23,9 +23,9 @@ public class DBConstants {
     final static String UPDATE_DATE = "update_date";
     final static String BRANCH = "branch";
     final static String LOCATION = "location";
-    final static String DATE = "date";
+    public final static String DATE = "date";
     final static String TYPE = "type";
-    /**
+    /*
      * 0 - if add
      * 1 - if update
      * -1 - from server
@@ -43,7 +43,7 @@ public class DBConstants {
     public final static String TRANSPORT_TABLE = "TABLE_TRANSPORT";
     public final static String CUSTOMER_TRANSACTIONS_TABLE = "TABLE_TRANSACTIONS";
 
-    /**
+    /*
      * Employees Column Names
      */
     final static String EMPLOYEE_NAME = "Employee_Name";
@@ -51,34 +51,34 @@ public class DBConstants {
     final static String EMPLOYEE_PASSWORD = "Employee_Pwd";
     final static String EMPLOYEE_MOBILE = "Employee_Mobile";
 
-    /**
+    /*
      * Vendors Column Names
      */
     public final static String VENDOR_NAME = "Vendor_Name";
     final static String VENDOR_SINCE = "vendor_since";
     final static String VENDOR_ADDRESS = "vendor_ADD";
 
-    /**
+    /*
      * Customer Column Names
      */
     public final static String CUSTOMER_NAME = "Customer_Name";
     public final static String CUSTOMER_CONTACT = "customer_contact";
 
-    /**
+    /*
      * Inventory Column Names
      */
     final static String ITEM_NAME = "itemName";
-    final static String ITEM_CODE = "itemCode";
+    public final static String ITEM_CODE = "itemCode";
     final static String UNIT = "unit";
-    final static String QUANTITY = "quantity";
+    public final static String QUANTITY = "quantity";
     final static String PRICE = "price";
     final static String MY_COST = "myCost";
     final static String WAREHOUSE = "warehouse";
-    final static String BARCODE = "barCode";
+    public final static String BARCODE = "barCode";
     final static String PHOTO = "photo";
 
 
-    /**
+    /*
      * TAX Column Names
      */
     final static String TAX_TYPE = "tax_type";
@@ -86,19 +86,19 @@ public class DBConstants {
     final static String TAX_RATE = "tax_rate";
 
 
-    /**
+    /*
      * Discount Column Names
      */
     final static String DISCOUNT_CODE = "discCode";
     final static String DISCOUNT_DESC = "discDesc";
     final static String DISCOUNT_VALUE = "discValue";
 
-    /**
+    /*
      * POS Column Names
      */
     final static String SELECTED_QTY = "selectedQTY";
 
-    /**
+    /*
      * Payments columns
      */
     public final static String PAYEE_NAME = "payee_name";
@@ -107,7 +107,7 @@ public class DBConstants {
     final static String MODE = "mode_of_payment";
     final static String PAYMENT_TYPE = "payment_type";
 
-    /**
+    /*
      * Customer Transactions
      */
     final static String BILL_NO = "billNo";
@@ -117,7 +117,7 @@ public class DBConstants {
     final static String AMOUNT_PAID = "amountPaid";
     final static String AMOUNT_DUE = "amountDue";
 
-    /**
+    /*
      * TRansport columns
      */
     public final static String TRANSPORT_NAME = "payee_name";

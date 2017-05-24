@@ -38,7 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class VendorsFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
@@ -254,7 +254,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
         long vendorAdded = billMatrixDaoImpl.addVendor(vendorData);
 
         if (vendorAdded != -1) {
-            /**
+            /*
              * reset all edit texts
              */
             vendorEmail_EditText.setText("");
@@ -267,7 +267,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
                 if (Utils.isInternetAvailable(mContext)) {
                     vendorFromServer = ServerUtils.addVendortoServer(vendorData, mContext, adminId, billMatrixDaoImpl);
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
@@ -279,7 +279,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
                     if (Utils.isInternetAvailable(mContext)) {
                         vendorFromServer = ServerUtils.updateVendortoServer(vendorData, mContext, billMatrixDaoImpl);
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
@@ -369,7 +369,7 @@ public class VendorsFragment extends Fragment implements OnItemClickListener, On
                                 ServerUtils.deleteVendorfromServer(selectedVendor, mContext, billMatrixDaoImpl);
                             }
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();

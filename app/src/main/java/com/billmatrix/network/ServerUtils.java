@@ -25,7 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
+/*
  * Created by KANDAGATLAs on 06-01-2017.
  */
 
@@ -46,10 +46,10 @@ public class ServerUtils {
         ServerUtils.isSync = isSync;
     }
 
-    /*********************************************************************
+    /********************************************************************
      ***************************  CUSTOMERS  *****************************
      *********************************************************************/
-    /**
+    /*
      * Add Customer to Server
      *
      * @param customerData customer data to be added to server
@@ -63,7 +63,7 @@ public class ServerUtils {
 
         call.enqueue(new Callback<CreateJob>() {
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -91,7 +91,7 @@ public class ServerUtils {
                             billMatrixDaoImpl.updateCustomer(customerData);
 
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
@@ -103,7 +103,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -111,7 +111,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
@@ -131,7 +131,7 @@ public class ServerUtils {
 
         call.enqueue(new Callback<CreateJob>() {
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -158,7 +158,7 @@ public class ServerUtils {
 
                             billMatrixDaoImpl.updateCustomer(customerData);
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
@@ -170,7 +170,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              * Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -178,7 +178,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
@@ -196,7 +196,7 @@ public class ServerUtils {
         call.enqueue(new Callback<HashMap<String, String>>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -215,7 +215,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -227,7 +227,7 @@ public class ServerUtils {
         });
     }
 
-    /*********************************************************************
+    /********************************************************************
      * ************************** EMPLOYEES ******************************
      *********************************************************************/
 
@@ -239,7 +239,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateEmployee>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -276,7 +276,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -284,7 +284,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateEmployee> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
@@ -303,7 +303,7 @@ public class ServerUtils {
         call.enqueue(new Callback<HashMap<String, String>>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -323,7 +323,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -342,7 +342,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateEmployee>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -381,7 +381,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -389,7 +389,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateEmployee> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
@@ -409,7 +409,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -443,7 +443,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -451,7 +451,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
@@ -472,7 +472,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -505,7 +505,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -513,7 +513,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, true).apply();
@@ -531,7 +531,7 @@ public class ServerUtils {
         call.enqueue(new Callback<HashMap<String, String>>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -548,7 +548,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -560,7 +560,7 @@ public class ServerUtils {
         });
     }
 
-    /****************************************************************
+    /***************************************************************
      * *****************INVENTORY METHODS ***************************
      ****************************************************************/
 
@@ -573,7 +573,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -609,7 +609,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -617,7 +617,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
@@ -636,7 +636,7 @@ public class ServerUtils {
         call.enqueue(new Callback<HashMap<String, String>>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -656,7 +656,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -664,7 +664,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<HashMap<String, String>> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
@@ -677,7 +677,7 @@ public class ServerUtils {
 
     public static Inventory.InventoryData addInventorytoServer(final Inventory.InventoryData inventoryData, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
         Log.e(TAG, "addInventorytoServer: ");
-        /**
+        /*
          * Change vendor Name to ID
          */
         Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addInventory(adminId, inventoryData.item_code, inventoryData.item_name,
@@ -687,7 +687,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -721,7 +721,7 @@ public class ServerUtils {
                         billMatrixDaoImpl.updateInventory(inventoryData);
 
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
@@ -730,7 +730,7 @@ public class ServerUtils {
                         }
                     }
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
@@ -740,7 +740,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -748,7 +748,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
@@ -760,7 +760,7 @@ public class ServerUtils {
         return inventoryData;
     }
 
-    /*********************************************************************
+    /********************************************************************
      * ************************** PAYMENTS ******************************
      *********************************************************************/
     public static void deletePaymentfromServer(final Payments.PaymentData paymentData, final Context mContext, final BillMatrixDaoImpl billMatrixDaoImpl) {
@@ -769,7 +769,7 @@ public class ServerUtils {
         call.enqueue(new Callback<HashMap<String, String>>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -788,7 +788,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -808,7 +808,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -838,7 +838,7 @@ public class ServerUtils {
                             billMatrixDaoImpl.updatePayment(paymentData, previousID);
 
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
@@ -847,7 +847,7 @@ public class ServerUtils {
                             }
                         }
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
@@ -856,7 +856,7 @@ public class ServerUtils {
                         }
                     }
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
@@ -866,7 +866,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -887,7 +887,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -917,7 +917,7 @@ public class ServerUtils {
 
                             billMatrixDaoImpl.updatePayment(paymentData, previousID);
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
@@ -926,7 +926,7 @@ public class ServerUtils {
                             }
                         }
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
@@ -937,7 +937,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -945,7 +945,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, true).apply();
@@ -958,7 +958,7 @@ public class ServerUtils {
         return paymentData;
     }
 
-    /*******************************************
+    /******************************************
      * **********DISCOUNTS ********************
      ******************************************/
 
@@ -970,7 +970,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -996,7 +996,7 @@ public class ServerUtils {
 
                             billMatrixDaoImpl.updateDiscount(discountData);
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
@@ -1005,7 +1005,7 @@ public class ServerUtils {
                             }
                         }
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
@@ -1016,7 +1016,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -1024,7 +1024,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
@@ -1045,7 +1045,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -1071,7 +1071,7 @@ public class ServerUtils {
 
                             billMatrixDaoImpl.updateDiscount(discountData);
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
@@ -1080,7 +1080,7 @@ public class ServerUtils {
                             }
                         }
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
@@ -1091,7 +1091,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -1099,7 +1099,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();
@@ -1118,7 +1118,7 @@ public class ServerUtils {
         call.enqueue(new Callback<HashMap<String, String>>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -1137,7 +1137,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -1155,7 +1155,7 @@ public class ServerUtils {
         call.enqueue(new Callback<HashMap<String, String>>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -1172,7 +1172,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -1191,7 +1191,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -1220,7 +1220,7 @@ public class ServerUtils {
 
                             billMatrixDaoImpl.updateTax(taxData);
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
@@ -1229,7 +1229,7 @@ public class ServerUtils {
                             }
                         }
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
@@ -1240,7 +1240,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -1248,7 +1248,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
@@ -1267,7 +1267,7 @@ public class ServerUtils {
         call.enqueue(new Callback<CreateJob>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -1293,7 +1293,7 @@ public class ServerUtils {
 
                             billMatrixDaoImpl.updateTax(taxData);
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
@@ -1302,7 +1302,7 @@ public class ServerUtils {
                             }
                         }
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
@@ -1313,7 +1313,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -1321,7 +1321,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
@@ -1332,10 +1332,10 @@ public class ServerUtils {
         });
     }
 
-    /*********************************************************************
+    /********************************************************************
      ***************************  TRANSPORTS  *****************************
      *********************************************************************/
-    /**
+    /*
      * Add Customer to Server
      *
      * @param transportData Transport data to be added to server
@@ -1349,7 +1349,7 @@ public class ServerUtils {
 
         call.enqueue(new Callback<CreateJob>() {
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -1376,7 +1376,7 @@ public class ServerUtils {
                             billMatrixDaoImpl.updateTransport(transportData);
 
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
@@ -1388,7 +1388,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -1396,7 +1396,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
@@ -1416,7 +1416,7 @@ public class ServerUtils {
 
         call.enqueue(new Callback<CreateJob>() {
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -1443,7 +1443,7 @@ public class ServerUtils {
 
                             billMatrixDaoImpl.updateTransport(transportData);
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
@@ -1455,7 +1455,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              * Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -1463,7 +1463,7 @@ public class ServerUtils {
             @Override
             public void onFailure(Call<CreateJob> call, Throwable t) {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
-                /**
+                /*
                  * To show pending sync Icon in database page
                  */
                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
@@ -1481,7 +1481,7 @@ public class ServerUtils {
         call.enqueue(new Callback<HashMap<String, String>>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -1500,7 +1500,7 @@ public class ServerUtils {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error

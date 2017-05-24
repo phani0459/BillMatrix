@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         billMatrixDaoImpl = new BillMatrixDaoImpl(mContext);
 
-        /**
+        /*
          * if user is previously looged in, directly open control panel
          */
         if (Utils.getSharedPreferences(mContext).getBoolean(Constants.IS_LOGGED_IN, false)) {
@@ -81,14 +81,14 @@ public class LoginActivity extends AppCompatActivity {
 
         rememberMeCheckBox.setChecked(false);
 
-        /**
+        /*
          * if user has logout, then show the previously logged in licence key in the field and disable the edit field
          */
         if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, null))) {
             licenceEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LICENECE_KEY, ""));
         }
 
-        /**
+        /*
          * if user name and password are present in prefs, show them in the edit text fields.
          */
         if (!TextUtils.isEmpty(Utils.getSharedPreferences(mContext).getString(Constants.PREF_LOGIN_ID, null))) {
@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.IS_LOGGED_IN, true).apply();
                     Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, profile.data.type).apply();
 
-                    /**
+                    /*
                      * if remember me is checked, save user name and pwd in pref if not remove them
                      */
                     if (rememberMeCheckBox.isChecked()) {
@@ -193,7 +193,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_USER_TYPE, loggedInEmployee.type).apply();
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_LOGIN_ID, loggedInEmployee.login_id).apply();
 
-                                /**
+                                /*
                                  * if remember me is checked, save user name and pwd in pref if not remove them
                                  */
                                 if (rememberMeCheckBox.isChecked()) {
@@ -245,7 +245,7 @@ public class LoginActivity extends AppCompatActivity {
         Call<HashMap<String, String>> call = Utils.getBillMatrixAPI(mContext).login(userName, password, imeiNumber);
 
         call.enqueue(new Callback<HashMap<String, String>>() {
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -266,7 +266,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_EMP_LOGIN_ID, userName).apply();
                             }
 
-                            /**
+                            /*
                              * if remember me is checked, save user name and pwd in pref if not remove them
                              */
                             if (rememberMeCheckBox.isChecked()) {
@@ -298,7 +298,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error

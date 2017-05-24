@@ -26,7 +26,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ZXingSc
         super.onCreate(state);
         setContentView(R.layout.activity_barcode_scanner);
 
-        /**
+        /*
          * setting up toolbar
          */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

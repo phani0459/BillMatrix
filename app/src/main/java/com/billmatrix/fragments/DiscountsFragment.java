@@ -36,7 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class DiscountsFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
@@ -240,7 +240,7 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         if (value.equals("0")) {
             Utils.getSharedPreferences(mContext).edit().putString(Constants.PREF_DEFAULT_DISCOUNT_CODE, code).apply();
             discountAdapter.insertDefaultDiscount(discountData);
-            /**
+            /*
              * reset all edit texts
              */
             discountDescEditText.setText("");
@@ -257,7 +257,7 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
         long discountAdded = billMatrixDaoImpl.addDiscount(discountData);
 
         if (discountAdded != -1) {
-            /**
+            /*
              * reset all edit texts
              */
             discountDescEditText.setText("");
@@ -268,7 +268,7 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                 if (Utils.isInternetAvailable(mContext)) {
                     discountFromServer = ServerUtils.addDiscounttoServer(discountData, adminId, mContext, billMatrixDaoImpl);
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     discountFromServer = discountData;
@@ -280,7 +280,7 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                     if (Utils.isInternetAvailable(mContext)) {
                         discountFromServer = ServerUtils.updateDiscounttoServer(discountData, mContext, adminId, billMatrixDaoImpl);
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         discountFromServer = discountData;
@@ -325,7 +325,7 @@ public class DiscountsFragment extends Fragment implements OnItemClickListener, 
                                 ServerUtils.deleteDiscountfromServer(selectedDiscount, mContext, billMatrixDaoImpl);
                             }
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, true).apply();

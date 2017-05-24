@@ -37,7 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class TaxFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
@@ -241,7 +241,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
             taxAdapter.addTax(taxData, addTaxButton.getText().toString().equalsIgnoreCase("ADD"));
             taxTypeRecyclerView.smoothScrollToPosition(taxAdapter.getItemCount());
 
-            /**
+            /*
              * reset all edit texts
              */
             taxTypeSpinner.setSelection(0);
@@ -252,7 +252,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
                 if (Utils.isInternetAvailable(mContext)) {
                     ServerUtils.addTaxtoServer(taxData, mContext, billMatrixDaoImpl, adminId);
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
@@ -263,7 +263,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
                     if (Utils.isInternetAvailable(mContext)) {
                         ServerUtils.updateTaxtoServer(taxData, mContext, adminId, billMatrixDaoImpl);
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();
@@ -315,7 +315,7 @@ public class TaxFragment extends Fragment implements OnItemClickListener, OnData
                                 ServerUtils.deleteTaxfromServer(taxAdapter.getItem(position), mContext, billMatrixDaoImpl);
                             }
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, true).apply();

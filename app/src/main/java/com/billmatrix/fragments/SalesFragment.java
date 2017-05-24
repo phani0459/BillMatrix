@@ -5,8 +5,11 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,24 +21,32 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.billmatrix.R;
+import com.billmatrix.adapters.GeneratedReportsAdapter;
+import com.billmatrix.adapters.SalesReportsAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
-import com.billmatrix.models.Customer;
+import com.billmatrix.database.DBConstants;
+import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Discount;
+import com.billmatrix.models.GeneratedReport;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.Transaction;
 import com.billmatrix.models.Vendor;
+import com.billmatrix.network.ServerUtils;
 import com.billmatrix.utils.Constants;
 import com.billmatrix.utils.Utils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
-public class SalesFragment extends Fragment {
+public class SalesFragment extends Fragment implements OnItemClickListener {
 
     @BindView(R.id.sp_sales_select)
     public Spinner saleSelectSpinner;
@@ -45,12 +56,20 @@ public class SalesFragment extends Fragment {
     public EditText toDate_EditText;
     @BindView(R.id.sp_sales_item)
     public Spinner saleItemSpinner;
-    @BindView(R.id.tv_dateHeading)
-    public TextView dateHeadingTextView;
     @BindView(R.id.disble_spinner)
     public View spinnerDisableView;
     @BindView(R.id.atv_sales_item)
     public AutoCompleteTextView salesItemACTextView;
+    @BindView(R.id.tv_qtyHeading)
+    public TextView h6TextView;
+    @BindView(R.id.tv_amountHeading)
+    public TextView h5TextView;
+    @BindView(R.id.tv_vendorHeading)
+    public TextView h4TextView;
+    @BindView(R.id.tv_itemNameHeading)
+    public TextView h3TextView;
+    @BindView(R.id.salesList)
+    public RecyclerView reportsRecyclerView;
 
     private Context mContext;
     private boolean isSalesTab;
@@ -59,6 +78,16 @@ public class SalesFragment extends Fragment {
     private ArrayList<Vendor.VendorData> vendors;
     private ArrayList<Discount.DiscountData> discounts;
     private ArrayList<Inventory.InventoryData> inventory;
+    private SalesReportsAdapter reportsAdapter;
+
+    /*
+     * For All screens: SNO and Date are common.
+     * For Sale Total: Only Item Name and QTY are required (h3 and h6)
+     * For Sale BY ITEM: h3 and h6 are required
+     * For Sale By VENDOR: h3, h4 and h6 are required
+     * For Sale By Profit: h4 and h5 are required
+     * For Sale By Discount: h3, h4, h5 and h6 are required
+     */
 
     public SalesFragment() {
         // Required empty public constructor
@@ -85,11 +114,9 @@ public class SalesFragment extends Fragment {
 
         if (isSalesTab) {
             Utils.loadSpinner(saleSelectSpinner, mContext, R.array.sale_by_array);
-            dateHeadingTextView.setText(getString(R.string.SOLD_DATE));
         } else {
             Utils.loadSpinner(saleSelectSpinner, mContext, R.array.purchase_by_array);
             loadVendors();
-            dateHeadingTextView.setText(getString(R.string.PURCHASE_DATE));
         }
 
         fromDate_EditText.setInputType(InputType.TYPE_NULL);
@@ -116,7 +143,8 @@ public class SalesFragment extends Fragment {
                         return;
                     }
                     try {
-                        DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, toDate_EditText, Constants.getDateFormat().parse(fromDate).getTime());
+                        DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, toDate_EditText, Constants.getDateFormat().parse(fromDate).getTime(), false);
+                        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                         datePickerDialog.show();
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -125,6 +153,13 @@ public class SalesFragment extends Fragment {
                 v.clearFocus();
             }
         });
+
+        List<Transaction> reports = new ArrayList<>();
+        ServerUtils.setIsSync(false);
+
+        reportsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        reportsAdapter = new SalesReportsAdapter(reports, this);
+        reportsRecyclerView.setAdapter(reportsAdapter);
 
         return v;
     }
@@ -186,7 +221,7 @@ public class SalesFragment extends Fragment {
             }
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, spinnerTwo_Strings);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.select_dialog_item, spinnerTwo_Strings);
         salesItemACTextView.setThreshold(1);//will start working from first character
         salesItemACTextView.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
     }
@@ -213,16 +248,54 @@ public class SalesFragment extends Fragment {
                     saleItemSpinner.setVisibility(View.VISIBLE);
                     spinnerDisableView.setVisibility(View.GONE);
                     salesItemACTextView.setVisibility(View.GONE);
+                    h3TextView.setVisibility(View.VISIBLE);
+                    h4TextView.setVisibility(View.VISIBLE);
+                    h5TextView.setVisibility(View.VISIBLE);
+                    h6TextView.setVisibility(View.VISIBLE);
+
                     if (selectedString.equalsIgnoreCase("SALE BY VENDOR")) {
+                        h5TextView.setVisibility(View.GONE);
+
+                        h3TextView.setText(getString(R.string.ITEM_NAME));
+                        h4TextView.setText(getString(R.string.vendor));
+                        h6TextView.setText(getString(R.string.TOTAL_SALES));
+
                         loadVendors();
                     } else if (selectedString.equalsIgnoreCase("SALE BY DISCOUNT")) {
+                        h3TextView.setText(getString(R.string.TOTAL_DISCOUNTED_BILL_AMT));
+                        h6TextView.setText(getString(R.string.DISCOUNT_CODE));
+                        h4TextView.setText(getString(R.string.TOTAL_SALES));
+                        h5TextView.setText(getString(R.string.TOTAL_DISC));
+
                         loadDiscounts();
                     } else if (selectedString.equalsIgnoreCase("SALE PROFIT") || selectedString.equalsIgnoreCase("SALE TOTAL") || selectedString.equalsIgnoreCase("SELECT ONE")) {
                         saleItemSpinner.setEnabled(false);
                         spinnerDisableView.setVisibility(View.VISIBLE);
+                        if (selectedString.equalsIgnoreCase("SALE PROFIT")) {
+                            h3TextView.setVisibility(View.GONE);
+                            h6TextView.setVisibility(View.GONE);
+
+                            h4TextView.setText(getString(R.string.TOTAL_SALES));
+                            h5TextView.setText(getString(R.string.TOTAL_PROFIT));
+                        }
+
+                        if (selectedString.equalsIgnoreCase("SALE TOTAL")) {
+                            h4TextView.setVisibility(View.GONE);
+                            h5TextView.setVisibility(View.GONE);
+
+                            h3TextView.setText(getString(R.string.ITEM_NAME));
+                            h6TextView.setText(getString(R.string.QTY));
+                        }
+
                     } else if (selectedString.equalsIgnoreCase("SALE BY ITEM")) {
                         saleItemSpinner.setVisibility(View.INVISIBLE);
                         salesItemACTextView.setVisibility(View.VISIBLE);
+                        h4TextView.setVisibility(View.GONE);
+                        h5TextView.setVisibility(View.GONE);
+
+                        h3TextView.setText(getString(R.string.ITEM_NAME));
+                        h6TextView.setText(getString(R.string.QTY));
+
                         loadInventory();
                     }
                 }
@@ -233,5 +306,42 @@ public class SalesFragment extends Fragment {
 
             }
         });
+    }
+
+    @OnClick(R.id.btn_viewSales)
+    public void viewSales() {
+        String fromDate = fromDate_EditText.getText().toString();
+
+        if (TextUtils.isEmpty(fromDate)) {
+            Utils.showToast("Enter From Date", mContext);
+            return;
+        }
+
+        String toDate = toDate_EditText.getText().toString();
+
+        if (TextUtils.isEmpty(toDate)) {
+            Utils.showToast("Enter To Date", mContext);
+            return;
+        }
+
+        switch (saleSelectSpinner.getSelectedItem().toString()) {
+            case "SELECT ONE":
+                Utils.showToast("Select Sale type to view report", mContext);
+                return;
+            case "SALE TOTAL":
+                String query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'";
+                ArrayList<Transaction> transactions = billMatrixDaoImpl.getTransactions(query);
+                if (transactions != null && transactions.size() > 0) {
+                    for (int i = 0; i < transactions.size(); i++) {
+                        reportsAdapter.addReport(transactions.get(i));
+                    }
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onItemClick(int caseInt, int position) {
+
     }
 }

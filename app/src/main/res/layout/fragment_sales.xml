@@ -8,9 +8,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/ll_sales_bottom_note"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -110,6 +112,7 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/btn_viewSales"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
@@ -158,42 +161,60 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="12dp"
-                android:layout_weight="1.5"
+                android:layout_weight="0.8"
                 android:gravity="center"
-                android:text="@string/Brand"
+                android:text="@string/DATE"
                 android:textColor="@android:color/black" />
 
             <TextView
+                android:id="@+id/tv_itemNameHeading"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="12dp"
-                android:layout_weight="1"
+                android:layout_weight="1.4"
                 android:gravity="center"
                 android:text="@string/ITEM_NAME"
                 android:textColor="@android:color/black" />
 
             <TextView
-                android:id="@+id/tv_dateHeading"
+                android:id="@+id/tv_vendorHeading"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="12dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/SOLD_DATE"
+                android:text="@string/VENDOR"
                 android:textColor="@android:color/black" />
 
-
             <TextView
+                android:id="@+id/tv_amountHeading"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_marginRight="12dp"
+                android:layout_weight="0.8"
+                android:gravity="center"
+                android:text="@string/amount"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/tv_qtyHeading"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
                 android:gravity="center"
                 android:text="@string/QTY"
                 android:textColor="@android:color/black" />
         </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/salesList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
 
     </LinearLayout>
 

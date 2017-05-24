@@ -198,7 +198,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             }
         }
 
-        /**
+        /*
          * Fetch profile to set printer headers
          */
         if (FileUtils.isFileExists(Constants.PROFILE_FILE_NAME, mContext)) {
@@ -216,7 +216,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         if (dbCustomers != null && dbCustomers.size() > 0) {
             for (Customer.CustomerData customer : dbCustomers) {
-                /**
+                /*
                  * Show only Customers who are active
                  */
                 if (customer.status.equalsIgnoreCase("1")) {
@@ -266,7 +266,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             selectedtaxes = Constants.getGson().fromJson(selectedTaxJSON, Constants.floatArrayMapType);
         }
 
-        /**
+        /*
          * set texts defaults
          */
         totalCartItemsTextView.setText("0" + " " + getString(R.string.ITEMS));
@@ -277,7 +277,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         tabsLayout.addView(buttonLayout);
 
-        /**
+        /*
          * Printer Code
          */
 
@@ -290,7 +290,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             mContext.startService(intent);
         }
 
-        /**
+        /*
          * Initiate devices Dialog
          */
         devicesDialog = new Dialog(mContext);
@@ -302,7 +302,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /**
+                /*
                  * to remove all the printers previously searched
                  */
                 devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
@@ -320,7 +320,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /**
+                /*
                  * to remove all the printers previously searched
                  */
                 devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
@@ -351,7 +351,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
     /*
-    Show transport diaolog
+    Show transport dialog
      */
     @OnClick(R.id.im_pos_transport)
     public void showTransportDialog(View v) {
@@ -539,8 +539,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 editedCustomerData.username = customerName;
                 editedCustomerData.mobile_number = customerContact;
 
-                Log.e(TAG, "onClick: " + editedCustomerData.toString());
-
                 if (selectedCustomer != null) {
                     billMatrixDaoImpl.deleteCustomer(DBConstants.ID, selectedCustomer.id);
                 }
@@ -572,7 +570,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 }
             }
 
-            /**
+            /*
              * If there are dues for edited customer, and name has been changed, update transactions and pos table
              * and if there are payins of customer, change customer name
              */
@@ -583,7 +581,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             billMatrixDaoImpl.updatePaymentOffline(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, previousCustomerName);
             billMatrixDaoImpl.updateCustomerName(DBConstants.PAYMENTS_TABLE, DBConstants.PAYEE_NAME, customerData.username, previousCustomerName);
 
-            /**
+            /*
              * If Customer Name is updated, remove previous name and add new Name to spinner
              */
             if (!TextUtils.isEmpty(previousCustomerName)) {
@@ -769,7 +767,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
                 String cardString = cardEditText.getText().toString();
-                /**
+                /*
                  * to enter only 2 values after decimal point
                  */
                 if (cardString.contains(".") && charSequence.charAt(charSequence.length() - 1) != '.') {
@@ -785,7 +783,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                 float changeValue = (moneyPaidFromCard + moneyPaidFromCash) - billTotalValue;
 
-                /**
+                /*
                  * if change is negative it is balanceTextView
                  */
                 if (changeValue == 0) {
@@ -819,7 +817,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
                 String cashString = cashEditText.getText().toString();
-                /**
+                /*
                  * to enter only 2 values after decimal point
                  */
                 if (cashString.contains(".") && charSequence.charAt(charSequence.length() - 1) != '.') {
@@ -835,7 +833,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                 float changeValue = (moneyPaidFromCard + moneyPaidFromCash) - billTotalValue;
 
-                /**
+                /*
                  * if change is negative it is balanceTextView
                  */
                 if (changeValue == 0) {
@@ -897,17 +895,24 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     public void resetCustomerBill(boolean isTransactionSuccess) {
 
-        /**
-         * save transaction if transaction is successfull
+        /*
+         * save transaction if transaction is successful
          */
         if (isTransactionSuccess) {
             saveTransaction();
         }
 
-        /**
+        /*
          * Remove customer bill items to close the bill
          */
         if (posItemAdapter.getItemCount() > 0) {
+            for (int i = 0; i < posItemAdapter.getItemCount(); i++) {
+                try {
+                    updateInventoryQuantity(posItemAdapter.getItem(i), Integer.parseInt(posItemAdapter.getItem(i).selectedQTY));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
             posItemAdapter.removeAllItems();
         }
         billMatrixDaoImpl.deleteAllCustomerItems(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
@@ -920,7 +925,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         }
         customersSpinner.setSelection(0);
 
-        /**
+        /*
          * dismiss payments dialog
          */
         if (paymentsDialog != null && paymentsDialog.isShowing()) {
@@ -950,8 +955,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         transaction.id = transaction.billNumber;
         transaction.isZbillChecked = zBillCheckBox.isChecked();
         transaction.status = "1";
-
-        Log.e(TAG, "saveTransaction: " + transaction.toString());
 
         billMatrixDaoImpl.addTransaction(transaction);
     }
@@ -1027,7 +1030,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
     String scannedBarcode = "";
 
-    /**
+    /*
      * to listen to the barcode scanner value
      *
      * @param e event triggered by scanner
@@ -1070,7 +1073,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         ConnectivityReceiver.connectivityReceiverListener = this;
 
-        /**
+        /*
          * if barcode is scanned, edit text will change focus to next edit text, to remove we again change focus to same edit text
          */
         posItemsSearchEditText.setOnKeyListener(new View.OnKeyListener() {
@@ -1184,7 +1187,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         });
 
 
-        /**
+        /*
          * POS items search
          */
         posItemsSearchEditText.addTextChangedListener(new TextWatcher() {
@@ -1269,7 +1272,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     private void loadPreviousItems(String selecteCustomerName) {
         ArrayList<Inventory.InventoryData> previousItems = billMatrixDaoImpl.getPOSItem(selecteCustomerName);
         if (previousItems != null && previousItems.size() > 0) {
-            /**
+            /*
              * apply discount selected for previous customer
              */
             discountSelected = Float.parseFloat(previousItems.get(0).discountValue);
@@ -1290,7 +1293,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
             if (dbCustomers != null && dbCustomers.size() > 0) {
                 for (Customer.CustomerData customerData : dbCustomers) {
-                    /**
+                    /*
                      * Show customers who are active only
                      */
                     if (customerData.status.equalsIgnoreCase("1")) {
@@ -1485,7 +1488,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
     public void loadInventoryToTransaction(Inventory.InventoryData selectedInventory) {
-        /**
+        /*
          * to add next guest customer in customer spinner if selected customer is guest and there are no more guest customers in spinner
          */
         if (isGuestCustomerSelected) {
@@ -1495,7 +1498,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 customerSpinnerAdapter.insert("GUEST CUSTOMER " + guestCustomerCount, guestCustomerCount);
             }
         }
+        /*
+         * Check If selected item is already loaded into pos list
+         */
         if (posItemAdapter.inventoryIDs != null && posItemAdapter.inventoryIDs.size() > 0) {
+            /*
+             * Check If selected item is already loaded into pos list
+             */
             if (posItemAdapter.inventoryIDs.contains(selectedInventory.id)) {
                 Inventory.InventoryData inventoryFromAdapter = posItemAdapter.getInventoryonID(selectedInventory.id);
                 if (inventoryFromAdapter != null) {
@@ -1505,12 +1514,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                             inventoryQty = inventoryQty + 1;
                             inventoryFromAdapter.selectedQTY = inventoryQty + "";
                             posItemAdapter.changeInventory(inventoryFromAdapter);
+                            updateInventoryQuantity(inventoryFromAdapter, -1);
+                            billMatrixDaoImpl.updatePOSItem(inventoryFromAdapter.selectedQTY, inventoryFromAdapter.item_code,
+                                    selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
                         } else {
                             Utils.showToast("This item is out of stock", mContext);
                         }
                     }
-                    billMatrixDaoImpl.updatePOSItem(inventoryFromAdapter.selectedQTY, inventoryFromAdapter.item_code,
-                            selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
                     loadFooterValues();
                 }
                 return;
@@ -1520,7 +1530,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         } else {
             selectedInventory.selectedQTY = "1";
         }
-        /**
+        /*
          * Discount code added to customer
          */
         selectedInventory.discountCode = discountCodeEditText.getText().toString();
@@ -1528,6 +1538,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         selectedInventory.isZbillChecked = zBillCheckBox.isChecked();
 
         posItemAdapter.addInventory(selectedInventory);
+        updateInventoryQuantity(selectedInventory, -1);
         posItemsRecyclerView.smoothScrollToPosition(posItemAdapter.getItemCount());
         billMatrixDaoImpl.addPOSItem(selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName, selectedInventory);
         billMatrixDaoImpl.updatePOSZBill(zBillCheckBox.isChecked(), selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
@@ -1541,6 +1552,35 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             loadInventoryToTransaction(selectedInventory);
         } else {
             Utils.showToast("Select Customer before adding items to cart", mContext);
+        }
+    }
+
+    public void updateInventoryQuantity(Inventory.InventoryData inventoryData, int updatedQty) {
+        Inventory.InventoryData dbInventory = billMatrixDaoImpl.getInventoryonByBarcode(DBConstants.ITEM_CODE, inventoryData.item_code);
+        if (!TextUtils.isEmpty(dbInventory.qty) && TextUtils.isDigitsOnly(dbInventory.qty)) {
+            int actualQty = Integer.parseInt(dbInventory.qty);
+            int presentQty = actualQty + updatedQty;
+            dbInventory.qty = "" + presentQty;
+            billMatrixDaoImpl.updateInventory(DBConstants.QUANTITY, "" + presentQty, dbInventory.item_code);
+
+            /*
+             * If inventory is added offline and internet is available, add inventory to server
+             * or else
+             * update to server
+             */
+            if (Utils.isInternetAvailable(mContext)) {
+                if (dbInventory.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                    ServerUtils.addInventorytoServer(inventoryData, mContext, adminId, billMatrixDaoImpl);
+                } else {
+                    ServerUtils.updateInventorytoServer(dbInventory, mContext, billMatrixDaoImpl);
+                }
+            } else {
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+                if (!dbInventory.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                    billMatrixDaoImpl.updateInventory(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, dbInventory.item_code);
+                }
+            }
+
         }
     }
 
@@ -1562,7 +1602,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         return discountCalculated; //String.format(Locale.getDefault(), "%.2f", discountCalculated) + "";
     }
 
-    /**
+    /*
      * Calculate tax after deducting discount on subtotal
      *
      * @param total
@@ -1608,6 +1648,11 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                 showAlertDialog("Are you sure?", "You want to remove Item", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            updateInventoryQuantity(posItemAdapter.getItem(position), Integer.parseInt(posItemAdapter.getItem(position).selectedQTY));
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
                         billMatrixDaoImpl.deletePOSItem(posItemAdapter.getItem(position).item_code, selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
                         posItemAdapter.removeItem(position);
                         float subTotal = getSubTotal();
@@ -1630,7 +1675,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
 
-    /*************************************************************
+    /************************************************************
      * **********PRINTER CODE *************************************
      *************************************************************/
 
@@ -1834,7 +1879,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
                     if (device == null)
                         return;
 
-                    /**
+                    /*
                      * dismiss search
                      */
                     if (searchingDialog != null && searchingDialog.isShowing())
@@ -1900,7 +1945,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                /**
+                /*
                  * DrawerService of onStartCommand Will send this message
                  */
                 case Global.MSG_ALLTHREAD_READY: {

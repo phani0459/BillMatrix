@@ -79,7 +79,7 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class InventoryFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
@@ -259,7 +259,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             }
         }
 
-        /**
+        /*
          * Printer Code
          */
 
@@ -272,7 +272,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             mContext.startService(intent);
         }
 
-        /**
+        /*
          * Initiate devices Dialog
          */
         devicesDialog = new Dialog(mContext);
@@ -284,7 +284,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /**
+                /*
                  * to remove all the printers previously searched
                  */
                 devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
@@ -302,7 +302,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /**
+                /*
                  * to remove all the printers previously searched
                  */
                 devicesAdapter = new DevicesAdapter(mContext, new ArrayList<BluetoothDevice>());
@@ -324,7 +324,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
     @OnClick(R.id.btn_scanBarcode)
     public void checkCameraPermission() {
-        /**
+        /*
          * Reset bottom layout fields
          */
         onItemClick(4, 0);
@@ -424,7 +424,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
     public void fetchInventoryByBarcode(String barcodeValue) {
         Utils.showToast(barcodeValue, mContext);
         Inventory.InventoryData barcodeInventoryData;
-        barcodeInventoryData = billMatrixDaoImpl.getInventoryonByBarcode("365214");
+        barcodeInventoryData = billMatrixDaoImpl.getInventoryonByBarcode(DBConstants.BARCODE, "365214");
         if (barcodeInventoryData != null && !inventoryAdapter.containsInventory(barcodeInventoryData.barcode)) {
             inventoryAdapter.addInventory(barcodeInventoryData);
             inventoryRecyclerView.smoothScrollToPosition(inventoryAdapter.getItemCount());
@@ -554,7 +554,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         long inventoryAdded = billMatrixDaoImpl.addInventory(inventoryData);
 
         if (inventoryAdded != -1) {
-            /**
+            /*
              * reset all edit texts
              */
             itemCodeEditText.setText("");
@@ -576,7 +576,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 if (Utils.isInternetAvailable(mContext)) {
                     inventoryFromServer = ServerUtils.addInventorytoServer(inventoryData, mContext, adminId, billMatrixDaoImpl);
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
@@ -588,7 +588,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                     if (Utils.isInternetAvailable(mContext)) {
                         inventoryFromServer = ServerUtils.updateInventorytoServer(inventoryData, mContext, billMatrixDaoImpl);
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         inventoryFromServer = inventoryData;
@@ -618,7 +618,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                     return;
                 }
 
-                /**
+                /*
                  * Reset bottom layout fields
                  */
                 resetBottomLayout();
@@ -637,7 +637,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                                 ServerUtils.deleteInventoryfromServer(selectedInventory, mContext, billMatrixDaoImpl);
                             }
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
@@ -649,7 +649,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                 break;
             case 2:
                 if (!isEditing) {
-                    /**
+                    /*
                      * Reset bottom layout fields
                      */
                     resetBottomLayout();
@@ -784,7 +784,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
     public void searchClicked(String query) {
         Log.e(TAG, "searchClicked: " + query);
-        /**
+        /*
          * Reset bottom layout fields
          */
         onItemClick(4, 0);
@@ -816,7 +816,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         }
     }
 
-    /**
+    /*
      * Printer Code
      */
     public void printBarcode() {
@@ -837,7 +837,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         printBarcodeImage(selectedInventorytoEdit);
     }
 
-    /**
+    /*
      * Printer Code
      *
      * @param v
@@ -902,7 +902,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
                     if (device == null)
                         return;
 
-                    /**
+                    /*
                      * dismiss search
                      */
                     if (searchingDialog != null && searchingDialog.isShowing())
@@ -955,7 +955,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                /**
+                /*
                  * DrawerService of onStartCommand Will send this message
                  */
                 case Global.MSG_ALLTHREAD_READY: {
@@ -1078,7 +1078,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
     }
 
-    /**************************************************************
+    /*************************************************************
      * getting from com.google.zxing.client.android.encode.QRCodeEncoder
      * <p>
      * See the sites below

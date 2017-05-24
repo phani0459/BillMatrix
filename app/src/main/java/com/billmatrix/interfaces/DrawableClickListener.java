@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.TextView;
 
-/**
+/*
  * This class can be used to define a listener for a compound drawable.
  * 
  * */
@@ -15,41 +15,41 @@ public abstract class DrawableClickListener implements OnTouchListener
 {
 
     /* PUBLIC CONSTANTS */
-    /**
+    /*
      * This represents the left drawable.
      * */
     public static final int DRAWABLE_INDEX_LEFT = 0;
-    /**
+    /*
      * This represents the top drawable.
      * */
     public static final int DRAWABLE_INDEX_TOP = 1;
-    /**
+    /*
      * This represents the right drawable.
      * */
     public static final int DRAWABLE_INDEX_RIGHT = 2;
-    /**
+    /*
      * This represents the bottom drawable.
      * */
     public static final int DRAWABLE_INDEX_BOTTOM = 3;
-    /**
+    /*
      * This stores the default value to be used for the
      * {@link DrawableClickListener#fuzz}.
      * */
     public static final int DEFAULT_FUZZ = 10;
 
     /* PRIVATE VARIABLES */
-    /**
+    /*
      * This stores the number of pixels of &quot;fuzz&quot; that should be
      * included to account for the size of a finger.
      * */
     private final int fuzz;
-    /**
+    /*
      * This will store a reference to the {@link Drawable}.
      * */
     private Drawable drawable = null;
 
     /* CONSTRUCTORS */
-    /**
+    /*
      * This will create a new instance of a {@link DrawableClickListener}
      * object.
      * 
@@ -68,7 +68,7 @@ public abstract class DrawableClickListener implements OnTouchListener
         this( view, drawableIndex, DrawableClickListener.DEFAULT_FUZZ );
     }
 
-    /**
+    /*
      * This will create a new instance of a {@link DrawableClickListener}
      * object.
      * 
@@ -114,12 +114,12 @@ public abstract class DrawableClickListener implements OnTouchListener
     }
 
     /* PUBLIC METHODS */
-    /**
+    /*
      * 
      * */
     public abstract boolean isClickOnDrawable( final int x, final int y, final View view, final Rect drawableBounds, final int fuzz );
 
-    /**
+    /*
      * This method will be fired when the drawable is touched/clicked.
      * 
      * @return
@@ -129,7 +129,7 @@ public abstract class DrawableClickListener implements OnTouchListener
     public abstract boolean onDrawableClick();
 
     /* PUBLIC CLASSES */
-    /**
+    /*
      * This class can be used to define a listener for a <b>LEFT</b> compound
      * drawable.
      * */
@@ -137,7 +137,7 @@ public abstract class DrawableClickListener implements OnTouchListener
     {
 
         /* CONSTRUCTORS */
-        /**
+        /*
          * This will create a new instance of a
          * {@link LeftDrawableClickListener} object.
          * 
@@ -150,7 +150,7 @@ public abstract class DrawableClickListener implements OnTouchListener
             super( view, DrawableClickListener.DRAWABLE_INDEX_LEFT );
         }
 
-        /**
+        /*
          * This will create a new instance of a
          * {@link LeftDrawableClickListener} object.
          * 
@@ -187,7 +187,7 @@ public abstract class DrawableClickListener implements OnTouchListener
 
     }
 
-    /**
+    /*
      * This class can be used to define a listener for a <b>TOP</b> compound
      * drawable.
      * */
@@ -195,7 +195,7 @@ public abstract class DrawableClickListener implements OnTouchListener
     {
 
         /* CONSTRUCTORS */
-        /**
+        /*
          * This will create a new instance of a {@link TopDrawableClickListener}
          * object.
          * 
@@ -208,7 +208,7 @@ public abstract class DrawableClickListener implements OnTouchListener
             super( view, DrawableClickListener.DRAWABLE_INDEX_TOP );
         }
 
-        /**
+        /*
          * This will create a new instance of a {@link TopDrawableClickListener}
          * object.
          * 
@@ -245,7 +245,7 @@ public abstract class DrawableClickListener implements OnTouchListener
 
     }
 
-    /**
+    /*
      * This class can be used to define a listener for a <b>RIGHT</b> compound
      * drawable.
      * */
@@ -253,7 +253,7 @@ public abstract class DrawableClickListener implements OnTouchListener
     {
 
         /* CONSTRUCTORS */
-        /**
+        /*
          * This will create a new instance of a
          * {@link RightDrawableClickListener} object.
          * 
@@ -266,7 +266,7 @@ public abstract class DrawableClickListener implements OnTouchListener
             super( view, DrawableClickListener.DRAWABLE_INDEX_RIGHT );
         }
 
-        /**
+        /*
          * This will create a new instance of a
          * {@link RightDrawableClickListener} object.
          * 
@@ -303,7 +303,7 @@ public abstract class DrawableClickListener implements OnTouchListener
 
     }
 
-    /**
+    /*
      * This class can be used to define a listener for a <b>BOTTOM</b> compound
      * drawable.
      * */
@@ -311,7 +311,7 @@ public abstract class DrawableClickListener implements OnTouchListener
     {
 
         /* CONSTRUCTORS */
-        /**
+        /*
          * This will create a new instance of a
          * {@link BottomDrawableClickListener} object.
          * 
@@ -324,7 +324,7 @@ public abstract class DrawableClickListener implements OnTouchListener
             super( view, DrawableClickListener.DRAWABLE_INDEX_BOTTOM );
         }
 
-        /**
+        /*
          * This will create a new instance of a
          * {@link BottomDrawableClickListener} object.
          * 

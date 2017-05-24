@@ -39,7 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class TransportFragment extends Fragment implements OnItemClickListener, OnDataFetchListener {
@@ -103,7 +103,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener, 
 
         if (dbCustomers != null && dbCustomers.size() > 0) {
             for (Customer.CustomerData customer : dbCustomers) {
-                /**
+                /*
                  * Show only Customers who are active
                  */
                 if (customer.status.equalsIgnoreCase("1")) {
@@ -221,7 +221,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener, 
                 if (Utils.isInternetAvailable(mContext)) {
                     transportFromServer = ServerUtils.addTransporttoServer(transportData, mContext, adminId, billMatrixDaoImpl);
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
@@ -233,7 +233,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener, 
                     if (Utils.isInternetAvailable(mContext)) {
                         transportFromServer = ServerUtils.updateTransporttoServer(transportData, mContext, billMatrixDaoImpl);
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();
@@ -309,7 +309,7 @@ public class TransportFragment extends Fragment implements OnItemClickListener, 
                                 ServerUtils.deleteTransportfromServer(selectedTransport, mContext, billMatrixDaoImpl);
                             }
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, true).apply();

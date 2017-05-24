@@ -19,7 +19,7 @@ import com.billmatrix.utils.Utils;
 
 import butterknife.BindView;
 
-/**
+/*
  * Created by KANDAGATLAs on 26-10-2016.
  */
 
@@ -124,7 +124,7 @@ public class InventoryActivity extends BaseTabActivity {
 
     String scannedBarcode = "";
 
-    /**
+    /*
      * to listen to the barcode scanner value
      *
      * @param e event triggered by scanner

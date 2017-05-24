@@ -35,7 +35,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-/**
+/*
  * Created by KANDAGATLAs on 28-10-2016.
  */
 
@@ -87,7 +87,7 @@ public class Utils {
         return fromDatePickerDialog;
     }
 
-    public static DatePickerDialog dateDialog(Context mContext, final Object fromEditText, long maxDate) {
+    public static DatePickerDialog dateDialog(Context mContext, final Object fromEditText, long maxDate, boolean isMax) {
         if (fromEditText instanceof EditText) {
             hideSoftKeyboard((EditText) fromEditText);
         }
@@ -106,7 +106,11 @@ public class Utils {
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
-        fromDatePickerDialog.getDatePicker().setMaxDate(maxDate);
+        if (isMax) {
+            fromDatePickerDialog.getDatePicker().setMaxDate(maxDate);
+        } else {
+            fromDatePickerDialog.getDatePicker().setMinDate(maxDate);
+        }
 
         return fromDatePickerDialog;
     }

@@ -115,7 +115,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         Intent logoutService = new Intent(mContext, LogoutService.class);
         startService(logoutService);
 
-        /**
+        /*
          * Sequence to fetch data from server
          * Profile
          * Employees
@@ -141,7 +141,7 @@ public class ControlPanelActivity extends AppCompatActivity {
                     call.enqueue(new Callback<Profile>() {
 
 
-                        /**
+                        /*
                          * Successful HTTP response.
                          * @param call server call
                          * @param response server response
@@ -157,7 +157,7 @@ public class ControlPanelActivity extends AppCompatActivity {
                             }
                         }
 
-                        /**
+                        /*
                          *  Invoked when a network or unexpected exception occurred during the HTTP request.
                          * @param call server call
                          * @param t error
@@ -199,7 +199,7 @@ public class ControlPanelActivity extends AppCompatActivity {
         call.enqueue(new Callback<Profile>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -216,7 +216,7 @@ public class ControlPanelActivity extends AppCompatActivity {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error

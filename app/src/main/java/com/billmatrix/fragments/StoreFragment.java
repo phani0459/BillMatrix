@@ -55,7 +55,7 @@ import retrofit2.Response;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class StoreFragment extends Fragment {
@@ -217,7 +217,7 @@ public class StoreFragment extends Fragment {
         call.enqueue(new Callback<Profile>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -234,7 +234,7 @@ public class StoreFragment extends Fragment {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -309,7 +309,7 @@ public class StoreFragment extends Fragment {
                 radioButton.setText(discountData.discount_description);
                 radioGroup.addView(radioButton);
 
-                /**
+                /*
                  * to show previously selected discount as selected
                  */
                 String selectedDiscountCode = Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, "");
@@ -375,7 +375,7 @@ public class StoreFragment extends Fragment {
         headerLogoDraweeView.setBackgroundResource(R.drawable.avatar);
     }
 
-    /**
+    /*
      * Callback received when a permissions request has been completed.
      */
     @Override
@@ -523,7 +523,7 @@ public class StoreFragment extends Fragment {
 
                 call.enqueue(new Callback<CreateEmployee>() {
 
-                    /**
+                    /*
                      * Successful HTTP response.
                      * @param call server call
                      * @param response server response
@@ -542,7 +542,7 @@ public class StoreFragment extends Fragment {
                         }
                     }
 
-                    /**
+                    /*
                      *  Invoked when a network or unexpected exception occurred during the HTTP request.
                      * @param call server call
                      * @param t error
@@ -559,7 +559,7 @@ public class StoreFragment extends Fragment {
 
     }
 
-    /**
+    /*
      * Get the URI of the selected image from {@link #getPickImageChooserIntent()}.<br/>
      * Will return the correct URI for camera and gallery image.
      *
@@ -574,7 +574,7 @@ public class StoreFragment extends Fragment {
         return isCamera ? getCaptureImageOutputUri() : data.getData();
     }
 
-    /**
+    /*
      * Create a chooser intent to select the source to get image from.<br/>
      * The source can be camera's (ACTION_IMAGE_CAPTURE) or gallery's (ACTION_GET_CONTENT).<br/>
      * All possible sources are added to the intent chooser.
@@ -630,7 +630,7 @@ public class StoreFragment extends Fragment {
         return chooserIntent;
     }
 
-    /**
+    /*
      * Get URI to image received from capture by camera.
      */
     private Uri getCaptureImageOutputUri() {

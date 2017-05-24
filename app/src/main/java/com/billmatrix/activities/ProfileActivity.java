@@ -73,7 +73,7 @@ public class ProfileActivity extends BaseTabActivity {
         String adminId = Utils.getSharedPreferences(mContext).getString(Constants.PREF_ADMIN_ID, null);
         String userType = Utils.getSharedPreferences(mContext).getString(Constants.PREF_USER_TYPE, null);
 
-        /**
+        /*
          * If employee logged in disable profile attrs
          */
         if (!TextUtils.isEmpty(userType)) {
@@ -187,7 +187,7 @@ public class ProfileActivity extends BaseTabActivity {
         call.enqueue(new Callback<Profile>() {
 
 
-            /**
+            /*
              * Successful HTTP response.
              * @param call server call
              * @param response server response
@@ -208,7 +208,7 @@ public class ProfileActivity extends BaseTabActivity {
                 }
             }
 
-            /**
+            /*
              *  Invoked when a network or unexpected exception occurred during the HTTP request.
              * @param call server call
              * @param t error
@@ -319,7 +319,7 @@ public class ProfileActivity extends BaseTabActivity {
 
             call.enqueue(new Callback<CreateEmployee>() {
 
-                /**
+                /*
                  * Successful HTTP response.
                  * @param call server call
                  * @param response server response
@@ -337,7 +337,7 @@ public class ProfileActivity extends BaseTabActivity {
                     }
                 }
 
-                /**
+                /*
                  *  Invoked when a network or unexpected exception occurred during the HTTP request.
                  * @param call server call
                  * @param t error
@@ -356,7 +356,7 @@ public class ProfileActivity extends BaseTabActivity {
 
     @Override
     public void tabChanged(String selectedTab, boolean isInit) {
-        /***
+        /**
          * There is only one tab in profile
          */
     }

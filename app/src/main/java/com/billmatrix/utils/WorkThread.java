@@ -801,7 +801,7 @@ public class WorkThread extends Thread {
         return workHandler;
     }
 
-    /**
+    /*
      * @param cmd
      */
     public void handleCmd(int cmd, Bundle data) {

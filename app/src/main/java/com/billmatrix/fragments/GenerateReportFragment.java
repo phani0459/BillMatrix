@@ -39,7 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class GenerateReportFragment extends Fragment implements OnItemClickListener {
@@ -160,7 +160,7 @@ public class GenerateReportFragment extends Fragment implements OnItemClickListe
     public void onResume() {
         super.onResume();
 
-        /**
+        /*
          * if a vendor is selected, show only his items in item Names drop down
          */
         vendorEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -172,7 +172,7 @@ public class GenerateReportFragment extends Fragment implements OnItemClickListe
             }
         });
 
-        /**
+        /*
          * if an item is selected, show only vendors who has that item in Vendors drop down
          */
         itemNameEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {

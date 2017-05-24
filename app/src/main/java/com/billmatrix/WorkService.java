@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/*
  * 观察者模式
  * 
  * @author Administrator
@@ -73,7 +73,7 @@ public class WorkService extends Service {
 		}
 	}
 
-	/**
+	/*
 	 * 
 	 * @param handler
 	 */
@@ -83,7 +83,7 @@ public class WorkService extends Service {
 		}
 	}
 
-	/**
+	/*
 	 * 
 	 * @param handler
 	 */
@@ -93,7 +93,7 @@ public class WorkService extends Service {
 		}
 	}
 
-	/**
+	/*
 	 * 
 	 * @param msg
 	 */

@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class VendorReportsFragment extends Fragment {
@@ -110,7 +110,7 @@ public class VendorReportsFragment extends Fragment {
                         return;
                     }
                     try {
-                        DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, toDate_EditText, Constants.getDateFormat().parse(fromDate).getTime());
+                        DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, toDate_EditText, Constants.getDateFormat().parse(fromDate).getTime(), false);
                         datePickerDialog.show();
                     } catch (ParseException e) {
                         e.printStackTrace();

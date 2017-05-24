@@ -51,7 +51,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 @SuppressWarnings("ALL")
@@ -139,7 +139,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         }
     }
 
-    /**
+    /*
      * Sequence to fetch data from server
      * Employees - 0
      * Customers - 1
@@ -250,7 +250,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         taxesSyncCheckbox.setOnCheckedChangeListener(this);
         trasnsportSyncCheckbox.setOnCheckedChangeListener(this);
 
-        /**
+        /*
          * If edited offline true, set pending sync icon
          */
 
@@ -346,7 +346,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         }
     }
 
-    /***************************************************
+    /**************************************************
      * ******** Header and Footer SYNC ******************
      **************************************************/
     private void syncHeaderFooter() {
@@ -365,7 +365,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
 
             call.enqueue(new Callback<CreateEmployee>() {
 
-                /**
+                /*
                  * Successful HTTP response.
                  * @param call server call
                  * @param response server response
@@ -385,7 +385,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
                     }
                 }
 
-                /**
+                /*
                  *  Invoked when a network or unexpected exception occurred during the HTTP request.
                  * @param call server call
                  * @param t error
@@ -398,7 +398,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         }
     }
 
-    /*****************************************************
+    /****************************************************
      * ******** Employee SYNC ***************************
      **************************************************/
 
@@ -539,7 +539,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         });
     }
 
-    /*****************************************************
+    /****************************************************
      * ******** Customers SYNC ***************************
      **************************************************/
 
@@ -681,7 +681,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         });
     }
 
-    /*****************************************************
+    /****************************************************
      * ******** Vendors SYNC ***************************
      **************************************************/
 
@@ -824,7 +824,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         });
     }
 
-    /*****************************************************
+    /****************************************************
      * ******** Inventory SYNC ***************************
      **************************************************/
 
@@ -967,7 +967,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         });
     }
 
-    /*****************************************************
+    /****************************************************
      * ******** Discounts SYNC ***************************
      **************************************************/
 
@@ -1110,7 +1110,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         });
     }
 
-    /*****************************************************
+    /****************************************************
      * ******** Payments SYNC ***************************
      **************************************************/
 
@@ -1253,7 +1253,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
         });
     }
 
-    /*****************************************************
+    /****************************************************
      * ******** Transport SYNC ***************************
      **************************************************/
 
@@ -1395,7 +1395,7 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
     }
 
 
-    /*****************************************************
+    /****************************************************
      * ******** Taxes SYNC ***************************
      **************************************************/
 

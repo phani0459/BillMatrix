@@ -3,7 +3,7 @@ package com.billmatrix.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
+/*
  * Created by KANDAGATLAs on 28-01-2017.
  */
 
@@ -27,7 +27,7 @@ public class CreateEmployee implements Serializable {
         public String status;
         public String create_date;
         public String update_date;
-        /**
+        /*
          * 0 - if add
          * 1 - if update
          * -1 - from server

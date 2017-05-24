@@ -3,7 +3,7 @@ package com.billmatrix.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
+/*
  * Created by KANDAGATLAs on 19-11-2016.
  */
 
@@ -31,7 +31,7 @@ public class Inventory implements Serializable {
         public String update_date;
         public String add_update;
 
-        /**
+        /*
          * fields required for pos and customer transactions
          */
         public String customerName;

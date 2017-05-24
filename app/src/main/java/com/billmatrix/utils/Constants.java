@@ -14,15 +14,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-/**
+/*
  * Created by KANDAGATLAs on 22-10-2016.
  */
 
 public class Constants {
-    /**
+    /*
      * Preferences Constants
      */
-    /**
+    /*
      * remove preferences when logout in base tab activity
      */
     public static final String PREFERENCES_NAME = "billMatrix shared prefs";
@@ -42,7 +42,7 @@ public class Constants {
     public static final String PREF_FOOTER_TEXT = "footerText";
     public static final String PREF_BOOL_IS_BARCODE_SCANNER_ATTACHED = "isScannerAttached";
 
-    /**
+    /*
      * Edited Offline
      */
 
@@ -60,7 +60,7 @@ public class Constants {
     public static final String PREF_TRANSPORT_EDITED_OFFLINE = "TransportOffline";
 
 
-    /**
+    /*
      * File Names
      */
     public static String PROFILE_FILE_NAME = "ProfileModel";
@@ -71,7 +71,7 @@ public class Constants {
     private static String billDateFormat = "ddMMyyyy";
     private static String timeFormat = "HH:mm:ss";
 
-    /**
+    /*
      * 0 - if add
      * 1 - if update
      * -1 - from server

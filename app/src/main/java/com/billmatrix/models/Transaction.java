@@ -3,7 +3,7 @@ package com.billmatrix.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
+/*
  * Created by KANDAGATLAs on 28-10-2016.
  */
 
@@ -21,7 +21,7 @@ public class Transaction implements Serializable {
     public String create_date;
     public String update_date;
     public boolean isZbillChecked;
-    /**
+    /*
      * 0 - if add
      * 1 - if update
      * -1 - from server

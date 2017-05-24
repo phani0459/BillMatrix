@@ -252,7 +252,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
         long customerAdded = billMatrixDaoImpl.addCustomer(customerData);
 
         if (customerAdded != -1) {
-            /**
+            /*
              * reset all edit texts
              */
             customerNameEditText.setText("");
@@ -265,7 +265,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                 if (Utils.isInternetAvailable(mContext)) {
                     customerFromServer = ServerUtils.addCustomertoServer(customerData, mContext, adminId, billMatrixDaoImpl);
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
@@ -277,7 +277,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                     if (Utils.isInternetAvailable(mContext)) {
                         customerFromServer = ServerUtils.updateCustomertoServer(customerData, mContext, billMatrixDaoImpl);
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();
@@ -285,7 +285,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                         Utils.showToast("Customer Updated successfully", mContext);
                     }
 
-                    /**
+                    /*
                      * If there are dues for edited customer, and name has been changed, update transactions and pos table
                      * and if there are payins of customer, change customer name
                      */
@@ -324,7 +324,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                     public void onClick(DialogInterface dialog, int which) {
                         Customer.CustomerData selectedCustomer = customersAdapter.getItem(position);
 
-                        /**
+                        /*
                          * If there are any dues for the customer, customer cannot be deleted
                          */
                         if (billMatrixDaoImpl.getCustomerTotalDue(selectedCustomer.username) != 0.0f) {
@@ -342,7 +342,7 @@ public class CustomersFragment extends Fragment implements OnItemClickListener, 
                                 ServerUtils.deleteCustomerfromServer(selectedCustomer, mContext, billMatrixDaoImpl);
                             }
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, true).apply();

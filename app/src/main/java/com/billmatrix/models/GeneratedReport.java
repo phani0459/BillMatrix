@@ -3,7 +3,7 @@ package com.billmatrix.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
+/*
  * Created by KANDAGATLAs on 28-10-2016.
  */
 
@@ -21,10 +21,11 @@ public class GeneratedReport implements Serializable {
         public String quantity;
         public String admin_id;
         public String discount;
+        public String amount;
         public String total;
         public String create_date;
         public String update_date;
-        /**
+        /*
          * 0 - if add
          * 1 - if update
          * -1 - from server
@@ -34,7 +35,7 @@ public class GeneratedReport implements Serializable {
         @Override
         public String toString() {
             return "\nid = " + id + "\n admin id=" + admin_id
-                    + "\n itemName=" + itemName
+                    + "\n itemName=" + itemName + "\n amount=" + amount
                     + "\n vendor=" + vendor + "\n date=" + date
                     + "\n cost=" + cost + "\n quantity=" + quantity
                     + "\n admin_id=" + admin_id + "\n discount=" + discount + "\n total=" + total

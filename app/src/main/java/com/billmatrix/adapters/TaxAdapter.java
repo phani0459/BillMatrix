@@ -113,7 +113,7 @@ public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.VendorHolder> {
             }
         });
 
-        /**
+        /*
          * to show previously selected tax as selected
          */
         holder.snoCheckBox.setChecked(false);

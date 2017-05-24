@@ -24,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
+/*
  * Created by KANDAGATLAs on 01-02-2017.
  */
 
@@ -71,7 +71,7 @@ public class ServerData {
         this.fromLogin = fromLogin;
     }
 
-    /**
+    /*
      * Sequence to fetch data from server
      * Employees - 0
      * Customers - 1
@@ -100,7 +100,7 @@ public class ServerData {
 
                     call.enqueue(new Callback<Employee>() {
 
-                        /**
+                        /*
                          * Successful HTTP response.
                          * @param call server call
                          * @param response server response
@@ -116,7 +116,7 @@ public class ServerData {
                                         billMatrixDaoImpl.addEmployee(employeeData);
                                     }
                                 }
-                                /**
+                                /*
                                  * To remove pending sync Icon in database page
                                  */
                                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, false).apply();
@@ -125,7 +125,7 @@ public class ServerData {
                             if (onDataFetchListener != null) onDataFetchListener.onDataFetch(0);
                         }
 
-                        /**
+                        /*
                          *  Invoked when a network or unexpected exception occurred during the HTTP request.
                          * @param call server call
                          * @param t error
@@ -160,7 +160,7 @@ public class ServerData {
 
                     call.enqueue(new Callback<Customer>() {
 
-                        /**
+                        /*
                          * Successful HTTP response.
                          * @param call server call
                          * @param response server response
@@ -176,7 +176,7 @@ public class ServerData {
                                         billMatrixDaoImpl.addCustomer(customerData);
                                     }
                                 }
-                                /**
+                                /*
                                  * To remove pending sync Icon in database page
                                  */
                                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_CUSTOMERS_EDITED_OFFLINE, false).apply();
@@ -186,7 +186,7 @@ public class ServerData {
                             if (onDataFetchListener != null) onDataFetchListener.onDataFetch(1);
                         }
 
-                        /**
+                        /*
                          *  Invoked when a network or unexpected exception occurred during the HTTP request.
                          * @param call server call
                          * @param t error
@@ -221,7 +221,7 @@ public class ServerData {
 
                     call.enqueue(new Callback<Vendor>() {
 
-                        /**
+                        /*
                          * Successful HTTP response.
                          * @param call server call
                          * @param response server response
@@ -237,7 +237,7 @@ public class ServerData {
                                         billMatrixDaoImpl.addVendor(vendorData);
                                     }
                                 }
-                                /**
+                                /*
                                  * To remove pending sync Icon in database page
                                  */
                                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, false).apply();
@@ -248,7 +248,7 @@ public class ServerData {
 
                         }
 
-                        /**
+                        /*
                          *  Invoked when a network or unexpected exception occurred during the HTTP request.
                          * @param call server call
                          * @param t error
@@ -284,7 +284,7 @@ public class ServerData {
 
                     call.enqueue(new Callback<Inventory>() {
 
-                        /**
+                        /*
                          * Successful HTTP response.
                          * @param call server call
                          * @param response server response
@@ -300,7 +300,7 @@ public class ServerData {
                                         billMatrixDaoImpl.addInventory(inventoryData);
                                     }
                                 }
-                                /**
+                                /*
                                  * To remove pending sync Icon in database page
                                  */
                                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, false).apply();
@@ -310,7 +310,7 @@ public class ServerData {
                             if (onDataFetchListener != null) onDataFetchListener.onDataFetch(3);
                         }
 
-                        /**
+                        /*
                          *  Invoked when a network or unexpected exception occurred during the HTTP request.
                          * @param call server call
                          * @param t error
@@ -344,7 +344,7 @@ public class ServerData {
 
                 call.enqueue(new Callback<Tax>() {
 
-                    /**
+                    /*
                      * Successful HTTP response.
                      * @param call server call
                      * @param response server response
@@ -360,7 +360,7 @@ public class ServerData {
                                     billMatrixDaoImpl.addTax(taxData);
                                 }
                             }
-                            /**
+                            /*
                              * To remove pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TAXES_EDITED_OFFLINE, false).apply();
@@ -371,7 +371,7 @@ public class ServerData {
 
                     }
 
-                    /**
+                    /*
                      *  Invoked when a network or unexpected exception occurred during the HTTP request.
                      * @param call server call
                      * @param t error
@@ -404,7 +404,7 @@ public class ServerData {
 
                 call.enqueue(new Callback<Discount>() {
 
-                    /**
+                    /*
                      * Successful HTTP response.
                      * @param call server call
                      * @param response server response
@@ -420,7 +420,7 @@ public class ServerData {
                                     billMatrixDaoImpl.addDiscount(discountData);
                                 }
                             }
-                            /**
+                            /*
                              * To remove pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_DISCS_EDITED_OFFLINE, false).apply();
@@ -431,7 +431,7 @@ public class ServerData {
 
                     }
 
-                    /**
+                    /*
                      *  Invoked when a network or unexpected exception occurred during the HTTP request.
                      * @param call server call
                      * @param t error
@@ -459,7 +459,7 @@ public class ServerData {
 
                 call.enqueue(new Callback<Payments>() {
 
-                    /**
+                    /*
                      * Successful HTTP response.
                      * @param call server call
                      * @param response server response
@@ -475,7 +475,7 @@ public class ServerData {
                                     billMatrixDaoImpl.addPayment(paymentData);
                                 }
                             }
-                            /**
+                            /*
                              * To remove pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_PURCS_EDITED_OFFLINE, false).apply();
@@ -486,7 +486,7 @@ public class ServerData {
 
                     }
 
-                    /**
+                    /*
                      *  Invoked when a network or unexpected exception occurred during the HTTP request.
                      * @param call server call
                      * @param t error
@@ -517,7 +517,7 @@ public class ServerData {
 
                     call.enqueue(new Callback<Transport>() {
 
-                        /**
+                        /*
                          * Successful HTTP response.
                          * @param call server call
                          * @param response server response
@@ -533,7 +533,7 @@ public class ServerData {
                                         billMatrixDaoImpl.addTransport(transportData);
                                     }
                                 }
-                                /**
+                                /*
                                  * To remove pending sync Icon in database page
                                  */
                                 Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSPORT_EDITED_OFFLINE, false).apply();
@@ -545,7 +545,7 @@ public class ServerData {
                             if (onDataFetchListener != null) onDataFetchListener.onDataFetch(11);
                         }
 
-                        /**
+                        /*
                          *  Invoked when a network or unexpected exception occurred during the HTTP request.
                          * @param call server call
                          * @param t error

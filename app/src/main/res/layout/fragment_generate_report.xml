@@ -58,7 +58,7 @@
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/PURCHASE_DATE"
+                android:text="@string/DATE"
                 android:textColor="@android:color/black" />
 
             <TextView

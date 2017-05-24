@@ -37,7 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
+/*
  * A simple {@link Fragment} subclass.
  */
 public class CustomerTransFragment extends Fragment implements OnItemClickListener {
@@ -122,7 +122,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
     public void onResume() {
         super.onResume();
 
-        /**
+        /*
          * if a customer is selected, show only his bills in bill number drop down
          */
         selectCustomerAutoCompleteTV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -141,7 +141,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
         });
 
 
-        /**
+        /*
          * If customer name is deleted, after entering other name, then show all bills again
          */
 

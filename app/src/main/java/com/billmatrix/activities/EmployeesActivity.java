@@ -30,7 +30,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-/**
+/*
  * Created by KANDAGATLAs on 23-10-2016.
  */
 
@@ -252,7 +252,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
         if (empAdded != -1) {
             employeesRecyclerView.smoothScrollToPosition(employeesAdapter.getItemCount());
 
-            /**
+            /*
              * reset all edit texts
              */
             empName_EditText.setText("");
@@ -265,7 +265,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                 if (Utils.isInternetAvailable(mContext)) {
                     employeeFromServer = ServerUtils.addEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, adminId);
                 } else {
-                    /**
+                    /*
                      * To show pending sync Icon in database page
                      */
                     Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
@@ -277,7 +277,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                     if (Utils.isInternetAvailable(mContext)) {
                         employeeFromServer = ServerUtils.updateEmployeetoServer(employeeData, mContext, billMatrixDaoImpl, profilefromFile.data.contact_person);
                     } else {
-                        /**
+                        /*
                          * To show pending sync Icon in database page
                          */
                         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();
@@ -301,7 +301,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
 
     @Override
     public void tabChanged(String selectedTab, boolean isInit) {
-        /***
+        /**
          * There is only one tab in Employees
          */
     }
@@ -347,7 +347,7 @@ public class EmployeesActivity extends BaseTabActivity implements OnItemClickLis
                                 ServerUtils.deleteEmployeefromServer(selectedEmp, mContext, billMatrixDaoImpl);
                             }
                         } else {
-                            /**
+                            /*
                              * To show pending sync Icon in database page
                              */
                             Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_EMPLOYEES_EDITED_OFFLINE, true).apply();

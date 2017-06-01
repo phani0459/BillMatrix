@@ -40,6 +40,13 @@ public class Inventory implements Serializable {
         public String discountValue;
         public boolean isZbillChecked;
 
+        /**
+         * used in reports
+         */
+        public String transactionDate;
+        public float totalSales;
+        public float totalProfit;
+
 
         @Override
         public String toString() {

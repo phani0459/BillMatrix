@@ -87,7 +87,7 @@ class BillMatrixDBHandler extends DBHandler {
             + DBConstants.CUSTOMER_NAME + " VARCHAR," + DBConstants.DATE + " VARCHAR," + DBConstants.TOTAL_AMOUNT + " VARCHAR,"
             + DBConstants.AMOUNT_PAID + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.AMOUNT_DUE + " VARCHAR,"
             + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR," + DBConstants.STATUS + " VARCHAR,"
-            + DBConstants.Z_BILL + " VARCHAR" + ")";
+            + DBConstants.Z_BILL + " VARCHAR," + DBConstants.DISCOUNT_CODE + " VARCHAR," + DBConstants.DISCOUNT_VALUE + " VARCHAR" + ")";
 
     @Override
     public void onCreate(SQLiteDatabase db) {

@@ -138,16 +138,9 @@ public class GenerateReportFragment extends Fragment implements OnItemClickListe
 
     public void loadVendors() {
         if (vendors != null && vendors.size() > 0) {
-            String selectedItem = itemNameEditText.getText().toString();
             ArrayList<String> vendorNames = new ArrayList<>();
             for (Vendor.VendorData vendorData : vendors) {
-                if (!TextUtils.isEmpty(selectedItem)) {
-                    if (vendorData.name.equalsIgnoreCase(selectedItem)) {
-                        vendorNames.add(vendorData.name);
-                    }
-                } else {
-                    vendorNames.add(vendorData.name);
-                }
+                vendorNames.add(vendorData.name);
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, vendorNames);
@@ -168,18 +161,6 @@ public class GenerateReportFragment extends Fragment implements OnItemClickListe
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!TextUtils.isEmpty(adapterView.getAdapter().getItem(i).toString())) {
                     loadItemNames();
-                }
-            }
-        });
-
-        /*
-         * if an item is selected, show only vendors who has that item in Vendors drop down
-         */
-        itemNameEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (!TextUtils.isEmpty(adapterView.getAdapter().getItem(i).toString())) {
-                    loadVendors();
                 }
             }
         });

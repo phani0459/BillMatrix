@@ -37,6 +37,7 @@ import com.billmatrix.utils.Utils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -127,6 +128,9 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, fromDate_EditText, true, false);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.MONTH, -2);
+                    datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -158,7 +162,7 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
         ServerUtils.setIsSync(false);
 
         reportsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        reportsAdapter = new SalesReportsAdapter(reports, this);
+        reportsAdapter = new SalesReportsAdapter(reports, this, billMatrixDaoImpl);
         reportsRecyclerView.setAdapter(reportsAdapter);
 
         return v;
@@ -232,7 +236,16 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
         saleSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (reportsAdapter != null) {
+                    reportsAdapter.removeAllReports();
+                    reportsAdapter.setSalesItemType(null);
+                }
+
+                fromDate_EditText.setText("");
+                toDate_EditText.setText("");
                 saleItemSpinner.setSelection(0);
+                salesItemACTextView.setText("");
+
                 String selectedString = adapterView.getSelectedItem().toString();
                 if (!isSalesTab) {
                     saleItemSpinner.setEnabled(true);
@@ -255,8 +268,8 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
 
                     if (selectedString.equalsIgnoreCase("SALE BY VENDOR")) {
                         h5TextView.setVisibility(View.GONE);
+                        h3TextView.setVisibility(View.GONE);
 
-                        h3TextView.setText(getString(R.string.ITEM_NAME));
                         h4TextView.setText(getString(R.string.vendor));
                         h6TextView.setText(getString(R.string.TOTAL_SALES));
 
@@ -309,12 +322,21 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
     }
 
     @OnClick(R.id.btn_viewSales)
-    public void viewSales() {
+    public void viewReports() {
+        Utils.hideSoftKeyboard(fromDate_EditText);
+        Utils.hideSoftKeyboard(salesItemACTextView);
+
         String fromDate = fromDate_EditText.getText().toString();
 
         if (TextUtils.isEmpty(fromDate)) {
             Utils.showToast("Enter From Date", mContext);
             return;
+        }
+
+        try {
+            fromDate = Constants.getSQLiteDateFormat().format(Constants.getDateFormat().parse(fromDate).getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         String toDate = toDate_EditText.getText().toString();
@@ -324,16 +346,123 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
             return;
         }
 
+        try {
+            toDate = Constants.getSQLiteDateFormat().format(Constants.getDateFormat().parse(toDate).getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String itemName = salesItemACTextView.getText().toString();
+        String spinnerItemName = saleItemSpinner.getSelectedItem().toString();
+
+        String query = "";
+        ArrayList<Transaction> transactions = new ArrayList<>();
+
+        if (reportsAdapter != null) {
+            reportsAdapter.removeAllReports();
+            reportsAdapter.setSalesItemType(null);
+        }
+
+        if (!isSalesTab) {
+            viewPurchasesReports(fromDate, toDate, spinnerItemName);
+            return;
+        }
+
         switch (saleSelectSpinner.getSelectedItem().toString()) {
             case "SELECT ONE":
+                reportsAdapter.setSalesType("SELECT ONE");
                 Utils.showToast("Select Sale type to view report", mContext);
                 return;
             case "SALE TOTAL":
-                String query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'";
-                ArrayList<Transaction> transactions = billMatrixDaoImpl.getTransactions(query);
+                query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'";
+                transactions = billMatrixDaoImpl.getTransactions(query);
+                reportsAdapter.setSalesType("SALE TOTAL");
                 if (transactions != null && transactions.size() > 0) {
+                    reportsAdapter.addAllReports(transactions);
+                }
+                break;
+            case "SALE BY ITEM":
+                if (TextUtils.isEmpty(itemName)) {
+                    Utils.showToast("Enter Item Name", mContext);
+                    return;
+                }
+                query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'";
+                transactions = billMatrixDaoImpl.getTransactions(query);
+                reportsAdapter.setSalesType("SALE BY ITEM");
+                reportsAdapter.setSalesItemType(itemName);
+                if (transactions != null && transactions.size() > 0) {
+                    reportsAdapter.addAllReports(transactions);
+                }
+                break;
+            case "SALE BY VENDOR":
+                if (TextUtils.isEmpty(spinnerItemName) || spinnerItemName.equalsIgnoreCase("SELECT ONE")) {
+                    Utils.showToast("Select Vendor", mContext);
+                    return;
+                }
+                query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'";
+                transactions = billMatrixDaoImpl.getTransactions(query);
+                reportsAdapter.setSalesType("SALE BY VENDOR");
+                reportsAdapter.setSalesItemType(billMatrixDaoImpl.getVendorId(spinnerItemName));
+                if (transactions != null && transactions.size() > 0) {
+                    reportsAdapter.addAllReports(transactions);
+                }
+                break;
+            case "SALE PROFIT":
+                query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'";
+                transactions = billMatrixDaoImpl.getTransactions(query);
+                reportsAdapter.setSalesType("SALE PROFIT");
+                if (transactions != null && transactions.size() > 0) {
+                    reportsAdapter.addAllReports(transactions);
+                }
+                break;
+            case "SALE BY DISCOUNT":
+                if (TextUtils.isEmpty(spinnerItemName) || spinnerItemName.equalsIgnoreCase("SELECT ONE")) {
+                    Utils.showToast("Select Discount", mContext);
+                    return;
+                }
+                query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "' AND "
+                        + DBConstants.DISCOUNT_CODE + " ='" + spinnerItemName + "'";
+                transactions = billMatrixDaoImpl.getTransactions(query);
+                reportsAdapter.setSalesType("SALE BY DISCOUNT");
+                reportsAdapter.setSalesItemType(spinnerItemName);
+                if (transactions != null && transactions.size() > 0) {
+                    reportsAdapter.addAllReports(transactions);
+                }
+                break;
+        }
+    }
+
+    private void viewPurchasesReports(String fromDate, String toDate, String spinnerItemName) {
+        ArrayList<Inventory.InventoryData> transactions = new ArrayList<>();
+
+        switch (saleSelectSpinner.getSelectedItem().toString()) {
+            case "SELECT ONE":
+                reportsAdapter.setSalesType("SELECT ONE");
+                Utils.showToast("Select Purchase type to view report", mContext);
+                return;
+            case "PURCHASE TOTAL":
+                transactions = billMatrixDaoImpl.getInventory();
+                reportsAdapter.setSalesType("PURCHASE TOTAL");
+                if (transactions != null && transactions.size() > 0) {
+                    reportsAdapter.addAllInventories(transactions);
+                }
+                break;
+            case "PURCHASE BY VENDOR":
+                if (TextUtils.isEmpty(spinnerItemName) || spinnerItemName.equalsIgnoreCase("SELECT ONE")) {
+                    Utils.showToast("Select Vendor", mContext);
+                    return;
+                }
+                reportsAdapter.setSalesType("PURCHASE BY VENDOR");
+                transactions = billMatrixDaoImpl.getInventory();
+                if (transactions != null && transactions.size() > 0) {
+                    ArrayList<Inventory.InventoryData> localInventories = new ArrayList<>();
                     for (int i = 0; i < transactions.size(); i++) {
-                        reportsAdapter.addReport(transactions.get(i));
+                        if (transactions.get(i).vendor.equalsIgnoreCase(billMatrixDaoImpl.getVendorId(spinnerItemName))) {
+                            localInventories.add(transactions.get(i));
+                        }
+                    }
+                    if (localInventories.size() > 0) {
+                        reportsAdapter.addAllInventories(localInventories);
                     }
                 }
                 break;

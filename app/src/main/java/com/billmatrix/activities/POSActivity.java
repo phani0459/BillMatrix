@@ -906,11 +906,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
          * Remove customer bill items to close the bill
          */
         if (posItemAdapter.getItemCount() > 0) {
-            for (int i = 0; i < posItemAdapter.getItemCount(); i++) {
-                try {
-                    updateInventoryQuantity(posItemAdapter.getItem(i), Integer.parseInt(posItemAdapter.getItem(i).selectedQTY));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+            if (!isTransactionSuccess) {
+                for (int i = 0; i < posItemAdapter.getItemCount(); i++) {
+                    try {
+                        updateInventoryQuantity(posItemAdapter.getItem(i), Integer.parseInt(posItemAdapter.getItem(i).selectedQTY));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             posItemAdapter.removeAllItems();
@@ -944,11 +946,13 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         transaction.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
         transaction.update_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
 
-        transaction.date = Constants.getDateFormat().format(System.currentTimeMillis());
+        transaction.date = Constants.getSQLiteDateFormat().format(System.currentTimeMillis());
         transaction.inventoryJson = inventoryJson;
         transaction.customerName = selectedCustomer != null ? selectedCustomer.username : selectedGuestCustomerName;
         transaction.amountPaid = totalPaidTextView.getText().toString();
         transaction.amountDue = balanceTextView.getText().toString().trim();
+        transaction.discountCodeApplied = discountCodeEditText.getText().toString().trim();
+        transaction.discountPercentApplied = discountSelected;
         transaction.totalAmount = totalValueTextView.getText().toString().replace("/-", "").trim();
         transaction.admin_id = adminId;
         transaction.billNumber = generateBillNumber();
@@ -960,7 +964,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
     }
 
     private String generateBillNumber() {
-        String billCounter = (billMatrixDaoImpl.getTransactionsCount(Constants.getDateFormat().format(System.currentTimeMillis())) + 1) + "";
+        String billCounter = (billMatrixDaoImpl.getTransactionsCount(Constants.getSQLiteDateFormat().format(System.currentTimeMillis())) + 1) + "";
         String billCounterNumber = billCounter.length() == 1 ? "00" + billCounter : (billCounter.length() == 2 ? "0" + billCounter : billCounter);
         StringBuilder billNumber = new StringBuilder("");
         billNumber.append(isGuestCustomerSelected ? "GB" : "B").append(Constants.getBillDateFormat().format(System.currentTimeMillis()))

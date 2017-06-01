@@ -89,7 +89,7 @@ public class DBConstants {
     /*
      * Discount Column Names
      */
-    final static String DISCOUNT_CODE = "discCode";
+    public final static String DISCOUNT_CODE = "discCode";
     final static String DISCOUNT_DESC = "discDesc";
     final static String DISCOUNT_VALUE = "discValue";
 

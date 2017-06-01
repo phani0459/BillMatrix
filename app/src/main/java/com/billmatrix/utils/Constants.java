@@ -68,6 +68,8 @@ public class Constants {
     private static Gson gson;
     private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
     private static String dateFormat = "dd-MM-yyyy";
+    private static String serverDateFormat = "MM/dd/yy";
+    private static String sqliteDateFormat = "yyyy-MM-dd";
     private static String billDateFormat = "ddMMyyyy";
     private static String timeFormat = "HH:mm:ss";
 
@@ -83,6 +85,7 @@ public class Constants {
 
     public static int DEFAULT_INVENTORY_SHOW_SIZE = 1000;
     public static final long PRINTER_DISCOVERY_TIME = 10000;
+    private static SimpleDateFormat simpleServerDateFormat;
 
 
     public static Gson getGson() {
@@ -95,7 +98,7 @@ public class Constants {
     }
 
     private static SimpleDateFormat simpleDateFormat, simpleTimeFormat, simpleBillDateFormat;
-    private static SimpleDateFormat simpleDateTimeFormat;
+    private static SimpleDateFormat simpleDateTimeFormat, simplesqLiteDateFormat;
 
     public static SimpleDateFormat getDateTimeFormat() {
         if (simpleDateTimeFormat == null) {
@@ -116,6 +119,20 @@ public class Constants {
             simpleDateFormat = new SimpleDateFormat(Constants.dateFormat, Locale.getDefault());
         }
         return simpleDateFormat;
+    }
+
+    public static SimpleDateFormat getServerDateFormat() {
+        if (simpleServerDateFormat == null) {
+            simpleServerDateFormat = new SimpleDateFormat(Constants.serverDateFormat, Locale.getDefault());
+        }
+        return simpleServerDateFormat;
+    }
+
+    public static SimpleDateFormat getSQLiteDateFormat() {
+        if (simplesqLiteDateFormat == null) {
+            simplesqLiteDateFormat = new SimpleDateFormat(Constants.sqliteDateFormat, Locale.getDefault());
+        }
+        return simplesqLiteDateFormat;
     }
 
     public static SimpleDateFormat getTimeFormat() {

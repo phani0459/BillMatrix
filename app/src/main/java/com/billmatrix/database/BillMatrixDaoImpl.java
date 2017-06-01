@@ -1334,6 +1334,8 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         contentValues.put(UPDATE_DATE, transaction.update_date);
         contentValues.put(ADD_UPDATE, transaction.add_update);
         contentValues.put(Z_BILL, transaction.isZbillChecked);
+        contentValues.put(DISCOUNT_CODE, transaction.discountCodeApplied);
+        contentValues.put(DISCOUNT_VALUE, transaction.discountPercentApplied);
 
         return db.insert(CUSTOMER_TRANSACTIONS_TABLE, null, contentValues);
     }
@@ -1444,6 +1446,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(ADD_UPDATE)));
                     transaction.status = (cursor.getString(cursor
                             .getColumnIndexOrThrow(STATUS)));
+                    transaction.discountPercentApplied = (cursor.getFloat(cursor
+                            .getColumnIndexOrThrow(DISCOUNT_VALUE)));
+                    transaction.discountCodeApplied = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DISCOUNT_CODE)));
                 } while (cursor.moveToNext());
 
                 return transaction;
@@ -1494,6 +1500,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(ADD_UPDATE)));
                     transaction.status = (cursor.getString(cursor
                             .getColumnIndexOrThrow(STATUS)));
+                    transaction.discountPercentApplied = (cursor.getFloat(cursor
+                            .getColumnIndexOrThrow(DISCOUNT_VALUE)));
+                    transaction.discountCodeApplied = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DISCOUNT_CODE)));
                     transactions.add(transaction);
                 } while (cursor.moveToNext());
 
@@ -1543,6 +1553,10 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
                             .getColumnIndexOrThrow(ADD_UPDATE)));
                     transaction.status = (cursor.getString(cursor
                             .getColumnIndexOrThrow(STATUS)));
+                    transaction.discountPercentApplied = (cursor.getFloat(cursor
+                            .getColumnIndexOrThrow(DISCOUNT_VALUE)));
+                    transaction.discountCodeApplied = (cursor.getString(cursor
+                            .getColumnIndexOrThrow(DISCOUNT_CODE)));
                     transactions.add(transaction);
                 } while (cursor.moveToNext());
 

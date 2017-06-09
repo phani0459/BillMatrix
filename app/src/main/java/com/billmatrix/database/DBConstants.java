@@ -116,6 +116,9 @@ public class DBConstants {
     final static String TOTAL_AMOUNT = "totalAmount";
     final static String AMOUNT_PAID = "amountPaid";
     final static String AMOUNT_DUE = "amountDue";
+    final static String TAX_ON_TRANSACTION = "taxCalculated";
+    final static String DISC_ON_TRANS = "discCalc";
+    final static String SUB_TOTAL = "subTotal";
 
     /*
      * TRansport columns

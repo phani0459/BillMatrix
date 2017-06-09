@@ -18,6 +18,9 @@ public class Transaction implements Serializable {
     public String totalAmount;
     public String discountCodeApplied;
     public float discountPercentApplied;
+    public String subTotal;
+    public String taxCalculated;
+    public String totalDiscount;
     public String amountPaid;
     public String amountDue;
     public String create_date;
@@ -29,6 +32,11 @@ public class Transaction implements Serializable {
      * -1 - from server
      */
     public String add_update;
+
+    /*
+     * For Reports
+     */
+    public String totalDiscountedAmt;
 
     @Override
     public String toString() {

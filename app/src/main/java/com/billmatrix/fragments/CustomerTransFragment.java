@@ -97,7 +97,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
                 customerNames.add(customer.username);
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, customerNames);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, R.layout.spinner_dropdown_item, customerNames);
             selectCustomerAutoCompleteTV.setThreshold(1);//will start working from first character
             selectCustomerAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
         }
@@ -105,7 +105,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
         bills = billMatrixDaoImpl.getBillNumbers(null);
 
         if (bills != null && bills.size() > 0) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, bills);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, R.layout.spinner_dropdown_item, bills);
             billNumberAutoCompleteTV.setThreshold(1);//will start working from first character
             billNumberAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
         }
@@ -132,7 +132,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
                     bills = billMatrixDaoImpl.getBillNumbers(adapterView.getAdapter().getItem(i).toString());
 
                     if (bills != null && bills.size() > 0) {
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, bills);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, R.layout.spinner_dropdown_item, bills);
                         billNumberAutoCompleteTV.setThreshold(1);//will start working from first character
                         billNumberAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
                     }
@@ -157,7 +157,7 @@ public class CustomerTransFragment extends Fragment implements OnItemClickListen
                     bills = billMatrixDaoImpl.getBillNumbers(null);
 
                     if (bills != null && bills.size() > 0) {
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, bills);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, R.layout.spinner_dropdown_item, bills);
                         billNumberAutoCompleteTV.setThreshold(1);//will start working from first character
                         billNumberAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
                     }

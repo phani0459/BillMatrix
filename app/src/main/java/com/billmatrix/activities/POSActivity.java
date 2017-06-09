@@ -82,6 +82,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import butterknife.OnTouch;
 
 public class POSActivity extends Activity implements OnItemClickListener, POSItemAdapter.OnItemSelected, ConnectivityReceiver.ConnectivityReceiverListener {
@@ -940,6 +941,16 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         List<Inventory.InventoryData> itemsPurchased = posItemAdapter.inventories;
 
+        /*
+         * To update inventory as offline and to show pending sync in database
+         */
+        Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
+        for (int i = 0; i < itemsPurchased.size(); i++) {
+            if (!itemsPurchased.get(i).add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
+                billMatrixDaoImpl.updateInventory(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, itemsPurchased.get(i).item_code);
+            }
+        }
+
         String inventoryJson = Constants.getGson().toJson(itemsPurchased);
 
         transaction.add_update = Constants.ADD_OFFLINE;
@@ -954,6 +965,9 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         transaction.discountCodeApplied = discountCodeEditText.getText().toString().trim();
         transaction.discountPercentApplied = discountSelected;
         transaction.totalAmount = totalValueTextView.getText().toString().replace("/-", "").trim();
+        transaction.subTotal = subTotalTextView.getText().toString().replace("/-", "").trim();
+        transaction.totalDiscount = discountCalTextView.getText().toString().replace("/-", "").replace(getString(R.string.discount) + ": ", "").trim();
+        transaction.taxCalculated = taxValueTextView.getText().toString().replace("/-", "").trim();
         transaction.admin_id = adminId;
         transaction.billNumber = generateBillNumber();
         transaction.id = transaction.billNumber;
@@ -1102,6 +1116,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         customersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f);
+                discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
+
                 posItemAdapter.removeAllItems();
                 creditButton.setBackgroundResource(R.drawable.button_enable);
                 cashCardButton.setBackgroundResource(R.drawable.button_enable);
@@ -1245,7 +1263,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (event.getRawX() >= (posItemsSearchEditText.getRight() - posItemsSearchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        Log.e(TAG, "onTouch: ");
                         if (posItemsSearchEditText.getText().toString().length() > 0) {
                             posItemsSearchEditText.setText("");
                             searchItemsClosed();
@@ -1335,12 +1352,41 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         Log.e(TAG, "searchClosed: ");
     }
 
+    @OnEditorAction(R.id.et_pos_discount_code)
+    protected boolean validateDiscount(int actionId) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            validateDiscount();
+            return true;
+        }
+
+        return false;
+    }
+
     @OnClick(R.id.btn_discountSelected)
     public void validateDiscount() {
         Utils.hideSoftKeyboard(discountCodeEditText);
+
+        if (noCustomerItemTextView.getVisibility() != View.GONE) {
+            Utils.showToast("Select Customer before applying Discount Code", mContext);
+            discountSelected = Utils.getSharedPreferences(mContext).getFloat(Constants.PREF_DISCOUNT_FLOAT_VALUE, 0.0f);
+            discountCodeEditText.setText(Utils.getSharedPreferences(mContext).getString(Constants.PREF_DISCOUNT_CODE, ""));
+            return;
+        }
+
         boolean isDiscountValidated = false;
         ArrayList<Discount.DiscountData> discounts = billMatrixDaoImpl.getDiscount();
         String discountToBeValidated = discountCodeEditText.getText().toString();
+
+        if (TextUtils.isEmpty(discountToBeValidated)) {
+            Utils.showToast("Discount Removed", mContext);
+            discountSelected = 0.0f;
+
+            billMatrixDaoImpl.updatePOSDiscount(discountCodeEditText.getText().toString(), discountSelected + "",
+                    selectedCustomer != null ? selectedCustomer.username.toUpperCase() : selectedGuestCustomerName);
+            loadFooterValues();
+
+            return;
+        }
 
         if (discounts != null && discounts.size() > 0) {
             for (Discount.DiscountData dbDiscountData : discounts) {
@@ -1566,12 +1612,6 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             int presentQty = actualQty + updatedQty;
             dbInventory.qty = "" + presentQty;
             billMatrixDaoImpl.updateInventory(DBConstants.QUANTITY, "" + presentQty, dbInventory.item_code);
-
-            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
-            if (!dbInventory.add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
-                billMatrixDaoImpl.updateInventory(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, dbInventory.item_code);
-            }
-
         }
     }
 

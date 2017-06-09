@@ -522,6 +522,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="4dp"
                             android:background="@android:color/white"
+                            android:imeOptions="actionDone"
                             android:text="@android:string/ok" />
                     </LinearLayout>
 

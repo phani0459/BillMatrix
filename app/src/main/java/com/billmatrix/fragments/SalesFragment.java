@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +20,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.billmatrix.R;
-import com.billmatrix.adapters.GeneratedReportsAdapter;
 import com.billmatrix.adapters.SalesReportsAdapter;
 import com.billmatrix.database.BillMatrixDaoImpl;
 import com.billmatrix.database.DBConstants;
 import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Discount;
-import com.billmatrix.models.GeneratedReport;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Transaction;
 import com.billmatrix.models.Vendor;
@@ -225,7 +222,7 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
             }
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.select_dialog_item, spinnerTwo_Strings);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, R.layout.spinner_dropdown_item, spinnerTwo_Strings);
         salesItemACTextView.setThreshold(1);//will start working from first character
         salesItemACTextView.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
     }
@@ -420,8 +417,7 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
                     Utils.showToast("Select Discount", mContext);
                     return;
                 }
-                query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "' AND "
-                        + DBConstants.DISCOUNT_CODE + " ='" + spinnerItemName + "'";
+                query = "SELECT * FROM " + DBConstants.CUSTOMER_TRANSACTIONS_TABLE + " WHERE " + DBConstants.DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'";
                 transactions = billMatrixDaoImpl.getTransactions(query);
                 reportsAdapter.setSalesType("SALE BY DISCOUNT");
                 reportsAdapter.setSalesItemType(spinnerItemName);

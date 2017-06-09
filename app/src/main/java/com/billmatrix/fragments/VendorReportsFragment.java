@@ -24,6 +24,7 @@ import com.billmatrix.utils.Utils;
 import java.sql.Date;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,6 +95,9 @@ public class VendorReportsFragment extends Fragment {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, fromDate_EditText, true, false);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.MONTH, -2);
+                    datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
                     datePickerDialog.show();
                 }
                 v.clearFocus();
@@ -111,6 +115,7 @@ public class VendorReportsFragment extends Fragment {
                     }
                     try {
                         DatePickerDialog datePickerDialog = Utils.dateDialog(mContext, toDate_EditText, Constants.getDateFormat().parse(fromDate).getTime(), false);
+                        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                         datePickerDialog.show();
                     } catch (ParseException e) {
                         e.printStackTrace();

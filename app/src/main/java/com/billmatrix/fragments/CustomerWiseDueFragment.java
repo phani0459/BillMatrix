@@ -83,7 +83,7 @@ public class CustomerWiseDueFragment extends Fragment implements OnItemClickList
                 customerNames.add(customer.username);
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, customerNames);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,  R.layout.item_spinner_text, customerNames);
             selectCustomerAutoCompleteTV.setThreshold(1);//will start working from first character
             selectCustomerAutoCompleteTV.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
         }

@@ -60,7 +60,8 @@ class BillMatrixDBHandler extends DBHandler {
             + DBConstants.DATE + " VARCHAR," + DBConstants.WAREHOUSE + " VARCHAR," + DBConstants.VENDOR_NAME + " VARCHAR,"
             + DBConstants.BARCODE + " VARCHAR," + DBConstants.PHOTO + " VARCHAR," + DBConstants.STATUS + " VARCHAR," + DBConstants.ID + " VARCHAR,"
             + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.CUSTOMER_NAME + " VARCHAR," + DBConstants.SELECTED_QTY + " VARCHAR," + DBConstants.DISCOUNT_CODE
-            + " VARCHAR," + DBConstants.DISCOUNT_VALUE + " VARCHAR," + DBConstants.Z_BILL + " VARCHAR" + ")";
+            + " VARCHAR," + DBConstants.DISCOUNT_VALUE + " VARCHAR," + DBConstants.Z_BILL + " VARCHAR,"
+            + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR" + ")";
 
     private final static String CREATE_TAX_TABLE = "CREATE TABLE IF NOT EXISTS "
             + DBConstants.TAX_TABLE + " (" + DBConstants.SNO
@@ -87,7 +88,8 @@ class BillMatrixDBHandler extends DBHandler {
             + DBConstants.CUSTOMER_NAME + " VARCHAR," + DBConstants.DATE + " VARCHAR," + DBConstants.TOTAL_AMOUNT + " VARCHAR,"
             + DBConstants.AMOUNT_PAID + " VARCHAR," + DBConstants.ADMIN_ID + " VARCHAR," + DBConstants.AMOUNT_DUE + " VARCHAR,"
             + DBConstants.CREATE_DATE + " VARCHAR," + DBConstants.UPDATE_DATE + " VARCHAR," + DBConstants.ADD_UPDATE + " VARCHAR," + DBConstants.STATUS + " VARCHAR,"
-            + DBConstants.Z_BILL + " VARCHAR," + DBConstants.DISCOUNT_CODE + " VARCHAR," + DBConstants.DISCOUNT_VALUE + " VARCHAR" + ")";
+            + DBConstants.Z_BILL + " VARCHAR," + DBConstants.DISCOUNT_CODE + " VARCHAR," + DBConstants.DISCOUNT_VALUE + " VARCHAR,"
+            + DBConstants.SUB_TOTAL + " VARCHAR," + DBConstants.TAX_ON_TRANSACTION + " VARCHAR," + DBConstants.DISC_ON_TRANS + " VARCHAR" + ")";
 
     @Override
     public void onCreate(SQLiteDatabase db) {

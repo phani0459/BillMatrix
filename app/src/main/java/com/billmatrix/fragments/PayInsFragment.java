@@ -102,7 +102,7 @@ public class PayInsFragment extends Fragment implements OnItemClickListener, OnD
                 }
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, customerNames);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, R.layout.spinner_dropdown_item, customerNames);
             customerNameAutoCompleteTextView.setThreshold(1);//will start working from first character
             customerNameAutoCompleteTextView.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
         }

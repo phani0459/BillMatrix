@@ -130,7 +130,7 @@ public class GenerateReportFragment extends Fragment implements OnItemClickListe
                 }
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, itemNames);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, R.layout.spinner_dropdown_item, itemNames);
             itemNameEditText.setThreshold(1);//will start working from first character
             itemNameEditText.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
         }
@@ -143,7 +143,7 @@ public class GenerateReportFragment extends Fragment implements OnItemClickListe
                 vendorNames.add(vendorData.name);
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, vendorNames);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, R.layout.spinner_dropdown_item, vendorNames);
             vendorEditText.setThreshold(1);//will start working from first character
             vendorEditText.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
         }

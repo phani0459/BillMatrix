@@ -3,6 +3,7 @@ package com.billmatrix.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,7 +136,7 @@ public class SalesReportsAdapter extends RecyclerView.Adapter<SalesReportsAdapte
                     getReportsByProfit();
                     break;
                 case "SALE BY DISCOUNT":
-                    getReportsByProfit();
+                    getReportsByDiscount();
                     break;
             }
         }
@@ -143,6 +144,62 @@ public class SalesReportsAdapter extends RecyclerView.Adapter<SalesReportsAdapte
         if (totalInventories.size() > 0) {
             Collections.sort(totalInventories, getTransDateComparator());
         }
+    }
+
+    private void getReportsByDiscount() {
+        ArrayList<Transaction> localReports = new ArrayList<>();
+        ArrayList<Transaction> localDateReports = new ArrayList<>();
+        String totalAmount = "";
+        String totalDiscountedAmt = "";
+
+        if (reports.size() > 0) {
+            for (int i = 0; i < reports.size(); i++) {
+
+                if (reports.get(i).discountCodeApplied.equalsIgnoreCase(salesItemType)) {
+                    localReports.add(reports.get(i));
+                }
+
+                float previousAmt = TextUtils.isEmpty(totalAmount) ? 0 : Float.parseFloat(totalAmount);
+                float presentAmt = TextUtils.isEmpty(reports.get(i).totalAmount) ? 0 : Float.parseFloat(reports.get(i).totalAmount);
+
+                if (reports.get(i).discountCodeApplied.equalsIgnoreCase(salesItemType)) {
+                    float previousDiscountedAmt = TextUtils.isEmpty(totalDiscountedAmt) ? 0 : Float.parseFloat(totalDiscountedAmt);
+                    float presentDiscountedAmt = TextUtils.isEmpty(reports.get(i).totalAmount) ? 0 : Float.parseFloat(reports.get(i).totalAmount);
+                    totalDiscountedAmt = String.format(Locale.getDefault(), "%.2f", (previousDiscountedAmt + presentDiscountedAmt));
+                }
+
+                totalAmount = String.format(Locale.getDefault(), "%.2f", (previousAmt + presentAmt));
+            }
+        }
+
+        boolean hasDate = false;
+        if (localReports.size() > 0) {
+            for (int i = 0; i < localReports.size(); i++) {
+                if (localDateReports.size() > 0) {
+                    for (int j = 0; j < localDateReports.size(); j++) {
+                        if (localDateReports.get(j).date.equalsIgnoreCase(localReports.get(i).date)) {
+                            hasDate = true;
+                            float presentDiscount = TextUtils.isEmpty(localReports.get(i).totalDiscount) ? 0 : Float.parseFloat(localReports.get(i).totalDiscount);
+                            float previousDiscount = TextUtils.isEmpty(localDateReports.get(j).totalDiscount) ? 0 : Float.parseFloat(localDateReports.get(j).totalDiscount);
+                            localDateReports.get(j).totalDiscount = String.format(Locale.getDefault(), "%.2f", (previousDiscount + presentDiscount));
+                            break;
+                        }
+                    }
+                    if (!hasDate) {
+                        localReports.get(i).totalAmount = totalAmount;
+                        localReports.get(i).totalDiscountedAmt = totalDiscountedAmt;
+                        localDateReports.add(localReports.get(i));
+                    }
+                } else {
+                    localReports.get(i).totalAmount = totalAmount;
+                    localReports.get(i).totalDiscountedAmt = totalDiscountedAmt;
+                    localDateReports.add(localReports.get(i));
+                }
+            }
+        }
+
+        reports = new ArrayList<>();
+        reports = localDateReports;
     }
 
     private void getReportsByProfit() {
@@ -157,7 +214,8 @@ public class SalesReportsAdapter extends RecyclerView.Adapter<SalesReportsAdapte
                             float itemQty = Float.parseFloat(totalInventories.get(i).selectedQTY);
                             float itemPrice = TextUtils.isEmpty(totalInventories.get(i).price) ? 0 : Float.parseFloat(totalInventories.get(i).price);
                             float itemMyCost = TextUtils.isEmpty(totalInventories.get(i).mycost) ? 0 : Float.parseFloat(totalInventories.get(i).mycost);
-                            totalInventories.get(i).totalSales = itemQty * itemPrice;
+                            float discountSelected = TextUtils.isEmpty(totalInventories.get(i).discountValue) ? 0 : Float.parseFloat(totalInventories.get(i).discountValue);
+                            totalInventories.get(i).totalSales = (itemQty * itemPrice) - ((itemQty * itemPrice * discountSelected) / 100);
                             totalInventories.get(i).totalProfit = totalInventories.get(i).totalSales - (itemMyCost * itemQty);
                             profitInventories.get(j).totalSales = profitInventories.get(j).totalSales + totalInventories.get(i).totalSales;
                             profitInventories.get(j).totalProfit = profitInventories.get(j).totalProfit + totalInventories.get(i).totalProfit;
@@ -168,7 +226,8 @@ public class SalesReportsAdapter extends RecyclerView.Adapter<SalesReportsAdapte
                         float itemQty = Float.parseFloat(totalInventories.get(i).selectedQTY);
                         float itemPrice = TextUtils.isEmpty(totalInventories.get(i).price) ? 0 : Float.parseFloat(totalInventories.get(i).price);
                         float itemMyCost = TextUtils.isEmpty(totalInventories.get(i).mycost) ? 0 : Float.parseFloat(totalInventories.get(i).mycost);
-                        totalInventories.get(i).totalSales = itemQty * itemPrice;
+                        float discountSelected = TextUtils.isEmpty(totalInventories.get(i).discountValue) ? 0 : Float.parseFloat(totalInventories.get(i).discountValue);
+                        totalInventories.get(i).totalSales = (itemQty * itemPrice) - ((itemQty * itemPrice * discountSelected) / 100);
                         totalInventories.get(i).totalProfit = totalInventories.get(i).totalSales - (itemMyCost * itemQty);
                         profitInventories.add(totalInventories.get(i));
                     }
@@ -176,7 +235,8 @@ public class SalesReportsAdapter extends RecyclerView.Adapter<SalesReportsAdapte
                     float itemQty = Float.parseFloat(totalInventories.get(i).selectedQTY);
                     float itemPrice = TextUtils.isEmpty(totalInventories.get(i).price) ? 0 : Float.parseFloat(totalInventories.get(i).price);
                     float itemMyCost = TextUtils.isEmpty(totalInventories.get(i).mycost) ? 0 : Float.parseFloat(totalInventories.get(i).mycost);
-                    totalInventories.get(i).totalSales = itemQty * itemPrice;
+                    float discountSelected = TextUtils.isEmpty(totalInventories.get(i).discountValue) ? 0 : Float.parseFloat(totalInventories.get(i).discountValue);
+                    totalInventories.get(i).totalSales = (itemQty * itemPrice) - ((itemQty * itemPrice * discountSelected) / 100);
                     totalInventories.get(i).totalProfit = totalInventories.get(i).totalSales - (itemMyCost * itemQty);
                     profitInventories.add(totalInventories.get(i));
                 }
@@ -274,7 +334,13 @@ public class SalesReportsAdapter extends RecyclerView.Adapter<SalesReportsAdapte
 
     @Override
     public void onBindViewHolder(ReportHolder holder, final int position) {
-        Inventory.InventoryData inventoryData = totalInventories.get(position);
+        Inventory.InventoryData inventoryData = null;
+        Transaction transaction = null;
+        if (salesType.equalsIgnoreCase("SALE BY DISCOUNT")) {
+            transaction = reports.get(position);
+        } else {
+            inventoryData = totalInventories.get(position);
+        }
 
         holder.itemNameTextView.setVisibility(View.VISIBLE);
         holder.qtyTextView.setVisibility(View.VISIBLE);
@@ -289,7 +355,12 @@ public class SalesReportsAdapter extends RecyclerView.Adapter<SalesReportsAdapte
                 holder.dateTextView.setText(inventoryData.date);
                 break;
             default:
-                String dateString = inventoryData.transactionDate.trim();
+                String dateString = null;
+                if (inventoryData != null) {
+                    dateString = inventoryData.transactionDate.trim();
+                } else if (transaction != null) {
+                    dateString = transaction.date.trim();
+                }
 
                 if (!TextUtils.isEmpty(dateString)) {
                     try {
@@ -304,51 +375,66 @@ public class SalesReportsAdapter extends RecyclerView.Adapter<SalesReportsAdapte
         switch (salesType) {
             case "SALE TOTAL":
             case "SALE BY ITEM":
-                holder.itemNameTextView.setText(inventoryData.item_name);
-                if (!TextUtils.isEmpty(inventoryData.selectedQTY)) {
-                    holder.qtyTextView.setText(inventoryData.selectedQTY);
+                if (inventoryData != null) {
+                    holder.itemNameTextView.setText(inventoryData.item_name);
+                    if (!TextUtils.isEmpty(inventoryData.selectedQTY)) {
+                        holder.qtyTextView.setText(inventoryData.selectedQTY);
+                    }
                 }
 
                 holder.vendorTextView.setVisibility(View.GONE);
                 holder.costTextView.setVisibility(View.GONE);
                 break;
             case "SALE BY VENDOR":
-                holder.vendorTextView.setText(billMatrixDaoImpl.getVendorName(inventoryData.vendor));
-                holder.qtyTextView.setText(String.format(Locale.getDefault(), "%.2f", inventoryData.totalSales));
+                if (inventoryData != null) {
+                    holder.vendorTextView.setText(billMatrixDaoImpl.getVendorName(inventoryData.vendor));
+                    holder.qtyTextView.setText(String.format(Locale.getDefault(), "%.2f", inventoryData.totalSales));
+                }
 
                 holder.itemNameTextView.setVisibility(View.GONE);
                 holder.costTextView.setVisibility(View.GONE);
                 break;
             case "SALE PROFIT":
-                holder.vendorTextView.setText(String.format(Locale.getDefault(), "%.2f", inventoryData.totalSales));
-                holder.costTextView.setText(String.format(Locale.getDefault(), "%.2f", inventoryData.totalProfit));
+                if (inventoryData != null) {
+                    holder.vendorTextView.setText(String.format(Locale.getDefault(), "%.2f", inventoryData.totalSales));
+                    holder.costTextView.setText(String.format(Locale.getDefault(), "%.2f", inventoryData.totalProfit));
+                }
 
                 holder.itemNameTextView.setVisibility(View.GONE);
                 holder.qtyTextView.setVisibility(View.GONE);
                 break;
             case "SALE BY DISCOUNT":
-                holder.vendorTextView.setText(String.format(Locale.getDefault(), "%.2f", inventoryData.totalSales));
-                holder.costTextView.setText(String.format(Locale.getDefault(), "%.2f", inventoryData.totalProfit));
-
-                holder.itemNameTextView.setText(View.GONE + "");
-                holder.qtyTextView.setText(salesItemType);
+                if (transaction != null) {
+                    holder.itemNameTextView.setText(transaction.totalDiscountedAmt);
+                    holder.vendorTextView.setText(transaction.totalAmount);
+                    holder.costTextView.setText(transaction.totalDiscount);
+                    holder.qtyTextView.setText(salesItemType);
+                }
                 break;
             case "PURCHASE TOTAL":
             case "PURCHASE BY VENDOR":
-                holder.itemNameTextView.setText(inventoryData.item_name);
-                holder.vendorTextView.setText(billMatrixDaoImpl.getVendorName(inventoryData.vendor));
-                holder.costTextView.setText(inventoryData.price);
-                holder.qtyTextView.setText(inventoryData.qty);
+                if (inventoryData != null) {
+                    holder.itemNameTextView.setText(inventoryData.item_name);
+                    holder.vendorTextView.setText(billMatrixDaoImpl.getVendorName(inventoryData.vendor));
+                    holder.costTextView.setText(inventoryData.price);
+                    holder.qtyTextView.setText(inventoryData.qty);
+                }
                 break;
         }
     }
 
-    public Inventory.InventoryData getItem(int position) {
+    public Object getItem(int position) {
+        if (!TextUtils.isEmpty(salesType) && salesType.equalsIgnoreCase("SALE BY DISCOUNT")) {
+            return reports.get(position);
+        }
         return totalInventories.get(position);
     }
 
     @Override
     public int getItemCount() {
+        if (!TextUtils.isEmpty(salesType) && salesType.equalsIgnoreCase("SALE BY DISCOUNT")) {
+            return reports.size();
+        }
         return totalInventories.size();
     }
 }

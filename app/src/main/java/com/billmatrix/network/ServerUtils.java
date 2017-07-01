@@ -14,6 +14,7 @@ import com.billmatrix.models.Employee;
 import com.billmatrix.models.Inventory;
 import com.billmatrix.models.Payments;
 import com.billmatrix.models.Tax;
+import com.billmatrix.models.Transaction;
 import com.billmatrix.models.Transport;
 import com.billmatrix.models.Vendor;
 import com.billmatrix.utils.Constants;
@@ -1493,7 +1494,8 @@ public class ServerUtils {
                     HashMap<String, String> customerStatus = response.body();
                     if (customerStatus.get("status").equalsIgnoreCase("200")) {
                         if (customerStatus.containsKey("delete_transport") && customerStatus.get("delete_transport").equalsIgnoreCase("success")) {
-                            if (!isSync) Utils.showToast("Transport Deleted successfully", mContext);
+                            if (!isSync)
+                                Utils.showToast("Transport Deleted successfully", mContext);
                             billMatrixDaoImpl.deleteTransport(DBConstants.ID, transportData.id);
                         }
                     }
@@ -1510,6 +1512,85 @@ public class ServerUtils {
                 Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
             }
         });
+    }
+
+    /********************************************************************
+     ***************************  TRANSACTIONS  *****************************
+     *********************************************************************/
+    /*
+     * Add Transaction to Server
+     *
+     */
+    public static Transaction addTransactiontoServer(final Transaction transaction, final Context mContext, String adminId, final BillMatrixDaoImpl billMatrixDaoImpl) {
+        Log.e(TAG, "addTransactiontoServer: " );
+        Call<CreateJob> call = Utils.getBillMatrixAPI(mContext).addTransaction(adminId, billMatrixDaoImpl.getCustomerId(transaction.customerName),
+                transaction.billNumber, transaction.totalAmount, transaction.discountCodeApplied, transaction.discountPercentApplied + "",
+                transaction.subTotal, transaction.date, transaction.taxCalculated, transaction.totalDiscount, transaction.amountPaid, transaction.amountDue,
+                transaction.itemsJson);
+
+        call.enqueue(new Callback<CreateJob>() {
+
+            /*
+             * Successful HTTP response.
+             * @param call server call
+             * @param response server response
+             */
+            @Override
+            public void onResponse(Call<CreateJob> call, Response<CreateJob> response) {
+                Log.e("SUCCEESS RESPONSE RAW", "" + response.raw());
+                if (response.body() != null) {
+                    CreateJob transactionStatus = response.body();
+                    if (transactionStatus.status.equalsIgnoreCase("200")) {
+                        if (!TextUtils.isEmpty(transactionStatus.create_transaction) && transactionStatus.create_transaction.equalsIgnoreCase("success")) {
+                            if (!isSync)
+                                Utils.showToast("Transaction Added successfully", mContext);
+
+                            /*transaction.id = transactionStatus.data.id;
+                            transaction.transportName = transactionStatus.data.transportName;
+                            transaction.phone = transactionStatus.data.phone;
+                            transaction.location = transactionStatus.data.location;
+                            transaction.status = transactionStatus.data.status;
+                            transaction.admin_id = transactionStatus.data.admin_id;
+                            transaction.create_date = transactionStatus.data.create_date;
+                            transaction.update_date = transactionStatus.data.update_date;
+                            transaction.add_update = Constants.DATA_FROM_SERVER;
+
+//                            billMatrixDaoImpl.updateTransport(transaction);*/
+
+                            Log.e(TAG, "onResponse: " + transactionStatus.create_transaction);
+
+                        } else {
+                            /*
+                             * To show pending sync Icon in database page
+                             */
+                            Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSACTION_EDITED_OFFLINE, true).apply();
+                            if (!isSync) {
+                                Utils.showToast(transactionStatus.create_transaction + "", mContext);
+                            }
+                        }
+                    }
+                }
+            }
+
+            /*
+             *  Invoked when a network or unexpected exception occurred during the HTTP request.
+             * @param call server call
+             * @param t error
+             */
+            @Override
+            public void onFailure(Call<CreateJob> call, Throwable t) {
+                Log.e(TAG, "FAILURE RESPONSE" + t.getMessage());
+                /*
+                 * To show pending sync Icon in database page
+                 */
+                Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_TRANSACTION_EDITED_OFFLINE, true).apply();
+                if (!isSync) {
+                    Utils.showToast("There was a problem adding Transaction to server", mContext);
+                }
+            }
+        });
+
+        return transaction;
     }
 
 

@@ -829,9 +829,13 @@ public class DatabaseFragment extends Fragment implements OnDataFetchListener, C
      **************************************************/
 
     private void syncInventory(int currentStatus) {
+        if (Utils.getSharedPreferences(mContext).getBoolean(Constants.PREF_VENDORS_EDITED_OFFLINE, false)) {
+            syncVendors(currentStatus);
+            return;
+        }
         inventorySyncIcon.setImageResource(R.drawable.sync_green);
 
-        ArrayList<Inventory.InventoryData> dbInventories = billMatrixDaoImpl.getInventory();
+        ArrayList<Inventory.InventoryData> dbInventories = billMatrixDaoImpl.getInventory(null);
         ArrayList<Inventory.InventoryData> deletedInventories = new ArrayList<>();
         ArrayList<Inventory.InventoryData> addedInventories = new ArrayList<>();
         ArrayList<Inventory.InventoryData> updatedInventories = new ArrayList<>();

@@ -234,7 +234,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
         inventoryAdapter = new InventoryAdapter(inventoryDatas, this, mContext);
         inventoryRecyclerView.setAdapter(inventoryAdapter);
 
-        inventoryDatas = billMatrixDaoImpl.getInventory();
+        inventoryDatas = billMatrixDaoImpl.getInventory(null);
 
         if (inventoryDatas != null && inventoryDatas.size() > 0) {
             if (inventoryDatas.size() > Constants.DEFAULT_INVENTORY_SHOW_SIZE) {
@@ -410,7 +410,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
     @Override
     public void onDataFetch(int dataFetched) {
-        ArrayList<Inventory.InventoryData> inventoryDatas = billMatrixDaoImpl.getInventory();
+        ArrayList<Inventory.InventoryData> inventoryDatas = billMatrixDaoImpl.getInventory(null);
 
         if (inventoryDatas != null && inventoryDatas.size() > 0) {
             for (Inventory.InventoryData inventoryData : inventoryDatas) {
@@ -773,7 +773,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
 
         inventoryAdapter.removeAllInventories();
 
-        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory(null);
 
         if (inventories != null && inventories.size() > 0) {
             for (Inventory.InventoryData inventoryData : inventories) {
@@ -797,7 +797,7 @@ public class InventoryFragment extends Fragment implements OnItemClickListener, 
             query = query.toLowerCase();
             inventoryAdapter.removeAllInventories();
 
-            ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+            ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory(null);
 
             if (inventories != null && inventories.size() > 0) {
                 for (Inventory.InventoryData inventoryData : inventories) {

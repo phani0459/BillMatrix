@@ -1,177 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:focusableInTouchMode="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/adminDetailsBG"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:weightSum="6">
-
-        <Spinner
-            android:id="@+id/sp_report_vendor_types"
-            style="@style/spinner_style"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1.25"
-            android:entries="@array/employee_status"
-            android:padding="6dp"
-            android:textColor="@android:color/black" />
-
-        <Spinner
-            android:id="@+id/sp_report_vendors"
-            style="@style/spinner_style"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1.25"
-            android:entries="@array/employee_status"
-            android:padding="6dp"
-            android:textColor="@android:color/black" />
-
-        <EditText
-            android:id="@+id/et_report_vendor_from_date"
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:background="@drawable/edit_text_border"
-            android:drawableRight="@drawable/date"
-            android:gravity="center_vertical"
-            android:hint="@string/from_date"
-            android:inputType="date"
-            android:maxLength="12"
-            android:paddingLeft="6dp"
-            android:textColor="@android:color/black" />
-
-        <EditText
-            android:id="@+id/et_report_vendor_to_date"
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:background="@drawable/edit_text_border"
-            android:drawableRight="@drawable/date"
-            android:gravity="center_vertical"
-            android:hint="@string/to_date"
-            android:inputType="date"
-            android:maxLength="12"
-            android:paddingLeft="6dp"
-            android:textColor="@android:color/black" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll_sales_bottom_note"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1.3"
+            android:background="@color/adminDetailsBG"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:weightSum="6">
 
-            <Button
+            <Spinner
+                android:id="@+id/sp_report_vendor_types"
+                style="@style/spinner_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1.25"
+                android:entries="@array/employee_status"
+                android:padding="6dp"
+                android:textColor="@android:color/black" />
+
+            <Spinner
+                android:id="@+id/sp_report_vendors"
+                style="@style/spinner_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1.25"
+                android:entries="@array/employee_status"
+                android:padding="6dp"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/et_report_vendor_from_date"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_gravity="center"
-                android:background="@drawable/green_button"
-                android:gravity="center"
-                android:text="@string/VIEW"
-                android:textColor="@android:color/white" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:background="@drawable/edit_text_border"
+                android:drawableRight="@drawable/date"
+                android:gravity="center_vertical"
+                android:hint="@string/from_date"
+                android:inputType="date"
+                android:maxLength="12"
+                android:paddingLeft="6dp"
+                android:textColor="@android:color/black" />
 
-            <Button
+            <EditText
+                android:id="@+id/et_report_vendor_to_date"
                 style="@style/Base.TextAppearance.AppCompat.Caption"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="12dp"
-                android:background="@drawable/green_button"
-                android:gravity="center"
-                android:text="@string/Print"
-                android:textColor="@android:color/white" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:background="@drawable/edit_text_border"
+                android:drawableRight="@drawable/date"
+                android:gravity="center_vertical"
+                android:hint="@string/to_date"
+                android:inputType="date"
+                android:maxLength="12"
+                android:paddingLeft="6dp"
+                android:textColor="@android:color/black" />
 
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1.3"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_viewReports"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/green_button"
+                    android:gravity="center"
+                    android:text="@string/VIEW"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="12dp"
+                    android:background="@drawable/green_button"
+                    android:gravity="center"
+                    android:text="@string/Print"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@color/adminDetailsBG"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:weightSum="6">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="@string/sno"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1.5"
+                android:gravity="center"
+                android:text="@string/VENDOR"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/ITEM_NAME"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/DATE"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/MY_COST"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/QTY"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/vendorReportsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
     </LinearLayout>
 
-    <LinearLayout
+    <TableLayout
+        android:id="@+id/ll_sales_bottom_note"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:background="@color/adminDetailsBG"
-        android:gravity="center"
         android:orientation="horizontal"
-        android:padding="8dp"
-        android:weightSum="6">
+        android:stretchColumns="*">
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:text="@string/sno"
-            android:textColor="@android:color/black" />
+        <TableRow>
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1.5"
-            android:gravity="center"
-            android:text="@string/VENDOR"
-            android:textColor="@android:color/black" />
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/total_stock_available"
+                android:textColor="@android:color/black" />
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/ITEM_NAME"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/DATE"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/MY_COST"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/QTY"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-
-</LinearLayout>
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="300"
+                android:textColor="@android:color/black" />
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>

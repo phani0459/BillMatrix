@@ -214,7 +214,7 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
                 spinnerTwo_Strings.add(inventoryData.item_name.toUpperCase());
             }
         } else {
-            inventory = billMatrixDaoImpl.getInventory();
+            inventory = billMatrixDaoImpl.getInventory(null);
             if (inventory != null && inventory.size() > 0) {
                 for (Inventory.InventoryData inventoryData : inventory) {
                     spinnerTwo_Strings.add(inventoryData.item_name.toUpperCase());
@@ -437,7 +437,7 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
                 Utils.showToast("Select Purchase type to view report", mContext);
                 return;
             case "PURCHASE TOTAL":
-                transactions = billMatrixDaoImpl.getInventory();
+                transactions = billMatrixDaoImpl.getInventory(null);
                 reportsAdapter.setSalesType("PURCHASE TOTAL");
                 if (transactions != null && transactions.size() > 0) {
                     reportsAdapter.addAllInventories(transactions);
@@ -449,7 +449,7 @@ public class SalesFragment extends Fragment implements OnItemClickListener {
                     return;
                 }
                 reportsAdapter.setSalesType("PURCHASE BY VENDOR");
-                transactions = billMatrixDaoImpl.getInventory();
+                transactions = billMatrixDaoImpl.getInventory(null);
                 if (transactions != null && transactions.size() > 0) {
                     ArrayList<Inventory.InventoryData> localInventories = new ArrayList<>();
                     for (int i = 0; i < transactions.size(); i++) {

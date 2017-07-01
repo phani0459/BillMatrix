@@ -173,6 +173,7 @@
     <string name="TOTAL_DISC">TOTAL DISCOUNT</string>
     <string name="Brand">BRAND</string>
     <string name="report_name">NAME OF THE REPORT</string>
+    <string name="total_stock_available">TOTAL STOCK AVAILABLE: </string>
     <string name="sale_note">NOTE: MAXIMUM 2 MONTHS OLD REPORTS ONLY AVAILABLE ON DEVICE, REST IS AVAILABLE ON CLOUD</string>
     <string-array name="sale_by_array">
         <item>SELECT ONE</item>

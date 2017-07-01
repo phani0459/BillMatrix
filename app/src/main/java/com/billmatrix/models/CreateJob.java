@@ -21,6 +21,7 @@ public class CreateJob implements Serializable {
     public String update_vendor;
     public String update_discount;
     public String create_discount;
+    public String create_transaction;
     public String create_tax;
     public String update_tax;
     public CreatedJob data;

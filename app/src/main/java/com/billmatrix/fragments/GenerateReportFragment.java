@@ -100,7 +100,7 @@ public class GenerateReportFragment extends Fragment implements OnItemClickListe
             }
         });
 
-        inventoryDatas = billMatrixDaoImpl.getInventory();
+        inventoryDatas = billMatrixDaoImpl.getInventory(null);
         vendors = billMatrixDaoImpl.getVendors();
 
         loadItemNames();

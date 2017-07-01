@@ -403,6 +403,18 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return db.update(CUSTOMERS_TABLE, contentValues, CUSTOMER_CONTACT + "='" + customerMobile + "'", null) > 0;
     }
 
+    public String getCustomerId(String customer) {
+        String query = "SELECT " + ID + " FROM " + CUSTOMERS_TABLE + " WHERE " + CUSTOMER_NAME + " = '" + customer + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String id = cursor.getString(cursor.getColumnIndex(ID));
+            cursor.close();
+            return id;
+        }
+        return "";
+    }
+
     public ArrayList<Customer.CustomerData> getCustomers(String adminID) {
         Cursor cursor = null;
         try {
@@ -619,12 +631,18 @@ public class BillMatrixDaoImpl implements BillMatrixDao {
         return null;
     }
 
-    public ArrayList<Inventory.InventoryData> getInventory() {
+    public ArrayList<Inventory.InventoryData> getInventory(String query) {
         Cursor cursor = null;
         try {
-            cursor = db.query(INVENTORY_TABLE, null,
-                    SNO + "<>?", new String[]{""},
-                    null, null, null);
+
+            if (!TextUtils.isEmpty(query)) {
+                cursor = db.rawQuery(query, null);
+            } else {
+                cursor = db.query(INVENTORY_TABLE, null,
+                        SNO + "<>?", new String[]{""},
+                        null, null, null);
+            }
+
 
             if (cursor.moveToFirst()) {
                 List<Inventory.InventoryData> inventories = new ArrayList<>();

@@ -269,7 +269,7 @@ public class ServerData {
     }
 
     public void getInventoryFromServer(final String adminId) {
-        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory(null);
         if (inventories != null && inventories.size() > 0) {
             if (isFromLogin()) getTaxesFromServer(adminId);
             else {

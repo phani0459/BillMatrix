@@ -61,6 +61,7 @@ import com.billmatrix.interfaces.OnItemClickListener;
 import com.billmatrix.models.Customer;
 import com.billmatrix.models.Discount;
 import com.billmatrix.models.Inventory;
+import com.billmatrix.models.ItemsJSON;
 import com.billmatrix.models.Profile;
 import com.billmatrix.models.Transaction;
 import com.billmatrix.models.Transport;
@@ -243,7 +244,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         posInventoryAdapter = new POSInventoryAdapter(inventoryDatas, this, mContext);
         posInventoryList.setAdapter(posInventoryAdapter);
 
-        inventoryDatas = billMatrixDaoImpl.getInventory();
+        inventoryDatas = billMatrixDaoImpl.getInventory(null);
 
         if (inventoryDatas != null && inventoryDatas.size() > 0) {
             for (Inventory.InventoryData inventoryData : inventoryDatas) {
@@ -285,6 +286,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         mHandler = new MHandler();
         WorkService.addHandler(mHandler);
         initBroadcast();
+        ServerUtils.setIsSync(false);
 
         if (null == WorkService.workThread) {
             Intent intent = new Intent(mContext, WorkService.class);
@@ -940,18 +942,24 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         Transaction transaction = new Transaction();
 
         List<Inventory.InventoryData> itemsPurchased = posItemAdapter.inventories;
+        List<ItemsJSON> itemsJSON = new ArrayList<>();
 
         /*
          * To update inventory as offline and to show pending sync in database
          */
         Utils.getSharedPreferences(mContext).edit().putBoolean(Constants.PREF_INVENTORY_EDITED_OFFLINE, true).apply();
         for (int i = 0; i < itemsPurchased.size(); i++) {
+            ItemsJSON itemJSON = new ItemsJSON();
+            itemJSON.item_id = itemsPurchased.get(i).id;
+            itemJSON.qty = itemsPurchased.get(i).selectedQTY;
+            itemsJSON.add(itemJSON);
             if (!itemsPurchased.get(i).add_update.equalsIgnoreCase(Constants.ADD_OFFLINE)) {
                 billMatrixDaoImpl.updateInventory(DBConstants.ADD_UPDATE, Constants.UPDATE_OFFLINE, itemsPurchased.get(i).item_code);
             }
         }
 
         String inventoryJson = Constants.getGson().toJson(itemsPurchased);
+        String itemsJson = Constants.getGson().toJson(itemsJSON);
 
         transaction.add_update = Constants.ADD_OFFLINE;
         transaction.create_date = Constants.getDateTimeFormat().format(System.currentTimeMillis());
@@ -959,6 +967,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         transaction.date = Constants.getSQLiteDateFormat().format(System.currentTimeMillis());
         transaction.inventoryJson = inventoryJson;
+        transaction.itemsJson = itemsJson;
         transaction.customerName = selectedCustomer != null ? selectedCustomer.username : selectedGuestCustomerName;
         transaction.amountPaid = totalPaidTextView.getText().toString();
         transaction.amountDue = balanceTextView.getText().toString().trim();
@@ -975,6 +984,10 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
         transaction.status = "1";
 
         billMatrixDaoImpl.addTransaction(transaction);
+
+        if (Utils.isInternetAvailable(mContext)) {
+            ServerUtils.addTransactiontoServer(transaction, mContext, adminId, billMatrixDaoImpl);
+        }
     }
 
     private String generateBillNumber() {
@@ -1424,7 +1437,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
             query = query.toLowerCase();
             posInventoryAdapter.removeAllInventories();
 
-            ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+            ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory(null);
 
             if (inventories != null && inventories.size() > 0) {
                 for (Inventory.InventoryData inventoryData : inventories) {
@@ -1448,7 +1461,7 @@ public class POSActivity extends Activity implements OnItemClickListener, POSIte
 
         posInventoryAdapter.removeAllInventories();
 
-        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory();
+        ArrayList<Inventory.InventoryData> inventories = billMatrixDaoImpl.getInventory(null);
 
         if (inventories != null && inventories.size() > 0) {
             for (Inventory.InventoryData inventoryData : inventories) {

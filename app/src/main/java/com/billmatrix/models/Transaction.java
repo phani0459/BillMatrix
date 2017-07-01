@@ -15,6 +15,7 @@ public class Transaction implements Serializable {
     public String customerName;
     public String date;
     public String inventoryJson;
+    public String itemsJson;
     public String totalAmount;
     public String discountCodeApplied;
     public float discountPercentApplied;

@@ -121,6 +121,14 @@ public interface BillMatrixAPI {
     Call<Inventory> getAdminInventory(@Field("admin_id") String adminId);
 
     @FormUrlEncoded
+    @POST("create_transaction")
+    Call<CreateJob> addTransaction(@Field("admin_id") String adminId, @Field("customer_id") String customer_id, @Field("billnumber") String billnumber,
+                                   @Field("totalamount") String totalamount, @Field("discountcodeapplied") String disccodeapplied,
+                                   @Field("discountpercentapplied") String discpercentapplied, @Field("subtotal") String subtotal, @Field("date") String date,
+                                   @Field("taxcalculated") String taxcalculated, @Field("totaldiscount") String totaldiscount, @Field("amountpaid") String amountpaid,
+                                   @Field("amountdue") String amountdue, @Field("items") String items);
+
+    @FormUrlEncoded
     @POST("create_inventory")
     Call<CreateJob> addInventory(@Field("admin_id") String adminId, @Field("item_code") String item_code, @Field("item_name") String item_name,
                                  @Field("unit") String unit, @Field("qty") String qty, @Field("price") String price, @Field("mycost") String mycost,
@@ -197,12 +205,12 @@ public interface BillMatrixAPI {
     @FormUrlEncoded
     @POST("create_transport")
     Call<CreateJob> addTransport(@Field("admin_id") String adminId, @Field("transportName") String transportName, @Field("phone") String phone,
-                                               @Field("location") String location, @Field("status") String status);
+                                 @Field("location") String location, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("update_transport")
     Call<CreateJob> updateTransport(@Field("id") String id, @Field("admin_id") String adminId, @Field("transportName") String transportName,
-                                                  @Field("phone") String phone, @Field("location") String location, @Field("status") String status);
+                                    @Field("phone") String phone, @Field("location") String location, @Field("status") String status);
 
     @FormUrlEncoded
     @POST("delete_transport")
